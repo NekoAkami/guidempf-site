@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Guide MPF — Connexion</title>
+</head>
+<body>
+
+<h1>Connexion Guide MPF</h1>
+<button onclick="login()">Connexion avec Google</button>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDPs4x2EE1pyeQTC_V-Ze5uyZ8Rs2N8qF4",
+  authDomain: "guidempf.firebaseapp.com",
+  projectId: "guidempf",
+  storageBucket: "guidempf.firebasestorage.app",
+  messagingSenderId: "806309770965",
+  appId: "1:806309770965:web:3621f58bfb252446c1945c"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+window.login = async () => {
+  const provider = new GoogleAuthProvider();
+  const result = await signInWithPopup(auth, provider);
+
+  const ref = doc(db, "users", result.user.uid);
+  const snap = await getDoc(ref);
+
+  if (!snap.exists()) {
+    await setDoc(ref, {
+      email: result.user.email,
+      status: "EN_ATTENTE",
+      createdAt: new Date()
+    });
+  }
+
+  window.location = "pending.html";
+};
+</script>
+
+</body>
+</html>
