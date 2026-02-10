@@ -178,16 +178,6 @@ body::before {
   opacity: 0.6;
 }
 
-@keyframes logoSpin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-@keyframes logoPulse {
-  0%, 100% { box-shadow: 0 0 20px rgba(0, 212, 255, 0.4); }
-  50% { box-shadow: 0 0 25px rgba(0, 212, 255, 0.6); }
-}
-
 .logo {
   font-family: 'Orbitron', sans-serif;
   font-size: 1.8rem;
