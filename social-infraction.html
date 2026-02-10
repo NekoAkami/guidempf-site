@@ -6,6 +6,7 @@
     <title>Social Infraction - MPF Documentation</title>
     <link rel="stylesheet" href="assets/css/main-style.css">
     <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/global-nav.css">
 </head>
 <body>
     <div class="particles-bg"></div>
@@ -16,26 +17,14 @@
                 <div class="logo-section">
                     <div class="logo-icon">M</div>
                     <h1 class="logo">MPF</h1>
+                    <p class="logo-subtitle">Metropolice Force Documentation</p>
                 </div>
-                <nav class="main-nav">
-                    <ul class="nav">
-                        <li><a href="index.html">Accueil</a></li>
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle">Activité ▾</a>
-                            <ul class="dropdown-menu">
-                                <li><a href="worker-announcement.html">Worker Announcement</a></li>
-                                <li><a href="ration-announcement.html">Ration Announcement</a></li>
-                                <li><a href="suspended-rations.html">Suspended Rations</a></li>
-                                <li><a href="social-infraction.html" class="active">Social Infraction</a></li>
-                                <li><a href="judgement-waiver.html">Judgement Waiver</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </nav>
                 <div id="authBtn"></div>
             </div>
         </div>
     </header>
+
+    <!-- Navigation globale insérée automatiquement par global-nav.js -->
 
     <main>
         <div class="container">
@@ -89,6 +78,7 @@
         </div>
     </main>
 
+    <script src="assets/js/global-nav.js"></script>
     <script type="module" src="assets/js/auth.js"></script>
     <script>
         document.getElementById('mobileMenuToggle')?.addEventListener('click', function() {

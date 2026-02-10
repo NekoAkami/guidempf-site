@@ -29,197 +29,109 @@
     </header>
 
     <!-- Navigation globale insérée automatiquement par global-nav.js -->
-                        </li>
-                    </ul>
-                </nav>
-                
-                <div id="authBtn"></div>
-            </div>
-        </div>
-    </header>
 
     <!-- Main Content -->
     <main>
         <div class="container">
             <!-- Hero Section -->
-            <section style="text-align: center; padding: 4rem 0; margin: 3rem 0;">
-                <h1 class="animate-fadeInDown" style="font-family: 'Orbitron', sans-serif; font-size: 3.5rem; font-weight: 900; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 5px;">
-                    METROPOLICE FORCE
-                </h1>
-                <p class="animate-fadeInUp delay-1" style="font-size: 1.4rem; color: var(--text-secondary); margin-bottom: 0.5rem; font-weight: 500; letter-spacing: 2px;">
-                    Documentation Centrale Officielle
-                </p>
-                <p class="animate-fadeInUp delay-2" style="font-family: 'Share Tech Mono', monospace; color: var(--accent-green); font-size: 1.1rem;">
-                    COMBINE OVERWATCH /// CITADEL ACCESS /// CLEARANCE REQUIRED
-                </p>
+            <section class="hero-section animate-fadeIn">
+                <h1 class="hero-title">METROPOLICE FORCE</h1>
+                <p class="hero-subtitle">Documentation Centrale Officielle</p>
+                <p class="hero-tagline">COMBINE OVERWATCH /// CITADEL ACCESS /// CLEARANCE REQUIRED</p>
                 
-                <div class="animate-fadeInUp delay-3" style="margin-top: 3rem; display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
-                    <a href="#documentation" style="padding: 1rem 2.5rem; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue)); color: var(--bg-primary); text-decoration: none; font-weight: 700; font-size: 1.1rem; border-radius: 8px; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease; display: inline-block; box-shadow: 0 5px 20px rgba(0, 212, 255, 0.4);">
-                        Accéder aux Docs
-                    </a>
-                    <a href="conscription.html" style="padding: 1rem 2.5rem; background: transparent; color: var(--accent-cyan); text-decoration: none; font-weight: 700; font-size: 1.1rem; border-radius: 8px; text-transform: uppercase; letter-spacing: 1px; border: 2px solid var(--accent-cyan); transition: all 0.3s ease; display: inline-block;">
-                        Conscription
-                    </a>
+                <div class="hero-buttons">
+                    <a href="#documentation" class="btn-primary">Accéder aux Docs</a>
+                    <a href="conscription.html" class="btn-outline">Conscription</a>
                 </div>
             </section>
 
             <!-- Quick Access Cards -->
-            <section id="documentation" style="margin: 4rem 0;">
-                <h2 class="animate-fadeInUp" style="font-family: 'Orbitron', sans-serif; font-size: 2.2rem; color: var(--accent-cyan); text-align: center; margin-bottom: 3rem; text-transform: uppercase; letter-spacing: 3px; text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);">
-                    Accès Rapide
-                </h2>
+            <section id="documentation" style="margin: 3rem 0;">
+                <h2 class="section-title animate-fadeInUp">Accès Rapide</h2>
                 
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
+                <div class="home-grid">
                     <!-- Card 1: Activité -->
-                    <div class="animate-fadeInUp delay-1" style="background: linear-gradient(135deg, rgba(15, 20, 32, 0.95), rgba(20, 25, 37, 0.95)); border: 2px solid rgba(0, 136, 255, 0.4); border-radius: 12px; padding: 2rem; position: relative; overflow: hidden; transition: all 0.4s ease;">
-                        <div style="position: absolute; top: -50%; right: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(0, 136, 255, 0.1) 0%, transparent 70%); opacity: 0; transition: opacity 0.4s ease;"></div>
-                        <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--accent-blue);">📋</div>
-                        <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--accent-blue); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px;">Activité</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">Annonces des travailleurs, distributions de rations, suspensions et infractions sociales.</p>
-                        <a href="worker-announcement.html" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent-blue); text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
-                            Voir les Activités →
-                        </a>
+                    <div class="home-card" style="border-color: rgba(0, 136, 255, 0.4);">
+                        <div class="card-emoji">📋</div>
+                        <h3 style="color: var(--accent-blue);">Activité</h3>
+                        <p>Annonces des travailleurs, distributions de rations, suspensions et infractions sociales.</p>
+                        <a href="worker-announcement.html" class="card-link" style="color: var(--accent-blue);">Voir les Activités →</a>
                     </div>
 
                     <!-- Card 2: Formation -->
-                    <div class="animate-fadeInUp delay-2" style="background: linear-gradient(135deg, rgba(15, 20, 32, 0.95), rgba(20, 25, 37, 0.95)); border: 2px solid rgba(0, 255, 136, 0.4); border-radius: 12px; padding: 2rem; position: relative; overflow: hidden; transition: all 0.4s ease;">
-                        <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--accent-green);">🎓</div>
-                        <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--accent-green); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px;">Formation</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">Cours théoriques RCT, 05+ et 03+. Programmes de formation et évaluation.</p>
-                        <a href="cours-rct.html" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent-green); text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
-                            Accéder aux Cours →
-                        </a>
+                    <div class="home-card" style="border-color: rgba(0, 255, 136, 0.4);">
+                        <div class="card-emoji">🎓</div>
+                        <h3 style="color: var(--accent-green);">Formation</h3>
+                        <p>Cours théoriques RCT, 05+ et 03+. Programmes de formation et évaluation.</p>
+                        <a href="cours-rct.html" class="card-link" style="color: var(--accent-green);">Accéder aux Cours →</a>
                     </div>
 
                     <!-- Card 3: Radio & Communications -->
-                    <div class="animate-fadeInUp delay-3" style="background: linear-gradient(135deg, rgba(15, 20, 32, 0.95), rgba(20, 25, 37, 0.95)); border: 2px solid rgba(255, 215, 0, 0.4); border-radius: 12px; padding: 2rem; position: relative; overflow: hidden; transition: all 0.4s ease;">
-                        <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--accent-yellow);">📻</div>
-                        <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--accent-yellow); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px;">Radio & Mdp</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">Fréquences radio, mots de passe et protocoles de communication.</p>
-                        <a href="radio.html" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent-yellow); text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
-                            Consulter les Fréquences →
-                        </a>
+                    <div class="home-card" style="border-color: rgba(255, 215, 0, 0.4);">
+                        <div class="card-emoji">📻</div>
+                        <h3 style="color: var(--accent-yellow);">Radio & Mdp</h3>
+                        <p>Fréquences radio, mots de passe et protocoles de communication.</p>
+                        <a href="radio.html" class="card-link" style="color: var(--accent-yellow);">Consulter les Fréquences →</a>
                     </div>
 
                     <!-- Card 4: Loyalisme -->
-                    <div class="animate-fadeInUp delay-4" style="background: linear-gradient(135deg, rgba(15, 20, 32, 0.95), rgba(20, 25, 37, 0.95)); border: 2px solid rgba(139, 92, 246, 0.4); border-radius: 12px; padding: 2rem; position: relative; overflow: hidden; transition: all 0.4s ease;">
-                        <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--accent-purple);">⭐</div>
-                        <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--accent-purple); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px;">Loyalisme</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">Niveaux de loyauté, brassards et privilèges des citoyens.</p>
-                        <a href="loyalisme.html" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent-purple); text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
-                            Explorer le Système →
-                        </a>
+                    <div class="home-card" style="border-color: rgba(139, 92, 246, 0.4);">
+                        <div class="card-emoji">⭐</div>
+                        <h3 style="color: var(--accent-purple);">Loyalisme</h3>
+                        <p>Niveaux de loyauté, brassards et privilèges des citoyens.</p>
+                        <a href="loyalisme.html" class="card-link" style="color: var(--accent-purple);">Explorer le Système →</a>
                     </div>
 
                     <!-- Card 5: Jugement -->
-                    <div class="animate-fadeInUp delay-5" style="background: linear-gradient(135deg, rgba(15, 20, 32, 0.95), rgba(20, 25, 37, 0.95)); border: 2px solid rgba(255, 43, 43, 0.4); border-radius: 12px; padding: 2rem; position: relative; overflow: hidden; transition: all 0.4s ease;">
-                        <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--accent-red);">⚖️</div>
-                        <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--accent-red); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px;">Jugement</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">Verdicts, peines, cycles de re-éducation et récidives.</p>
-                        <a href="jugement.html" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent-red); text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
-                            Voir les Verdicts →
-                        </a>
+                    <div class="home-card" style="border-color: rgba(255, 43, 43, 0.4);">
+                        <div class="card-emoji">⚖️</div>
+                        <h3 style="color: var(--accent-red);">Jugement</h3>
+                        <p>Verdicts, peines, cycles de re-éducation et récidives.</p>
+                        <a href="jugement.html" class="card-link" style="color: var(--accent-red);">Voir les Verdicts →</a>
                     </div>
 
                     <!-- Card 6: Hiérarchie -->
-                    <div class="animate-fadeInUp" style="background: linear-gradient(135deg, rgba(15, 20, 32, 0.95), rgba(20, 25, 37, 0.95)); border: 2px solid rgba(255, 159, 160, 0.4); border-radius: 12px; padding: 2rem; position: relative; overflow: hidden; transition: all 0.4s ease;">
-                        <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--accent-pink);">👑</div>
-                        <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--accent-pink); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px;">Hiérarchie</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">Organigramme complet des rangs et saluts de la MPF.</p>
-                        <a href="hierarchie.html" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent-pink); text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
-                            Consulter l'Organigramme →
-                        </a>
+                    <div class="home-card" style="border-color: rgba(255, 159, 160, 0.4);">
+                        <div class="card-emoji">👑</div>
+                        <h3 style="color: var(--accent-pink);">Hiérarchie</h3>
+                        <p>Organigramme complet des rangs et saluts de la MPF.</p>
+                        <a href="hierarchie.html" class="card-link" style="color: var(--accent-pink);">Consulter l'Organigramme →</a>
                     </div>
 
                     <!-- Card 7: Contrebande -->
-                    <div class="animate-fadeInUp" style="background: linear-gradient(135deg, rgba(15, 20, 32, 0.95), rgba(20, 25, 37, 0.95)); border: 2px solid rgba(255, 107, 53, 0.4); border-radius: 12px; padding: 2rem; position: relative; overflow: hidden; transition: all 0.4s ease;">
-                        <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--accent-orange);">🚫</div>
-                        <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--accent-orange); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px;">Contrebande</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">Niveaux de contrebande et éléments interdits dans la Cité.</p>
-                        <a href="contrebande.html" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent-orange); text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
-                            Voir les Niveaux →
-                        </a>
+                    <div class="home-card" style="border-color: rgba(255, 107, 53, 0.4);">
+                        <div class="card-emoji">🚫</div>
+                        <h3 style="color: var(--accent-orange);">Contrebande</h3>
+                        <p>Niveaux de contrebande et éléments interdits dans la Cité.</p>
+                        <a href="contrebande.html" class="card-link" style="color: var(--accent-orange);">Voir les Niveaux →</a>
                     </div>
 
                     <!-- Card 8: Codex -->
-                    <div class="animate-fadeInUp" style="background: linear-gradient(135deg, rgba(15, 20, 32, 0.95), rgba(20, 25, 37, 0.95)); border: 2px solid rgba(0, 212, 255, 0.4); border-radius: 12px; padding: 2rem; position: relative; overflow: hidden; transition: all 0.4s ease;">
-                        <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--accent-cyan);">📖</div>
-                        <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--accent-cyan); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px;">Codex</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">Codes, lois et documents officiels de la Combine.</p>
-                        <a href="codex.html" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent-cyan); text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
-                            Consulter le Codex →
-                        </a>
+                    <div class="home-card" style="border-color: rgba(0, 212, 255, 0.4);">
+                        <div class="card-emoji">📖</div>
+                        <h3 style="color: var(--accent-cyan);">Codex</h3>
+                        <p>Codes, lois et documents officiels de la Combine.</p>
+                        <a href="codex.html" class="card-link" style="color: var(--accent-cyan);">Consulter le Codex →</a>
                     </div>
 
                     <!-- Card 9: Guide Procédures -->
-                    <div class="animate-fadeInUp" style="background: linear-gradient(135deg, rgba(15, 20, 32, 0.95), rgba(20, 25, 37, 0.95)); border: 2px solid rgba(0, 255, 136, 0.4); border-radius: 12px; padding: 2rem; position: relative; overflow: hidden; transition: all 0.4s ease;">
-                        <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--accent-green);">📝</div>
-                        <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--accent-green); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px;">Procédures</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">Guides détaillés pour conscription, tests, incarcération et dispatch.</p>
-                        <a href="procedures-generales.html" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent-green); text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
-                            Accéder aux Guides →
-                        </a>
+                    <div class="home-card" style="border-color: rgba(0, 255, 136, 0.4);">
+                        <div class="card-emoji">📝</div>
+                        <h3 style="color: var(--accent-green);">Procédures</h3>
+                        <p>Guides détaillés pour conscription, tests, incarcération et dispatch.</p>
+                        <a href="procedures-generales.html" class="card-link" style="color: var(--accent-green);">Accéder aux Guides →</a>
                     </div>
                 </div>
             </section>
 
             <!-- System Status -->
-            <section class="animate-fadeInUp" style="margin: 4rem 0; text-align: center; padding: 2rem; background: rgba(15, 20, 32, 0.6); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 10px;">
-                <div style="font-family: 'Share Tech Mono', monospace; color: var(--accent-green); margin-bottom: 1rem;">
-                    SYSTEM STATUS: <span style="color: var(--accent-green); animation: pulse 1.5s ease-in-out infinite;">ONLINE</span>
-                </div>
-                <div style="font-family: 'Share Tech Mono', monospace; color: var(--text-muted); font-size: 0.85rem;">
-                    LAST UPDATE: 2026.02.10 /// CITADEL CENTRAL /// ALL SYSTEMS OPERATIONAL
-                </div>
-            </section>
+            <div class="status-bar">
+                <div class="status-text">SYSTEM STATUS: ONLINE</div>
+                <div class="status-detail">LAST UPDATE: 2026.02.10 /// CITADEL CENTRAL /// ALL SYSTEMS OPERATIONAL</div>
+            </div>
         </div>
     </main>
 
-    <script type="module" src="assets/js/auth.js"></script>
-    <script>
-        // Mobile Menu Toggle
-        document.getElementById('mobileMenuToggle')?.addEventListener('click', function() {
-            document.getElementById('mainNav')?.classList.toggle('active');
-            this.classList.toggle('active');
-        });
-
-        // Add hover effects to cards
-        document.querySelectorAll('[style*="grid"]>div').forEach((card, index) => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-10px)';
-                this.style.boxShadow = '0 20px 50px rgba(0, 212, 255, 0.3)';
-                const radialgradient = this.querySelector('[style*="radial-gradient"]');
-                if (radialgradient) radialgradient.style.opacity = '1';
-            });
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-                this.style.boxShadow = 'none';
-                const radialgradient = this.querySelector('[style*="radial-gradient"]');
-                if (radialgradient) radialgradient.style.opacity = '0';
-            });
-        });
-
-        // Add hover effects to buttons
-        document.querySelectorAll('a[style*="padding: 1rem"]').forEach(btn => {
-            btn.addEventListener('mouseenter', function() {
-                if (this.style.background.includes('gradient')) {
-                    this.style.transform = 'translateY(-3px)';
-                    this.style.boxShadow = '0 8px 30px rgba(0, 212, 255, 0.6)';
-                } else {
-                    this.style.background = 'rgba(0, 212, 255, 0.1)';
-                }
-            });
-            btn.addEventListener('mouseleave', function() {
-                if (this.style.transform) {
-                    this.style.transform = 'translateY(0)';
-                    this.style.boxShadow = '0 5px 20px rgba(0, 212, 255, 0.4)';
-                } else {
-                    this.style.background = 'transparent';
-                }
-            });
-        });
-    </script>
-    
     <script type="module" src="assets/js/auth.js"></script>
     <script src="assets/js/global-nav.js"></script>
     <script src="assets/js/interactive-system.js"></script>
