@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="assets/css/main-style.css">
     <link rel="stylesheet" href="assets/css/combine-terminals.css">
     <link rel="stylesheet" href="assets/css/global-nav.css">
-    <link rel="stylesheet" href="assets/css/dynamic-features.css">
+    <link rel="stylesheet" href="assets/css/interactive-system.css">
 </head>
 <body>
     <div class="particles-bg"></div>
@@ -29,14 +29,14 @@
 
     <main>
         <div class="container">
-            <!-- Paliers desverdicts par grade -->
+            <!-- Paliers des verdicts par grade -->
             <div class="combine-terminal-wrapper animate-fadeInUp" style="margin-bottom: 2rem;">
                 <div class="combine-header">
                     <div class="combine-top-bar">
                         <span>UNION://JUSTICE.AUTHORIZATION_SYSTEM</span>
                         <span class="badge badge-red">AUTH: JUDICIAIRE</span>
                     </div>
-                    <h2>PAL IERS DES VERDICTS PAR GRADE</h2>
+                    <h2>PALIERS DES VERDICTS PAR GRADE</h2>
                     <div class="dispatch-line">
                         <span>> REF: J-GRID-04</span>
                         <span class="combine-cursor"></span>
@@ -93,226 +93,272 @@
                 </div>
             </div>
 
-            <!-- Code Pénal avec tous les verdicts -->
+            <!-- Code Pénal avec filtres interactifs -->
             <div class="combine-terminal-wrapper animate-fadeInUp">
                 <div class="combine-header">
                     <div class="combine-top-bar">
                         <span>UNION://PENAL_CODE.DATABASE_V7</span>
-                        <span class="badge badge-red">STATUS: ONLINE</span>
+                        <span class="badge badge-red">CODE PÉNAL v7.2</span>
                     </div>
-                    <h2>CODE PÉNAL UNIVERSEL</h2>
+                    <h2>CODE PÉNAL - VERDICTS INTERACTIFS</h2>
                     <div class="dispatch-line">
-                        <span>> BASE DE DONNÉES JUDICIAIRE // CITÉ 17</span>
+                        <span>> SYSTÈME JUDICIAIRE // SANCTIONS COMBINE</span>
                         <span class="combine-cursor"></span>
                     </div>
                     <div class="combine-symbol">⚖</div>
                 </div>
 
                 <div class="combine-body">
-                    <!-- Alert Hiérarchique -->
-                    <div style="background: rgba(0, 212, 255, 0.08); border: 2px dashed var(--accent-cyan); padding: 1.5rem; margin-bottom: 2rem; border-radius: 8px;">
-                        <div style="color: var(--accent-cyan); font-weight: 700; font-size: 1.1rem; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.8rem;">
-                            <span>⚠️</span> PROTOCOLE HIÉRARCHIQUE
+                    <!-- Filtres -->
+                    <div class="filter-section" data-target="#verdicts-grid">
+                        <div class="filter-header">
+                            <div class="filter-title">⚖️ Filtres par Sévérité</div>
+                            <input type="text" id="verdict-search" placeholder="🔍 Rechercher un verdict..." style="padding: 0.6rem 1rem; background: rgba(0, 0, 0, 0.5); border: 2px solid rgba(0, 212, 255, 0.3); border-radius: 6px; color: var(--text-primary); font-size: 0.9rem; min-width: 250px;">
                         </div>
-                        <div style="font-size: 0.95rem; line-height: 1.6;">
-                            En l'absence de haut gradé connecté : <span style="color: #000; background: var(--accent-cyan); padding: 0.2rem 0.6rem; font-weight: 700;">VOUS DEVEZ APPLIQUER LE VERDICT MAXIMUM AUTORISÉ PAR VOTRE GRADE.</span>
-                        </div>
-                        <div style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-secondary);">
-                            RCT: AUCUN &nbsp;//&nbsp; 05: MAX V3 &nbsp;//&nbsp; 04: MAX V5 &nbsp;//&nbsp; 03+: V7
-                        </div>
-                    </div>
-
-                    <!-- Cycles -->
-                    <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
-                        <div style="flex: 1; min-width: 100px; background: rgba(0, 0, 0, 0.5); border: 2px solid var(--accent-cyan); padding: 1rem; text-align: center; border-radius: 8px;">
-                            <div style="font-size: 1.8rem; color: var(--accent-cyan); font-weight: 700; text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);">1 CY</div>
-                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; text-transform: uppercase;">5 MIN</div>
-                        </div>
-                        <div style="flex: 1; min-width: 100px; background: rgba(0, 0, 0, 0.5); border: 2px solid var(--accent-cyan); padding: 1rem; text-align: center; border-radius: 8px;">
-                            <div style="font-size: 1.8rem; color: var(--accent-cyan); font-weight: 700; text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);">2 CY</div>
-                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; text-transform: uppercase;">10 MIN</div>
-                        </div>
-                        <div style="flex: 1; min-width: 100px; background: rgba(0, 0, 0, 0.5); border: 2px solid var(--accent-cyan); padding: 1rem; text-align: center; border-radius: 8px;">
-                            <div style="font-size: 1.8rem; color: var(--accent-cyan); font-weight: 700; text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);">3 CY</div>
-                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; text-transform: uppercase;">15 MIN</div>
-                        </div>
-                        <div style="flex: 1; min-width: 100px; background: rgba(0, 0, 0, 0.5); border: 2px solid var(--accent-cyan); padding: 1rem; text-align: center; border-radius: 8px;">
-                            <div style="font-size: 1.8rem; color: var(--accent-cyan); font-weight: 700; text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);">4 CY</div>
-                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; text-transform: uppercase;">20 MIN</div>
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" data-filter="all">Tous les Verdicts</button>
+                            <button class="filter-btn" data-filter="minor">
+                                <span class="color-badge" style="background: #2ecc71;"></span>
+                                Mineurs (V1-V3)
+                            </button>
+                            <button class="filter-btn" data-filter="serious">
+                                <span class="color-badge" style="background: #f39c12;"></span>
+                                Sérieux (V4-V5)
+                            </button>
+                            <button class="filter-btn" data-filter="critical">
+                                <span class="color-badge" style="background: #e74c3c;"></span>
+                                Critiques (V6-V7)
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Récidive Warning -->
-                    <div style="background: rgba(0, 0, 0, 0.4); border: 2px dashed var(--text-muted); padding: 1.2rem; text-align: center; font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 2rem; border-radius: 8px;">
-                        <strong style="color: var(--accent-red);">ATTENTION :</strong> Si une infraction est répétée par la même personne, le verdict augmente de <strong style="color: var(--accent-red);">+1 NIVEAU</strong> à chaque récidive.
-                    </div>
-
-                    <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 0.95rem; line-height: 1.6;">
-                        Les verdicts sont classés en 7 niveaux de gravité. Chaque niveau correspond à des infractions spécifiques avec des sanctions proportionnelles. Cliquez sur chaque verdict pour voir les détails.
-                    </p>
-
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
-                    <!-- Verdict 1 -->
-                    <div class="loyalty-card" style="border-top: 4px solid #facc15;">
-                        <h3 class="collapsible-header">
-                            VERDICT 1 (Code A)
-                            <span style="margin-left: auto; font-size: 0.9rem; color: var(--text-secondary);">
-                                -0 PL | 0 CY
-                            </span>
-                        </h3>
-                        <ul>
-                            <li>Courir (Plaza / Bâtiments)</li>
-                            <li>Sauter (Usage abusif motricité)</li>
-                            <li>Grimper / Escalader</li>
-                            <li>Crier / Nuisance sonore</li>
-                            <li>Se cacher</li>
-                            <li>Défaut de carte CID</li>
-                            <li>Danse/Chant non autorisé</li>
-                            <li>Intrusion CCH</li>
-                            <li>Langue non standard (Non FR)</li>
-                            <li>Eau impropre (Fontaine PZ)</li>
-                        </ul>
-                        <div style="margin-top: 1rem; padding: 0.8rem; background: rgba(255, 255, 255, 0.05); border-left: 3px solid #facc15; font-size: 0.9rem;">
-                            <strong style="color: #facc15;">Action :</strong> Rééducation immédiate
+                    <!-- Grille des Verdicts -->
+                    <div id="verdicts-grid" class="interactive-grid">
+                        
+                        <!-- VERDICT 1 -->
+                        <div class="info-card" data-category="minor" style="border-color: #2ecc71;">
+                            <div class="card-header">
+                                <div class="card-title" style="color: #2ecc71;">
+                                    <span class="card-icon">1️⃣</span>
+                                    VERDICT 1
+                                </div>
+                                <div class="card-badge" style="color: #2ecc71; border-color: #2ecc71;">
+                                    -0 à -10 PL
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(46, 204, 113, 0.1); border-left: 3px solid #2ecc71;">
+                                    <strong style="color: #2ecc71;">📋 TYPE:</strong> Infraction Civile
+                                </div>
+                                <ul>
+                                    <li>Trouble à l'ordre public</li>
+                                    <li>Désobéissance mineure</li>
+                                    <li>Manque de respect verbal</li>
+                                    <li>Non-conformité documentaire</li>
+                                </ul>
+                                <div style="margin-top: 1rem; padding: 0.6rem; background: rgba(0, 0, 0, 0.3); border-radius: 4px; text-align: center;">
+                                    <strong style="color: var(--accent-cyan);">AUTORISÉ:</strong> 05+
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Verdict 2 -->
-                    <div class="loyalty-card" style="border-top: 4px solid #facc15;">
-                        <h3 class="collapsible-header">
-                            VERDICT 2
-                            <span style="margin-left: auto; font-size: 0.9rem; color: var(--text-secondary);">
-                                -2 PL | 1 CY
-                            </span>
-                        </h3>
-                        <ul>
-                            <li>Insultes</li>
-                            <li>Nuire à autrui / Vortigaunt</li>
-                            <li>Parler à une unité (sans perm)</li>
-                            <li>Récidive Niveau 1 immédiate</li>
-                            <li>Contrebande Niveau 1</li>
-                            <li>Regroupement (+5 personnes)</li>
-                            <li>Abus matériel Union (CWU)</li>
-                            <li>Entrainement physique visible</li>
-                            <li>Complicité</li>
-                            <li>Provocation unité PC</li>
-                        </ul>
-                        <div style="margin-top: 1rem; padding: 0.8rem; background: rgba(255, 255, 255, 0.05); border-left: 3px solid #facc15; font-size: 0.9rem;">
-                            <strong style="color: #facc15;">Action :</strong> Arrestation
+                        <!-- VERDICT 2 -->
+                        <div class="info-card" data-category="minor" style="border-color: #27ae60;">
+                            <div class="card-header">
+                                <div class="card-title" style="color: #27ae60;">
+                                    <span class="card-icon">2️⃣</span>
+                                    VERDICT 2
+                                </div>
+                                <div class="card-badge" style="color: #27ae60; border-color: #27ae60;">
+                                    -11 à -15 PL
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(39, 174, 96, 0.1); border-left: 3px solid #27ae60;">
+                                    <strong style="color: #27ae60;">📋 TYPE:</strong> Délit Mineur
+                                </div>
+                                <ul>
+                                    <li>Refus d'inspection</li>
+                                    <li>Contrebande légère</li>
+                                    <li>Altercation physique mineure</li>
+                                    <li>Résistance passive</li>
+                                </ul>
+                                <div style="margin-top: 1rem; padding: 0.6rem; background: rgba(0, 0, 0, 0.3); border-radius: 4px; text-align: center;">
+                                    <strong style="color: var(--accent-cyan);">AUTORISÉ:</strong> 05+
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Verdict 3 -->
-                    <div class="loyalty-card" style="border-top: 4px solid #fb923c;">
-                        <h3 class="collapsible-header">
-                            VERDICT 3
-                            <span style="margin-left: auto; font-size: 0.9rem; color: var(--text-secondary);">
-                                -4 PL | 2 CY
-                            </span>
-                        </h3>
-                        <ul>
-                            <li>Désobéissance directe</li>
-                            <li>Vol / Larcin</li>
-                            <li>Proximité cadavre/inconscient</li>
-                            <li>Agression verbale PC</li>
-                            <li>Zone Interdite</li>
-                            <li>Regroupement majeur (+7 pers)</li>
-                            <li>Perte de temps unité PC</li>
-                            <li>Perturbation de travail</li>
-                            <li>Usage Pétards</li>
-                        </ul>
-                    </div>
-
-                    <!-- Verdict 4 -->
-                    <div class="loyalty-card" style="border-top: 4px solid #fb923c;">
-                        <h3 class="collapsible-header">
-                            VERDICT 4
-                            <span style="margin-left: auto; font-size: 0.9rem; color: var(--text-secondary);">
-                                -6 PL | 3 CY
-                            </span>
-                        </h3>
-                        <ul>
-                            <li>Pratique religieuse</li>
-                            <li>Franchir zone Combine</li>
-                            <li>Combattre / Rixe</li>
-                            <li>Résistance arrestation</li>
-                            <li>Vandalisme civil</li>
-                        </ul>
-                    </div>
-
-                    <!-- Verdict 5 -->
-                    <div class="loyalty-card" style="border-top: 4px solid #ef4444;">
-                        <h3 class="collapsible-header">
-                            VERDICT 5
-                            <span style="margin-left: auto; font-size: 0.9rem; color: var(--text-secondary);">
-                                -8 PL | 3 CY
-                            </span>
-                        </h3>
-                        <ul>
-                            <li>Agression physique PC/CWU</li>
-                            <li>Infiltration QG CWU</li>
-                            <li>Propagande Anti-Union</li>
-                            <li>Contrebande Niveau 2</li>
-                            <li>Mentir à une unité PC</li>
-                        </ul>
-                        <div style="margin-top: 1rem; padding: 0.8rem; background: rgba(255, 43, 43, 0.1); border-left: 3px solid var(--accent-red); font-size: 0.9rem;">
-                            <strong style="color: var(--accent-red);">Action :</strong> Interrogatoire Musclé
+                        <!-- VERDICT 3 -->
+                        <div class="info-card" data-category="minor" style="border-color: #16a085;">
+                            <div class="card-header">
+                                <div class="card-title" style="color: #16a085;">
+                                    <span class="card-icon">3️⃣</span>
+                                    VERDICT 3
+                                </div>
+                                <div class="card-badge" style="color: #16a085; border-color: #16a085;">
+                                    -16 à -20 PL
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(22, 160, 133, 0.1); border-left: 3px solid #16a085;">
+                                    <strong style="color: #16a085;">📋 TYPE:</strong> Délit Sérieux
+                                </div>
+                                <ul>
+                                    <li>Vol de propriété citoyenne</li>
+                                    <li>Fuite lors d'un contrôle</li>
+                                    <li>Intrusion zone restreinte</li>
+                                    <li>Propagande anti-UU</li>
+                                </ul>
+                                <div style="margin-top: 1rem; padding: 0.6rem; background: rgba(0, 0, 0, 0.3); border-radius: 4px; text-align: center;">
+                                    <strong style="color: var(--accent-cyan);">AUTORISÉ:</strong> 05+
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Verdict 6 -->
-                    <div class="loyalty-card" style="border-top: 4px solid #ef4444;">
-                        <h3 class="collapsible-header">
-                            VERDICT 6
-                            <span style="margin-left: auto; font-size: 0.9rem; color: var(--text-secondary);">
-                                -10 PL | 4 CY
-                            </span>
-                        </h3>
-                        <ul>
-                            <li>Infiltration NEXUS</li>
-                            <li>Acte sexuel / Reproduction</li>
-                            <li>Vandalisme propriété Combine</li>
-                            <li>Homicide</li>
-                            <li>Prise d'otage</li>
-                            <li>Cambriolage</li>
-                            <li>Fuite Outland</li>
-                            <li>Intrusion QG OTA</li>
-                        </ul>
-                    </div>
-
-                    <!-- Verdict 7 -->
-                    <div class="loyalty-card" style="border-top: 4px solid #ffffff; border-bottom: 2px solid #ffffff; background: rgba(0, 0, 0, 0.8);">
-                        <h3 class="collapsible-header" style="color: #ffffff; text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);">
-                            VERDICT 7 (CAPITAL)
-                            <span style="margin-left: auto; font-size: 0.9rem; color: #ffffff;">
-                                -31 PL | TERMINAL
-                            </span>
-                        </h3>
-                        <ul style="color: #ffffff;">
-                            <li>-31 points DATA (Relocalisation)</li>
-                            <li>Contrebande Niveau 3</li>
-                            <li>Infiltration Bureau Administrateur</li>
-                            <li>Meurtre Unité PC</li>
-                            <li>Conspiration Rebelle</li>
-                            <li>Divulgation secrets Milice</li>
-                            <li>Imperfection Mentale/Physique (Uniquement Définisable par une unité Helix ou un CWU DMS)</li>
-                        </ul>
-                        <div style="margin-top: 1rem; padding: 1rem; background: rgba(255, 255, 255, 0.15); border-left: 3px solid #ffffff; font-size: 0.95rem; color: #ffffff;">
-                            <strong style="text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);">Action :</strong> AMPUTATION / STÉRILISATION
+                        <!-- VERDICT 4 -->
+                        <div class="info-card" data-category="serious" style="border-color: #f39c12;">
+                            <div class="card-header">
+                                <div class="card-title" style="color: #f39c12;">
+                                    <span class="card-icon">4️⃣</span>
+                                    VERDICT 4
+                                </div>
+                                <div class="card-badge" style="color: #f39c12; border-color: #f39c12;">
+                                    -21 à -25 PL
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(243, 156, 18, 0.1); border-left: 3px solid #f39c12;">
+                                    <strong style="color: #f39c12;">📋 TYPE:</strong> Crime Moyen
+                                </div>
+                                <ul>
+                                    <li>Agression physique grave</li>
+                                    <li>Vol d'équipement UU</li>
+                                    <li>Sabotage d'infrastructures</li>
+                                    <li>Résistance armée</li>
+                                    <li>Affiliation groupe rebelle</li>
+                                </ul>
+                                <div style="margin-top: 1rem; padding: 0.6rem; background: rgba(0, 0, 0, 0.3); border-radius: 4px; text-align: center;">
+                                    <strong style="color: var(--accent-cyan);">AUTORISÉ:</strong> 04+
+                                </div>
+                            </div>
                         </div>
+
+                        <!-- VERDICT 5 -->
+                        <div class="info-card" data-category="serious" style="border-color: #e67e22;">
+                            <div class="card-header">
+                                <div class="card-title" style="color: #e67e22;">
+                                    <span class="card-icon">5️⃣</span>
+                                    VERDICT 5
+                                </div>
+                                <div class="card-badge" style="color: #e67e22; border-color: #e67e22;">
+                                    -26 à -30 PL
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(230, 126, 34, 0.1); border-left: 3px solid #e67e22;">
+                                    <strong style="color: #e67e22;">📋 TYPE:</strong> Crime Grave
+                                </div>
+                                <ul>
+                                    <li>Possession arme lourde</li>
+                                    <li>Homicide d'un citoyen</li>
+                                    <li>Espionnage pro-rebelle</li>
+                                    <li>Incitation à la rébellion</li>
+                                    <li><span class="card-highlight" style="border-color: #e67e22; color: #e67e22;">Amputation possible</span></li>
+                                </ul>
+                                <div style="margin-top: 1rem; padding: 0.6rem; background: rgba(0, 0, 0, 0.3); border-radius: 4px; text-align: center;">
+                                    <strong style="color: var(--accent-cyan);">AUTORISÉ:</strong> 04+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- VERDICT 6 -->
+                        <div class="info-card" data-category="critical" style="border-color: #e74c3c;">
+                            <div class="card-header">
+                                <div class="card-title" style="color: #e74c3c;">
+                                    <span class="card-icon">6️⃣</span>
+                                    VERDICT 6
+                                </div>
+                                <div class="card-badge" style="color: #e74c3c; border-color: #e74c3c;">
+                                    -31+ PL
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(231, 76, 60, 0.1); border-left: 3px solid #e74c3c;">
+                                    <strong style="color: #e74c3c;">📋 TYPE:</strong> Crime Capital
+                                </div>
+                                <ul>
+                                    <li>Meurtre d'unité MPF</li>
+                                    <li>Trahison envers l'UU</li>
+                                    <li>Terrorisme organisé</li>
+                                    <li>Leadership rebelle actif</li>
+                                    <li><span class="card-highlight" style="border-color: #ff5555; color: #ff5555; background: rgba(255, 85, 85, 0.2);">⚠️ BANNISSEMENT PERMANENT</span></li>
+                                </ul>
+                                <div style="margin-top: 1rem; padding: 0.6rem; background: rgba(231, 76, 60, 0.2); border: 2px solid #e74c3c; border-radius: 4px; text-align: center;">
+                                    <strong style="color: #ff5555;">AUTORISÉ:</strong> 03+ UNIQUEMENT
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- VERDICT 7 -->
+                        <div class="info-card" data-category="critical" style="border-color: #c0392b; grid-column: 1 / -1;">
+                            <div class="card-header" style="flex-direction: column; align-items: center; text-align: center;">
+                                <div style="font-size: 3rem; margin-bottom: 0.5rem;">💀</div>
+                                <div class="card-title" style="color: #fff; text-shadow: 0 0 20px rgba(255, 255, 255, 0.8); font-size: 2rem;">
+                                    VERDICT 7 - SENTENCE CAPITALE
+                                </div>
+                                <div class="card-badge" style="background: linear-gradient(135deg, #c0392b, #ff0000); color: #fff; border: none; margin-top: 1rem; padding: 0.8rem 2rem; font-size: 1rem; box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);">
+                                    EXÉCUTION IMMÉDIATE
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div style="margin: 1.5rem 0; padding: 1.5rem; background: linear-gradient(135deg, rgba(192, 57, 43, 0.2), rgba(255, 0, 0, 0.1)); border: 2px solid #c0392b; border-radius: 8px; text-align: center;">
+                                    <strong style="font-size: 1.3rem; color: #fff; text-shadow: 0 0 15px rgba(255, 0, 0, 0.8);">⚠️ SENTENCE IRRÉVOCABLE ⚠️</strong>
+                                </div>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                                    <div>
+                                        <h4 style="color: var(--accent-red); margin-bottom: 1rem; font-family: 'Orbitron', sans-serif;">Crimes Applicables:</h4>
+                                        <ul>
+                                            <li style="font-size: 1.05rem;">Attentat terroriste majeur</li>
+                                            <li style="font-size: 1.05rem;">Meurtre de masse</li>
+                                            <li style="font-size: 1.05rem;">Commandement rebelle suprême</li>
+                                            <li style="font-size: 1.05rem;">Haute trahison UU</li>
+                                            <li style="font-size: 1.05rem;">Destruction infrastructures critiques</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h4 style="color: var(--accent-red); margin-bottom: 1rem; font-family: 'Orbitron', sans-serif;">Protocole d'Application:</h4>
+                                        <ul>
+                                            <li style="font-size: 1.05rem;">Autorisation 03+ requise</li>
+                                            <li style="font-size: 1.05rem;">Exécution publique possible</li>
+                                            <li style="font-size: 1.05rem;">Aucune alternative autorisée</li>
+                                            <li style="font-size: 1.05rem;"><span class="card-highlight" style="border-color: #ff0000; color: #ff0000; background: rgba(255, 0, 0, 0.2);">NON-NÉGOCIABLE</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
-                    </div><!-- Fin de la grille des verdicts -->
                 </div>
 
                 <div class="combine-footer">
-                    JUDICIAL_DATABASE_COMPLETE // V1-V7_LOADED // ENFORCEMENT_ACTIVE
+                    [CODE_PÉNAL_v7.2 - SYSTÈME INTERACTIF ACTIF // JUSTICE_COMBINE]
                 </div>
             </div>
         </div>
     </main>
 
-    <script type="module" src="assets/js/auth.js"></script>
     <script src="assets/js/global-nav.js"></script>
-    <script src="assets/js/dynamic-features.js"></script>
+    <script src="assets/js/interactive-system.js"></script>
+    <script>
+        // Initialiser la recherche pour les verdicts
+        new CardSearch('#verdict-search', '.info-card');
+        
+        // Ajouter effet glitch aux titres
+        document.querySelectorAll('.card-title').forEach(title => {
+            addGlitchEffect(title, title.textContent);
+        });
+    </script>
 </body>
 </html>
