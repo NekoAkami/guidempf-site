@@ -30,45 +30,6 @@
     100% { transform: translateY(100%); }
 }
 
-.glitch-effect {
-    position: relative;
-    display: inline-block;
-}
-
-.glitch-effect:hover::before,
-.glitch-effect:hover::after {
-    content: attr(data-text);
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-
-.glitch-effect:hover::before {
-    animation: glitch-1 0.3s infinite;
-    color: var(--accent-cyan);
-    z-index: -1;
-}
-
-.glitch-effect:hover::after {
-    animation: glitch-2 0.3s infinite;
-    color: var(--accent-pink);
-    z-index: -2;
-}
-
-@keyframes glitch-1 {
-    0%, 100% { transform: translate(0); }
-    33% { transform: translate(-2px, 2px); }
-    66% { transform: translate(2px, -2px); }
-}
-
-@keyframes glitch-2 {
-    0%, 100% { transform: translate(0); }
-    33% { transform: translate(2px, -2px); }
-    66% { transform: translate(-2px, 2px); }
-}
-
 /* ==================== SYSTÈME DE TABS ==================== */
 .tabs-container {
     margin: 2rem 0;

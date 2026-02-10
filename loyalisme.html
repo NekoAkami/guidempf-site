@@ -41,35 +41,6 @@
                     </p>
                 </div>
 
-                <!-- Filtres Interactifs -->
-                <div class="filter-section" data-target="#loyalty-grid">
-                    <div class="filter-header">
-                        <div class="filter-title">🎯 Filtres Rapides</div>
-                        <input type="text" id="loyalty-search" placeholder="🔍 Rechercher un niveau..." style="padding: 0.6rem 1rem; background: rgba(0, 0, 0, 0.5); border: 2px solid rgba(0, 212, 255, 0.3); border-radius: 6px; color: var(--text-primary); font-size: 0.9rem; min-width: 250px;">
-                    </div>
-                    <div class="filter-buttons">
-                        <button class="filter-btn active" data-filter="all">
-                            Tout Afficher
-                        </button>
-                        <button class="filter-btn" data-filter="anticitizen">
-                            <span class="color-badge" style="background: #95a5a6;"></span>
-                            Anti-Citoyens
-                        </button>
-                        <button class="filter-btn" data-filter="citizen">
-                            <span class="color-badge" style="background: #95a5a6;"></span>
-                            Citoyen
-                        </button>
-                        <button class="filter-btn" data-filter="loyalist">
-                            <span class="color-badge" style="background: linear-gradient(90deg, #ecf0f1, #f1c40f, #3498db, #e74c3c, #2ecc71, #9b59b6);"></span>
-                            Loyalistes
-                        </button>
-                        <button class="filter-btn" data-filter="platinum">
-                            <span class="color-badge" style="background: #00d2d3;"></span>
-                            Platine
-                        </button>
-                    </div>
-                </div>
-
                 <!-- Grille de Cartes Interactives -->
                 <div id="loyalty-grid" class="interactive-grid">
                     
@@ -436,14 +407,5 @@
 
     <script src="assets/js/global-nav.js"></script>
     <script src="assets/js/interactive-system.js"></script>
-    <script>
-        // Initialiser la recherche pour les cartes
-        new CardSearch('#loyalty-search', '.info-card');
-        
-        // Ajouter effet glitch aux titres
-        document.querySelectorAll('.card-title').forEach(title => {
-            addGlitchEffect(title, title.textContent);
-        });
-    </script>
 </body>
 </html>
