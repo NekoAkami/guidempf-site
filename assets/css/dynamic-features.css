@@ -115,6 +115,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
     user-select: none;
     cursor: pointer;
     padding: 1rem 1.5rem;
@@ -155,7 +157,8 @@
     font-weight: 900;
     transition: transform var(--transition-normal);
     color: var(--accent-cyan);
-    margin-left: 1rem;
+    margin-left: auto;
+    flex-shrink: 0;
     text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
 }
 
