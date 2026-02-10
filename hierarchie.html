@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hiérarchie MPF - Metro Police Force Documentation</title>
+    <link rel="stylesheet" href="assets/css/main-style.css">
+    <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/dynamic-features.css">
+    <style>
+        /* Styles spécifiques pour l'organigramme */
+        .org-container {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+            align-items: start;
+        }
+
+        .org-col-title {
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--accent-cyan);
+            text-align: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.8rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .org-column.center-col .org-col-title {
+            color: #ffffff;
+            border-bottom-color: #ffffff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .desktop-spacer {
+            display: block;
+            height: 270px;
+            position: relative;
+            border-left: 2px dashed rgba(0, 212, 255, 0.2);
+            margin-left: 50%;
+            margin-bottom: 1rem;
+        }
+
+        .org-box {
+            background: rgba(0, 212, 255, 0.05);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+
+        .org-box::after {
+            content: '';
+            position: absolute;
+            bottom: -1.5rem;
+            left: 50%;
+            width: 2px;
+            height: 1.5rem;
+            background: rgba(0, 212, 255, 0.4);
+            transform: translateX(-50%);
+        }
+
+        .org-box:last-child {
+            margin-bottom: 0;
+        }
+
+        .org-box:last-child::after {
+            display: none;
+        }
+
+        .org-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.3);
+            border-color: var(--accent-cyan);
+        }
+
+        .org-rank-id {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            display: block;
+            opacity: 0.8;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+        }
+
+        .org-rank-name {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            display: block;
+            margin-top: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        /* Variations de couleurs */
+        .org-box.white {
+            border-color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .org-box.white .org-rank-name {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+        }
+
+        .org-box.white .org-rank-id {
+            color: #e0e0e0;
+        }
+
+        .org-box.gold {
+            border-color: #e6b800;
+            background: rgba(230, 184, 0, 0.08);
+            box-shadow: 0 0 15px rgba(230, 184, 0, 0.2);
+        }
+
+        .org-box.gold .org-rank-name {
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .org-box.gold .org-rank-id {
+            color: #ffe680;
+        }
+
+        .org-box.blue {
+            border-color: var(--accent-blue);
+            background: rgba(0, 136, 255, 0.08);
+        }
+
+        .org-box.blue .org-rank-name {
+            color: var(--accent-blue);
+            text-shadow: 0 0 10px rgba(0, 136, 255, 0.4);
+        }
+
+        .org-box.red {
+            border-color: var(--accent-red);
+            background: rgba(255, 43, 43, 0.08);
+            box-shadow: 0 0 15px rgba(255, 43, 43, 0.2);
+        }
+
+        .org-box.red .org-rank-name {
+            color: var(--accent-red);
+            text-shadow: 0 0 10px rgba(255, 43, 43, 0.4);
+        }
+
+        .org-box.red .org-rank-id {
+            color: #ff9999;
+        }
+
+        .org-box.gray {
+            border-color: #4a5a6a;
+            opacity: 0.85;
+        }
+
+        .org-box.gray .org-rank-name {
+            color: var(--text-secondary);
+        }
+
+        .group-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--accent-cyan);
+            text-align: center;
+            margin: 1.5rem 0 1rem 0;
+            letter-spacing: 2px;
+            position: relative;
+            font-weight: 600;
+        }
+
+        .group-label::before,
+        .group-label::after {
+            content: '━';
+            opacity: 0.4;
+            margin: 0 0.8rem;
+            color: var(--accent-cyan);
+        }
+
+        .note-box {
+            margin-top: 2rem;
+            padding: 1.2rem;
+            font-size: 0.85rem;
+            border-radius: 8px;
+            line-height: 1.6;
+        }
+
+        .note-box.red-note {
+            color: #ff9999;
+            border: 2px dotted var(--accent-red);
+            background: rgba(255, 43, 43, 0.05);
+        }
+
+        .note-box.blue-note {
+            color: #8cb4ff;
+            border: 2px dotted var(--accent-blue);
+            background: rgba(0, 136, 255, 0.05);
+        }
+
+        .note-box strong {
+            font-weight: 700;
+            color: inherit;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 900px) {
+            .org-container {
+                grid-template-columns: 1fr;
+            }
+
+            .org-col-title {
+                margin-top: 2rem;
+                color: #ffffff;
+                border-bottom-color: #ffffff;
+            }
+
+            .org-column:first-child .org-col-title {
+                margin-top: 0;
+            }
+
+            .desktop-spacer {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles-bg"></div>
+
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <h1 class="logo">MPF</h1>
+                </div>
+                <nav class="main-nav">
+                    <ul class="nav">
+                        <li><a href="index.html">Accueil</a></li>
+                        <li><a href="#" class="has-submenu">Activité▼
+                            <ul class="submenu">
+                                <li><a href="worker-announcement.html">Worker Announcement</a></li>
+                                <li><a href="ration-announcement.html">Ration Announcement</a></li>
+                                <li><a href="suspended-rations.html">Suspended Rations</a></li>
+                                <li><a href="social-infraction.html">Social Infraction</a></li>
+                                <li><a href="judgement-waiver.html">Judgement Waiver</a></li>
+                            </ul>
+                        </a></li>
+                        <li><a href="radio.html">Radio & Mdp</a></li>
+                        <li><a href="loyalisme.html">Loyalisme</a></li>
+                        <li><a href="jugement.html">Jugement</a></li>
+                        <li><a href="hierarchie.html" class="active">Hiérarchie</a></li>
+                        <li><a href="contrebande.html">Contrebande</a></li>
+                    </ul>
+                </nav>
+                <div id="authBtn"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="combine-terminal-wrapper animate-fadeInUp">
+                <div class="combine-header">
+                    <div class="combine-top-bar">
+                        <span>UNION://STRUCTURE.ORGANIGRAMME_V3</span>
+                        <span class="badge badge-cyan">ACCÈS: PUBLIC</span>
+                    </div>
+                    <h2>HIÉRARCHIE METRO POLICE FORCE</h2>
+                    <div class="dispatch-line">
+                        <span>> UNITÉS DE TERRAIN // MATRICE D'AUTORITÉ</span>
+                        <span class="combine-cursor"></span>
+                    </div>
+                    <div class="combine-symbol">⟁</div>
+                </div>
+
+                <div class="combine-body">
+                    <div class="org-container">
+                        <!-- SECTEUR JUDICIAIRE -->
+                        <div class="org-column">
+                            <div class="org-col-title">/// SECTEUR JUDICIAIRE ///</div>
+                            
+                            <div class="desktop-spacer"></div>
+
+                            <div class="group-label">Commandement Div</div>
+                            <div class="org-box gold">
+                                <span class="org-rank-id">DvL-JUDGE [01]</span>
+                                <span class="org-rank-name">Gérant JURY</span>
+                            </div>
+
+                            <div class="group-label">unité élite</div>
+                            <div class="org-box red">
+                                <span class="org-rank-id">JUDGE [01]</span>
+                                <span class="org-rank-name">Autorité & Discipline</span>
+                            </div>
+                            
+                            <div class="group-label">unité JURY</div>
+                            <div class="org-box red">
+                                <span class="org-rank-id">JURY [03]</span>
+                                <span class="org-rank-name">Discipline</span>
+                            </div>
+                            
+                            <div class="note-box red-note">
+                                <strong>NOTE:</strong> Autonomie complète sur les protocoles d'amputation.
+                            </div>
+                        </div>
+
+                        <!-- HIÉRARCHIE PRINCIPALE -->
+                        <div class="org-column center-col">
+                            <div class="org-col-title">/// HIÉRARCHIE PRINCIPALE ///</div>
+
+                            <div class="group-label">HAUT COMMANDEMENT</div>
+                            <div class="org-box white">
+                                <span class="org-rank-id">CMD</span>
+                                <span class="org-rank-name">COMMANDER</span>
+                            </div>
+                            <div class="org-box white">
+                                <span class="org-rank-id">OfC</span>
+                                <span class="org-rank-name">OFFICIER</span>
+                            </div>
+
+                            <div class="group-label">UNITÉS D'ÉLITE</div>
+                            <div class="org-box gold">
+                                <span class="org-rank-id">RANK 01</span>
+                                <span class="org-rank-name">ADJ. ADMINISTRATIF</span>
+                            </div>
+                            <div class="org-box gold">
+                                <span class="org-rank-id">RANK 02</span>
+                                <span class="org-rank-name">ADJOINT</span>
+                            </div>
+
+                            <div class="group-label">UNITÉS DE TERRAIN</div>
+                            <div class="org-box blue">
+                                <span class="org-rank-id">RANK 03</span>
+                                <span class="org-rank-name">AGENT RESPONSABLE</span>
+                            </div>
+                            <div class="org-box blue">
+                                <span class="org-rank-id">RANK 04</span>
+                                <span class="org-rank-name">AGENT AUTONOME</span>
+                            </div>
+                            <div class="org-box blue">
+                                <span class="org-rank-id">RANK 05</span>
+                                <span class="org-rank-name">AGENT PC</span>
+                            </div>
+
+                            <div class="group-label">INITIATION</div>
+                            <div class="org-box gray">
+                                <span class="org-rank-id">RCT</span>
+                                <span class="org-rank-name">RECRUE</span>
+                            </div>
+                        </div>
+
+                        <!-- STRUCTURE DIVISION -->
+                        <div class="org-column">
+                            <div class="org-col-title">/// STRUCTURE DIVISION ///</div>
+                            
+                            <div class="desktop-spacer"></div>
+                            
+                            <div class="group-label">COMMANDEMENT DIV.</div>
+                            <div class="org-box gold">
+                                <span class="org-rank-id">DvL-APEX [01]</span>
+                                <span class="org-rank-name">Gérant HELIX</span>
+                            </div>
+
+                            <div class="group-label">UNITé ELITE MéDICAL</div>
+                            <div class="org-box blue">
+                                <span class="org-rank-id">APEX [02+]</span>
+                                <span class="org-rank-name">Elite - MÉDICAL</span>
+                            </div>
+                            
+                            <div class="group-label">UNIté Médical</div>
+                            <div class="org-box blue">
+                                <span class="org-rank-id">HELIX [05+]</span>
+                                <span class="org-rank-name">Médical</span>
+                            </div>
+
+                            <div class="note-box blue-note">
+                                <strong>NOTE:</strong> Chacune des autres divisions de la PC suivent ce même exemple.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="combine-footer">
+                    SYNC_COMPLETE // VISUAL_MATRIX_OFFSET_APPLIED
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="assets/js/auth.js"></script>
+    <script src="assets/js/dynamic-features.js"></script>
+    <script>
+        document.getElementById('mobileMenuToggle')?.addEventListener('click', function() {
+            document.getElementById('mainNav')?.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
