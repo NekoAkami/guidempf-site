@@ -6,6 +6,7 @@
     <title>Hiérarchie MPF - Metro Police Force Documentation</title>
     <link rel="stylesheet" href="assets/css/main-style.css">
     <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/global-nav.css">
     <link rel="stylesheet" href="assets/css/dynamic-features.css">
     <style>
         /* Styles spécifiques pour l'organigramme */
@@ -241,30 +242,14 @@
                 <div class="logo-section">
                     <div class="logo-icon">M</div>
                     <h1 class="logo">MPF</h1>
+                    <p class="logo-subtitle">Metropolice Force Documentation</p>
                 </div>
-                <nav class="main-nav">
-                    <ul class="nav">
-                        <li><a href="index.html">Accueil</a></li>
-                        <li><a href="#" class="has-submenu">Activité▼
-                            <ul class="submenu">
-                                <li><a href="worker-announcement.html">Worker Announcement</a></li>
-                                <li><a href="ration-announcement.html">Ration Announcement</a></li>
-                                <li><a href="suspended-rations.html">Suspended Rations</a></li>
-                                <li><a href="social-infraction.html">Social Infraction</a></li>
-                                <li><a href="judgement-waiver.html">Judgement Waiver</a></li>
-                            </ul>
-                        </a></li>
-                        <li><a href="radio.html">Radio & Mdp</a></li>
-                        <li><a href="loyalisme.html">Loyalisme</a></li>
-                        <li><a href="jugement.html">Jugement</a></li>
-                        <li><a href="hierarchie.html" class="active">Hiérarchie</a></li>
-                        <li><a href="contrebande.html">Contrebande</a></li>
-                    </ul>
-                </nav>
                 <div id="authBtn"></div>
             </div>
         </div>
     </header>
+
+    <!-- Navigation globale insérée automatiquement par global-nav.js -->
 
     <main>
         <div class="container">
@@ -397,11 +382,7 @@
     </main>
 
     <script type="module" src="assets/js/auth.js"></script>
+    <script src="assets/js/global-nav.js"></script>
     <script src="assets/js/dynamic-features.js"></script>
-    <script>
-        document.getElementById('mobileMenuToggle')?.addEventListener('click', function() {
-            document.getElementById('mainNav')?.classList.toggle('active');
-        });
-    </script>
 </body>
 </html>
