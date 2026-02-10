@@ -6,6 +6,8 @@
     <title>Radio & Mdp - MPF Documentation</title>
     <link rel="stylesheet" href="assets/css/main-style.css">
     <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/global-nav.css">
+    <link rel="stylesheet" href="assets/css/dynamic-features.css">
 </head>
 <body>
     <div class="particles-bg"></div>
@@ -16,21 +18,14 @@
                 <div class="logo-section">
                     <div class="logo-icon">M</div>
                     <h1 class="logo">MPF</h1>
+                    <p class="logo-subtitle">Metropolice Force Documentation</p>
                 </div>
-                <nav class="main-nav">
-                    <ul class="nav">
-                        <li><a href="index.html">Accueil</a></li>
-                        <li><a href="radio.html" class="active">Radio & Mdp</a></li>
-                        <li><a href="loyalisme.html">Loyalisme</a></li>
-                        <li><a href="jugement.html">Jugement</a></li>
-                        <li><a href="hierarchie.html">Hiérarchie</a></li>
-                        <li><a href="contrebande.html">Contrebande</a></li>
-                    </ul>
-                </nav>
                 <div id="authBtn"></div>
             </div>
         </div>
     </header>
+
+    <!-- Navigation globale insérée automatiquement par global-nav.js -->
 
     <main>
         <div class="container">
@@ -135,10 +130,7 @@
     </main>
 
     <script type="module" src="assets/js/auth.js"></script>
-    <script>
-        document.getElementById('mobileMenuToggle')?.addEventListener('click', function() {
-            document.getElementById('mainNav')?.classList.toggle('active');
-        });
-    </script>
+    <script src="assets/js/global-nav.js"></script>
+    <script src="assets/js/dynamic-features.js"></script>
 </body>
 </html>

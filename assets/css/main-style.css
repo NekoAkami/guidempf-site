@@ -190,7 +190,7 @@ body::before {
   font-size: 1.2rem;
   color: var(--bg-primary);
   clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
-  animation: logoSpin 20s linear infinite, logoPulse 2s ease-in-out infinite;
+  animation: logoPulse 2s ease-in-out infinite;
   position: relative;
 }
 
