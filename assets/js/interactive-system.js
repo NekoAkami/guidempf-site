@@ -149,12 +149,7 @@ class InteractiveSystem {
 
     // ==================== SCANLINES EFFECT ====================
     setupScanlines() {
-        // Ajouter scanlines aux cartes
-        document.querySelectorAll('.info-card').forEach(card => {
-            if (!card.classList.contains('no-scanlines')) {
-                card.classList.add('scanlines');
-            }
-        });
+        // Scanlines disabled for cleaner look
     }
 
     // ==================== TOOLTIPS ====================
