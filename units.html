@@ -18,6 +18,7 @@
             <li><a href="tactics.html">Tactiques</a></li>
             <li><a href="equipment.html">Équipement</a></li>
             <li><a href="contact.html">Contact</a></li>
+            <li id="authBtn"></li>
           </ul>
         </nav>
       </div>
@@ -79,6 +80,41 @@
         </div>
       </div>
 
+      <div class="section">
+        <h2>Codes & Designations</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Signification</th>
+              <th>Priorité</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>10-0</strong></td>
+              <td>Alerte maximale - Toutes unités</td>
+              <td><span class="badge admin">CRITIQUE</span></td>
+            </tr>
+            <tr>
+              <td><strong>10-15</strong></td>
+              <td>Civil en détention</td>
+              <td><span class="badge pending">MOYEN</span></td>
+            </tr>
+            <tr>
+              <td><strong>10-20</strong></td>
+              <td>Position/Localisation</td>
+              <td><span class="badge user">BAS</span></td>
+            </tr>
+            <tr>
+              <td><strong>10-99</strong></td>
+              <td>Officier en danger</td>
+              <td><span class="badge admin">CRITIQUE</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
       <div style="text-align:center;margin:2rem 0">
         <a href="index.html" class="btn">← Retour Accueil</a>
       </div>
@@ -87,5 +123,9 @@
     <footer class="site-footer">
       <div class="container">© 2026 — Guide Metropolice Force</div>
     </footer>
+    
+    <script type="module">
+      import { updateAuthButton } from './assets/js/auth.js';
+    </script>
   </body>
 </html>

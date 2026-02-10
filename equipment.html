@@ -18,6 +18,7 @@
             <li><a href="tactics.html">Tactiques</a></li>
             <li><a href="equipment.html" class="active">Équipement</a></li>
             <li><a href="contact.html">Contact</a></li>
+            <li id="authBtn"></li>
           </ul>
         </nav>
       </div>
@@ -80,6 +81,24 @@
         </ul>
       </div>
 
+      <div class="section">
+        <h2>Communication & Tech</h2>
+        <div class="cards">
+          <div class="card">
+            <h3>📡 Radio Tactique</h3>
+            <p>Communication cryptée longue portée entre unités</p>
+          </div>
+          <div class="card">
+            <h3>👁️ Scanner Biométrique</h3>
+            <p>Identification instantanée des civils et suspects</p>
+          </div>
+          <div class="card">
+            <h3>📱 Terminal PDA</h3>
+            <p>Accès base de données et cartographie en temps réel</p>
+          </div>
+        </div>
+      </div>
+
       <div style="text-align:center;margin:2rem 0">
         <a href="index.html" class="btn">← Retour Accueil</a>
       </div>
@@ -88,5 +107,9 @@
     <footer class="site-footer">
       <div class="container">© 2026 — Guide Metropolice Force</div>
     </footer>
+    
+    <script type="module">
+      import { updateAuthButton } from './assets/js/auth.js';
+    </script>
   </body>
 </html>

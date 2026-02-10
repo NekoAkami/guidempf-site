@@ -18,6 +18,7 @@
             <li><a href="tactics.html" class="active">Tactiques</a></li>
             <li><a href="equipment.html">Équipement</a></li>
             <li><a href="contact.html">Contact</a></li>
+            <li id="authBtn"></li>
           </ul>
         </nav>
       </div>
@@ -78,6 +79,36 @@
         </table>
       </div>
 
+      <div class="section">
+        <h2>Règles d'Engagement</h2>
+        <div class="cards">
+          <div class="card">
+            <h3>🚨 Niveau 1 - Vert</h3>
+            <p>Situation normale - Patrouille de routine</p>
+            <ul style="text-align:left;color:var(--muted);font-size:.9rem">
+              <li>Force non-létale autorisée</li>
+              <li>Contrôles d'identité standards</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>⚠️ Niveau 2 - Jaune</h3>
+            <p>Menace potentielle - Vigilance accrue</p>
+            <ul style="text-align:left;color:var(--muted);font-size:.9rem">
+              <li>Armement léger autorisé</li>
+              <li>Renforts en stand-by</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>🔴 Niveau 3 - Rouge</h3>
+            <p>Menace immédiate - Force maximale</p>
+            <ul style="text-align:left;color:var(--muted);font-size:.9rem">
+              <li>Toutes armes autorisées</li>
+              <li>Neutralisation immédiate</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
       <div style="text-align:center;margin:2rem 0">
         <a href="index.html" class="btn">← Retour Accueil</a>
       </div>
@@ -86,5 +117,9 @@
     <footer class="site-footer">
       <div class="container">© 2026 — Guide Metropolice Force</div>
     </footer>
+    
+    <script type="module">
+      import { updateAuthButton } from './assets/js/auth.js';
+    </script>
   </body>
 </html>

@@ -74,6 +74,7 @@
 
       <div class="section">
         <h3>Liste des Utilisateurs</h3>
+        <div id="actionMessage" style="display:none;padding:1rem;border-radius:4px;margin-bottom:1rem"></div>
         <table>
           <thead>
             <tr>
@@ -116,6 +117,16 @@
 
       let allUsers = [];
 
+      function showMessage(message, type = 'success') {
+        const msg = document.getElementById('actionMessage');
+        msg.style.display = 'block';
+        msg.textContent = message;
+        msg.className = type === 'success' ? 'alert success' : 'alert error';
+        setTimeout(() => {
+          msg.style.display = 'none';
+        }, 3000);
+      }
+
       async function loadUsers() {
         const q = await getDocs(collection(db, 'users'));
         allUsers = [];
@@ -129,7 +140,7 @@
       function updateStats() {
         const total = allUsers.length;
         const approved = allUsers.filter(u => u.approved === true).length;
-        const pending = allUsers.filter(u => u.approved !== true).length;
+        const pending = allUsers.filter(u => u.approved !== true && u.status !== 'REVOKED').length;
         const admins = allUsers.filter(u => u.is_admin === true).length;
 
         document.getElementById('totalCount').textContent = total;
@@ -144,19 +155,26 @@
           tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted)">Aucun utilisateur</td></tr>';
           return;
         }
-        tbody.innerHTML = users.map(u => `
+        tbody.innerHTML = users.map(u => {
+          const statusBadge = u.status === 'APPROVED' ? '<span class="badge user">APPROUVÉ</span>' :
+                             u.status === 'REVOKED' ? '<span class="badge admin">RÉVOQUÉ</span>' :
+                             '<span class="badge pending">EN ATTENTE</span>';
+          const adminBadge = u.is_admin ? '<span class="badge admin">✓</span>' : '-';
+          
+          return `
           <tr>
             <td>${u.email || '-'}</td>
             <td><strong>${u.matricule || '-'}</strong></td>
-            <td>${u.is_admin ? '✓' : '-'}</td>
-            <td class="${u.approved ? 'approved' : 'pending'}">${u.status || (u.approved ? 'APPROVED' : 'PENDING')}</td>
+            <td>${adminBadge}</td>
+            <td>${statusBadge}</td>
             <td style="font-size:.85rem">${u.created_at ? u.created_at.substring(0,10) : '-'}</td>
             <td class="action-cell">
-              ${!u.approved ? `<button class="btn" onclick="approveUser('${u.id}')">Approuver</button>` : ''}
-              ${u.approved && !u.revoked ? `<button class="btn secondary" onclick="revokeUser('${u.id}')">Révoquer</button>` : ''}
+              ${!u.approved ? `<button class="btn" onclick="approveUser('${u.id}')">✓ Approuver</button>` : ''}
+              ${u.approved && u.status !== 'REVOKED' ? `<button class="btn secondary" onclick="revokeUser('${u.id}')">✗ Révoquer</button>` : ''}
+              ${u.status === 'REVOKED' ? `<button class="btn" onclick="reactivateUser('${u.id}')">↻ Réactiver</button>` : ''}
             </td>
           </tr>
-        `).join('');
+        `}).join('');
       }
 
       function filterUsers() {
@@ -180,22 +198,39 @@
             status: 'APPROVED',
             approved_at: new Date().toISOString()
           });
+          showMessage('✓ Utilisateur approuvé avec succès', 'success');
           await loadUsers();
         } catch (err) {
-          alert('Erreur: ' + err.message);
+          showMessage('✗ Erreur: ' + err.message, 'error');
         }
       };
 
       window.revokeUser = async (userId) => {
+        if (!confirm('Êtes-vous sûr de vouloir révoquer cet utilisateur ?')) return;
         try {
           await updateDoc(doc(db, 'users', userId), {
             approved: false,
             status: 'REVOKED',
             revoked_at: new Date().toISOString()
           });
+          showMessage('✓ Utilisateur révoqué', 'success');
           await loadUsers();
         } catch (err) {
-          alert('Erreur: ' + err.message);
+          showMessage('✗ Erreur: ' + err.message, 'error');
+        }
+      };
+
+      window.reactivateUser = async (userId) => {
+        try {
+          await updateDoc(doc(db, 'users', userId), {
+            approved: true,
+            status: 'APPROVED',
+            reactivated_at: new Date().toISOString()
+          });
+          showMessage('✓ Utilisateur réactivé', 'success');
+          await loadUsers();
+        } catch (err) {
+          showMessage('✗ Erreur: ' + err.message, 'error');
         }
       };
 
@@ -215,7 +250,7 @@
 
         const snap = await getDoc(doc(db, 'users', user.uid));
         if (!snap.exists() || !snap.data().is_admin) {
-          document.getElementById('loading').textContent = '❌ Accès refusé (non admin)';
+          document.getElementById('loading').innerHTML = '<div class="alert error">❌ Accès refusé (non admin)</div>';
           return;
         }
 

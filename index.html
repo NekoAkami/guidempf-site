@@ -26,9 +26,13 @@
 
     <main class="container">
       <section class="hero">
-        <h1>GUIDE OPERATIONNEL</h1>
-        <p>Ressource éducative sur l'organisation et les tactiques de la Metropolice Force.</p>
-        <p style="color:var(--warning);font-size:.9rem">Univers fictif inspiré de Half-Life 2</p>
+        <h1 class="animate-title">GUIDE OPERATIONNEL</h1>
+        <p class="animate-subtitle">Ressource éducative sur l'organisation et les tactiques de la Metropolice Force.</p>
+        <p style="color:var(--warning);font-size:.9rem" class="animate-subtitle">Univers fictif inspiré de Half-Life 2</p>
+        <div style="margin-top:2rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap" class="animate-buttons">
+          <a href="register.html" class="btn">🚀 Commencer</a>
+          <a href="about.html" class="btn secondary">📖 En savoir plus</a>
+        </div>
       </section>
 
       <section class="cards">
@@ -65,45 +69,8 @@
     </footer>
 
     <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-      import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-      import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-      const firebaseConfig = {
-        apiKey: "AIzaSyDPs4x2EE1pyeQTC_V-Ze5uyZ8Rs2N8qF4",
-        authDomain: "guidempf.firebaseapp.com",
-        projectId: "guidempf",
-        storageBucket: "guidempf.firebasestorage.app",
-        messagingSenderId: "806309770965",
-        appId: "1:806309770965:web:3621f58bfb252446c1945c"
-      };
-
-      const app = initializeApp(firebaseConfig);
-      const auth = getAuth(app);
-      const db = getFirestore(app);
-
-      onAuthStateChanged(auth, async (user) => {
-        const authBtn = document.getElementById('authBtn');
-        if (user) {
-          const snap = await getDoc(doc(db, 'users', user.uid));
-          const isAdmin = snap.exists() && snap.data().is_admin === true;
-          authBtn.innerHTML = `<button onclick="logout()" class="btn secondary">Déconnexion</button>`;
-          if (isAdmin) {
-            const link = document.createElement('a');
-            link.href = 'admin/panel.html';
-            link.className = 'btn';
-            link.textContent = 'Admin';
-            authBtn.appendChild(link);
-          }
-        } else {
-          authBtn.innerHTML = `<a href="login.html" class="btn">Connexion</a>`;
-        }
-      });
-
-      window.logout = async () => {
-        await signOut(auth);
-        location.href = 'index.html';
-      };
+      import { updateAuthButton } from './assets/js/auth.js';
+      // Le script d'authentification global gère automatiquement le bouton
     </script>
   </body>
 </html>

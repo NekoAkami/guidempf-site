@@ -18,6 +18,7 @@
             <li><a href="tactics.html">Tactiques</a></li>
             <li><a href="equipment.html">Équipement</a></li>
             <li><a href="contact.html" class="active">Contact</a></li>
+            <li id="authBtn"></li>
           </ul>
         </nav>
       </div>
@@ -41,6 +42,15 @@
         <p>Ce guide est une création de fans, créé à titre éducatif et créatif. Il n'est pas affilié à Valve Corporation ni au jeu Half-Life 2. Le contenu original contribue à enrichir la communauté autour de cet univers fictif.</p>
       </div>
 
+      <div class="section">
+        <h2>👥 Communauté</h2>
+        <p>Rejoins la communauté pour partager tes connaissances et expériences !</p>
+        <div style="display:flex;gap:1rem;justify-content:center;margin-top:1.5rem;flex-wrap:wrap">
+          <a href="register.html" class="btn">Rejoindre</a>
+          <a href="https://github.com/NekoAkami/guidempf-site" class="btn secondary" target="_blank">🐛 GitHub</a>
+        </div>
+      </div>
+
       <div style="text-align:center;margin:2rem 0">
         <a href="index.html" class="btn">← Retour Accueil</a>
       </div>
@@ -49,5 +59,9 @@
     <footer class="site-footer">
       <div class="container">© 2026 — Guide Metropolice Force</div>
     </footer>
+    
+    <script type="module">
+      import { updateAuthButton } from './assets/js/auth.js';
+    </script>
   </body>
 </html>
