@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worker Announcement - MPF Documentation</title>
+    <link rel="stylesheet" href="assets/css/main-style.css">
+    <link rel="stylesheet" href="assets/css/combine-terminals.css">
+</head>
+<body>
+    <div class="particles-bg"></div>
+
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <h1 class="logo">MPF</h1>
+                </div>
+                <nav class="main-nav">
+                    <ul class="nav">
+                        <li><a href="index.html">Accueil</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle">Activité ▾</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="worker-announcement.html" class="active">Worker Announcement</a></li>
+                                <li><a href="ration-announcement.html">Ration Announcement</a></li>
+                                <li><a href="suspended-rations.html">Suspended Rations</a></li>
+                                <li><a href="social-infraction.html">Social Infraction</a></li>
+                                <li><a href="judgement-waiver.html">Judgement Waiver</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+                <div id="authBtn"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="combine-terminal-wrapper animate-fadeInUp">
+                <div class="combine-header">
+                    <h2>WORKER ANNOUNCEMENT</h2>
+                    <span class="header-code badge-blue">03+</span>
+                </div>
+                
+                <div class="combine-body">
+                    <p>Ce bouton est réservé à l'annonce d'ouverture de travail obligatoires organisées par le QG CMU.</p>
+                    
+                    <p>Vous devez <strong>l'activer uniquement lorsqu'un CWU fait la demande</strong>. Ces sessions sont obligatoires.</p>
+                    
+                    <h3>L'objectif est de maintenir un équilibre :</h3>
+                    <p>Étant donné que ce type de session reste rare, vous pouvez laisser ce bouton actif lorsqu'elles se présentent.</p>
+                    
+                    <p>Cependant, vous <strong>ne devez ni le trop accepter systématiquement chaque requête</strong> : ces sessions ne peuvent pas être désactivés.</p>
+                    
+                    <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(0, 212, 255, 0.05); border-left: 4px solid var(--accent-cyan); border-radius: 6px;">
+                        <h3 style="color: var(--accent-cyan); margin-bottom: 1rem;">📋 Important :</h3>
+                        <ul>
+                            <li>Activation obligatoire lors des demandes CWU</li>
+                            <li>Sessions rares mais prioritaires</li>
+                            <li>Une fois activé, le bouton reste actif</li>
+                            <li>Maintenir l'équilibre entre acceptation et refus</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="combine-footer">
+                    [METROPOLICE FORCE - CIVIL WORKERS UNION COORDINATION]
+                </div>
+            </div>
+
+            <div style="text-align: center; margin: 3rem 0;">
+                <a href="index.html" class="btn" style="display: inline-block; padding: 1rem 2rem; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue)); color: var(--bg-primary); text-decoration: none; font-weight: 700; border-radius: 8px; text-transform: uppercase; letter-spacing: 1px;">
+                    ← Retour à l'Accueil
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="assets/js/auth.js"></script>
+    <script>
+        document.getElementById('mobileMenuToggle')?.addEventListener('click', function() {
+            document.getElementById('mainNav')?.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

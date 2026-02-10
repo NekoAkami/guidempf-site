@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radio & Mdp - MPF Documentation</title>
+    <link rel="stylesheet" href="assets/css/main-style.css">
+    <link rel="stylesheet" href="assets/css/combine-terminals.css">
+</head>
+<body>
+    <div class="particles-bg"></div>
+
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <h1 class="logo">MPF</h1>
+                </div>
+                <nav class="main-nav">
+                    <ul class="nav">
+                        <li><a href="index.html">Accueil</a></li>
+                        <li><a href="radio.html" class="active">Radio & Mdp</a></li>
+                        <li><a href="loyalisme.html">Loyalisme</a></li>
+                        <li><a href="jugement.html">Jugement</a></li>
+                        <li><a href="hierarchie.html">Hiérarchie</a></li>
+                        <li><a href="contrebande.html">Contrebande</a></li>
+                    </ul>
+                </nav>
+                <div id="authBtn"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="combine-terminal-wrapper animate-fadeInUp">
+                <div class="combine-header">
+                    <h2>📻 CANAUX DE COMMUNICATION</h2>
+                    <span class="header-code badge-cyan">CRYPTÉ NIVEAU 2</span>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; margin: 2rem 0;">
+                    <!-- Fréquence Radio -->
+                    <div style="background: rgba(66, 135, 245, 0.05); border: 2px solid rgba(66, 135, 245, 0.3); border-radius: 10px; padding: 2rem; text-align: center; position: relative;">
+                        <div style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 2.5rem;">📻</div>
+                        <div style="margin-top: 1rem;">
+                            <div style="font-size: 0.85rem; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem;">Fréquence Radio</div>
+                            <div style="font-size: 3rem; color: var(--accent-cyan); font-weight: 700; font-family: 'Share Tech Mono', monospace; text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);">
+                                119.8<span style="font-size: 1.2rem; color: var(--text-secondary);"> MHz</span>
+                            </div>
+                            <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0, 0, 0, 0.3); border-radius: 6px; font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6;">
+                                Fréquence dédiée aux communications opérationnelles de la Protection Civile. <strong style="color: var(--accent-cyan);">Cryptage automatique activé.</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stockage MPF -->
+                    <div style="background: rgba(74, 222, 128, 0.05); border: 2px solid rgba(74, 222, 128, 0.3); border-radius: 10px; padding: 2rem; text-align: center; position: relative;">
+                        <div style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 2.5rem;">🗄️</div>
+                        <div style="margin-top: 1rem;">
+                            <div style="font-size: 0.85rem; color: var(--accent-green); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem;">Stockage MPF / Armoire</div>
+                            <div style="font-size: 2.5rem; color: var(--accent-green); font-weight: 700; font-family: 'Share Tech Mono', monospace; text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);">
+                                Milice.954
+                            </div>
+                            <div style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Armoire de stockage principale - Salle d'équipement</div>
+                            <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0, 0, 0, 0.3); border-radius: 6px; font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6;">
+                                Accès aux équipements standard, munitions, et matériel de maintenance. <strong style="color: var(--accent-green);">Réapprovisionnement hebdomadaire.</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Boîte aux Lettres -->
+                <div style="background: rgba(245, 158, 11, 0.05); border: 2px solid rgba(245, 158, 11, 0.3); border-radius: 10px; padding: 2rem; margin: 2rem 0; position: relative;">
+                    <div style="position: absolute; top: -15px; left: 2rem; font-size: 2.5rem;">📫</div>
+                    <div style="margin-top: 1rem;">
+                        <h3 style="font-family: 'Orbitron', sans-serif; color: var(--accent-orange); font-size: 1.3rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1.5rem;">Boîte aux Lettres</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                            <div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;">Adresse de Contact</div>
+                                <div style="font-size: 2rem; color: var(--accent-yellow); font-weight: 700; font-family: 'Share Tech Mono', monospace; text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);">
+                                    Lettrempf2
+                                </div>
+                            </div>
+                            <div style="padding: 0.7rem 1.5rem; background: rgba(26, 45, 66, 0.5); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 6px; font-size: 0.85rem; color: var(--accent-yellow); text-transform: uppercase; letter-spacing: 1px;">
+                                ✓ Active - Vérifiée Quotidiennement
+                            </div>
+                        </div>
+                        <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0, 0, 0, 0.3); border-radius: 6px; font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6;">
+                            Pour les communications écrites non urgentes. <strong style="color: var(--accent-red);">Ne pas utiliser pour les urgences.</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert-box" style="margin: 2rem 0;">
+                    <h3>🔒 Sécurité & Protocoles</h3>
+                    <ul>
+                        <li><strong>Canal Principal :</strong> Utiliser uniquement pour les communications officielles</li>
+                        <li><strong>Cryptage :</strong> Niveau 2 actif en permanence - Ne pas transmettre d'informations classifiées par d'autres moyens</li>
+                        <li><strong>Stockage :</strong> L'accès à l'armoire est tracé et enregistré</li>
+                        <li><strong>Courrier :</strong> Vérification quotidienne obligatoire pour tout le personnel actif</li>
+                    </ul>
+                </div>
+
+                <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(0, 212, 255, 0.05); border-left: 4px solid var(--accent-cyan); border-radius: 6px;">
+                    <h3 style="color: var(--accent-cyan); margin-bottom: 1rem;">📡 Protocole de Communication</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div>
+                            <div style="font-weight: 700; color: var(--accent-cyan); margin-bottom: 0.5rem;">Urgences</div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">Utiliser la fréquence 119.8 MHz</div>
+                        </div>
+                        <div>
+                            <div style="font-weight: 700; color: var(--accent-green); margin-bottom: 0.5rem;">Approvisionnement</div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">Armoire Milice.954</div>
+                        </div>
+                        <div>
+                            <div style="font-weight: 700; color: var(--accent-yellow); margin-bottom: 0.5rem;">Non-urgent</div>
+                            <div style="color: var(--text-secondary); font-size: 0.9rem;">Boîte Lettrempf2</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="combine-footer">
+                    [TRANSMISSION ACTIVE - REF: COMMS-ACCESS-332]
+                </div>
+            </div>
+
+            <div style="text-align: center; margin: 3rem 0;">
+                <a href="index.html" style="display: inline-block; padding: 1rem 2rem; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue)); color: var(--bg-primary); text-decoration: none; font-weight: 700; border-radius: 8px; text-transform: uppercase; letter-spacing: 1px;">
+                    ← Retour à l'Accueil
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="assets/js/auth.js"></script>
+    <script>
+        document.getElementById('mobileMenuToggle')?.addEventListener('click', function() {
+            document.getElementById('mainNav')?.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
