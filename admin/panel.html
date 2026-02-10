@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin — Panneau</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <style>
+      .admin-container{max-width:1400px;margin:0 auto;padding:0 1.5rem}
+      .filter-group{display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
+      .filter-group input{flex:1;min-width:200px}
+      .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:2rem}
+      .stat-box{background:var(--bg-alt);border:1px solid var(--border);padding:1.5rem;border-radius:6px;text-align:center}
+      .stat-box .number{font-size:2.5rem;color:var(--accent);font-weight:bold}
+      .stat-box .label{color:var(--muted);margin-top:.5rem}
+      .action-cell{display:flex;gap:.5rem}
+      .action-cell button{padding:.4rem .8rem;font-size:.85rem}
+      .approved{color:var(--success)}
+      .pending{color:var(--warning)}
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <h1 class="logo">ADMIN PANEL</h1>
+        <nav>
+          <ul class="nav">
+            <li><a href="/index.html">Site</a></li>
+            <li><a href="#">Gestion Utilisateurs</a></li>
+            <li id="userInfo"></li>
+            <li><button onclick="logout()" class="btn secondary">Déconnexion</button></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main class="admin-container">
+      <div class="admin-header">
+        <h2>Gestion des Utilisateurs</h2>
+        <div id="loading" style="color:var(--accent)">Chargement...</div>
+      </div>
+
+      <div class="stats">
+        <div class="stat-box">
+          <div class="number" id="totalCount">0</div>
+          <div class="label">Total inscrit</div>
+        </div>
+        <div class="stat-box">
+          <div class="number" id="approvedCount">0</div>
+          <div class="label">Approuvé</div>
+        </div>
+        <div class="stat-box">
+          <div class="number" id="pendingCount">0</div>
+          <div class="label">En attente</div>
+        </div>
+        <div class="stat-box">
+          <div class="number" id="adminCount">0</div>
+          <div class="label">Admin</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Filtre & Recherche</h3>
+        <div class="filter-group">
+          <input type="text" id="searchInput" placeholder="Rechercher par email, matricule...">
+          <select id="statusFilter">
+            <option value="">-- Tous --</option>
+            <option value="APPROVED">Approuvé</option>
+            <option value="PENDING">En attente</option>
+            <option value="REVOKED">Révoqué</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Liste des Utilisateurs</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Matricule</th>
+              <th>Admin</th>
+              <th>Statut</th>
+              <th>Créé</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="usersList">
+            <tr><td colspan="6" style="text-align:center">Chargement...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <p>Metropolice Force Admin Panel © 2026</p>
+    </footer>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+      import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+      import { getFirestore, collection, getDocs, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyDPs4x2EE1pyeQTC_V-Ze5uyZ8Rs2N8qF4",
+        authDomain: "guidempf.firebaseapp.com",
+        projectId: "guidempf",
+        storageBucket: "guidempf.firebasestorage.app",
+        messagingSenderId: "806309770965",
+        appId: "1:806309770965:web:3621f58bfb252446c1945c"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+
+      let allUsers = [];
+
+      async function loadUsers() {
+        const q = await getDocs(collection(db, 'users'));
+        allUsers = [];
+        q.forEach(docSnap => {
+          allUsers.push({ id: docSnap.id, ...docSnap.data() });
+        });
+        updateStats();
+        renderUsers(allUsers);
+      }
+
+      function updateStats() {
+        const total = allUsers.length;
+        const approved = allUsers.filter(u => u.approved === true).length;
+        const pending = allUsers.filter(u => u.approved !== true).length;
+        const admins = allUsers.filter(u => u.is_admin === true).length;
+
+        document.getElementById('totalCount').textContent = total;
+        document.getElementById('approvedCount').textContent = approved;
+        document.getElementById('pendingCount').textContent = pending;
+        document.getElementById('adminCount').textContent = admins;
+      }
+
+      function renderUsers(users) {
+        const tbody = document.getElementById('usersList');
+        if (users.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted)">Aucun utilisateur</td></tr>';
+          return;
+        }
+        tbody.innerHTML = users.map(u => `
+          <tr>
+            <td>${u.email || '-'}</td>
+            <td><strong>${u.matricule || '-'}</strong></td>
+            <td>${u.is_admin ? '✓' : '-'}</td>
+            <td class="${u.approved ? 'approved' : 'pending'}">${u.status || (u.approved ? 'APPROVED' : 'PENDING')}</td>
+            <td style="font-size:.85rem">${u.created_at ? u.created_at.substring(0,10) : '-'}</td>
+            <td class="action-cell">
+              ${!u.approved ? `<button class="btn" onclick="approveUser('${u.id}')">Approuver</button>` : ''}
+              ${u.approved && !u.revoked ? `<button class="btn secondary" onclick="revokeUser('${u.id}')">Révoquer</button>` : ''}
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      function filterUsers() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const status = document.getElementById('statusFilter').value;
+        
+        let filtered = allUsers.filter(u => {
+          const matchSearch = !search || 
+            u.email.toLowerCase().includes(search) || 
+            (u.matricule && u.matricule.includes(search));
+          const matchStatus = !status || (u.status === status);
+          return matchSearch && matchStatus;
+        });
+        renderUsers(filtered);
+      }
+
+      window.approveUser = async (userId) => {
+        try {
+          await updateDoc(doc(db, 'users', userId), {
+            approved: true,
+            status: 'APPROVED',
+            approved_at: new Date().toISOString()
+          });
+          await loadUsers();
+        } catch (err) {
+          alert('Erreur: ' + err.message);
+        }
+      };
+
+      window.revokeUser = async (userId) => {
+        try {
+          await updateDoc(doc(db, 'users', userId), {
+            approved: false,
+            status: 'REVOKED',
+            revoked_at: new Date().toISOString()
+          });
+          await loadUsers();
+        } catch (err) {
+          alert('Erreur: ' + err.message);
+        }
+      };
+
+      window.logout = async () => {
+        await signOut(auth);
+        location.href = '/index.html';
+      };
+
+      document.getElementById('searchInput').addEventListener('keyup', filterUsers);
+      document.getElementById('statusFilter').addEventListener('change', filterUsers);
+
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+          location.href = '/login.html';
+          return;
+        }
+
+        const snap = await getDoc(doc(db, 'users', user.uid));
+        if (!snap.exists() || !snap.data().is_admin) {
+          document.getElementById('loading').textContent = '❌ Accès refusé (non admin)';
+          return;
+        }
+
+        document.getElementById('userInfo').textContent = user.email;
+        document.getElementById('loading').style.display = 'none';
+        await loadUsers();
+      });
+    </script>
+  </body>
+</html>

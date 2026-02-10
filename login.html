@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Connexion — Metropolice</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+      .auth-container{max-width:400px;margin:4rem auto;background:var(--bg-alt);border:2px solid var(--accent);border-radius:8px;padding:2rem}
+      .auth-container h1{text-align:center;color:var(--accent);margin-top:0;text-shadow:0 0 10px var(--accent)}
+      .auth-container .form-group{margin:1.5rem 0}
+      .auth-container label{display:block;margin-bottom:.5rem;color:var(--accent);font-weight:bold}
+      .auth-container input{width:100%;padding:.6rem;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:4px;font-family:inherit}
+      .auth-container input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 8px rgba(0,212,255,.2)}
+      .auth-container .btn{width:100%;margin-top:1rem}
+      .auth-container .link-group{text-align:center;margin-top:1rem}
+      .auth-container .link-group a{color:var(--accent);text-decoration:none}
+      .auth-container .link-group a:hover{text-decoration:underline}
+      .message{padding:.8rem;border-radius:4px;margin:1rem 0;text-align:center;font-weight:bold}
+      .message.error{background:rgba(255,107,53,.1);border:1px solid var(--warning);color:var(--warning)}
+      .message.success{background:rgba(0,255,136,.1);border:1px solid var(--success);color:var(--success)}
+    </style>
+  </head>
+  <body style="display:flex;flex-direction:column;min-height:100vh">
+    <header class="site-header">
+      <div class="container">
+        <h1 class="logo">METROPOLICE FORCE</h1>
+        <nav style="text-align:right">
+          <a href="index.html" style="color:var(--muted);text-decoration:none">← Retour</a>
+        </nav>
+      </div>
+    </header>
+
+    <main style="flex:1">
+      <div class="auth-container">
+        <h1>Connexion</h1>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          <div class="form-group">
+            <label for="password">Mot de passe</label>
+            <input type="password" id="password" name="password" required>
+          </div>
+          <button type="submit" class="btn">Se connecter</button>
+        </form>
+        <div id="message"></div>
+        <div class="link-group">
+          Pas de compte ? <a href="register.html">S'inscrire</a>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">© 2026 — Metropolice Force</div>
+    </footer>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+      import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+      import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyDPs4x2EE1pyeQTC_V-Ze5uyZ8Rs2N8qF4",
+        authDomain: "guidempf.firebaseapp.com",
+        projectId: "guidempf",
+        storageBucket: "guidempf.firebasestorage.app",
+        messagingSenderId: "806309770965",
+        appId: "1:806309770965:web:3621f58bfb252446c1945c"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+
+      const form = document.getElementById('loginForm');
+      const msg = document.getElementById('message');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        msg.textContent = '';
+        const data = new FormData(form);
+        const email = data.get('email');
+        const password = data.get('password');
+        try {
+          const cred = await signInWithEmailAndPassword(auth, email, password);
+          const snap = await getDoc(doc(db, 'users', cred.user.uid));
+          const userData = snap.exists() ? snap.data() : null;
+          if (!userData || userData.approved !== true) {
+            import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js').then(({ signOut }) => signOut(auth));
+            location.href = 'pending.html';
+            return;
+          }
+          const isAdmin = userData.is_admin === true;
+          if (isAdmin) location.href = 'admin/panel.html';
+          else location.href = 'index.html';
+        } catch (err) {
+          msg.className = 'message error';
+          msg.textContent = err.message || 'Erreur lors de la connexion';
+        }
+      });
+    </script>
+  </body>
+</html>

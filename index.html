@@ -1,50 +1,109 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <title>Guide MPF — Connexion</title>
-</head>
-<body>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Metropolice Force — Guide</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <h1 class="logo">METROPOLICE FORCE</h1>
+        <nav>
+          <ul class="nav">
+            <li><a href="index.html" class="active">Accueil</a></li>
+            <li><a href="about.html">Présentation</a></li>
+            <li><a href="units.html">Unités</a></li>
+            <li><a href="tactics.html">Tactiques</a></li>
+            <li><a href="equipment.html">Équipement</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li id="authBtn"></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
 
-<h1>Connexion Guide MPF</h1>
-<button onclick="login()">Connexion avec Google</button>
+    <main class="container">
+      <section class="hero">
+        <h1>GUIDE OPERATIONNEL</h1>
+        <p>Ressource éducative sur l'organisation et les tactiques de la Metropolice Force.</p>
+        <p style="color:var(--warning);font-size:.9rem">Univers fictif inspiré de Half-Life 2</p>
+      </section>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+      <section class="cards">
+        <div class="card">
+          <h3>📋 Présentation</h3>
+          <p>Structure organisationnelle et missions de la Metropolice Force dans les zones urbaines.</p>
+          <a href="about.html" class="btn">Lire</a>
+        </div>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDPs4x2EE1pyeQTC_V-Ze5uyZ8Rs2N8qF4",
-  authDomain: "guidempf.firebaseapp.com",
-  projectId: "guidempf",
-  storageBucket: "guidempf.firebasestorage.app",
-  messagingSenderId: "806309770965",
-  appId: "1:806309770965:web:3621f58bfb252446c1945c"
-};
+        <div class="card">
+          <h3>👮 Unités & Grades</h3>
+          <p>Hiérarchie, unités spécialisées et cadre opérationnel des forces de maintien de l'ordre.</p>
+          <a href="units.html" class="btn">Consulter</a>
+        </div>
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+        <div class="card">
+          <h3>⚔️ Tactiques</h3>
+          <p>Principes de déploiement, formations et procédures d'intervention tactique.</p>
+          <a href="tactics.html" class="btn">Voir</a>
+        </div>
 
-window.login = async () => {
-  const provider = new GoogleAuthProvider();
-  const result = await signInWithPopup(auth, provider);
+        <div class="card">
+          <h3>🛠️ Équipement</h3>
+          <p>Armement, protection et véhicules utilisés par la Metropolice Force.</p>
+          <a href="equipment.html" class="btn">Explorer</a>
+        </div>
+      </section>
+    </main>
 
-  const ref = doc(db, "users", result.user.uid);
-  const snap = await getDoc(ref);
+    <footer class="site-footer">
+      <div class="container">
+        <p>&copy; 2026 — Guide Metropolice Force | Fan-made | <a href="contact.html">Contact</a></p>
+      </div>
+    </footer>
 
-  if (!snap.exists()) {
-    await setDoc(ref, {
-      email: result.user.email,
-      status: "EN_ATTENTE",
-      createdAt: new Date()
-    });
-  }
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+      import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+      import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  window.location = "pending.html";
-};
-</script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyDPs4x2EE1pyeQTC_V-Ze5uyZ8Rs2N8qF4",
+        authDomain: "guidempf.firebaseapp.com",
+        projectId: "guidempf",
+        storageBucket: "guidempf.firebasestorage.app",
+        messagingSenderId: "806309770965",
+        appId: "1:806309770965:web:3621f58bfb252446c1945c"
+      };
 
-</body>
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+
+      onAuthStateChanged(auth, async (user) => {
+        const authBtn = document.getElementById('authBtn');
+        if (user) {
+          const snap = await getDoc(doc(db, 'users', user.uid));
+          const isAdmin = snap.exists() && snap.data().is_admin === true;
+          authBtn.innerHTML = `<button onclick="logout()" class="btn secondary">Déconnexion</button>`;
+          if (isAdmin) {
+            const link = document.createElement('a');
+            link.href = 'admin/panel.html';
+            link.className = 'btn';
+            link.textContent = 'Admin';
+            authBtn.appendChild(link);
+          }
+        } else {
+          authBtn.innerHTML = `<a href="login.html" class="btn">Connexion</a>`;
+        }
+      });
+
+      window.logout = async () => {
+        await signOut(auth);
+        location.href = 'index.html';
+      };
+    </script>
+  </body>
 </html>

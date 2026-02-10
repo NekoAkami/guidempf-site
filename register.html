@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>S'inscrire — Metropolice</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+      .auth-container{max-width:400px;margin:4rem auto;background:var(--bg-alt);border:2px solid var(--accent);border-radius:8px;padding:2rem}
+      .auth-container h1{text-align:center;color:var(--accent);margin-top:0;text-shadow:0 0 10px var(--accent)}
+      .form-group{margin:1.5rem 0}
+      .auth-container label{display:block;margin-bottom:.5rem;color:var(--accent);font-weight:bold}
+      .auth-container input{width:100%;padding:.6rem;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:4px;font-family:inherit}
+      .auth-container input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 8px rgba(0,212,255,.2)}
+      .auth-container .btn{width:100%;margin-top:1rem}
+      .link-group{text-align:center;margin-top:1rem}
+      .link-group a{color:var(--accent);text-decoration:none}
+      .link-group a:hover{text-decoration:underline}
+      .message{padding:.8rem;border-radius:4px;margin:1rem 0;text-align:center;font-weight:bold}
+      .message.error{background:rgba(255,107,53,.1);border:1px solid var(--warning);color:var(--warning)}
+      .message.success{background:rgba(0,255,136,.1);border:1px solid var(--success);color:var(--success)}
+      .hint{color:var(--muted);font-size:.85rem;margin-top:.3rem}
+    </style>
+  </head>
+  <body style="display:flex;flex-direction:column;min-height:100vh">
+    <header class="site-header">
+      <div class="container">
+        <h1 class="logo">METROPOLICE FORCE</h1>
+        <nav style="text-align:right">
+          <a href="index.html" style="color:var(--muted);text-decoration:none">← Retour</a>
+        </nav>
+      </div>
+    </header>
+
+    <main style="flex:1">
+      <div class="auth-container">
+        <h1>S'inscrire</h1>
+        <form id="registerForm">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          <div class="form-group">
+            <label for="matricule">Matricule (3 chiffres)</label>
+            <input type="text" id="matricule" name="matricule" pattern="\d{3}" maxlength="3" required>
+            <div class="hint">Exemple: 123, 456, 789</div>
+          </div>
+          <div class="form-group">
+            <label for="password">Mot de passe (min 8)</label>
+            <input type="password" id="password" name="password" minlength="8" required>
+          </div>
+          <button type="submit" class="btn">S'inscrire</button>
+        </form>
+        <div id="message"></div>
+        <div class="link-group">
+          Déjà inscrit ? <a href="login.html">Se connecter</a>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">© 2026 — Metropolice Force</div>
+    </footer>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+      import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+      import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyDPs4x2EE1pyeQTC_V-Ze5uyZ8Rs2N8qF4",
+        authDomain: "guidempf.firebaseapp.com",
+        projectId: "guidempf",
+        storageBucket: "guidempf.firebasestorage.app",
+        messagingSenderId: "806309770965",
+        appId: "1:806309770965:web:3621f58bfb252446c1945c"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
+
+      const form = document.getElementById('registerForm');
+      const msg = document.getElementById('message');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        msg.textContent = '';
+        const fd = new FormData(form);
+        const email = fd.get('email');
+        const matricule = fd.get('matricule');
+        const password = fd.get('password');
+
+        if (!/^\d{3}$/.test(matricule)) {
+          msg.className = 'message error';
+          msg.textContent = 'Matricule invalide (3 chiffres requis)';
+          return;
+        }
+        try {
+          const userCred = await createUserWithEmailAndPassword(auth, email, password);
+          await setDoc(doc(db, 'users', userCred.user.uid), {
+            email,
+            matricule,
+            is_admin: false,
+            approved: false,
+            status: 'PENDING',
+            created_at: new Date().toISOString()
+          });
+          msg.className = 'message success';
+          msg.textContent = 'Inscription enregistrée — redirection...';
+          setTimeout(() => location.href = 'pending.html', 1500);
+        } catch (err) {
+          msg.className = 'message error';
+          msg.textContent = err.message || 'Erreur';
+        }
+      });
+    </script>
+  </body>
+</html>
