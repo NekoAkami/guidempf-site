@@ -410,8 +410,8 @@
       // ========== ACCRÉDITATION ==========
       function getAccreditation(rang) {
         if (rang === 'RCT') return 'Recrue';
-        if (['.05', '.04', '.03'].includes(rang)) return 'MPF';
-        if (['.02', '.01', 'DvL'].includes(rang)) return 'MPEF';
+        if (['.05', '.04', '.03', 'STB'].includes(rang)) return 'MPF';
+        if (['.02', '.01', 'DvL', 'STBE', 'CABAL'].includes(rang)) return 'MPEF';
         if (['Ofc', 'Cmd'].includes(rang)) return 'HautGradé';
         return '';
       }

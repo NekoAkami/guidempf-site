@@ -88,7 +88,7 @@ export async function updateAuthButton() {
           // Enrichir avec les données d'unité (rang + division + accréditation)
           let gradeMatDiv = matricule;
           let accredLine = '';
-          const _accredMap = { 'RCT': 'Recrue', '.05': 'MPF', '.04': 'MPF', '.03': 'MPF', '.02': 'MPEF', '.01': 'MPEF', 'DvL': 'MPEF', 'Ofc': 'HautGradé', 'Cmd': 'HautGradé' };
+          const _accredMap = { 'RCT': 'Recrue', '.05': 'MPF', '.04': 'MPF', '.03': 'MPF', 'STB': 'MPF', '.02': 'MPEF', '.01': 'MPEF', 'DvL': 'MPEF', 'STBE': 'MPEF', 'CABAL': 'MPEF', 'Ofc': 'HautGradé', 'Cmd': 'HautGradé' };
           const _formateurLabel = (acc) => (acc === 'MPF' || acc === 'Recrue') ? 'Unité Formatrice MPF' : (acc === 'MPEF' || acc === 'HautGradé') ? 'Unité Formatrice MPEF' : '';
           try {
             const res = await fetch('https://raw.githubusercontent.com/NekoAkami/guidempf-site/main/data/units.json');
