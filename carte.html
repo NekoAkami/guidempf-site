@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carte de Cité 17 - MPF Documentation</title>
+    <link rel="stylesheet" href="assets/css/main-style.css">
+    <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/global-nav.css">
+    <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
+    <link rel="stylesheet" href="assets/css/city-map.css">
+</head>
+<body>
+    <!-- Scanline overlay -->
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <div>
+                        <h1 class="logo">MPF</h1>
+                        <p class="logo-subtitle">Metropolice Force Documentation</p>
+                    </div>
+                </div>
+                <div id="authBtn"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;">
+                <div class="combine-header">
+                    <h2 class="glitch-text" data-text="CARTE OPERATIONNELLE - CITE 17">CARTE OPERATIONNELLE - CITE 17</h2>
+                    <span class="header-code">GEO // CARTOGRAPHIE TACTIQUE</span>
+                </div>
+
+                <div style="text-align: center; margin: 1.5rem 0; padding: 1rem; background: rgba(0, 170, 255, 0.02); border: 1px solid rgba(0, 170, 255, 0.08);">
+                    <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7;">
+                        Carte tactique de Cité 17 reproduite fidèlement. Chaque secteur est codé par couleur selon sa fonction. La légende détaillée est affichée à droite de la carte.
+                    </p>
+                </div>
+
+                <!-- Carte statique (fidèle à la référence) -->
+                <div class="city-map-container">
+                    <svg class="city-map-svg" viewBox="0 0 1200 650" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="0" y="0" width="1200" height="650" fill="#e6e6e6"/>
+
+                        <!-- ====== ZONES (layout fidèle à unnamed.jpg) ====== -->
+                        <!-- GARE (grand bloc à gauche) -->
+                        <rect x="60" y="150" width="180" height="330" fill="#c9c9c9" stroke="#2b2b2b" stroke-width="2"/>
+                        <text class="map-zone-label" x="150" y="320" text-anchor="middle" fill="#3a3a3a" font-size="18">GARE</text>
+
+                        <!-- Connexion gare -> centre -->
+                        <rect x="240" y="295" width="70" height="50" fill="#c9c9c9" stroke="#2b2b2b" stroke-width="2"/>
+
+                        <!-- PARC (haut gauche) -->
+                        <rect x="250" y="170" width="70" height="70" fill="#42c15f" stroke="#2b2b2b" stroke-width="2"/>
+                        <text class="map-zone-label" x="285" y="210" text-anchor="middle" fill="#2b2b2b" font-size="9">Parc</text>
+
+                        <!-- CCH 4 (haut gauche) -->
+                        <rect x="330" y="165" width="55" height="35" fill="#b8875a" stroke="#2b2b2b" stroke-width="2"/>
+                        <text class="map-zone-label" x="358" y="188" text-anchor="middle" fill="#2b2b2b" font-size="9">CCH 4</text>
+
+                        <!-- CCH Vort (haut centre-gauche) -->
+                        <rect x="395" y="145" width="65" height="35" fill="#a86b3f" stroke="#2b2b2b" stroke-width="2"/>
+                        <text class="map-zone-label" x="427" y="168" text-anchor="middle" fill="#2b2b2b" font-size="9">CCH Vort</text>
+
+                        <!-- DISTRICT 3 (haut-centre) -->
+                        <rect x="335" y="200" width="165" height="70" fill="#ffb1d8" stroke="#2b2b2b" stroke-width="2"/>
+                        <text class="map-zone-label" x="418" y="242" text-anchor="middle" fill="#2b2b2b" font-size="11">DISTRICT 3</text>
+
+                        <!-- MINE (sous district 3) -->
+                        <rect x="365" y="250" width="60" height="40" fill="#d1762b" stroke="#2b2b2b" stroke-width="2"/>
+                        <text class="map-zone-label" x="395" y="275" text-anchor="middle" fill="#2b2b2b" font-size="9">MINE</text>
+
+                        <!-- LIVRE (sous district 3) -->
+                        <rect x="435" y="245" width="60" height="35" fill="#ffc13d" stroke="#2b2b2b" stroke-width="2"/>
+                        <text class="map-zone-label" x="465" y="268" text-anchor="middle" fill="#2b2b2b" font-size="9">LIVRE</text>
+
+                        <!-- EPICERIE (haut centre) -->
+                        <rect x="505" y="180" width="60" height="30" fill="#ffe600" stroke="#2b2b2b" stroke-width="2"/>
+                        <text class="map-zone-label" x="535" y="200" text-anchor="middle" fill="#2b2b2b" font-size="9">EPICERIE</text>
+
+                        <!-- CCH 1 (au-dessus plaza) -->
+                        <rect x="380" y="285" width="70" height="60" fill="#b8875a" stroke="#2b2b2b" stroke-width="2"/>
+                        <text class="map-zone-label" x="415" y="320" text-anchor="middle" fill="#2b2b2b" font-size="10">CCH1</text>
+
+                        <!-- DISTRICT 1 (gauche-centre) -->
+                        <rect x="310" y="270" width="140" height="120" fill="#ff4ddb" stroke="#2b2b2b" stroke-width="2"/>
+                        <text class="map-zone-label" x="380" y="335" text-anchor="middle" fill="#2b2b2b" font-size="12">DISTRICT 1</text>
+
+                        <!-- DISTRICT 2 (bas-centre) -->
+                        <rect x="300" y="400" width="210" height="110" fill="#9b5bd4" stroke="#2b2b2b" stroke-width="2"/>
+                        <text class="map-zone-label" x="405" y="460" text-anchor="middle" fill="#2b2b2b" font-size="12">DISTRICT 2</text>
+
+                        <!-- DISTILLERIE (dans district 2) -->
+                        <rect x="330" y="440" width="90" height="35" fill="#f28b35" stroke="#2b2b2b" stroke-width="2"/>
+                        <text class="map-zone-label" x="375" y="463" text-anchor="middle" fill="#2b2b2b" font-size="9">DISTILLERIE</text>
+
+                        <!-- HOPITAL (bas gauche) -->
+                        <rect x="350" y="360" width="60" height="30" fill="#ffd54a" stroke="#2b2b2b" stroke-width="2"/>
+                        <text class="map-zone-label" x="380" y="380" text-anchor="middle" fill="#2b2b2b" font-size="9">HOPITAL</text>
+
+                        <!-- QG CWU (bas centre) -->
+                        <rect x="420" y="350" width="85" height="45" fill="#ffe600" stroke="#2b2b2b" stroke-width="2"/>
+                        <text class="map-zone-label" x="462" y="378" text-anchor="middle" fill="#2b2b2b" font-size="10">QG CWU</text>
+
+                        <!-- PLAZA (grand bleu centre, forme en L) -->
+                        <path d="M470 210 L690 210 L690 380 L470 380 L470 320 L430 320 L430 260 L470 260 Z" fill="#1aa6ff" stroke="#2b2b2b" stroke-width="2"/>
+                        <text class="map-zone-label" x="575" y="310" text-anchor="middle" fill="#093c5c" font-size="18">PLAZA</text>
+                        <circle cx="635" cy="330" r="12" fill="#f0f0f0" stroke="#2b2b2b" stroke-width="2"/>
+
+                        <!-- RATION (petit orange haut-centre) -->
+                        <rect x="645" y="190" width="60" height="28" fill="#f28b35" stroke="#2b2b2b" stroke-width="2"/>
+                        <text class="map-zone-label" x="675" y="208" text-anchor="middle" fill="#2b2b2b" font-size="9">RATION</text>
+
+                        <!-- NEXUS (rouge centre-droit) -->
+                        <rect x="700" y="240" width="60" height="150" fill="#ff2b2b" stroke="#2b2b2b" stroke-width="2"/>
+                        <text class="map-zone-label" x="730" y="318" text-anchor="middle" fill="#2b2b2b" font-size="11">NEXUS</text>
+
+                        <!-- OTA (rouge bas-centre) -->
+                        <rect x="520" y="365" width="80" height="60" fill="#c9493a" stroke="#2b2b2b" stroke-width="2"/>
+                        <text class="map-zone-label" x="560" y="400" text-anchor="middle" fill="#2b2b2b" font-size="11">OTA</text>
+
+                        <!-- BASSE VILLE (grande zone violette droite) -->
+                        <rect x="760" y="215" width="175" height="255" fill="#8a3ccf" stroke="#2b2b2b" stroke-width="2"/>
+                        <text class="map-zone-label" x="848" y="340" text-anchor="middle" fill="#2b2b2b" font-size="11">BASSE VILLE</text>
+
+                        <!-- CCH 2 (haut droite) -->
+                        <rect x="825" y="165" width="95" height="45" fill="#b8875a" stroke="#2b2b2b" stroke-width="2"/>
+                        <text class="map-zone-label" x="872" y="193" text-anchor="middle" fill="#2b2b2b" font-size="10">CCH 2</text>
+
+                        <!-- DECHETERIE (droite centre) -->
+                        <rect x="840" y="280" width="105" height="55" fill="#f28b35" stroke="#2b2b2b" stroke-width="2"/>
+                        <text class="map-zone-label" x="892" y="312" text-anchor="middle" fill="#2b2b2b" font-size="9">DECHETERIE</text>
+
+                        <!-- DISTRICT 4 (droite haut, cluster) -->
+                        <g fill="#8a3ccf" stroke="#2b2b2b" stroke-width="2">
+                            <rect x="945" y="230" width="70" height="55"/>
+                            <rect x="1015" y="245" width="60" height="40"/>
+                            <rect x="990" y="290" width="70" height="45"/>
+                            <rect x="1060" y="295" width="70" height="40"/>
+                            <rect x="960" y="335" width="90" height="45"/>
+                            <rect x="1050" y="345" width="70" height="45"/>
+                        </g>
+                        <text class="map-zone-label" x="1010" y="270" text-anchor="middle" fill="#2b2b2b" font-size="10">DISTRICT 4</text>
+
+                        <!-- Buildings divers (gris clair) -->
+                        <g fill="#bdbdbd" stroke="#2b2b2b" stroke-width="2">
+                            <rect x="610" y="220" width="40" height="45"/>
+                            <rect x="580" y="260" width="45" height="40"/>
+                            <rect x="640" y="260" width="45" height="40"/>
+                            <rect x="920" y="250" width="20" height="30"/>
+                            <rect x="930" y="300" width="30" height="30"/>
+                        </g>
+
+                        <!-- ZONE INTERDITE (grand rouge bas droite) -->
+                        <rect x="760" y="470" width="330" height="150" fill="#c2263e" stroke="#2b2b2b" stroke-width="2"/>
+                        <text class="map-zone-label" x="925" y="555" text-anchor="middle" fill="#2b2b2b" font-size="14">ZONE INTERDITE</text>
+
+                        <!-- CCH 3 (bas droite) -->
+                        <rect x="820" y="495" width="70" height="50" fill="#b8875a" stroke="#2b2b2b" stroke-width="2"/>
+                        <text class="map-zone-label" x="855" y="525" text-anchor="middle" fill="#2b2b2b" font-size="10">CCH 3</text>
+
+                        <!-- ====== LEGEND (a droite) ====== -->
+                        <g transform="translate(1030, 60)">
+                            <rect x="0" y="0" width="150" height="540" fill="#f2f2f2" stroke="#2b2b2b" stroke-width="2"/>
+                            <g transform="translate(12, 12)" font-family="Share Tech Mono, monospace">
+                                <g transform="translate(0, 0)">
+                                    <rect width="18" height="18" fill="#1aa6ff" stroke="#2b2b2b" stroke-width="1"/>
+                                    <text x="26" y="14" font-size="11" fill="#2b2b2b">PLAZA</text>
+                                </g>
+                                <g transform="translate(0, 24)">
+                                    <rect width="18" height="18" fill="#ff4ddb" stroke="#2b2b2b" stroke-width="1"/>
+                                    <text x="26" y="14" font-size="11" fill="#2b2b2b">DISTRICT 1</text>
+                                </g>
+                                <g transform="translate(0, 48)">
+                                    <rect width="18" height="18" fill="#9b5bd4" stroke="#2b2b2b" stroke-width="1"/>
+                                    <text x="26" y="14" font-size="11" fill="#2b2b2b">DISTRICT 2</text>
+                                </g>
+                                <g transform="translate(0, 72)">
+                                    <rect width="18" height="18" fill="#ffb1d8" stroke="#2b2b2b" stroke-width="1"/>
+                                    <text x="26" y="14" font-size="11" fill="#2b2b2b">DISTRICT 3</text>
+                                </g>
+                                <g transform="translate(0, 96)">
+                                    <rect width="18" height="18" fill="#8a3ccf" stroke="#2b2b2b" stroke-width="1"/>
+                                    <text x="26" y="14" font-size="10" fill="#2b2b2b">DISTRICT 4 &amp; BASSE VILLE</text>
+                                </g>
+                                <g transform="translate(0, 120)">
+                                    <rect width="18" height="18" fill="#ff2b2b" stroke="#2b2b2b" stroke-width="1"/>
+                                    <text x="26" y="14" font-size="11" fill="#2b2b2b">NEXUS</text>
+                                </g>
+                                <g transform="translate(0, 144)">
+                                    <rect width="18" height="18" fill="#c9493a" stroke="#2b2b2b" stroke-width="1"/>
+                                    <text x="26" y="14" font-size="11" fill="#2b2b2b">OTA</text>
+                                </g>
+                                <g transform="translate(0, 168)">
+                                    <rect width="18" height="18" fill="#c2263e" stroke="#2b2b2b" stroke-width="1"/>
+                                    <text x="26" y="14" font-size="11" fill="#2b2b2b">ZONE INTERDITE</text>
+                                </g>
+                                <g transform="translate(0, 192)">
+                                    <rect width="18" height="18" fill="#d1762b" stroke="#2b2b2b" stroke-width="1"/>
+                                    <text x="26" y="14" font-size="11" fill="#2b2b2b">MINE</text>
+                                </g>
+                                <g transform="translate(0, 216)">
+                                    <rect width="18" height="18" fill="#f28b35" stroke="#2b2b2b" stroke-width="1"/>
+                                    <text x="26" y="14" font-size="11" fill="#2b2b2b">DISTILLERIE</text>
+                                </g>
+                                <g transform="translate(0, 240)">
+                                    <rect width="18" height="18" fill="#ffe600" stroke="#2b2b2b" stroke-width="1"/>
+                                    <text x="26" y="14" font-size="11" fill="#2b2b2b">QG CWU</text>
+                                </g>
+                                <g transform="translate(0, 264)">
+                                    <rect width="18" height="18" fill="#b8875a" stroke="#2b2b2b" stroke-width="1"/>
+                                    <text x="26" y="14" font-size="11" fill="#2b2b2b">CCH 1</text>
+                                </g>
+                                <g transform="translate(0, 288)">
+                                    <rect width="18" height="18" fill="#b8875a" stroke="#2b2b2b" stroke-width="1"/>
+                                    <text x="26" y="14" font-size="11" fill="#2b2b2b">CCH 2</text>
+                                </g>
+                                <g transform="translate(0, 312)">
+                                    <rect width="18" height="18" fill="#b8875a" stroke="#2b2b2b" stroke-width="1"/>
+                                    <text x="26" y="14" font-size="11" fill="#2b2b2b">CCH 3</text>
+                                </g>
+                                <g transform="translate(0, 336)">
+                                    <rect width="18" height="18" fill="#b8875a" stroke="#2b2b2b" stroke-width="1"/>
+                                    <text x="26" y="14" font-size="11" fill="#2b2b2b">CCH 4</text>
+                                </g>
+                                <g transform="translate(0, 360)">
+                                    <rect width="18" height="18" fill="#a86b3f" stroke="#2b2b2b" stroke-width="1"/>
+                                    <text x="26" y="14" font-size="11" fill="#2b2b2b">CCH Vort</text>
+                                </g>
+                                <g transform="translate(0, 384)">
+                                    <rect width="18" height="18" fill="#42c15f" stroke="#2b2b2b" stroke-width="1"/>
+                                    <text x="26" y="14" font-size="11" fill="#2b2b2b">Parc</text>
+                                </g>
+                                <g transform="translate(0, 408)">
+                                    <rect width="18" height="18" fill="#c9c9c9" stroke="#2b2b2b" stroke-width="1"/>
+                                    <text x="26" y="14" font-size="11" fill="#2b2b2b">GARE</text>
+                                </g>
+                                <g transform="translate(0, 432)">
+                                    <rect width="18" height="18" fill="#bdbdbd" stroke="#2b2b2b" stroke-width="1"/>
+                                    <text x="26" y="14" font-size="10" fill="#2b2b2b">Various Unmarked Buildings</text>
+                                </g>
+                            </g>
+                        </g>
+
+                        <!-- Titre carte (bas droite) -->
+                        <text x="900" y="610" font-size="22" font-family="Share Tech Mono, monospace" fill="#2b2b2b">CARTE DE</text>
+                        <text x="900" y="635" font-size="22" font-family="Share Tech Mono, monospace" fill="#2b2b2b">CITE 17</text>
+                    </svg>
+                </div>
+
+                <!-- Secteurs principaux -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1.5rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>SECTEURS PRINCIPAUX</h2>
+                        <span class="header-code">ZONES D'OPERATION</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; padding: 0.5rem 0;">
+                        <div style="padding: 0.8rem; border: 1px solid rgba(0, 170, 255, 0.15); border-left: 3px solid var(--accent-cyan);">
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; color: var(--accent-cyan); margin-bottom: 0.3rem;">NEXUS — QG MPF</div>
+                            <div style="color: var(--text-primary); font-size: 0.9rem; margin-bottom: 0.3rem;">Centre de Commandement</div>
+                            <div style="color: var(--text-secondary); font-size: 0.8rem;">Cellules de detention, armurerie, salles de formation. Acces restreint au personnel MPF uniquement.</div>
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--accent-red); margin-top: 0.5rem;">SECURITE : MAXIMALE</div>
+                        </div>
+                        <div style="padding: 0.8rem; border: 1px solid rgba(0, 170, 255, 0.15); border-left: 3px solid #00aaff;">
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; color: #00aaff; margin-bottom: 0.3rem;">PLAZA — PLACE CENTRALE</div>
+                            <div style="color: var(--text-primary); font-size: 0.9rem; margin-bottom: 0.3rem;">Zone de Rassemblement</div>
+                            <div style="color: var(--text-secondary); font-size: 0.8rem;">Point de distribution des rations. Ecran de diffusion Combine. Forte frequentation civile.</div>
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: #ffcc00; margin-top: 0.5rem;">SECURITE : SURVEILLANCE CONSTANTE</div>
+                        </div>
+                        <div style="padding: 0.8rem; border: 1px solid rgba(180, 50, 150, 0.3); border-left: 3px solid #cc55aa;">
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; color: #cc55aa; margin-bottom: 0.3rem;">DISTRICTS 1-4 — BLOCS RESIDENTIELS</div>
+                            <div style="color: var(--text-primary); font-size: 0.9rem; margin-bottom: 0.3rem;">Zones Residentielles</div>
+                            <div style="color: var(--text-secondary); font-size: 0.8rem;">Blocs d'appartements civils. Couvre-feu applique. Patrouilles regulieres. Points d'acces controles.</div>
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: #ffcc00; margin-top: 0.5rem;">SECURITE : PATROUILLES REQUISES</div>
+                        </div>
+                        <div style="padding: 0.8rem; border: 1px solid rgba(100, 50, 160, 0.3); border-left: 3px solid #aa66dd;">
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; color: #aa66dd; margin-bottom: 0.3rem;">BASSE VILLE — ZONE SOUTERRAINE</div>
+                            <div style="color: var(--text-primary); font-size: 0.9rem; margin-bottom: 0.3rem;">Quartier Inferieur</div>
+                            <div style="color: var(--text-secondary); font-size: 0.8rem;">Reseau souterrain. Activite de contrebande et regroupements clandestins. Danger eleve.</div>
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: #ff4444; margin-top: 0.5rem;">SECURITE : ZONE ROUGE — BINOME REQUIS</div>
+                        </div>
+                        <div style="padding: 0.8rem; border: 1px solid rgba(200, 30, 30, 0.3); border-left: 3px solid #ff4444;">
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; color: #ff4444; margin-bottom: 0.3rem;">ZONE INTERDITE — PERIMETRE</div>
+                            <div style="color: var(--text-primary); font-size: 0.9rem; margin-bottom: 0.3rem;">Zone Militarisee</div>
+                            <div style="color: var(--text-secondary); font-size: 0.8rem;">Perimetre exterieur. Acces strictement interdit aux civils. Autorisation OTA obligatoire.</div>
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: #ff4444; margin-top: 0.5rem;">SECURITE : ZONE INTERDITE — AUTORISATION 05+</div>
+                        </div>
+                        <div style="padding: 0.8rem; border: 1px solid rgba(90, 100, 110, 0.3); border-left: 3px solid #b0b8c0;">
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; color: #b0b8c0; margin-bottom: 0.3rem;">GARE — TRANSIT</div>
+                            <div style="color: var(--text-primary); font-size: 0.9rem; margin-bottom: 0.3rem;">Point d'Arrivee</div>
+                            <div style="color: var(--text-secondary); font-size: 0.8rem;">Trains Combine. Controle d'identite obligatoire. Zone de transit a forte frequentation.</div>
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: #ff8800; margin-top: 0.5rem;">SECURITE : ACCES CONTROLE</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Points d'interet -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>POINTS D'INTERET</h2>
+                        <span class="header-code">LOCALISATIONS CLES</span>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid rgba(0, 170, 255, 0.15);">
+                                <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">LIEU</th>
+                                <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">ZONE</th>
+                                <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">DESCRIPTION</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Nexus</td>
+                                <td style="padding: 0.5rem; color: var(--accent-cyan);">Central</td>
+                                <td style="padding: 0.5rem; color: var(--text-secondary);">QG MPF. Commandement, detention, formation. Acces restreint.</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Gare</td>
+                                <td style="padding: 0.5rem; color: #b0b8c0;">Nord-Ouest</td>
+                                <td style="padding: 0.5rem; color: var(--text-secondary);">Arrivee des trains. Controle d'identite obligatoire.</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Hopital</td>
+                                <td style="padding: 0.5rem; color: #e0e0e0;">Sud-Ouest</td>
+                                <td style="padding: 0.5rem; color: var(--text-secondary);">Centre medical civil CWU. Soins basiques uniquement.</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">QG CWU</td>
+                                <td style="padding: 0.5rem; color: #ccaa00;">Sud</td>
+                                <td style="padding: 0.5rem; color: var(--text-secondary);">Administration civile sous controle Combine.</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">OTA</td>
+                                <td style="padding: 0.5rem; color: #ff4444;">Sud</td>
+                                <td style="padding: 0.5rem; color: var(--text-secondary);">Base Overwatch Trans-humaine. Zone militaire, autorisation speciale.</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Epicerie</td>
+                                <td style="padding: 0.5rem; color: #55bbff;">Nord</td>
+                                <td style="padding: 0.5rem; color: var(--text-secondary);">Distribution alimentaire civile. Rations sur presentation du carnet.</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Mine</td>
+                                <td style="padding: 0.5rem; color: #cc9944;">Nord</td>
+                                <td style="padding: 0.5rem; color: var(--text-secondary);">Zone d'extraction CWU. Travail force sous supervision.</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Distillerie</td>
+                                <td style="padding: 0.5rem; color: #dd7733;">Sud-Est</td>
+                                <td style="padding: 0.5rem; color: var(--text-secondary);">Production illicite. Demantelements recurrents.</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Decheterie</td>
+                                <td style="padding: 0.5rem; color: #ccaa44;">Est</td>
+                                <td style="padding: 0.5rem; color: var(--text-secondary);">Cachettes de la resistance. Raids reguliers par la MPF.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/global-nav.js"></script>
+    <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
+</body>
+</html>

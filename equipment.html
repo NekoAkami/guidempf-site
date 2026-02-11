@@ -1,115 +1,202 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Équipement — Metropolice</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-  </head>
-  <body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipement Standard - MPF Documentation</title>
+    <link rel="stylesheet" href="assets/css/main-style.css">
+    <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/global-nav.css">
+    <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
+</head>
+<body>
+    <!-- Scanline overlay -->
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
     <header class="site-header">
-      <div class="container">
-        <h1 class="logo">METROPOLICE FORCE</h1>
-        <nav>
-          <ul class="nav">
-            <li><a href="index.html">Accueil</a></li>
-            <li><a href="about.html">Présentation</a></li>
-            <li><a href="units.html">Unités</a></li>
-            <li><a href="tactics.html">Tactiques</a></li>
-            <li><a href="equipment.html" class="active">Équipement</a></li>
-            <li><a href="contact.html">Contact</a></li>
-            <li id="authBtn"></li>
-          </ul>
-        </nav>
-      </div>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <div>
+                        <h1 class="logo">MPF</h1>
+                        <p class="logo-subtitle">Metropolice Force Documentation</p>
+                    </div>
+                </div>
+                <div id="authBtn"></div>
+            </div>
+        </div>
     </header>
 
-    <main class="container">
-      <h1 style="color:var(--accent)">Équipement Standard</h1>
+    <main>
+        <div class="container">
+            <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;">
+                <div class="combine-header">
+                    <h2>EQUIPEMENT STANDARD</h2>
+                    <span class="header-code">EQP // ARSENAL MPF</span>
+                </div>
 
-      <div class="section">
-        <h2>Armement</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Désignation</th>
-              <th>Type</th>
-              <th>Utilisation</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>AR-2 Assault Rifle</td>
-              <td>Fusil d'assaut</td>
-              <td>Dotation standard pour patrouille</td>
-            </tr>
-            <tr>
-              <td>Pulse Rifle</td>
-              <td>Arme énergétique</td>
-              <td>Combat rapproché, efficacité maximale</td>
-            </tr>
-            <tr>
-              <td>SMG</td>
-              <td>Pistolet-mitrailleur</td>
-              <td>Opérations urbaines rapprochées</td>
-            </tr>
-            <tr>
-              <td>Stunstick</td>
-              <td>Arme non-létale</td>
-              <td>Contrôle de foule, appréhension</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+                <div style="text-align: center; margin: 1.5rem 0; padding: 1rem; background: rgba(0, 170, 255, 0.02); border: 1px solid rgba(0, 170, 255, 0.08);">
+                    <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7;">
+                        Inventaire complet de l'equipement mis a disposition des unites MPF. L'acces a chaque categorie est conditionne par le <strong style="color: var(--accent-cyan);">grade</strong> de l'unite.
+                    </p>
+                </div>
 
-      <div class="section">
-        <h2>Équipement de Protection</h2>
-        <ul>
-          <li><strong>Casque de combat :</strong> Protection crânienne, intégration radio</li>
-          <li><strong>Gilet tactique :</strong> Plaques kevlar, rangements équipement</li>
-          <li><strong>Protections articulaires :</strong> Coudes, genoux, poignets</li>
-          <li><strong>Équipement de vision :</strong> Lunettes thermiques pour missions nocturnes</li>
-        </ul>
-      </div>
+                <!-- Armement -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(255, 68, 68, 0.02); border-color: rgba(255, 68, 68, 0.1);">
+                    <div class="combine-header" style="border-bottom-color: rgba(255, 68, 68, 0.1);">
+                        <h2 style="color: #ff4444;">ARMEMENT</h2>
+                        <span class="header-code">ARMES DE SERVICE</span>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid rgba(255, 68, 68, 0.15);">
+                                <th style="text-align: left; padding: 0.6rem; color: #ff4444; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">ARME</th>
+                                <th style="text-align: left; padding: 0.6rem; color: #ff4444; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">TYPE</th>
+                                <th style="text-align: left; padding: 0.6rem; color: #ff4444; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">GRADE REQUIS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Stunstick</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Melee / Non-letale</td>
+                                <td style="padding: 0.5rem; color: var(--accent-green);">RCT+</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Pistolet USP Match</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Arme de poing</td>
+                                <td style="padding: 0.5rem; color: var(--accent-green);">01+</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">MP7 SMG</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Pistolet-mitrailleur</td>
+                                <td style="padding: 0.5rem; color: var(--accent-cyan);">03+</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">SPAS-12</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Fusil a pompe</td>
+                                <td style="padding: 0.5rem; color: #ff8800;">04+</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Fusil AR2 Overwatch</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Fusil d'assaut</td>
+                                <td style="padding: 0.5rem; color: #ff4444;">05+ / Division</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Crossbow</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Arme de precision</td>
+                                <td style="padding: 0.5rem; color: #ff4444;">Division SWORD</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-      <div class="section">
-        <h2>Véhicules de Patrouille</h2>
-        <ul>
-          <li><strong>APC (Armored Personnel Carrier) :</strong> Transport couvert, autonomie opérationnelle</li>
-          <li><strong>Jeep tactique :</strong> Mobilité, reconnaissance rapide</li>
-          <li><strong>Hélicoptère de soutien :</strong> Reconnaissance aérienne, appui feu</li>
-        </ul>
-      </div>
+                <!-- Protection -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>EQUIPEMENT DE PROTECTION</h2>
+                        <span class="header-code">BLINDAGE</span>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid rgba(0, 170, 255, 0.15);">
+                                <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">EQUIPEMENT</th>
+                                <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">PROTECTION</th>
+                                <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">GRADE REQUIS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Masque a gaz standard</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Protection respiratoire + identification</td>
+                                <td style="padding: 0.5rem; color: var(--accent-green);">RCT+</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Combinaison Metropolice</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Protection balistique legere</td>
+                                <td style="padding: 0.5rem; color: var(--accent-green);">RCT+</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Gilet tactique renforce</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Protection balistique moyenne</td>
+                                <td style="padding: 0.5rem; color: var(--accent-cyan);">03+</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Armure lourde Overwatch</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Protection balistique complete</td>
+                                <td style="padding: 0.5rem; color: #ff4444;">05+ / Elite</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-      <div class="section">
-        <h2>Communication & Tech</h2>
-        <div class="cards">
-          <div class="card">
-            <h3>📡 Radio Tactique</h3>
-            <p>Communication cryptée longue portée entre unités</p>
-          </div>
-          <div class="card">
-            <h3>👁️ Scanner Biométrique</h3>
-            <p>Identification instantanée des civils et suspects</p>
-          </div>
-          <div class="card">
-            <h3>📱 Terminal PDA</h3>
-            <p>Accès base de données et cartographie en temps réel</p>
-          </div>
+                <!-- Communication & Tech -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>COMMUNICATION ET TECHNOLOGIE</h2>
+                        <span class="header-code">TECH</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.8rem; padding: 0.5rem 0;">
+                        <div style="padding: 0.8rem; border: 1px solid rgba(0, 170, 255, 0.1); background: rgba(0, 170, 255, 0.02);">
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan);">RADIO TACTIQUE</div>
+                            <div style="color: var(--text-primary); font-size: 0.9rem; margin-top: 0.3rem;">Frequence 119.8 MHz</div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem;">Communication inter-unites standard</div>
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--accent-green); margin-top: 0.3rem;">RCT+</div>
+                        </div>
+                        <div style="padding: 0.8rem; border: 1px solid rgba(0, 170, 255, 0.1); background: rgba(0, 170, 255, 0.02);">
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan);">SCANNER CID</div>
+                            <div style="color: var(--text-primary); font-size: 0.9rem; margin-top: 0.3rem;">Lecteur d'identification</div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem;">Verification citoyen instantanee</div>
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--accent-green); margin-top: 0.3rem;">01+</div>
+                        </div>
+                        <div style="padding: 0.8rem; border: 1px solid rgba(0, 170, 255, 0.1); background: rgba(0, 170, 255, 0.02);">
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan);">HAUT-PARLEUR</div>
+                            <div style="color: var(--text-primary); font-size: 0.9rem; margin-top: 0.3rem;">Systeme de diffusion</div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem;">Annonces publiques et avertissements</div>
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--accent-cyan); margin-top: 0.3rem;">03+</div>
+                        </div>
+                        <div style="padding: 0.8rem; border: 1px solid rgba(0, 170, 255, 0.1); background: rgba(0, 170, 255, 0.02);">
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan);">TERMINAL DISPATCH</div>
+                            <div style="color: var(--text-primary); font-size: 0.9rem; margin-top: 0.3rem;">Console de commandement</div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem;">Acces complet aux systemes de dispatch</div>
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: #ff8800; margin-top: 0.3rem;">04+</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Equipement tactique -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>EQUIPEMENT TACTIQUE</h2>
+                        <span class="header-code">ACCESSOIRES</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; padding: 0.5rem 0;">
+                        <div style="padding: 0.5rem; border-left: 2px solid var(--accent-cyan);">
+                            <div style="color: var(--text-primary); font-weight: 600; font-size: 0.85rem;">Menottes ZIP</div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem;">Contrainte de suspects. Standard pour toutes les unites.</div>
+                        </div>
+                        <div style="padding: 0.5rem; border-left: 2px solid var(--accent-cyan);">
+                            <div style="color: var(--text-primary); font-weight: 600; font-size: 0.85rem;">Grenade Flash</div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem;">Desorientante. 04+ ou sur autorisation.</div>
+                        </div>
+                        <div style="padding: 0.5rem; border-left: 2px solid var(--accent-cyan);">
+                            <div style="color: var(--text-primary); font-weight: 600; font-size: 0.85rem;">Medikit</div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem;">Soins basiques sur le terrain. Division HELIX specialisee.</div>
+                        </div>
+                        <div style="padding: 0.5rem; border-left: 2px solid var(--accent-cyan);">
+                            <div style="color: var(--text-primary); font-weight: 600; font-size: 0.85rem;">Lampe tactique</div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem;">Eclairage de zone. Fixee sur l'arme ou casque.</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
-      </div>
-
-      <div style="text-align:center;margin:2rem 0">
-        <a href="index.html" class="btn">← Retour Accueil</a>
-      </div>
     </main>
 
-    <footer class="site-footer">
-      <div class="container">© 2026 — Guide Metropolice Force</div>
-    </footer>
-    
-    <script type="module">
-      import { updateAuthButton } from './assets/js/auth.js';
-    </script>
-  </body>
+    <script src="assets/js/global-nav.js"></script>
+    <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
+</body>
 </html>

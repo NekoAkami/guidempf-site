@@ -8,9 +8,13 @@
     <link rel="stylesheet" href="assets/css/combine-terminals.css">
     <link rel="stylesheet" href="assets/css/global-nav.css">
     <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
 </head>
 <body>
-    <!-- Animated Background -->
+    <!-- Scanline overlay -->
+    <div class="scanline-overlay"></div>
+
+    <!-- Combine Terminal Background -->
     <div class="particles-bg"></div>
 
     <!-- Header -->
@@ -19,209 +23,294 @@
             <div class="header-content">
                 <div class="logo-section">
                     <div class="logo-icon">M</div>
-                    <h1 class="logo">MPF</h1>
-                    <p class="logo-subtitle">Metropolice Force Documentation</p>
+                    <div>
+                        <h1 class="logo">MPF</h1>
+                        <p class="logo-subtitle">Metropolice Force Documentation</p>
+                    </div>
                 </div>
-                
                 <div id="authBtn"></div>
             </div>
         </div>
     </header>
 
-    <!-- Navigation globale insérée automatiquement par global-nav.js -->
-                        </li>
-                    </ul>
-                </nav>
-                
-                <div id="authBtn"></div>
-            </div>
-        </div>
-    </header>
+    <!-- Navigation insérée par global-nav.js -->
 
     <!-- Main Content -->
     <main>
         <div class="container">
-            <!-- Hero Section -->
-            <section style="text-align: center; padding: 4rem 0; margin: 3rem 0;">
-                <h1 class="animate-fadeInDown" style="font-family: 'Orbitron', sans-serif; font-size: 3.5rem; font-weight: 900; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 5px;">
-                    METROPOLICE FORCE
-                </h1>
-                <p class="animate-fadeInUp delay-1" style="font-size: 1.4rem; color: var(--text-secondary); margin-bottom: 0.5rem; font-weight: 500; letter-spacing: 2px;">
-                    Documentation Centrale Officielle
-                </p>
-                <p class="animate-fadeInUp delay-2" style="font-family: 'Share Tech Mono', monospace; color: var(--accent-green); font-size: 1.1rem;">
-                    COMBINE OVERWATCH /// CITADEL ACCESS /// CLEARANCE REQUIRED
-                </p>
+            <!-- Hero Section - Combine Terminal Style with Dynamic Visuals -->
+            <section class="combine-terminal-wrapper holo-container hex-grid-bg" style="margin-top: 1.5rem; border-left: 2px solid rgba(0, 170, 255, 0.35); position: relative; overflow: hidden;">
                 
-                <div class="animate-fadeInUp delay-3" style="margin-top: 3rem; display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
-                    <a href="#documentation" style="padding: 1rem 2.5rem; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue)); color: var(--bg-primary); text-decoration: none; font-weight: 700; font-size: 1.1rem; border-radius: 8px; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease; display: inline-block; box-shadow: 0 5px 20px rgba(0, 212, 255, 0.4);">
-                        Accéder aux Docs
-                    </a>
-                    <a href="conscription.html" style="padding: 1rem 2.5rem; background: transparent; color: var(--accent-cyan); text-decoration: none; font-weight: 700; font-size: 1.1rem; border-radius: 8px; text-transform: uppercase; letter-spacing: 1px; border: 2px solid var(--accent-cyan); transition: all 0.3s ease; display: inline-block;">
-                        Conscription
-                    </a>
+                <!-- Particle Canvas Background -->
+                <canvas id="particles-canvas" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;"></canvas>
+
+                <div style="position: relative; z-index: 1;">
+                    <!-- Overwatch Banner SVG -->
+                    <div style="text-align: center; margin-bottom: 1rem;">
+                        <img src="assets/images/overwatch-banner.svg" alt="Combine Overwatch" style="width: 100%; max-width: 400px; height: auto; opacity: 0.6;">
+                    </div>
+
+                    <!-- Main hero with animated logo -->
+                    <div class="hero-visual-grid" style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 2rem; align-items: center; padding: 1.5rem 0;">
+                        
+                        <!-- Left: Radar Scanner -->
+                        <div style="text-align: center;" class="reveal-on-scroll">
+                            <img src="assets/images/radar-scan.svg" alt="Sector Scanner" style="width: 130px; height: 130px; opacity: 0.7;">
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--accent-green); margin-top: 0.5rem; letter-spacing: 1px;">
+                                <span class="status-dot online" style="margin-right: 4px;"></span> SECTOR SCAN ACTIVE
+                            </div>
+                        </div>
+
+                        <!-- Center: Main Title + Animated Combine Logo -->
+                        <div style="text-align: center;">
+                            <div style="margin-bottom: 1.5rem;">
+                                <img src="assets/images/combine-logo-blue.svg" alt="Combine Logo" class="badge-pulse" style="width: 160px; height: 190px;">
+                            </div>
+                            <h1 class="glitch-text flicker" data-text="METROPOLICE FORCE" style="font-family: 'Orbitron', sans-serif; font-size: 2.8rem; font-weight: 900; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 6px; margin-bottom: 0.8rem;">
+                                METROPOLICE FORCE
+                            </h1>
+                            <p style="font-size: 1.1rem; color: var(--text-secondary); font-weight: 500; letter-spacing: 2px; margin-bottom: 0.3rem;">
+                                Documentation Centrale Officielle
+                            </p>
+
+                            <!-- Energy Wave Separator -->
+                            <div class="energy-wave" style="margin: 1rem 0;">
+                                <div class="energy-wave-line"></div>
+                                <div class="energy-wave-line"></div>
+                                <div class="energy-wave-line"></div>
+                            </div>
+
+                            <div style="font-family: 'Share Tech Mono', monospace; color: var(--accent-green); font-size: 0.85rem;">
+                                // CLEARANCE GRANTED // ACCESS LEVEL: STANDARD //
+                            </div>
+
+                            <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                                <a href="#documentation" class="notification-flash" style="padding: 0.7rem 2rem; background: var(--accent-cyan); color: var(--bg-primary); text-decoration: none; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1.5px; transition: background 0.1s ease; display: inline-block; font-family: 'Rajdhani', sans-serif; position: relative; overflow: hidden;">
+                                    ACCEDER AUX DOCS
+                                </a>
+                                <a href="conscription.html" style="padding: 0.7rem 2rem; background: transparent; color: var(--accent-cyan); text-decoration: none; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1.5px; border: 1px solid var(--accent-cyan); transition: background 0.1s ease; display: inline-block; font-family: 'Rajdhani', sans-serif;">
+                                    CONSCRIPTION
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Right: Scanner Eye -->
+                        <div style="text-align: center;" class="reveal-on-scroll">
+                            <img src="assets/images/scanner-eye.svg" alt="Surveillance" style="width: 130px; height: 130px; opacity: 0.7;">
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--accent-cyan); margin-top: 0.5rem; letter-spacing: 1px;">
+                                <span class="status-dot scanning" style="margin-right: 4px;"></span> SURVEILLANCE ACTIVE
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Terminal Typing Effect -->
+                    <div class="typing-terminal" style="margin-top: 1.5rem; max-width: 600px; margin-left: auto; margin-right: auto; font-size: 0.75rem;"
+                         data-lines='["SYSTEM BOOT SEQUENCE INITIATED...", "CONNECTING TO CITADEL NETWORK...", "AUTHENTICATION: VERIFIED", "LOADING MPF DATABASE v3.1...", "ALL SYSTEMS OPERATIONAL"]'
+                         data-speed="35"
+                         data-line-delay="600">
+                    </div>
                 </div>
             </section>
 
             <!-- Quick Access Cards -->
-            <section id="documentation" style="margin: 4rem 0;">
-                <h2 class="animate-fadeInUp" style="font-family: 'Orbitron', sans-serif; font-size: 2.2rem; color: var(--accent-cyan); text-align: center; margin-bottom: 3rem; text-transform: uppercase; letter-spacing: 3px; text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);">
-                    Accès Rapide
-                </h2>
-                
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
-                    <!-- Card 1: Activité -->
-                    <div class="animate-fadeInUp delay-1" style="background: linear-gradient(135deg, rgba(15, 20, 32, 0.95), rgba(20, 25, 37, 0.95)); border: 2px solid rgba(0, 136, 255, 0.4); border-radius: 12px; padding: 2rem; position: relative; overflow: hidden; transition: all 0.4s ease;">
-                        <div style="position: absolute; top: -50%; right: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(0, 136, 255, 0.1) 0%, transparent 70%); opacity: 0; transition: opacity 0.4s ease;"></div>
-                        <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--accent-blue);">📋</div>
-                        <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--accent-blue); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px;">Activité</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">Annonces des travailleurs, distributions de rations, suspensions et infractions sociales.</p>
-                        <a href="worker-announcement.html" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent-blue); text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
-                            Voir les Activités →
-                        </a>
+            <section id="documentation" style="margin: 2rem 0;">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <h2 class="glitch-text" data-text="// ACCES RAPIDE //" style="font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 3px;">
+                        // ACCES RAPIDE //
+                    </h2>
+                    <div style="width: 60px; height: 1px; background: var(--accent-cyan); margin: 0.8rem auto; opacity: 0.4;"></div>
+                    <!-- Signal Bars -->
+                    <div class="signal-bars" style="justify-content: center; margin-top: 0.5rem;">
+                        <div class="signal-bar"></div>
+                        <div class="signal-bar"></div>
+                        <div class="signal-bar"></div>
+                        <div class="signal-bar"></div>
+                        <div class="signal-bar"></div>
                     </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+                    <!-- Card 1: Activité -->
+                    <a href="worker-announcement.html" class="doc-card reveal-on-scroll notification-flash" style="background: rgba(4, 10, 20, 0.95); border: 1px solid rgba(0, 119, 204, 0.2); padding: 1.5rem; text-decoration: none; position: relative; overflow: hidden; transition: border-color 0.1s ease, transform 0.2s ease; display: block;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                            <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 2px; margin: 0;"><span class="status-dot online" style="margin-right: 6px;"></span>ACTIVITE</h3>
+                            <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--text-muted); border: 1px solid rgba(0, 119, 204, 0.2); padding: 0.15rem 0.5rem;">SEC-01</span>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin: 0;">Annonces, distributions de rations, suspensions et infractions sociales.</p>
+                        <div class="combine-progress" style="margin-top: 0.8rem;"><div class="combine-progress-fill" style="width: 85%;"></div></div>
+                    </a>
 
                     <!-- Card 2: Formation -->
-                    <div class="animate-fadeInUp delay-2" style="background: linear-gradient(135deg, rgba(15, 20, 32, 0.95), rgba(20, 25, 37, 0.95)); border: 2px solid rgba(0, 255, 136, 0.4); border-radius: 12px; padding: 2rem; position: relative; overflow: hidden; transition: all 0.4s ease;">
-                        <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--accent-green);">🎓</div>
-                        <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--accent-green); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px;">Formation</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">Cours théoriques RCT, 05+ et 03+. Programmes de formation et évaluation.</p>
-                        <a href="cours-rct.html" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent-green); text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
-                            Accéder aux Cours →
-                        </a>
-                    </div>
+                    <a href="cours-rct.html" class="doc-card reveal-on-scroll notification-flash" style="background: rgba(4, 10, 20, 0.95); border: 1px solid rgba(0, 204, 102, 0.2); padding: 1.5rem; text-decoration: none; position: relative; overflow: hidden; transition: border-color 0.1s ease, transform 0.2s ease; display: block;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                            <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--accent-green); text-transform: uppercase; letter-spacing: 2px; margin: 0;"><span class="status-dot online" style="margin-right: 6px;"></span>FORMATION</h3>
+                            <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--text-muted); border: 1px solid rgba(0, 204, 102, 0.2); padding: 0.15rem 0.5rem;">SEC-02</span>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin: 0;">Cours theoriques RCT, 05+ et 03+. Programmes et evaluations.</p>
+                        <div class="combine-progress" style="margin-top: 0.8rem;"><div class="combine-progress-fill" style="width: 72%;"></div></div>
+                    </a>
 
                     <!-- Card 3: Radio & Communications -->
-                    <div class="animate-fadeInUp delay-3" style="background: linear-gradient(135deg, rgba(15, 20, 32, 0.95), rgba(20, 25, 37, 0.95)); border: 2px solid rgba(255, 215, 0, 0.4); border-radius: 12px; padding: 2rem; position: relative; overflow: hidden; transition: all 0.4s ease;">
-                        <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--accent-yellow);">📻</div>
-                        <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--accent-yellow); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px;">Radio & Mdp</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">Fréquences radio, mots de passe et protocoles de communication.</p>
-                        <a href="radio.html" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent-yellow); text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
-                            Consulter les Fréquences →
-                        </a>
-                    </div>
+                    <a href="radio.html" class="doc-card reveal-on-scroll notification-flash" style="background: rgba(4, 10, 20, 0.95); border: 1px solid rgba(204, 170, 0, 0.2); padding: 1.5rem; text-decoration: none; position: relative; overflow: hidden; transition: border-color 0.1s ease, transform 0.2s ease; display: block;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                            <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--accent-yellow); text-transform: uppercase; letter-spacing: 2px; margin: 0;"><span class="status-dot warning" style="margin-right: 6px;"></span>RADIO & MDP</h3>
+                            <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--text-muted); border: 1px solid rgba(204, 170, 0, 0.2); padding: 0.15rem 0.5rem;">SEC-03</span>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin: 0;">Frequences radio, mots de passe et protocoles de communication.</p>
+                        <div class="combine-progress" style="margin-top: 0.8rem;"><div class="combine-progress-fill" style="width: 90%; background: linear-gradient(90deg, #ccaa00, #cc6600);"></div></div>
+                    </a>
 
                     <!-- Card 4: Loyalisme -->
-                    <div class="animate-fadeInUp delay-4" style="background: linear-gradient(135deg, rgba(15, 20, 32, 0.95), rgba(20, 25, 37, 0.95)); border: 2px solid rgba(139, 92, 246, 0.4); border-radius: 12px; padding: 2rem; position: relative; overflow: hidden; transition: all 0.4s ease;">
-                        <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--accent-purple);">⭐</div>
-                        <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--accent-purple); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px;">Loyalisme</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">Niveaux de loyauté, brassards et privilèges des citoyens.</p>
-                        <a href="loyalisme.html" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent-purple); text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
-                            Explorer le Système →
-                        </a>
-                    </div>
+                    <a href="loyalisme.html" class="doc-card reveal-on-scroll notification-flash" style="background: rgba(4, 10, 20, 0.95); border: 1px solid rgba(102, 68, 170, 0.2); padding: 1.5rem; text-decoration: none; position: relative; overflow: hidden; transition: border-color 0.1s ease, transform 0.2s ease; display: block;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                            <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--accent-purple); text-transform: uppercase; letter-spacing: 2px; margin: 0;"><span class="status-dot scanning" style="margin-right: 6px; background: #6644aa; box-shadow: 0 0 8px rgba(102,68,170,0.6);"></span>LOYALISME</h3>
+                            <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--text-muted); border: 1px solid rgba(102, 68, 170, 0.2); padding: 0.15rem 0.5rem;">SEC-04</span>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin: 0;">Niveaux de loyaute, brassards et privileges des citoyens.</p>
+                        <div class="combine-progress" style="margin-top: 0.8rem;"><div class="combine-progress-fill" style="width: 65%; background: linear-gradient(90deg, #6644aa, #9966cc);"></div></div>
+                    </a>
 
                     <!-- Card 5: Jugement -->
-                    <div class="animate-fadeInUp delay-5" style="background: linear-gradient(135deg, rgba(15, 20, 32, 0.95), rgba(20, 25, 37, 0.95)); border: 2px solid rgba(255, 43, 43, 0.4); border-radius: 12px; padding: 2rem; position: relative; overflow: hidden; transition: all 0.4s ease;">
-                        <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--accent-red);">⚖️</div>
-                        <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--accent-red); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px;">Jugement</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">Verdicts, peines, cycles de re-éducation et récidives.</p>
-                        <a href="jugement.html" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent-red); text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
-                            Voir les Verdicts →
-                        </a>
-                    </div>
+                    <a href="jugement.html" class="doc-card reveal-on-scroll notification-flash" style="background: rgba(4, 10, 20, 0.95); border: 1px solid rgba(204, 34, 34, 0.2); padding: 1.5rem; text-decoration: none; position: relative; overflow: hidden; transition: border-color 0.1s ease, transform 0.2s ease; display: block;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                            <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--accent-red); text-transform: uppercase; letter-spacing: 2px; margin: 0;"><span class="status-dot alert" style="margin-right: 6px;"></span>JUGEMENT</h3>
+                            <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--text-muted); border: 1px solid rgba(204, 34, 34, 0.2); padding: 0.15rem 0.5rem;">SEC-05</span>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin: 0;">Verdicts, peines, cycles de re-education et recidives.</p>
+                        <div class="combine-progress" style="margin-top: 0.8rem;"><div class="combine-progress-fill" style="width: 95%; background: linear-gradient(90deg, #cc2222, #ff4444);"></div></div>
+                    </a>
 
                     <!-- Card 6: Hiérarchie -->
-                    <div class="animate-fadeInUp" style="background: linear-gradient(135deg, rgba(15, 20, 32, 0.95), rgba(20, 25, 37, 0.95)); border: 2px solid rgba(255, 159, 160, 0.4); border-radius: 12px; padding: 2rem; position: relative; overflow: hidden; transition: all 0.4s ease;">
-                        <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--accent-pink);">👑</div>
-                        <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--accent-pink); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px;">Hiérarchie</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">Organigramme complet des rangs et saluts de la MPF.</p>
-                        <a href="hierarchie.html" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent-pink); text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
-                            Consulter l'Organigramme →
-                        </a>
-                    </div>
+                    <a href="hierarchie.html" class="doc-card reveal-on-scroll notification-flash" style="background: rgba(4, 10, 20, 0.95); border: 1px solid rgba(204, 85, 119, 0.2); padding: 1.5rem; text-decoration: none; position: relative; overflow: hidden; transition: border-color 0.1s ease, transform 0.2s ease; display: block;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                            <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--accent-pink); text-transform: uppercase; letter-spacing: 2px; margin: 0;"><span class="status-dot online" style="margin-right: 6px; background: #cc5577; box-shadow: 0 0 8px rgba(204,85,119,0.6);"></span>HIERARCHIE</h3>
+                            <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--text-muted); border: 1px solid rgba(204, 85, 119, 0.2); padding: 0.15rem 0.5rem;">SEC-06</span>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin: 0;">Organigramme complet des rangs et saluts de la MPF.</p>
+                        <div class="combine-progress" style="margin-top: 0.8rem;"><div class="combine-progress-fill" style="width: 78%; background: linear-gradient(90deg, #cc5577, #ff6699);"></div></div>
+                    </a>
 
                     <!-- Card 7: Contrebande -->
-                    <div class="animate-fadeInUp" style="background: linear-gradient(135deg, rgba(15, 20, 32, 0.95), rgba(20, 25, 37, 0.95)); border: 2px solid rgba(255, 107, 53, 0.4); border-radius: 12px; padding: 2rem; position: relative; overflow: hidden; transition: all 0.4s ease;">
-                        <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--accent-orange);">🚫</div>
-                        <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--accent-orange); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px;">Contrebande</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">Niveaux de contrebande et éléments interdits dans la Cité.</p>
-                        <a href="contrebande.html" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent-orange); text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
-                            Voir les Niveaux →
-                        </a>
-                    </div>
+                    <a href="contrebande.html" class="doc-card reveal-on-scroll notification-flash" style="background: rgba(4, 10, 20, 0.95); border: 1px solid rgba(204, 102, 0, 0.2); padding: 1.5rem; text-decoration: none; position: relative; overflow: hidden; transition: border-color 0.1s ease, transform 0.2s ease; display: block;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                            <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--accent-orange); text-transform: uppercase; letter-spacing: 2px; margin: 0;"><span class="status-dot warning" style="margin-right: 6px; background: #cc6600; box-shadow: 0 0 8px rgba(204,102,0,0.6);"></span>CONTREBANDE</h3>
+                            <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--text-muted); border: 1px solid rgba(204, 102, 0, 0.2); padding: 0.15rem 0.5rem;">SEC-07</span>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin: 0;">Niveaux de contrebande et elements interdits dans la Cite.</p>
+                        <div class="combine-progress" style="margin-top: 0.8rem;"><div class="combine-progress-fill" style="width: 60%; background: linear-gradient(90deg, #cc6600, #ff8800);"></div></div>
+                    </a>
 
                     <!-- Card 8: Codex -->
-                    <div class="animate-fadeInUp" style="background: linear-gradient(135deg, rgba(15, 20, 32, 0.95), rgba(20, 25, 37, 0.95)); border: 2px solid rgba(0, 212, 255, 0.4); border-radius: 12px; padding: 2rem; position: relative; overflow: hidden; transition: all 0.4s ease;">
-                        <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--accent-cyan);">📖</div>
-                        <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--accent-cyan); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px;">Codex</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">Codes, lois et documents officiels de la Combine.</p>
-                        <a href="codex.html" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent-cyan); text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
-                            Consulter le Codex →
-                        </a>
-                    </div>
+                    <a href="codex.html" class="doc-card reveal-on-scroll notification-flash" style="background: rgba(4, 10, 20, 0.95); border: 1px solid rgba(0, 170, 255, 0.2); padding: 1.5rem; text-decoration: none; position: relative; overflow: hidden; transition: border-color 0.1s ease, transform 0.2s ease; display: block;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                            <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 2px; margin: 0;"><span class="status-dot scanning" style="margin-right: 6px;"></span>CODEX</h3>
+                            <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--text-muted); border: 1px solid rgba(0, 170, 255, 0.2); padding: 0.15rem 0.5rem;">SEC-08</span>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin: 0;">Codes, lois et documents officiels de la Combine.</p>
+                        <div class="combine-progress" style="margin-top: 0.8rem;"><div class="combine-progress-fill" style="width: 88%;"></div></div>
+                    </a>
 
                     <!-- Card 9: Guide Procédures -->
-                    <div class="animate-fadeInUp" style="background: linear-gradient(135deg, rgba(15, 20, 32, 0.95), rgba(20, 25, 37, 0.95)); border: 2px solid rgba(0, 255, 136, 0.4); border-radius: 12px; padding: 2rem; position: relative; overflow: hidden; transition: all 0.4s ease;">
-                        <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--accent-green);">📝</div>
-                        <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--accent-green); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 2px;">Procédures</h3>
-                        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6;">Guides détaillés pour conscription, tests, incarcération et dispatch.</p>
-                        <a href="procedures-generales.html" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--accent-green); text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
-                            Accéder aux Guides →
-                        </a>
-                    </div>
+                    <a href="procedures-generales.html" class="doc-card reveal-on-scroll notification-flash" style="background: rgba(4, 10, 20, 0.95); border: 1px solid rgba(0, 204, 102, 0.2); padding: 1.5rem; text-decoration: none; position: relative; overflow: hidden; transition: border-color 0.1s ease, transform 0.2s ease; display: block;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                            <h3 style="font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--accent-green); text-transform: uppercase; letter-spacing: 2px; margin: 0;"><span class="status-dot online" style="margin-right: 6px;"></span>PROCEDURES</h3>
+                            <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--text-muted); border: 1px solid rgba(0, 204, 102, 0.2); padding: 0.15rem 0.5rem;">SEC-09</span>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; margin: 0;">Guides detailles pour conscription, tests, incarceration et dispatch.</p>
+                        <div class="combine-progress" style="margin-top: 0.8rem;"><div class="combine-progress-fill" style="width: 80%; background: linear-gradient(90deg, #00cc66, #00ff88);"></div></div>
+                    </a>
                 </div>
             </section>
 
-            <!-- System Status -->
-            <section class="animate-fadeInUp" style="margin: 4rem 0; text-align: center; padding: 2rem; background: rgba(15, 20, 32, 0.6); border: 1px solid rgba(0, 212, 255, 0.2); border-radius: 10px;">
-                <div style="font-family: 'Share Tech Mono', monospace; color: var(--accent-green); margin-bottom: 1rem;">
-                    SYSTEM STATUS: <span style="color: var(--accent-green); animation: pulse 1.5s ease-in-out infinite;">ONLINE</span>
+            <!-- Data Stream Matrix Effect -->
+            <section class="reveal-on-scroll" style="margin: 2rem 0 1rem;">
+                <div class="data-stream" style="height: 100px; border-radius: 0; border-color: rgba(0, 170, 255, 0.1);"></div>
+            </section>
+
+            <!-- Live Statistics -->
+            <section class="reveal-on-scroll" style="margin: 1rem 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;">
+                <div class="holo-container" style="text-align: center; padding: 1.2rem;">
+                    <div style="font-family: 'Orbitron', sans-serif; font-size: 1.8rem; color: var(--accent-cyan); font-weight: 700;" data-counter="2847" data-prefix="" data-suffix="">0</div>
+                    <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; margin-top: 0.3rem;">CITOYENS ACTIFS</div>
+                    <div class="combine-progress" style="margin-top: 0.5rem;"><div class="combine-progress-fill" style="width: 95%;"></div></div>
                 </div>
-                <div style="font-family: 'Share Tech Mono', monospace; color: var(--text-muted); font-size: 0.85rem;">
-                    LAST UPDATE: 2026.02.10 /// CITADEL CENTRAL /// ALL SYSTEMS OPERATIONAL
+                <div class="holo-container" style="text-align: center; padding: 1.2rem;">
+                    <div style="font-family: 'Orbitron', sans-serif; font-size: 1.8rem; color: var(--accent-green); font-weight: 700;" data-counter="156" data-prefix="" data-suffix="">0</div>
+                    <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; margin-top: 0.3rem;">UNITES DEPLOYEES</div>
+                    <div class="combine-progress" style="margin-top: 0.5rem;"><div class="combine-progress-fill" style="width: 78%; background: linear-gradient(90deg, #00cc66, #00ff88);"></div></div>
+                </div>
+                <div class="holo-container" style="text-align: center; padding: 1.2rem;">
+                    <div style="font-family: 'Orbitron', sans-serif; font-size: 1.8rem; color: var(--accent-red); font-weight: 700;" data-counter="23" data-prefix="" data-suffix="">0</div>
+                    <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; margin-top: 0.3rem;">ANTI-CITOYENS</div>
+                    <div class="combine-progress" style="margin-top: 0.5rem;"><div class="combine-progress-fill" style="width: 15%; background: linear-gradient(90deg, #cc2222, #ff4444);"></div></div>
+                </div>
+                <div class="holo-container" style="text-align: center; padding: 1.2rem;">
+                    <div style="font-family: 'Orbitron', sans-serif; font-size: 1.8rem; color: var(--accent-yellow); font-weight: 700;" data-counter="47" data-prefix="" data-suffix="">0</div>
+                    <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; margin-top: 0.3rem;">VERDICTS CYCLE</div>
+                    <div class="combine-progress" style="margin-top: 0.5rem;"><div class="combine-progress-fill" style="width: 47%; background: linear-gradient(90deg, #ccaa00, #ffdd00);"></div></div>
+                </div>
+            </section>
+
+            <!-- Overwatch Alert Banner -->
+            <div class="overwatch-alert reveal-on-scroll" style="margin: 1rem 0;">
+                <div class="alert-icon">!</div>
+                <div>
+                    <div style="font-family: 'Share Tech Mono', monospace; color: #cc2222; font-size: 0.8rem; font-weight: 700;">OVERWATCH DIRECTIVE</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary);">Tous les agents MPF doivent consulter la documentation mise a jour avant le debut de service.</div>
+                </div>
+            </div>
+
+            <!-- System Status with animated elements -->
+            <section style="margin: 1rem 0 1rem; padding: 1rem 1.5rem; background: rgba(4, 10, 20, 0.6); border: 1px solid rgba(0, 170, 255, 0.08);">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="status-dot online"></span>
+                        <span style="font-family: 'Share Tech Mono', monospace; color: var(--accent-green); font-size: 0.8rem;">
+                            SYSTEM STATUS: ONLINE
+                        </span>
+                        <div class="signal-bars" style="margin-left: 0.5rem;">
+                            <div class="signal-bar" style="background: var(--accent-green);"></div>
+                            <div class="signal-bar" style="background: var(--accent-green);"></div>
+                            <div class="signal-bar" style="background: var(--accent-green);"></div>
+                            <div class="signal-bar" style="background: var(--accent-green);"></div>
+                            <div class="signal-bar" style="background: var(--accent-green);"></div>
+                        </div>
+                    </div>
+                    <div class="status-ticker" data-messages='["LAST UPDATE: 2026.02.10 // CITADEL CENTRAL", "ALL SYSTEMS OPERATIONAL // UPTIME: 99.7%", "NETWORK SYNC: COMPLETE // NODE COUNT: 14", "OVERWATCH PROTOCOL: ACTIVE // CLEARANCE: L3"]' style="font-family: 'Share Tech Mono', monospace; color: var(--text-muted); font-size: 0.75rem;">
+                    </div>
                 </div>
             </section>
         </div>
     </main>
 
-    <script type="module" src="assets/js/auth.js"></script>
+    <style>
+        .doc-card:hover {
+            border-color: rgba(0, 170, 255, 0.4) !important;
+        }
+        .doc-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 2px; height: 100%;
+            background: currentColor;
+            opacity: 0.15;
+            transition: opacity 0.1s ease;
+        }
+        .doc-card:hover::before {
+            opacity: 0.5;
+        }
+    </style>
+
     <script>
         // Mobile Menu Toggle
         document.getElementById('mobileMenuToggle')?.addEventListener('click', function() {
             document.getElementById('mainNav')?.classList.toggle('active');
-            this.classList.toggle('active');
-        });
-
-        // Add hover effects to cards
-        document.querySelectorAll('[style*="grid"]>div').forEach((card, index) => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-10px)';
-                this.style.boxShadow = '0 20px 50px rgba(0, 212, 255, 0.3)';
-                const radialgradient = this.querySelector('[style*="radial-gradient"]');
-                if (radialgradient) radialgradient.style.opacity = '1';
-            });
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-                this.style.boxShadow = 'none';
-                const radialgradient = this.querySelector('[style*="radial-gradient"]');
-                if (radialgradient) radialgradient.style.opacity = '0';
-            });
-        });
-
-        // Add hover effects to buttons
-        document.querySelectorAll('a[style*="padding: 1rem"]').forEach(btn => {
-            btn.addEventListener('mouseenter', function() {
-                if (this.style.background.includes('gradient')) {
-                    this.style.transform = 'translateY(-3px)';
-                    this.style.boxShadow = '0 8px 30px rgba(0, 212, 255, 0.6)';
-                } else {
-                    this.style.background = 'rgba(0, 212, 255, 0.1)';
-                }
-            });
-            btn.addEventListener('mouseleave', function() {
-                if (this.style.transform) {
-                    this.style.transform = 'translateY(0)';
-                    this.style.boxShadow = '0 5px 20px rgba(0, 212, 255, 0.4)';
-                } else {
-                    this.style.background = 'transparent';
-                }
-            });
         });
     </script>
-    
+
     <script type="module" src="assets/js/auth.js"></script>
     <script src="assets/js/global-nav.js"></script>
     <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
 </body>
 </html>

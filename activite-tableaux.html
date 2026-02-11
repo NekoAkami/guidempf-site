@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableaux d'Activite - MPF Documentation</title>
+    <link rel="stylesheet" href="assets/css/main-style.css">
+    <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/global-nav.css">
+    <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
+</head>
+<body>
+    <!-- Scanline overlay -->
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <div>
+                        <h1 class="logo">MPF</h1>
+                        <p class="logo-subtitle">Metropolice Force Documentation</p>
+                    </div>
+                </div>
+                <div id="authBtn"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;">
+                <div class="combine-header">
+                    <h2>TABLEAUX D'ACTIVITE</h2>
+                    <span class="header-code">ACT-01 // REGISTRE OPERATIONNEL</span>
+                </div>
+
+                <div style="text-align: center; margin: 1.5rem 0; padding: 1rem; background: rgba(0, 170, 255, 0.02); border: 1px solid rgba(0, 170, 255, 0.08);">
+                    <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7;">
+                        Les tableaux d'activite centralisent le suivi operationnel de chaque unite. Mis a jour par le commandement et les dispatchers (04+).
+                    </p>
+                </div>
+
+                <!-- Tableau des presences -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>REGISTRE DE PRESENCE</h2>
+                        <span class="header-code">MODELE STANDARD</span>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 600px;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid rgba(0, 170, 255, 0.15);">
+                                    <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">DESIGNATION</th>
+                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">LUN</th>
+                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">MAR</th>
+                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">MER</th>
+                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">JEU</th>
+                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">VEN</th>
+                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">SAM</th>
+                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">DIM</th>
+                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">TOTAL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                    <td style="padding: 0.5rem; color: var(--text-primary);">MPF-05.XXX</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green);">P</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green);">P</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">-</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green);">P</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green);">P</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green);">P</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">-</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green); font-weight: 700;">5/7</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                    <td style="padding: 0.5rem; color: var(--text-primary);">MPF-03.XXX</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green);">P</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">-</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green);">P</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">-</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green);">P</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">-</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">-</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green); font-weight: 700;">3/7</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 0.5rem; color: var(--text-primary);">MPF-RCT.XXX</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green);">P</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">-</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">-</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">-</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">-</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">-</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">-</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: #ff4444; font-weight: 700;">1/7</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="margin-top: 0.8rem; font-size: 0.8rem; color: var(--text-muted);">
+                        <span style="color: var(--accent-green); font-weight: 600;">P</span> = Present | <span style="color: var(--text-muted); font-weight: 600;">-</span> = Absent | <span style="color: #ffcc00; font-weight: 600;">A</span> = Absence declaree | <span style="color: #ff4444; font-weight: 600;">S</span> = Suspendu
+                    </div>
+                </div>
+
+                <!-- Tableau verdicts -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>REGISTRE DES VERDICTS</h2>
+                        <span class="header-code">SUIVI HEBDOMADAIRE</span>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 600px;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid rgba(0, 170, 255, 0.15);">
+                                    <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">UNITE</th>
+                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">V1</th>
+                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">V2</th>
+                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">V3</th>
+                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">V4</th>
+                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">V5+</th>
+                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">TOTAL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                    <td style="padding: 0.5rem; color: var(--text-primary);">MPF-05.XXX</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">3</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">1</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">2</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">0</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">0</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green); font-weight: 700;">6</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                    <td style="padding: 0.5rem; color: var(--text-primary);">MPF-03.XXX</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">5</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">2</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">0</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">0</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">0</td>
+                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green); font-weight: 700;">7</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Classement -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>BAREME D'EVALUATION</h2>
+                        <span class="header-code">CRITERES DE PERFORMANCE</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.8rem; padding: 0.5rem 0;">
+                        <div style="padding: 0.8rem; border: 1px solid rgba(0, 255, 100, 0.1); background: rgba(0, 255, 100, 0.02);">
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-green);">EXCELLENT</div>
+                            <div style="color: var(--text-primary); font-size: 0.9rem; margin: 0.3rem 0;">5+ presences / semaine</div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem;">Eligible a promotion</div>
+                        </div>
+                        <div style="padding: 0.8rem; border: 1px solid rgba(0, 170, 255, 0.1); background: rgba(0, 170, 255, 0.02);">
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan);">SATISFAISANT</div>
+                            <div style="color: var(--text-primary); font-size: 0.9rem; margin: 0.3rem 0;">3-4 presences / semaine</div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem;">Standard accepte</div>
+                        </div>
+                        <div style="padding: 0.8rem; border: 1px solid rgba(255, 200, 0, 0.1); background: rgba(255, 200, 0, 0.02);">
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: #ffcc00;">INSUFFISANT</div>
+                            <div style="color: var(--text-primary); font-size: 0.9rem; margin: 0.3rem 0;">1-2 presences / semaine</div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem;">Avertissement</div>
+                        </div>
+                        <div style="padding: 0.8rem; border: 1px solid rgba(255, 68, 68, 0.1); background: rgba(255, 68, 68, 0.02);">
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: #ff4444;">CRITIQUE</div>
+                            <div style="color: var(--text-primary); font-size: 0.9rem; margin: 0.3rem 0;">0 presences / semaine</div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem;">Retrogradation / Amputation</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/global-nav.js"></script>
+    <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
+</body>
+</html>

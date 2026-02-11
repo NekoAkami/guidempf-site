@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chaine de Commandement - MPF Documentation</title>
+    <link rel="stylesheet" href="assets/css/main-style.css">
+    <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/global-nav.css">
+    <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
+</head>
+<body>
+    <!-- Scanline overlay -->
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <div>
+                        <h1 class="logo">MPF</h1>
+                        <p class="logo-subtitle">Metropolice Force Documentation</p>
+                    </div>
+                </div>
+                <div id="authBtn"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;">
+                <div class="combine-header">
+                    <h2>CHAINE DE COMMANDEMENT</h2>
+                    <span class="header-code">GDE-03 // AUTORITE ET DELEGATION</span>
+                </div>
+
+                <div style="text-align: center; margin: 1.5rem 0; padding: 1rem; background: rgba(0, 170, 255, 0.02); border: 1px solid rgba(0, 170, 255, 0.08);">
+                    <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7;">
+                        La chaine de commandement est <strong style="color: var(--accent-cyan);">absolue</strong>. Tout ordre d'un superieur hierarchique doit etre execute sans delai, sauf s'il contrevient aux directives de l'Overwatch.
+                    </p>
+                </div>
+
+                <!-- Principes -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>PRINCIPES FONDAMENTAUX</h2>
+                        <span class="header-code">DOCTRINE</span>
+                    </div>
+                    <div style="padding: 0.5rem 0;">
+                        <div style="display: grid; gap: 0.8rem;">
+                            <div style="padding: 0.8rem; border-left: 2px solid var(--accent-cyan);">
+                                <div style="color: var(--text-primary); font-weight: 600; margin-bottom: 0.3rem;">1. Autorite descendante</div>
+                                <div style="color: var(--text-muted); font-size: 0.85rem;">Les ordres descendent du Commandant vers les recrues. Chaque echelon transmet et fait appliquer les directives du niveau superieur.</div>
+                            </div>
+                            <div style="padding: 0.8rem; border-left: 2px solid var(--accent-cyan);">
+                                <div style="color: var(--text-primary); font-weight: 600; margin-bottom: 0.3rem;">2. Unite de commandement</div>
+                                <div style="color: var(--text-muted); font-size: 0.85rem;">Chaque unite ne repond qu'a un seul superieur direct. En cas de conflit d'ordres, l'ordre du grade le plus eleve prevaut.</div>
+                            </div>
+                            <div style="padding: 0.8rem; border-left: 2px solid var(--accent-cyan);">
+                                <div style="color: var(--text-primary); font-weight: 600; margin-bottom: 0.3rem;">3. Responsabilite hierarchique</div>
+                                <div style="color: var(--text-muted); font-size: 0.85rem;">Un officier est responsable des actions de ses subordonnes. Les fautes des unites terrain engagent le commandement local.</div>
+                            </div>
+                            <div style="padding: 0.8rem; border-left: 2px solid var(--accent-cyan);">
+                                <div style="color: var(--text-primary); font-weight: 600; margin-bottom: 0.3rem;">4. Initiative limitee</div>
+                                <div style="color: var(--text-muted); font-size: 0.85rem;">Les unites de grade inferieur a 04 n'ont pas d'initiative personnelle. Elles executent les ordres ou demandent instruction.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Delegation d'autorite -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>DELEGATION D'AUTORITE</h2>
+                        <span class="header-code">PERMISSIONS PAR GRADE</span>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid rgba(0, 170, 255, 0.15);">
+                                <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">GRADE</th>
+                                <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">AUTORISATIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">CMD (Commandant)</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Autorite totale. Decisions strategiques, promotions, amputation d'unites, contact Overwatch.</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">DvL (Division Leader)</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Gestion de division, propositions de promotion, coordination inter-divisions, V7 autorisation.</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">OfC (Officier en Chef)</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Supervision terrain, formation des recrues, verdicts jusqu'a V5, gestion des patrouilles.</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">05 (Sergent)</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Commandement d'escouade, verdicts jusqu'a V4, acces divisions, inspections.</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">04 (Caporal)</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Dispatch, coordination de patrouille, verdicts jusqu'a V3, test de loyaute, conscription basique.</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">03 (Officier)</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Verdicts V1-V2, incarceration, patrouille autonome, formation des RCT.</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">02 (Soldat)</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Patrouille sous supervision, verdicts V1 uniquement, taches assignees.</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">01 (Garde)</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Patrouille accompagnee, aucune autorite de verdict, execution d'ordres uniquement.</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">RCT (Recrue)</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Aucune autorite. Suit un 03+ en permanence. En formation.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Protocoles de decision -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>PROTOCOLE DE DECISION</h2>
+                        <span class="header-code">PROCESSUS STANDARD</span>
+                    </div>
+                    <div style="padding: 0.5rem 0;">
+                        <ol style="list-style: none; padding: 0; counter-reset: step;">
+                            <li style="padding: 0.6rem; border-bottom: 1px solid rgba(0, 170, 255, 0.06); display: flex; gap: 0.8rem; align-items: flex-start;">
+                                <span style="font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan); font-size: 0.8rem; min-width: 2rem;">01.</span>
+                                <div>
+                                    <div style="color: var(--text-primary); font-weight: 600;">Evaluation de la situation</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem;">Identifier la menace, les ressources disponibles et le perimetre d'intervention.</div>
+                                </div>
+                            </li>
+                            <li style="padding: 0.6rem; border-bottom: 1px solid rgba(0, 170, 255, 0.06); display: flex; gap: 0.8rem; align-items: flex-start;">
+                                <span style="font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan); font-size: 0.8rem; min-width: 2rem;">02.</span>
+                                <div>
+                                    <div style="color: var(--text-primary); font-weight: 600;">Verification d'autorite</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem;">Verifier si l'action envisagee est dans les limites du grade. Sinon, escalader.</div>
+                                </div>
+                            </li>
+                            <li style="padding: 0.6rem; border-bottom: 1px solid rgba(0, 170, 255, 0.06); display: flex; gap: 0.8rem; align-items: flex-start;">
+                                <span style="font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan); font-size: 0.8rem; min-width: 2rem;">03.</span>
+                                <div>
+                                    <div style="color: var(--text-primary); font-weight: 600;">Communication radio</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem;">Informer le dispatch et demander renforts si necessaire.</div>
+                                </div>
+                            </li>
+                            <li style="padding: 0.6rem; display: flex; gap: 0.8rem; align-items: flex-start;">
+                                <span style="font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan); font-size: 0.8rem; min-width: 2rem;">04.</span>
+                                <div>
+                                    <div style="color: var(--text-primary); font-weight: 600;">Execution et rapport</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem;">Executer la decision, puis rediger un rapport si la situation l'exige.</div>
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/global-nav.js"></script>
+    <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
+</body>
+</html>

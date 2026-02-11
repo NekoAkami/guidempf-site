@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dispatch & Haut-parleur - MPF Documentation</title>
+    <link rel="stylesheet" href="assets/css/main-style.css">
+    <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/global-nav.css">
+    <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
+</head>
+<body>
+    <!-- Scanline overlay -->
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <h1 class="logo">MPF</h1>
+                    <p class="logo-subtitle">Metropolice Force Documentation</p>
+                </div>
+                <div id="authBtn"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="combine-terminal-wrapper animate-fadeInUp">
+                <div class="combine-header">
+                    <h2>📻 DISPATCH & HAUT-PARLEUR</h2>
+                    <span class="header-code">PROTOCOLE COMMUNICATION</span>
+                </div>
+
+                <div class="combine-body">
+                    <!-- Intro Dispatch -->
+                    <div style="background: rgba(0, 212, 255, 0.05); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; border-left: 4px solid var(--accent-cyan);">
+                        <h3 style="color: var(--accent-cyan); margin-top: 0; font-size: 1.1rem;">🤖 CENTRALE DE CONTRÔLE (DISPATCH)</h3>
+                        <p style="color: var(--text-secondary); line-height: 1.6;">
+                            La <strong>Centrale</strong> est une Intelligence Artificielle développée par le Cartel pour superviser et assister la Protection Civile. Elle agrège les données des rapports d'Unités, caméras urbaines et systèmes scan environnemental. Toutes les communications transitent par son réseau radio sécurisé.
+                        </p>
+                    </div>
+
+                    <!-- Grille -->
+                    <div class="interactive-grid" style="grid-template-columns: repeat(2, 1fr);">
+                        
+                        <!-- Structure Message Radio -->
+                        <div class="info-card" style="border-color: #32CD32;">
+                            <div class="card-header">
+                                <div class="card-title" style="color: #32CD32;">
+                                    <span class="card-icon">📡</span>
+                                    STRUCTURE MESSAGE
+                                </div>
+                                <div class="card-badge" style="background: #32CD32; color: #000;">7 ÉLÉMENTS</div>
+                            </div>
+                            <div class="card-content">
+                                <ol style="font-size: 0.9rem; line-height: 1.6; padding-left: 1.2rem;">
+                                    <li><strong style="color: #32CD32;">Identification</strong> - Matricule unité</li>
+                                    <li><strong style="color: #32CD32;">Mission</strong> - Type activité</li>
+                                    <li><strong style="color: #32CD32;">Localisation</strong> - Position actuelle</li>
+                                    <li><strong style="color: #32CD32;">Objectif</strong> - But opération</li>
+                                    <li><strong style="color: #32CD32;">Statut</strong> - État situation</li>
+                                    <li><strong style="color: #32CD32;">Commentaire</strong> - Info supplémentaire</li>
+                                    <li><strong style="color: #32CD32;">Fin</strong> - Clôture message</li>
+                                </ol>
+                                <div style="margin-top: 1rem; padding: 0.8rem; background: rgba(50, 205, 50, 0.1); border-radius: 4px; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: #90EE90;">
+                                    <strong>EXEMPLE:</strong><br>
+                                    10-101 10-08 RCT.001 | 10-50 | 10-20 PZ | 10-16 : 10-109 10-14/CnB | 10-5 | Code 100 | 11-40
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Messages Service -->
+                        <div class="info-card" style="border-color: #ffd700;">
+                            <div class="card-header">
+                                <div class="card-title" style="color: #ffd700;">
+                                    <span class="card-icon">🔄</span>
+                                    MESSAGES SERVICE
+                                </div>
+                                <div class="card-badge" style="background: #ffd700; color: #000;">OBLIGATOIRES</div>
+                            </div>
+                            <div class="card-content">
+                                <div style="margin-bottom: 1rem;">
+                                    <strong style="color: #32CD32; font-size: 0.85rem;">✅ CONNEXION (10-13)</strong>
+                                    <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: #90EE90; background: rgba(50, 205, 50, 0.1); padding: 0.5rem; border-radius: 3px; margin-top: 0.3rem;">
+                                        10-08 C17:MPF-RCT.001 | Connecté au 10-64c | 10-60 10-13 | 11-40
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 1rem;">
+                                    <strong style="color: #ffd700; font-size: 0.85rem;">⏸️ PAUSE (10-44t)</strong>
+                                    <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: #90EE90; background: rgba(255, 215, 0, 0.1); padding: 0.5rem; border-radius: 3px; margin-top: 0.3rem;">
+                                        10-08 C17:MPF-RCT.001 | Déconnecté du 10-64c | 10-60 10-44t | 11-40
+                                    </div>
+                                </div>
+                                <div>
+                                    <strong style="color: #ff4500; font-size: 0.85rem;">❌ DÉCONNEXION (10-44)</strong>
+                                    <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: #90EE90; background: rgba(255, 69, 0, 0.1); padding: 0.5rem; border-radius: 3px; margin-top: 0.3rem;">
+                                        10-08 C17:MPF-RCT.001 | Déconnecté du 10-64c | 10-60 10-44 | 11-40
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Création Escouade -->
+                        <div class="info-card" style="border-color: #4287f5;">
+                            <div class="card-header">
+                                <div class="card-title" style="color: #4287f5;">
+                                    <span class="card-icon">👥</span>
+                                    CRÉATION ESCOUADE
+                                </div>
+                                <div class="card-badge" style="background: #4287f5; color: #fff;">UNION X</div>
+                            </div>
+                            <div class="card-content">
+                                <div style="margin-bottom: 1rem;">
+                                    <strong style="color: #4287f5;">MESSAGE RADIO:</strong>
+                                    <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: #90EE90; background: rgba(66, 135, 245, 0.1); padding: 0.8rem; border-radius: 4px; margin-top: 0.5rem;">
+                                        10-101 10-08 X X X | Création d'escouade Union 1 | 11-40
+                                    </div>
+                                </div>
+                                <div style="padding: 0.8rem; background: rgba(66, 135, 245, 0.05); border-radius: 4px; border-left: 3px solid #4287f5;">
+                                    <strong style="color: var(--accent-cyan);">COMMANDE:</strong>
+                                    <div style="font-family: 'Share Tech Mono', monospace; color: #fff; margin-top: 0.3rem;">/ptjoin X</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.3rem;">(X = numéro d'escouade)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Règles Communication -->
+                        <div class="info-card" style="border-color: #ff4500;">
+                            <div class="card-header">
+                                <div class="card-title" style="color: #ff4500;">
+                                    <span class="card-icon">⚠️</span>
+                                    RÈGLES STRICTES
+                                </div>
+                                <div class="card-badge" style="background: #ff4500; color: #fff;">DISCIPLINE</div>
+                            </div>
+                            <div class="card-content">
+                                <ul style="font-size: 0.85rem; line-height: 1.5;">
+                                    <li>Communication <strong>vitale</strong> et obligatoire</li>
+                                    <li>Messages <strong>codifiés</strong> uniquement</li>
+                                    <li>Pauses <strong>exceptionnelles</strong> et limitées</li>
+                                    <li><span class="card-highlight" style="border-color: #ff4500; color: #ff4500;">Interdiction sortie solo</span></li>
+                                    <li>Toujours accompagné d'une <strong>Unité 05+</strong></li>
+                                    <li>Contact radio <strong>constant</strong></li>
+                                    <li>Surveillance continue par <strong>Dispatch</strong></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Lien Codex -->
+                    <div style="margin-top: 2rem; padding: 1.2rem; background: linear-gradient(135deg, rgba(66, 135, 245, 0.1), rgba(50, 205, 50, 0.05)); border-radius: 8px; text-align: center; border: 2px solid #4287f5;">
+                        <div style="font-size: 1.1rem; color: var(--accent-cyan); font-weight: 700; margin-bottom: 0.5rem;">📘 GUIDE COMPLET DES CODES RADIO</div>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Consultez la page <strong>CODEX</strong> pour la liste complète des codes 10-XX et codes d'activité</p>
+                    </div>
+                </div>
+
+                <div class="combine-footer">
+                    [DISPATCH_PROTOCOL_v4.7 - COMMUNICATION_ACTIVE]
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/global-nav.js"></script>
+    <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
+</body>
+</html>

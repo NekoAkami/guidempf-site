@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="assets/css/combine-terminals.css">
     <link rel="stylesheet" href="assets/css/global-nav.css">
     <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
     <style>
         /* Styles spécifiques pour l'organigramme */
         .org-container {
@@ -234,6 +235,8 @@
     </style>
 </head>
 <body>
+    <!-- Scanline overlay -->
+    <div class="scanline-overlay"></div>
     <div class="particles-bg"></div>
 
     <header class="site-header">
@@ -253,13 +256,13 @@
 
     <main>
         <div class="container">
-            <div class="combine-terminal-wrapper animate-fadeInUp">
+            <div class="combine-terminal-wrapper animate-fadeInUp holo-container">
                 <div class="combine-header">
                     <div class="combine-top-bar">
                         <span>UNION://STRUCTURE.ORGANIGRAMME_V3</span>
                         <span class="badge badge-cyan">ACCÈS: PUBLIC</span>
                     </div>
-                    <h2>HIÉRARCHIE METRO POLICE FORCE</h2>
+                    <h2 class="glitch-text" data-text="HIÉRARCHIE METRO POLICE FORCE"><span class="status-dot online" style="margin-right: 8px;"></span> HIÉRARCHIE METRO POLICE FORCE</h2>
                     <div class="dispatch-line">
                         <span>> UNITÉS DE TERRAIN // MATRICE D'AUTORITÉ</span>
                         <span class="combine-cursor"></span>
@@ -384,5 +387,6 @@
     <script type="module" src="assets/js/auth.js"></script>
     <script src="assets/js/global-nav.js"></script>
     <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
 </body>
 </html>

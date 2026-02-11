@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scanner - MPF Documentation</title>
+    <link rel="stylesheet" href="assets/css/main-style.css">
+    <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/global-nav.css">
+    <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
+</head>
+<body>
+    <!-- Scanline overlay -->
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <div>
+                        <h1 class="logo">MPF</h1>
+                        <p class="logo-subtitle">Metropolice Force Documentation</p>
+                    </div>
+                </div>
+                <div id="authBtn"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;">
+                <div class="combine-header">
+                    <h2>DISPOSITIF SCANNER</h2>
+                    <span class="header-code">EQUIPEMENT // IDENTIFICATION CIVILE</span>
+                </div>
+
+                <div style="text-align: center; margin: 1.5rem 0; padding: 1rem; background: rgba(0, 170, 255, 0.02); border: 1px solid rgba(0, 170, 255, 0.08);">
+                    <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7;">
+                        Le <strong style="color: var(--accent-cyan);">scanner</strong> est l'outil d'identification principal de la MPF. Il permet de verifier le CID d'un citoyen, consulter son casier et valider son statut social.
+                    </p>
+                </div>
+
+                <!-- Utilisation -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>UTILISATION DU SCANNER</h2>
+                        <span class="header-code">PROCEDURE STANDARD</span>
+                    </div>
+                    <div style="padding: 0.5rem 0;">
+                        <ol style="list-style: none; padding: 0;">
+                            <li style="padding: 0.6rem; border-bottom: 1px solid rgba(0, 170, 255, 0.06); display: flex; gap: 0.8rem;">
+                                <span style="font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan); min-width: 2rem;">01.</span>
+                                <div>
+                                    <div style="color: var(--text-primary); font-weight: 600;">Ordonner l'arret</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem;">"Citoyen, halte. Controle d'identite. Presentez votre CID."</div>
+                                </div>
+                            </li>
+                            <li style="padding: 0.6rem; border-bottom: 1px solid rgba(0, 170, 255, 0.06); display: flex; gap: 0.8rem;">
+                                <span style="font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan); min-width: 2rem;">02.</span>
+                                <div>
+                                    <div style="color: var(--text-primary); font-weight: 600;">Activer le scanner</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem;">Pointer le dispositif vers le citoyen. Le scan s'effectue automatiquement.</div>
+                                </div>
+                            </li>
+                            <li style="padding: 0.6rem; border-bottom: 1px solid rgba(0, 170, 255, 0.06); display: flex; gap: 0.8rem;">
+                                <span style="font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan); min-width: 2rem;">03.</span>
+                                <div>
+                                    <div style="color: var(--text-primary); font-weight: 600;">Lecture des resultats</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem;">Le scanner affiche : nom, CID, statut de loyaute, verdicts actifs, contrebande detectee.</div>
+                                </div>
+                            </li>
+                            <li style="padding: 0.6rem; display: flex; gap: 0.8rem;">
+                                <span style="font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan); min-width: 2rem;">04.</span>
+                                <div>
+                                    <div style="color: var(--text-primary); font-weight: 600;">Decision</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem;">Selon les resultats : liberation, avertissement verbal, verdict ou incarceration.</div>
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Informations affichees -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 0, 0, 0.3); border-color: rgba(0, 170, 255, 0.2);">
+                    <div class="combine-header">
+                        <h2>ECRAN DE RESULTAT</h2>
+                        <span class="header-code">EXEMPLE DE SCAN</span>
+                    </div>
+                    <div style="padding: 1rem; font-family: 'Share Tech Mono', monospace; font-size: 0.85rem;">
+                        <div style="color: var(--accent-cyan); margin-bottom: 0.3rem;">========= COMBINE SCANNER v2.1 =========</div>
+                        <div style="color: var(--accent-green); margin-bottom: 0.2rem;">SCAN COMPLETE - CID VALIDE</div>
+                        <div style="color: var(--text-muted); margin-bottom: 0.6rem;">----------------------------------------</div>
+                        <div style="color: var(--text-primary); margin-bottom: 0.2rem;">NOM : John Doe</div>
+                        <div style="color: var(--text-primary); margin-bottom: 0.2rem;">CID : #28451</div>
+                        <div style="color: var(--text-primary); margin-bottom: 0.2rem;">STATUT : <span style="color: var(--accent-green);">CITOYEN</span></div>
+                        <div style="color: var(--text-primary); margin-bottom: 0.2rem;">LOYAUTE : <span style="color: var(--accent-cyan);">NIVEAU 2 (45 PL)</span></div>
+                        <div style="color: var(--text-primary); margin-bottom: 0.2rem;">VERDICTS : <span style="color: #ffcc00;">1x V1 (ACTIF)</span></div>
+                        <div style="color: var(--text-primary); margin-bottom: 0.2rem;">CONTREBANDE : <span style="color: var(--accent-green);">NEGATIF</span></div>
+                        <div style="color: var(--text-primary); margin-bottom: 0.2rem;">RESIDENCE : BLOC 14, APT 3B</div>
+                        <div style="color: var(--text-muted); margin-top: 0.6rem;">----------------------------------------</div>
+                        <div style="color: var(--accent-cyan);">=========================================</div>
+                    </div>
+                </div>
+
+                <!-- Interpretatation des resultats -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>INTERPRETATION</h2>
+                        <span class="header-code">GUIDE DE REPONSE</span>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid rgba(0, 170, 255, 0.15);">
+                                <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">RESULTAT</th>
+                                <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">ACTION REQUISE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--accent-green); font-weight: 600;">CID VALIDE - AUCUN VERDICT</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Liberer le citoyen. "Circulation autorisee."</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: #ffcc00; font-weight: 600;">VERDICTS ACTIFS (V1-V3)</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Avertir le citoyen. Surveillance accrue. Consideration de fouille.</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: #ff8800; font-weight: 600;">VERDICTS ACTIFS (V4+)</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Fouille obligatoire. Escorte au Nexus pour evaluation. Informer dispatch.</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: #ff4444; font-weight: 600;">ANTI-CITOYEN DETECTE</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Arrestation immediate. Aucune negociation. Incarceration directe.</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: #ff4444; font-weight: 600;">CID INVALIDE / ABSENT</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Detention pour verification. Possible anti-citoyen ou CID contrefait. V2 minimum.</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.5rem; color: #ff4444; font-weight: 600;">CONTREBANDE DETECTEE</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Saisie immediate. Verdict selon classification CnB. <a href="contrebande.html" style="color: var(--accent-cyan);">Voir table CnB</a>.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/global-nav.js"></script>
+    <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
+</body>
+</html>

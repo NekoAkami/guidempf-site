@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dispatch Administratif - MPF Documentation</title>
+    <link rel="stylesheet" href="assets/css/main-style.css">
+    <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/global-nav.css">
+    <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
+</head>
+<body>
+    <!-- Scanline overlay -->
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <div>
+                        <h1 class="logo">MPF</h1>
+                        <p class="logo-subtitle">Metropolice Force Documentation</p>
+                    </div>
+                </div>
+                <div id="authBtn"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;">
+                <div class="combine-header">
+                    <h2>DISPATCH ADMINISTRATIF</h2>
+                    <span class="header-code">SOP-04 // AUTORISATION REQUISE : 04+</span>
+                </div>
+
+                <div style="text-align: center; margin: 1.5rem 0; padding: 1rem; background: rgba(0, 170, 255, 0.02); border: 1px solid rgba(0, 170, 255, 0.08);">
+                    <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7;">
+                        Le <strong style="color: var(--accent-cyan);">dispatch administratif</strong> gere les transmissions non-tactiques : registres, coordination inter-services, rapports et gestion logistique de la MPF.
+                    </p>
+                </div>
+
+                <!-- Responsabilites du dispatch -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>RESPONSABILITES</h2>
+                        <span class="header-code">TACHES ADMINISTRATIVES</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding: 0.5rem 0;">
+                        <div>
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; color: var(--accent-cyan); margin-bottom: 0.5rem;">GESTION QUOTIDIENNE</div>
+                            <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-muted);">
+                                <li style="padding: 0.3rem 0; border-bottom: 1px solid rgba(0, 170, 255, 0.05);">Mise a jour du registre des unites en service</li>
+                                <li style="padding: 0.3rem 0; border-bottom: 1px solid rgba(0, 170, 255, 0.05);">Enregistrement des verdicts prononces</li>
+                                <li style="padding: 0.3rem 0; border-bottom: 1px solid rgba(0, 170, 255, 0.05);">Suivi des patrouilles actives</li>
+                                <li style="padding: 0.3rem 0;">Archivage des rapports d'incident</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; color: var(--accent-cyan); margin-bottom: 0.5rem;">COORDINATION</div>
+                            <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-muted);">
+                                <li style="padding: 0.3rem 0; border-bottom: 1px solid rgba(0, 170, 255, 0.05);">Relais entre commandement et terrain</li>
+                                <li style="padding: 0.3rem 0; border-bottom: 1px solid rgba(0, 170, 255, 0.05);">Transmission des ordres hierarchiques</li>
+                                <li style="padding: 0.3rem 0; border-bottom: 1px solid rgba(0, 170, 255, 0.05);">Coordination avec la CWU</li>
+                                <li style="padding: 0.3rem 0;">Gestion des demandes d'equipement</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Registres -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>REGISTRES A MAINTENIR</h2>
+                        <span class="header-code">DOCUMENTATION OBLIGATOIRE</span>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid rgba(0, 170, 255, 0.15);">
+                                <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">REGISTRE</th>
+                                <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">CONTENU</th>
+                                <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">FREQUENCE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Log de service</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Unites presentes, heures d'arrivee/depart, zone patrouillee</td>
+                                <td style="padding: 0.5rem; color: var(--accent-green);">Chaque session</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Registre verdicts</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">CID du citoyen, type de verdict, unite responsable, motif</td>
+                                <td style="padding: 0.5rem; color: var(--accent-green);">A chaque verdict</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Log contrebande</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Objet saisi, classification CnB, lieu de decouverte, suspect</td>
+                                <td style="padding: 0.5rem; color: var(--accent-green);">A chaque saisie</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Rapport disciplinaire</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Unite fautive, type de breche, sanction appliquee</td>
+                                <td style="padding: 0.5rem; color: var(--accent-green);">A chaque incident</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Tableau d'activite</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Resume hebdomadaire de l'activite par unite</td>
+                                <td style="padding: 0.5rem; color: var(--accent-green);">Hebdomadaire</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Format radio admin -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>FORMAT RADIO ADMINISTRATIF</h2>
+                        <span class="header-code">MESSAGES TYPES</span>
+                    </div>
+                    <div style="padding: 0.5rem 0; display: grid; gap: 0.8rem;">
+                        <div style="padding: 0.8rem; border: 1px solid rgba(0, 170, 255, 0.1); background: rgba(0, 0, 0, 0.2);">
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan); margin-bottom: 0.3rem;">PRISE DE SERVICE</div>
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; color: var(--accent-green);">"Dispatch, [Designation] 10-8. Zone assignee : [Zone]."</div>
+                        </div>
+                        <div style="padding: 0.8rem; border: 1px solid rgba(0, 170, 255, 0.1); background: rgba(0, 0, 0, 0.2);">
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan); margin-bottom: 0.3rem;">FIN DE SERVICE</div>
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; color: var(--accent-green);">"Dispatch, [Designation] 10-7. Fin de service. Rapport depose."</div>
+                        </div>
+                        <div style="padding: 0.8rem; border: 1px solid rgba(0, 170, 255, 0.1); background: rgba(0, 0, 0, 0.2);">
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan); margin-bottom: 0.3rem;">ANNONCE GENERALE</div>
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; color: var(--accent-green);">"Toutes unites, [Designation]. [Contenu de l'annonce]. Terminee."</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/global-nav.js"></script>
+    <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
+</body>
+</html>

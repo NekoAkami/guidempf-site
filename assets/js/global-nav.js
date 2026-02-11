@@ -1,5 +1,5 @@
 // ========================================
-// NAVIGATION GLOBALE - MPF Documentation
+// NAVIGATION GLOBALE - MPF COMBINE TERMINAL
 // ========================================
 
 class GlobalNavigation {
@@ -14,14 +14,12 @@ class GlobalNavigation {
         this.setupDropdowns();
     }
 
-    // Structure complète du menu
     getMenuStructure() {
         return [
-            { label: 'Accueil', url: 'index.html', icon: '🏠' },
-            { 
-                label: 'Activité', 
-                url: 'activite.html', 
-                icon: '📋',
+            { label: 'ACCUEIL', url: 'index.html' },
+            {
+                label: 'ACTIVITE',
+                url: 'activite.html',
                 dropdown: [
                     { label: 'Tableaux Milice', url: 'activite-tableaux.html' },
                     { label: 'Worker Announcement', url: 'worker-announcement.html' },
@@ -31,72 +29,68 @@ class GlobalNavigation {
                     { label: 'Judgement Waiver', url: 'judgement-waiver.html' }
                 ]
             },
-            { label: 'Radio & Mdp', url: 'radio.html', icon: '📡' },
-            { label: 'Loyalisme', url: 'loyalisme.html', icon: '⭐' },
-            { label: 'Jugement', url: 'jugement.html', icon: '⚖️' },
-            { label: 'Contrebande', url: 'contrebande.html', icon: '📦' },
-            { label: 'Hiérarchie', url: 'hierarchie.html', icon: '👥' },
-            { label: 'Codex', url: 'codex.html', icon: '📜' },
-            { 
-                label: 'Guide', 
-                url: 'guide.html', 
-                icon: '📘',
+            { label: 'RADIO & MDP', url: 'radio.html' },
+            { label: 'LOYALISME', url: 'loyalisme.html' },
+            { label: 'JUGEMENT', url: 'jugement.html' },
+            { label: 'CONTREBANDE', url: 'contrebande.html' },
+            { label: 'HIERARCHIE', url: 'hierarchie.html' },
+            { label: 'CODEX', url: 'codex.html' },
+            {
+                label: 'GUIDE',
+                url: 'guide.html',
                 dropdown: [
+                    { label: 'Divisions MPF', url: 'divisions.html' },
                     { label: 'Dispatch & Haut-parleur', url: 'guide-dispatch.html' },
                     { label: 'Terminologie', url: 'guide-terminologie.html' },
                     { label: 'Respect & Salutations', url: 'guide-respect.html' },
                     { label: 'Code Vestimentaire', url: 'guide-vestimentaire.html' },
                     { label: 'Commandement', url: 'guide-commandement.html' },
-                    { label: 'Divisions', url: 'guide-divisions.html' },
-                    { label: 'Brèches de Protocoles', url: 'guide-breches.html' },
-                    { label: 'Formations Complémentaires', url: 'guide-formations.html' },
+                    { label: 'Breches de Protocoles', url: 'guide-breches.html' },
+                    { label: 'Formations Complementaires', url: 'guide-formations.html' },
                     { label: 'Sociostatus', url: 'guide-sociostatus.html' }
                 ]
             },
-            { 
-                label: 'Cours Théoriques', 
-                url: 'cours.html', 
-                icon: '📗',
+            {
+                label: 'COURS',
+                url: 'cours.html',
                 dropdown: [
                     { label: 'Cours RCT', url: 'cours-rct.html' },
                     { label: 'Cours 05+', url: 'cours-05.html' },
                     { label: 'Cours 03+', url: 'cours-03.html' }
                 ]
             },
-            { 
-                label: 'Procédures Générales', 
-                url: 'procedures.html', 
-                icon: '📕',
+            {
+                label: 'PROCEDURES',
+                url: 'procedures.html',
                 dropdown: [
+                    { label: 'Declarations MPF', url: 'declarations.html' },
+                    { label: 'Test de Loyaute', url: 'test-loyaute.html' },
                     { label: 'Conscription', url: 'procedure-conscription.html' },
-                    { label: 'Test de Loyauté', url: 'procedure-test-loyaute.html' },
-                    { label: 'Incarcération', url: 'procedure-incarceration.html' },
+                    { label: 'Incarceration', url: 'procedure-incarceration.html' },
                     { label: 'Dispatch Administrateur', url: 'procedure-dispatch-admin.html' },
                     { label: 'Code 7 Escouade', url: 'procedure-code7.html' }
                 ]
             },
-            { 
-                label: 'CWU', 
-                url: 'cwu.html', 
-                icon: '🔧',
+            {
+                label: 'CWU',
+                url: 'cwu.html',
                 dropdown: [
-                    { label: 'Procédure CWU-MPF', url: 'cwu-procedure.html' }
+                    { label: 'Procedure CWU-MPF', url: 'cwu-procedure.html' }
                 ]
             },
-            { label: 'Scanner & Central', url: 'scanner.html', icon: '🖥️' },
-            { label: 'Carte Cité 17', url: 'carte.html', icon: '🗺️' },
-            { label: 'Liens Utiles', url: 'liens.html', icon: '🔗' }
+            { label: 'SCANNER', url: 'scanner.html' },
+            { label: 'CARTE', url: 'carte.html' },
+            { label: 'LIENS', url: 'liens.html' }
         ];
     }
 
-    // Créer le HTML de la navigation
     createNavigationHTML() {
         const menuStructure = this.getMenuStructure();
         const navHTML = `
             <nav class="main-nav">
                 <div class="nav-container">
                     <button class="mobile-menu-toggle" onclick="globalNav.toggleMobileMenu()">
-                        ☰ MENU
+                        MENU
                     </button>
                     <ul class="nav-list" id="mainNavList">
                         ${menuStructure.map(item => this.createNavItem(item)).join('')}
@@ -104,24 +98,22 @@ class GlobalNavigation {
                 </div>
             </nav>
         `;
-        
-        // Insérer la navigation après le header
+
         const header = document.querySelector('.site-header');
         if (header) {
             header.insertAdjacentHTML('afterend', navHTML);
         }
     }
 
-    // Créer un item de navigation
     createNavItem(item) {
         const hasDropdown = item.dropdown && item.dropdown.length > 0;
         const dropdownClass = hasDropdown ? 'has-dropdown' : '';
-        
+
         let html = `
             <li class="nav-item">
-                <a href="${item.url}" class="nav-link ${dropdownClass}">${item.icon} ${item.label}</a>
+                <a href="${item.url}" class="nav-link ${dropdownClass}">${item.label}</a>
         `;
-        
+
         if (hasDropdown) {
             html += `
                 <ul class="dropdown-menu">
@@ -133,23 +125,20 @@ class GlobalNavigation {
                 </ul>
             `;
         }
-        
+
         html += '</li>';
         return html;
     }
 
-    // Marquer la page active
     markActivePage() {
         setTimeout(() => {
             const currentPage = window.location.pathname.split('/').pop() || 'index.html';
             const navLinks = document.querySelectorAll('.nav-link, .dropdown-link');
-            
+
             navLinks.forEach(link => {
                 const href = link.getAttribute('href');
                 if (href === currentPage) {
                     link.classList.add('active');
-                    
-                    // Si c'est dans un dropdown, ouvrir le parent en mode mobile
                     const parentItem = link.closest('.nav-item');
                     if (parentItem) {
                         parentItem.classList.add('active-parent');
@@ -159,7 +148,6 @@ class GlobalNavigation {
         }, 100);
     }
 
-    // Menu mobile
     toggleMobileMenu() {
         const navList = document.getElementById('mainNavList');
         if (navList) {
@@ -167,9 +155,7 @@ class GlobalNavigation {
         }
     }
 
-    // Dropdowns mobile
     setupDropdowns() {
-        // Sur mobile, toggle le dropdown au clic
         if (window.innerWidth <= 768) {
             document.querySelectorAll('.nav-link.has-dropdown').forEach(link => {
                 link.addEventListener('click', (e) => {
@@ -181,9 +167,7 @@ class GlobalNavigation {
         }
     }
 
-    // Setup événements mobile
     setupMobileMenu() {
-        // Fermer le menu quand on clique sur un lien
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('dropdown-link')) {
                 const navList = document.getElementById('mainNavList');
@@ -193,7 +177,6 @@ class GlobalNavigation {
             }
         });
 
-        // Réinitialiser au redimensionnement
         window.addEventListener('resize', () => {
             if (window.innerWidth > 768) {
                 const navList = document.getElementById('mainNavList');
@@ -208,7 +191,6 @@ class GlobalNavigation {
     }
 }
 
-// Fonction utilitaire pour créer des sous-onglets (pour les pages avec sous-sections)
 function createSubTabs(tabs, currentPage) {
     const tabsHTML = `
         <div class="sub-tabs">
@@ -223,15 +205,13 @@ function createSubTabs(tabs, currentPage) {
             </ul>
         </div>
     `;
-    
-    // Insérer après la navigation principale
+
     const mainNav = document.querySelector('.main-nav');
     if (mainNav) {
         mainNav.insertAdjacentHTML('afterend', tabsHTML);
     }
 }
 
-// Initialiser la navigation au chargement
 let globalNav;
 document.addEventListener('DOMContentLoaded', () => {
     globalNav = new GlobalNavigation();

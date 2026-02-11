@@ -6,8 +6,13 @@
     <title>Ration Announcement - MPF Documentation</title>
     <link rel="stylesheet" href="assets/css/main-style.css">
     <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/global-nav.css">
+    <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
 </head>
 <body>
+    <!-- Scanline overlay -->
+    <div class="scanline-overlay"></div>
     <div class="particles-bg"></div>
 
     <header class="site-header">
@@ -15,23 +20,11 @@
             <div class="header-content">
                 <div class="logo-section">
                     <div class="logo-icon">M</div>
-                    <h1 class="logo">MPF</h1>
+                    <div>
+                        <h1 class="logo">MPF</h1>
+                        <p class="logo-subtitle">Metropolice Force Documentation</p>
+                    </div>
                 </div>
-                <nav class="main-nav">
-                    <ul class="nav">
-                        <li><a href="index.html">Accueil</a></li>
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle">Activité ▾</a>
-                            <ul class="dropdown-menu">
-                                <li><a href="worker-announcement.html">Worker Announcement</a></li>
-                                <li><a href="ration-announcement.html" class="active">Ration Announcement</a></li>
-                                <li><a href="suspended-rations.html">Suspended Rations</a></li>
-                                <li><a href="social-infraction.html">Social Infraction</a></li>
-                                <li><a href="judgement-waiver.html">Judgement Waiver</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </nav>
                 <div id="authBtn"></div>
             </div>
         </div>
@@ -39,70 +32,110 @@
 
     <main>
         <div class="container">
-            <div class="combine-terminal-wrapper animate-fadeInUp">
+            <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;">
                 <div class="combine-header">
                     <h2>RATION ANNOUNCEMENT</h2>
-                    <span class="header-code badge-green">03+</span>
+                    <span class="header-code">ACT-02 // DISTRIBUTION DE RATIONS // 03+</span>
                 </div>
-                
+
                 <div class="combine-body">
-                    <p>Ce bouton est réservé à l'annonce d'activation des rations.</p>
-                    
-                    <p>Une fois activé, vous devez appliquer <strong>les procédures en vigueur</strong> comme suit :</p>
-                    
-                    <h3>📋 Procédures :</h3>
-                    <ul>
-                        <li>Attendre le <strong>rassemblement des participants</strong> en Plaza.</li>
-                        <li>Faire <strong>appliquer et fouiller tous les participants, sauf les CWU</strong> (sauf si l'organisateur l'exige).</li>
-                        <li>Effectuer un <strong>comptage précis des participants</strong>.</li>
-                        <li>En cas d'<strong>erreur de comptage</strong>, lancer le message : <span class="code-block" style="display: inline;">"Attention : Des absents ou doublons"</span></li>
-                    </ul>
+                    <p style="font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan); font-size: 0.85rem;">&gt; BOUTON DISPATCH : RATION ANNOUNCEMENT</p>
+                    <p style="font-family: 'Share Tech Mono', monospace; color: var(--accent-green); font-size: 0.85rem;">&gt; AUTORISATION REQUISE : 03+</p>
 
-                    <div class="alert-box" style="margin: 2rem 0;">
-                        <h3>⚠️ Important</h3>
-                        <p>Si certains <strong>absents peuvent créer un doute ou parallèle une feuille de la Cité avec</strong> :</p>
-                        <ul>
-                            <li>Si <strong>aucune distribution officielle ne sera organisée</strong> pendant un certain temps.</li>
+                    <div class="info-card" style="margin: 1.5rem 0;">
+                        <div class="card-header">
+                            <span class="card-code">DESC</span>
+                            <h3>DESCRIPTION</h3>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem; line-height: 1.6;">
+                            Le bouton Ration Announcement est utilise pour annoncer l'ouverture d'un <strong style="color: var(--text-primary);">cycle de distribution de rations</strong> aux citoyens. Une fois active, les unites doivent appliquer les procedures standard de distribution.
+                        </p>
+                    </div>
+
+                    <div class="combine-terminal-wrapper" style="margin: 1.5rem 0; background: rgba(0, 170, 255, 0.02);">
+                        <div class="combine-header">
+                            <h2>PROCEDURE DE DISTRIBUTION</h2>
+                            <span class="header-code">ETAPES OBLIGATOIRES</span>
+                        </div>
+                        <ol style="list-style: none; padding: 0;">
+                            <li style="padding: 0.6rem; border-bottom: 1px solid rgba(0, 170, 255, 0.06); display: flex; gap: 0.8rem;">
+                                <span style="font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan); min-width: 2rem; font-weight: 700;">01.</span>
+                                <div>
+                                    <div style="color: var(--text-primary); font-weight: 600;">Rassemblement</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem;">Attendre le rassemblement des citoyens en Plaza. Maintenir l'ordre durant l'attente.</div>
+                                </div>
+                            </li>
+                            <li style="padding: 0.6rem; border-bottom: 1px solid rgba(0, 170, 255, 0.06); display: flex; gap: 0.8rem;">
+                                <span style="font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan); min-width: 2rem; font-weight: 700;">02.</span>
+                                <div>
+                                    <div style="color: var(--text-primary); font-weight: 600;">Fouille et application</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem;">Appliquer et fouiller tous les participants. Les CWU sont exemptes sauf si l'organisateur l'exige.</div>
+                                </div>
+                            </li>
+                            <li style="padding: 0.6rem; border-bottom: 1px solid rgba(0, 170, 255, 0.06); display: flex; gap: 0.8rem;">
+                                <span style="font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan); min-width: 2rem; font-weight: 700;">03.</span>
+                                <div>
+                                    <div style="color: var(--text-primary); font-weight: 600;">Comptage</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem;">Effectuer un comptage precis des participants. En cas d'erreur, signaler au dispatch : "Attention : absents ou doublons detectes".</div>
+                                </div>
+                            </li>
+                            <li style="padding: 0.6rem; border-bottom: 1px solid rgba(0, 170, 255, 0.06); display: flex; gap: 0.8rem;">
+                                <span style="font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan); min-width: 2rem; font-weight: 700;">04.</span>
+                                <div>
+                                    <div style="color: var(--text-primary); font-weight: 600;">Entree par loyaute</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem;">Faire entrer les citoyens dans le Nexus selon leur <a href="loyalisme.html" style="color: var(--accent-cyan);">niveau de loyaute</a>. Les Loyalistes passent en priorite.</div>
+                                </div>
+                            </li>
+                            <li style="padding: 0.6rem; border-bottom: 1px solid rgba(0, 170, 255, 0.06); display: flex; gap: 0.8rem;">
+                                <span style="font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan); min-width: 2rem; font-weight: 700;">05.</span>
+                                <div>
+                                    <div style="color: var(--text-primary); font-weight: 600;">Distribution adaptee</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem;">Les rations sont distribuees en fonction des Points de Loyaute. Plus le rang est eleve, meilleure est la ration.</div>
+                                </div>
+                            </li>
+                            <li style="padding: 0.6rem; display: flex; gap: 0.8rem;">
+                                <span style="font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan); min-width: 2rem; font-weight: 700;">06.</span>
+                                <div>
+                                    <div style="color: var(--text-primary); font-weight: 600;">Securisation complete</div>
+                                    <div style="color: var(--text-muted); font-size: 0.85rem;">Securiser tous les secteurs : Hall, Quartier, Officiers, Armurerie. Les retardataires sont admis apres fouille.</div>
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+
+                    <div class="info-card" style="margin: 1.5rem 0; border-left-color: var(--accent-green);">
+                        <div class="card-header">
+                            <span class="card-code" style="color: var(--accent-green);">INFO</span>
+                            <h3>POINTS CLES</h3>
+                        </div>
+                        <ul style="list-style: none; padding: 0; margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">
+                            <li style="padding: 0.3rem 0; border-bottom: 1px solid rgba(0, 170, 255, 0.05);"><span style="color: var(--accent-green); margin-right: 0.5rem;">+</span>Les Loyalistes entrent en premier dans le Nexus</li>
+                            <li style="padding: 0.3rem 0; border-bottom: 1px solid rgba(0, 170, 255, 0.05);"><span style="color: var(--accent-green); margin-right: 0.5rem;">+</span>Les CWU recoivent une ration adaptee a leurs Points de Loyaute</li>
+                            <li style="padding: 0.3rem 0; border-bottom: 1px solid rgba(0, 170, 255, 0.05);"><span style="color: var(--accent-green); margin-right: 0.5rem;">+</span>Tous les secteurs doivent etre securises pendant la distribution</li>
+                            <li style="padding: 0.3rem 0;"><span style="color: var(--accent-green); margin-right: 0.5rem;">+</span>Les retardataires restent admissibles apres fouille et application</li>
                         </ul>
                     </div>
 
-                    <h3>📊 Distribution des Rations :</h3>
-                    <p>Cette décision vise à <strong>réfléchir les citoyens et à ramener le calme</strong> dans la Cité.</p>
-                    
-                    <p>En résumé : une mesure temporaire, <strong>dissuasive et symbolique</strong> pour rappeler à tous que la coopération assure la stabilité et la survie.</p>
-
-                    <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(0, 255, 136, 0.05); border-left: 4px solid var(--accent-green); border-radius: 6px;">
-                        <h3 style="color: var(--accent-green); margin-bottom: 1rem;">✓ Points Clés :</h3>
-                        <ul>
-                            <li>Faire <strong>entrer les participants dans le Nexus</strong> selon leur <strong>niveau de loyauté</strong> (voir <a href="loyalisme.html" style="color: var(--accent-cyan);">section Loyalisme</a>)</li>
-                            <li>Les CMU reçoivent une ration <strong>adaptée à leurs points de Loyauté</strong>.</li>
-                            <li>Veuillez <strong>à sécuriser tout le secteur</strong> : Hall, Quarti, Officers, Armurerie.</li>
-                            <li>Les <strong>retardataires</strong> peuvent être admis <strong>après fouille et application</strong>.</li>
-                        </ul>
+                    <div class="info-card" style="margin: 1.5rem 0; border-left-color: #ff4444;">
+                        <div class="card-header">
+                            <span class="card-code" style="color: #ff4444;">WARN</span>
+                            <h3 style="color: #ff4444;">AVERTISSEMENT</h3>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">
+                            Ne fermez <strong style="color: #ff4444;">JAMAIS</strong> les distributeurs de rations. La distribution est geree par le dispatch, pas par la fermeture des equipements.
+                        </p>
                     </div>
-
-                    <h3>🚫 Vérifier l'état des liens avant de conclure et de passer à une nouvelle mission :</h3>
-                    <p>Ne fermez <strong>jamais les distributeurs de rations</strong> !</p>
                 </div>
-                
-                <div class="combine-footer">
-                    [METROPOLICE FORCE - RATION DISTRIBUTION PROTOCOL]
-                </div>
-            </div>
 
-            <div style="text-align: center; margin: 3rem 0;">
-                <a href="index.html" style="display: inline-block; padding: 1rem 2rem; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue)); color: var(--bg-primary); text-decoration: none; font-weight: 700; border-radius: 8px; text-transform: uppercase; letter-spacing: 1px;">
-                    ← Retour à l'Accueil
-                </a>
+                <div class="combine-footer" style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--text-muted); padding: 0.8rem; border-top: 1px solid rgba(0, 170, 255, 0.08);">
+                    [METROPOLICE FORCE // RATION DISTRIBUTION PROTOCOL // DISPATCH COORDINATION]
+                </div>
             </div>
         </div>
     </main>
 
-    <script type="module" src="assets/js/auth.js"></script>
-    <script>
-        document.getElementById('mobileMenuToggle')?.addEventListener('click', function() {
-            document.getElementById('mainNav')?.classList.toggle('active');
-        });
-    </script>
+    <script src="assets/js/global-nav.js"></script>
+    <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
 </body>
 </html>

@@ -1,93 +1,152 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Présentation — Metropolice Force</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-  </head>
-  <body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Propos - MPF Documentation</title>
+    <link rel="stylesheet" href="assets/css/main-style.css">
+    <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/global-nav.css">
+    <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
+</head>
+<body>
+    <!-- Scanline overlay -->
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
     <header class="site-header">
-      <div class="container">
-        <h1 class="logo">METROPOLICE FORCE</h1>
-        <nav>
-          <ul class="nav">
-            <li><a href="index.html">Accueil</a></li>
-            <li><a href="about.html" class="active">Présentation</a></li>
-            <li><a href="units.html">Unités</a></li>
-            <li><a href="tactics.html">Tactiques</a></li>
-            <li><a href="equipment.html">Équipement</a></li>
-            <li><a href="contact.html">Contact</a></li>
-            <li id="authBtn"></li>
-          </ul>
-        </nav>
-      </div>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <div>
+                        <h1 class="logo">MPF</h1>
+                        <p class="logo-subtitle">Metropolice Force Documentation</p>
+                    </div>
+                </div>
+                <div id="authBtn"></div>
+            </div>
+        </div>
     </header>
 
-    <main class="container">
-      <h1 style="color:var(--accent)">Présentation</h1>
+    <main>
+        <div class="container">
+            <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;">
+                <div class="combine-header">
+                    <h2>A PROPOS</h2>
+                    <span class="header-code">SYS // INFORMATIONS GENERALES</span>
+                </div>
 
-      <div class="section">
-        <h2>Structure Générale</h2>
-        <p>La Metropolice Force (MPF) est l'organisation chargée du maintien de l'ordre civil dans les zones urbaines du Combine. Elle opère sous un commandement centralisé avec une hiérarchie stricte et emploie des tactiques de contrôle de foule, d'intervention rapide et de patrouille systématique.</p>
-      </div>
+                <div style="text-align: center; margin: 1.5rem 0; padding: 1rem; background: rgba(0, 170, 255, 0.02); border: 1px solid rgba(0, 170, 255, 0.08);">
+                    <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7;">
+                        Ce portail constitue la <strong style="color: var(--accent-cyan);">base de donnees centralisee</strong> de la Metropolice Force. Il regroupe l'ensemble des procedures, reglements, formations et references necessaires a l'exercice des fonctions MPF.
+                    </p>
+                </div>
 
-      <div class="section">
-        <h2>Missions Principales</h2>
-        <ul>
-          <li><strong>Maintien de l'ordre :</strong> Répression des dissidences et contrôle des populations civiles</li>
-          <li><strong>Surveillance :</strong> Contrôle des déplacements, vérifications d'identité et gestion des points de passage</li>
-          <li><strong>Sécurité :</strong> Protection des infrastructures critiques et soutien aux unités supérieures</li>
-          <li><strong>Patrouille :</strong> Présence constante pour dissuasion et détection de menaces</li>
-        </ul>
-      </div>
+                <!-- Mission -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>MISSION</h2>
+                        <span class="header-code">OBJ-001</span>
+                    </div>
+                    <div style="padding: 0.5rem 0;">
+                        <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.7; margin-bottom: 0.8rem;">
+                            La Metropolice Force est l'organe de securite civile place sous l'autorite directe de l'Union Universelle. Ses missions comprennent :
+                        </p>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                            <div style="padding: 0.6rem; border-left: 2px solid var(--accent-cyan); background: rgba(0, 0, 0, 0.15);">
+                                <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--accent-cyan);">SECURITE CIVILE</div>
+                                <div style="color: var(--text-muted); font-size: 0.8rem;">Maintien de l'ordre public et protection des citoyens loyaux</div>
+                            </div>
+                            <div style="padding: 0.6rem; border-left: 2px solid var(--accent-cyan); background: rgba(0, 0, 0, 0.15);">
+                                <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--accent-cyan);">APPLICATION DES LOIS</div>
+                                <div style="color: var(--text-muted); font-size: 0.8rem;">Enforcement des reglements de l'Union et des arretes locaux</div>
+                            </div>
+                            <div style="padding: 0.6rem; border-left: 2px solid var(--accent-cyan); background: rgba(0, 0, 0, 0.15);">
+                                <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--accent-cyan);">CONTROLE ANTI-CITOYEN</div>
+                                <div style="color: var(--text-muted); font-size: 0.8rem;">Surveillance et gestion des individus non-conformes</div>
+                            </div>
+                            <div style="padding: 0.6rem; border-left: 2px solid var(--accent-cyan); background: rgba(0, 0, 0, 0.15);">
+                                <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--accent-cyan);">SUPPORT OVERWATCH</div>
+                                <div style="color: var(--text-muted); font-size: 0.8rem;">Assistance aux operations Overwatch en cas de menace elevee</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-      <div class="section">
-        <h2>Doctrine Opérationnelle</h2>
-        <p>La MPF opère selon des principes d'autorité absolue et de réponse rapide. Les opérations sont minutieusement planifiées avec coordination entre escouades et support logistique. La formation continue et la discipline sont prioritaires.</p>
-      </div>
+                <!-- Doctrine -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>DOCTRINE</h2>
+                        <span class="header-code">DOC-CORE</span>
+                    </div>
+                    <div style="padding: 0.5rem 0;">
+                        <div style="display: grid; gap: 0.5rem;">
+                            <div style="display: flex; align-items: flex-start; gap: 0.8rem; padding: 0.6rem; background: rgba(0, 0, 0, 0.2);">
+                                <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan); min-width: 30px;">01</span>
+                                <div>
+                                    <div style="color: var(--text-primary); font-size: 0.85rem; font-weight: 600;">Obeissance absolue</div>
+                                    <div style="color: var(--text-muted); font-size: 0.8rem;">La chaine de commandement est inviolable. Un ordre superieur prime sur toute initiative personnelle.</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: flex-start; gap: 0.8rem; padding: 0.6rem; background: rgba(0, 0, 0, 0.2);">
+                                <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan); min-width: 30px;">02</span>
+                                <div>
+                                    <div style="color: var(--text-primary); font-size: 0.85rem; font-weight: 600;">Force proportionnee</div>
+                                    <div style="color: var(--text-muted); font-size: 0.8rem;">L'usage de la force doit etre adapte a la menace. Toute escalade injustifiee constitue une breche.</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: flex-start; gap: 0.8rem; padding: 0.6rem; background: rgba(0, 0, 0, 0.2);">
+                                <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan); min-width: 30px;">03</span>
+                                <div>
+                                    <div style="color: var(--text-primary); font-size: 0.85rem; font-weight: 600;">Anonymat</div>
+                                    <div style="color: var(--text-muted); font-size: 0.8rem;">Les unites MPF ne sont identifiees que par leur designation. Aucune identite civile ne doit etre revelee.</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: flex-start; gap: 0.8rem; padding: 0.6rem; background: rgba(0, 0, 0, 0.2);">
+                                <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan); min-width: 30px;">04</span>
+                                <div>
+                                    <div style="color: var(--text-primary); font-size: 0.85rem; font-weight: 600;">Devoir de rapport</div>
+                                    <div style="color: var(--text-muted); font-size: 0.8rem;">Toute operation, incident ou anomalie doit etre signale(e) au dispatch.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-      <div class="section">
-        <h2>Code de Conduite</h2>
-        <ul>
-          <li><strong>Obéissance absolue :</strong> Les ordres sont exécutés sans questionnement</li>
-          <li><strong>Vigilance constante :</strong> Surveillance permanente des zones assignées</li>
-          <li><strong>Force mesurée :</strong> Usage proportionnel de la force selon les situations</li>
-          <li><strong>Loyauté :</strong> Engagement total envers le Combine et la mission</li>
-        </ul>
-      </div>
-
-      <div class="section">
-        <h2>💡 Points Clés</h2>
-        <div class="cards">
-          <div class="card">
-            <h3>⚡ Efficacité</h3>
-            <p>Réponse rapide et coordination optimale pour toute situation</p>
-          </div>
-          <div class="card">
-            <h3>🎯 Précision</h3>
-            <p>Actions ciblées et minimisation des dommages collatéraux</p>
-          </div>
-          <div class="card">
-            <h3>🔒 Sécurité</h3>
-            <p>Protection des infrastructures et maintien de l'ordre</p>
-          </div>
+                <!-- Portail -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>A PROPOS DU PORTAIL</h2>
+                        <span class="header-code">SYS-INFO</span>
+                    </div>
+                    <div style="padding: 0.5rem 0;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-muted); width: 35%;">Version</td>
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-family: 'Share Tech Mono', monospace;">2.0.0 // COMBINE TERMINAL</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Architecture</td>
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-family: 'Share Tech Mono', monospace;">HTML5 / CSS3 / Node.js</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Hebergement</td>
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-family: 'Share Tech Mono', monospace;">Firebase Authentication</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Design</td>
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-family: 'Share Tech Mono', monospace;">HL2 Combine Terminal Interface</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-
-      <div style="text-align:center;margin:2rem 0">
-        <a href="index.html" class="btn">← Retour Accueil</a>
-      </div>
     </main>
 
-    <footer class="site-footer">
-      <div class="container">
-        <p>&copy; 2026 — Guide Metropolice Force</p>
-      </div>
-    </footer>
-    
-    <script type="module">
-      import { updateAuthButton } from './assets/js/auth.js';
-    </script>
-  </body>
+    <script src="assets/js/global-nav.js"></script>
+    <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
+</body>
 </html>

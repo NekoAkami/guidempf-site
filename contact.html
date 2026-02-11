@@ -1,67 +1,124 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Contact — Metropolice</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-  </head>
-  <body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - MPF Documentation</title>
+    <link rel="stylesheet" href="assets/css/main-style.css">
+    <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/global-nav.css">
+    <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
+</head>
+<body>
+    <!-- Scanline overlay -->
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
     <header class="site-header">
-      <div class="container">
-        <h1 class="logo">METROPOLICE FORCE</h1>
-        <nav>
-          <ul class="nav">
-            <li><a href="index.html">Accueil</a></li>
-            <li><a href="about.html">Présentation</a></li>
-            <li><a href="units.html">Unités</a></li>
-            <li><a href="tactics.html">Tactiques</a></li>
-            <li><a href="equipment.html">Équipement</a></li>
-            <li><a href="contact.html" class="active">Contact</a></li>
-            <li id="authBtn"></li>
-          </ul>
-        </nav>
-      </div>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <div>
+                        <h1 class="logo">MPF</h1>
+                        <p class="logo-subtitle">Metropolice Force Documentation</p>
+                    </div>
+                </div>
+                <div id="authBtn"></div>
+            </div>
+        </div>
     </header>
 
-    <main class="container">
-      <h1 style="color:var(--accent)">Contact & Contributions</h1>
+    <main>
+        <div class="container">
+            <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;">
+                <div class="combine-header">
+                    <h2>CONTACT</h2>
+                    <span class="header-code">COM // CANAUX DE COMMUNICATION</span>
+                </div>
 
-      <div class="section">
-        <h2>Signaler un Problème</h2>
-        <p>Si tu as trouvé une erreur, une imprécision ou tu veux contribuer au guide :</p>
-        <ul>
-          <li>Ouvre une issue sur le dépôt GitHub du projet</li>
-          <li>Propose des modifications ou améliorations via pull request</li>
-          <li>Contacte l'équipe de maintenance</li>
-        </ul>
-      </div>
+                <div style="text-align: center; margin: 1.5rem 0; padding: 1rem; background: rgba(0, 170, 255, 0.02); border: 1px solid rgba(0, 170, 255, 0.08);">
+                    <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7;">
+                        Canaux officiels pour les <strong style="color: var(--accent-cyan);">rapports de dysfonctionnement</strong>, les contributions au portail et les demandes d'acces.
+                    </p>
+                </div>
 
-      <div class="section">
-        <h2>À propos</h2>
-        <p>Ce guide est une création de fans, créé à titre éducatif et créatif. Il n'est pas affilié à Valve Corporation ni au jeu Half-Life 2. Le contenu original contribue à enrichir la communauté autour de cet univers fictif.</p>
-      </div>
+                <!-- Signalement -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>SIGNALEMENT DE PROBLEMES</h2>
+                        <span class="header-code">RPT-BUG</span>
+                    </div>
+                    <div style="padding: 0.5rem 0;">
+                        <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.7; margin-bottom: 0.8rem;">
+                            Pour signaler un dysfonctionnement, une erreur dans la documentation ou un probleme d'acces, utilisez le canal suivant :
+                        </p>
+                        <div style="padding: 0.8rem; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 170, 255, 0.15);">
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan); margin-bottom: 0.3rem;">DEPOT GITHUB</div>
+                            <div style="color: var(--text-primary); font-size: 0.85rem;">Ouvrir une Issue sur le depot du projet avec une description du probleme rencontre.</div>
+                        </div>
+                    </div>
+                </div>
 
-      <div class="section">
-        <h2>👥 Communauté</h2>
-        <p>Rejoins la communauté pour partager tes connaissances et expériences !</p>
-        <div style="display:flex;gap:1rem;justify-content:center;margin-top:1.5rem;flex-wrap:wrap">
-          <a href="register.html" class="btn">Rejoindre</a>
-          <a href="https://github.com/NekoAkami/guidempf-site" class="btn secondary" target="_blank">🐛 GitHub</a>
+                <!-- Contribution -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>CONTRIBUTION</h2>
+                        <span class="header-code">CONTRIB</span>
+                    </div>
+                    <div style="padding: 0.5rem 0;">
+                        <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.7; margin-bottom: 0.8rem;">
+                            Les contributions au portail de documentation sont soumises a approbation hierarchique. Procedure :
+                        </p>
+                        <div style="display: grid; gap: 0.5rem;">
+                            <div style="display: flex; align-items: flex-start; gap: 0.8rem; padding: 0.5rem; background: rgba(0, 0, 0, 0.2);">
+                                <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan); min-width: 30px;">01</span>
+                                <div style="color: var(--text-muted); font-size: 0.85rem;">Soumettre une proposition via Discord ou GitHub Pull Request</div>
+                            </div>
+                            <div style="display: flex; align-items: flex-start; gap: 0.8rem; padding: 0.5rem; background: rgba(0, 0, 0, 0.2);">
+                                <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan); min-width: 30px;">02</span>
+                                <div style="color: var(--text-muted); font-size: 0.85rem;">Validation par un 05+ ou un Division Leader</div>
+                            </div>
+                            <div style="display: flex; align-items: flex-start; gap: 0.8rem; padding: 0.5rem; background: rgba(0, 0, 0, 0.2);">
+                                <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan); min-width: 30px;">03</span>
+                                <div style="color: var(--text-muted); font-size: 0.85rem;">Integration au portail apres revision et tests</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Acces -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>DEMANDE D'ACCES</h2>
+                        <span class="header-code">ACC-REQ</span>
+                    </div>
+                    <div style="padding: 0.5rem 0;">
+                        <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.7; margin-bottom: 0.8rem;">
+                            L'acces au portail est reserve au personnel MPF actif. Pour obtenir un acces :
+                        </p>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; width: 35%;">NOUVEL ACCES</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Demander a un 04+ d'enregistrer votre compte via le panneau d'administration.</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace;">ACCES PERDU</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Contacter un administrateur via Discord pour reinitialisation.</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.5rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace;">ACCES ADMIN</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Reserve au Commandement. Attribution directe par un CMD.</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-
-      <div style="text-align:center;margin:2rem 0">
-        <a href="index.html" class="btn">← Retour Accueil</a>
-      </div>
     </main>
 
-    <footer class="site-footer">
-      <div class="container">© 2026 — Guide Metropolice Force</div>
-    </footer>
-    
-    <script type="module">
-      import { updateAuthButton } from './assets/js/auth.js';
-    </script>
-  </body>
+    <script src="assets/js/global-nav.js"></script>
+    <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
+</body>
 </html>

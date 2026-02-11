@@ -1,125 +1,210 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Tactiques — Metropolice</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-  </head>
-  <body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tactique - MPF Documentation</title>
+    <link rel="stylesheet" href="assets/css/main-style.css">
+    <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/global-nav.css">
+    <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
+</head>
+<body>
+    <!-- Scanline overlay -->
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
     <header class="site-header">
-      <div class="container">
-        <h1 class="logo">METROPOLICE FORCE</h1>
-        <nav>
-          <ul class="nav">
-            <li><a href="index.html">Accueil</a></li>
-            <li><a href="about.html">Présentation</a></li>
-            <li><a href="units.html">Unités</a></li>
-            <li><a href="tactics.html" class="active">Tactiques</a></li>
-            <li><a href="equipment.html">Équipement</a></li>
-            <li><a href="contact.html">Contact</a></li>
-            <li id="authBtn"></li>
-          </ul>
-        </nav>
-      </div>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <div>
+                        <h1 class="logo">MPF</h1>
+                        <p class="logo-subtitle">Metropolice Force Documentation</p>
+                    </div>
+                </div>
+                <div id="authBtn"></div>
+            </div>
+        </div>
     </header>
 
-    <main class="container">
-      <h1 style="color:var(--accent)">Doctrine Tactique</h1>
+    <main>
+        <div class="container">
+            <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;">
+                <div class="combine-header">
+                    <h2>DOCTRINE TACTIQUE</h2>
+                    <span class="header-code">TAC // PROCEDURES OPERATIONNELLES</span>
+                </div>
 
-      <div class="section">
-        <h2>Principes Fondamentaux</h2>
-        <ul>
-          <li>Maintenir la supériorité numérique et de feu sur tous les axes</li>
-          <li>Contrôle absolu des zones de déploiement</li>
-          <li>Communication en temps réel entre unités</li>
-          <li>Réaction rapide aux menaces identifiées</li>
-        </ul>
-      </div>
+                <div style="text-align: center; margin: 1.5rem 0; padding: 1rem; background: rgba(0, 170, 255, 0.02); border: 1px solid rgba(0, 170, 255, 0.08);">
+                    <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7;">
+                        Principes tactiques fondamentaux regissant les <strong style="color: var(--accent-cyan);">operations de terrain</strong>. Applicable a toute unite en service actif.
+                    </p>
+                </div>
 
-      <div class="section">
-        <h2>Opérations Courantes</h2>
-        <h3>Patrouille de Routine</h3>
-        <p>Réseau de patrouille organisé fixe et aléatoire pour maintenir présence dissuasive et empêcher la formation de zones de résistance.</p>
-        
-        <h3>Intervention d'Urgence</h3>
-        <p>Approche coordonnée avec équipes d'assaut, évacuation des civils, sécurisation du périmètre et neutralisation des menaces identifiées.</p>
-        
-        <h3>Contrôle de Foule</h3>
-        <p>Formation en ligne, utilisation d'équipement non-létal, containment progressif et dispersement systématique.</p>
-      </div>
+                <!-- Principes fondamentaux -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>PRINCIPES FONDAMENTAUX</h2>
+                        <span class="header-code">TAC-CORE</span>
+                    </div>
+                    <div style="display: grid; gap: 0.5rem; padding: 0.5rem 0;">
+                        <div style="display: flex; align-items: flex-start; gap: 0.8rem; padding: 0.6rem; background: rgba(0, 0, 0, 0.2);">
+                            <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan); min-width: 30px;">01</span>
+                            <div>
+                                <div style="color: var(--text-primary); font-size: 0.85rem; font-weight: 600;">Superiorite numerique</div>
+                                <div style="color: var(--text-muted); font-size: 0.8rem;">Ne jamais engager seul. Minimum 2 unites par contact hostile. 3+ recommande pour neutralisation.</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: flex-start; gap: 0.8rem; padding: 0.6rem; background: rgba(0, 0, 0, 0.2);">
+                            <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan); min-width: 30px;">02</span>
+                            <div>
+                                <div style="color: var(--text-primary); font-size: 0.85rem; font-weight: 600;">Communication constante</div>
+                                <div style="color: var(--text-muted); font-size: 0.8rem;">Toute position, mouvement ou contact doit etre rapporte au dispatch. Silence radio = potentielle urgence.</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: flex-start; gap: 0.8rem; padding: 0.6rem; background: rgba(0, 0, 0, 0.2);">
+                            <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan); min-width: 30px;">03</span>
+                            <div>
+                                <div style="color: var(--text-primary); font-size: 0.85rem; font-weight: 600;">Couverture mutuelle</div>
+                                <div style="color: var(--text-muted); font-size: 0.8rem;">Chaque unite couvre les angles morts de son co-equipier. Aucun mouvement sans couverture assuree.</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: flex-start; gap: 0.8rem; padding: 0.6rem; background: rgba(0, 0, 0, 0.2);">
+                            <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan); min-width: 30px;">04</span>
+                            <div>
+                                <div style="color: var(--text-primary); font-size: 0.85rem; font-weight: 600;">Escalade progressive</div>
+                                <div style="color: var(--text-muted); font-size: 0.8rem;">Verbal > Stunstick > Arme non-letale > Arme letale. Chaque niveau requiert justification.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-      <div class="section">
-        <h2>Formations Tactiques</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Formation</th>
-              <th>Utilisation</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Ligne</td>
-              <td>Avancée coordonnée, contrôle de foule</td>
-            </tr>
-            <tr>
-              <td>Colonne</td>
-              <td>Déplacement en zone urbaine, patrouille</td>
-            </tr>
-            <tr>
-              <td>Carré</td>
-              <td>Défense, protection personnalité</td>
-            </tr>
-            <tr>
-              <td>Dispersion</td>
-              <td>Couverture secteur, surveillance</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+                <!-- Patrouille -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>PROTOCOLE DE PATROUILLE</h2>
+                        <span class="header-code">TAC-PTR</span>
+                    </div>
+                    <div style="padding: 0.5rem 0;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid rgba(0, 170, 255, 0.15);">
+                                    <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">TYPE</th>
+                                    <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">EFFECTIF</th>
+                                    <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">PROCEDURE</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                    <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Patrouille standard</td>
+                                    <td style="padding: 0.5rem; color: var(--text-muted);">2 unites minimum</td>
+                                    <td style="padding: 0.5rem; color: var(--text-muted);">Itineraire aleatoire. Controles d'identite reguliers. Rapport toutes les 15 min.</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                    <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Patrouille renforcee</td>
+                                    <td style="padding: 0.5rem; color: var(--text-muted);">3-4 unites</td>
+                                    <td style="padding: 0.5rem; color: var(--text-muted);">Secteur a risque. Formation en echelon. Armes en position basse.</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                    <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Balayage</td>
+                                    <td style="padding: 0.5rem; color: var(--text-muted);">4+ unites</td>
+                                    <td style="padding: 0.5rem; color: var(--text-muted);">Fouille systematique d'un secteur. Formation en ligne. Pas de zone laissee non-verifiee.</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 0.5rem; color: #ff8800; font-weight: 600;">Intervention</td>
+                                    <td style="padding: 0.5rem; color: var(--text-muted);">Effectif variable</td>
+                                    <td style="padding: 0.5rem; color: var(--text-muted);">Reponse a un incident. Formation stack a l'entree, puis deploiement tactique.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-      <div class="section">
-        <h2>Règles d'Engagement</h2>
-        <div class="cards">
-          <div class="card">
-            <h3>🚨 Niveau 1 - Vert</h3>
-            <p>Situation normale - Patrouille de routine</p>
-            <ul style="text-align:left;color:var(--muted);font-size:.9rem">
-              <li>Force non-létale autorisée</li>
-              <li>Contrôles d'identité standards</li>
-            </ul>
-          </div>
-          <div class="card">
-            <h3>⚠️ Niveau 2 - Jaune</h3>
-            <p>Menace potentielle - Vigilance accrue</p>
-            <ul style="text-align:left;color:var(--muted);font-size:.9rem">
-              <li>Armement léger autorisé</li>
-              <li>Renforts en stand-by</li>
-            </ul>
-          </div>
-          <div class="card">
-            <h3>🔴 Niveau 3 - Rouge</h3>
-            <p>Menace immédiate - Force maximale</p>
-            <ul style="text-align:left;color:var(--muted);font-size:.9rem">
-              <li>Toutes armes autorisées</li>
-              <li>Neutralisation immédiate</li>
-            </ul>
-          </div>
+                <!-- Formations tactiques -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>FORMATIONS TACTIQUES</h2>
+                        <span class="header-code">TAC-FRM</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; padding: 0.5rem 0;">
+                        <div style="padding: 0.6rem; border-left: 2px solid var(--accent-cyan); background: rgba(0, 0, 0, 0.15);">
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan);">STACK</div>
+                            <div style="color: var(--text-primary); font-size: 0.85rem; font-weight: 600;">File indienne</div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem;">Couloirs, portes, escaliers. Le point couvre l'avant, la queue couvre l'arriere.</div>
+                        </div>
+                        <div style="padding: 0.6rem; border-left: 2px solid var(--accent-cyan); background: rgba(0, 0, 0, 0.15);">
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan);">WEDGE</div>
+                            <div style="color: var(--text-primary); font-size: 0.85rem; font-weight: 600;">Formation en V</div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem;">Terrain ouvert. Couverture 180 degres avant. Leader en pointe.</div>
+                        </div>
+                        <div style="padding: 0.6rem; border-left: 2px solid var(--accent-cyan); background: rgba(0, 0, 0, 0.15);">
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan);">LINE</div>
+                            <div style="color: var(--text-primary); font-size: 0.85rem; font-weight: 600;">Ligne frontale</div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem;">Controle de foule. Avance simultanee. Espacement regulier.</div>
+                        </div>
+                        <div style="padding: 0.6rem; border-left: 2px solid var(--accent-cyan); background: rgba(0, 0, 0, 0.15);">
+                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan);">DIAMOND</div>
+                            <div style="color: var(--text-primary); font-size: 0.85rem; font-weight: 600;">Losange</div>
+                            <div style="color: var(--text-muted); font-size: 0.8rem;">Couverture 360 degres. Protection de VIP ou de prisonnier en transfert.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Regles d'engagement -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>REGLES D'ENGAGEMENT</h2>
+                        <span class="header-code">TAC-ROE</span>
+                    </div>
+                    <div style="padding: 0.5rem 0;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid rgba(0, 170, 255, 0.15);">
+                                    <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">NIVEAU</th>
+                                    <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">CONDITIONS</th>
+                                    <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">FORCE AUTORISEE</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                    <td style="padding: 0.5rem; color: var(--accent-green); font-family: 'Share Tech Mono', monospace;">VERT</td>
+                                    <td style="padding: 0.5rem; color: var(--text-muted);">Situation normale. Aucune menace detectee.</td>
+                                    <td style="padding: 0.5rem; color: var(--text-muted);">Verbale uniquement. Stunstick en holster.</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                    <td style="padding: 0.5rem; color: #ff8800; font-family: 'Share Tech Mono', monospace;">JAUNE</td>
+                                    <td style="padding: 0.5rem; color: var(--text-muted);">Individu non-cooperatif ou zone a risque.</td>
+                                    <td style="padding: 0.5rem; color: var(--text-muted);">Stunstick deploye. Sommations verbales.</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                    <td style="padding: 0.5rem; color: #ff4444; font-family: 'Share Tech Mono', monospace;">ROUGE</td>
+                                    <td style="padding: 0.5rem; color: var(--text-muted);">Agression active ou individu arme. Menace immediate.</td>
+                                    <td style="padding: 0.5rem; color: var(--text-muted);">Arme a feu non-letale, pistolet. Tir pour neutraliser.</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 0.5rem; color: #fff; font-family: 'Share Tech Mono', monospace; text-shadow: 0 0 3px #ff0000;">NOIR</td>
+                                    <td style="padding: 0.5rem; color: var(--text-muted);">Code 7 autorise. Danger critique pour les unites.</td>
+                                    <td style="padding: 0.5rem; color: var(--text-muted);">Force letale. SMG, fusil. Tir pour eliminer.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Lien -->
+                <div style="margin-top: 1.5rem; text-align: center;">
+                    <a href="guide-formations.html" style="display: inline-block; padding: 0.8rem 2rem; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); text-decoration: none; font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; letter-spacing: 1px; transition: all 0.1s ease;">
+                        GUIDE DES FORMATIONS DETAILLE
+                    </a>
+                </div>
+            </div>
         </div>
-      </div>
-
-      <div style="text-align:center;margin:2rem 0">
-        <a href="index.html" class="btn">← Retour Accueil</a>
-      </div>
     </main>
 
-    <footer class="site-footer">
-      <div class="container">© 2026 — Guide Metropolice Force</div>
-    </footer>
-    
-    <script type="module">
-      import { updateAuthButton } from './assets/js/auth.js';
-    </script>
-  </body>
+    <script src="assets/js/global-nav.js"></script>
+    <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
+</body>
 </html>

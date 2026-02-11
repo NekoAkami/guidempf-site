@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Système de Loyalisme - MPF Documentation</title>
+    <title>Systeme de Loyalisme - MPF Documentation</title>
     <link rel="stylesheet" href="assets/css/main-style.css">
     <link rel="stylesheet" href="assets/css/combine-terminals.css">
     <link rel="stylesheet" href="assets/css/global-nav.css">
     <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
 </head>
 <body>
+    <!-- Scanline overlay -->
+    <div class="scanline-overlay"></div>
     <div class="particles-bg"></div>
 
     <header class="site-header">
@@ -17,52 +20,80 @@
             <div class="header-content">
                 <div class="logo-section">
                     <div class="logo-icon">M</div>
-                    <h1 class="logo">MPF</h1>
-                    <p class="logo-subtitle">Metropolice Force Documentation</p>
+                    <div>
+                        <h1 class="logo">MPF</h1>
+                        <p class="logo-subtitle">Metropolice Force Documentation</p>
+                    </div>
                 </div>
                 <div id="authBtn"></div>
             </div>
         </div>
     </header>
 
-    <!-- Navigation globale insérée automatiquement par global-nav.js -->
+    <!-- Navigation globale inseree automatiquement par global-nav.js -->
 
     <main>
         <div class="container">
-            <div class="combine-terminal-wrapper animate-fadeInUp">
+            <div class="combine-terminal-wrapper holo-container" style="margin-top: 1.5rem;">
                 <div class="combine-header">
-                    <h2>⭐ HIÉRARCHIE DE LOYAUTÉ</h2>
-                    <span class="header-code" style="background: rgba(0, 212, 255, 0.1); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); padding: 0.5rem 1rem; border-radius: 5px; font-size: 0.85rem;">PYRAMIDE SOCIALE // 300+ PL MAX</span>
+                    <h2 class="glitch-text" data-text="HIERARCHIE DE LOYAUTE"><span class="status-dot scanning" style="margin-right: 8px; background: #6644aa; box-shadow: 0 0 8px rgba(102,68,170,0.6);"></span> HIERARCHIE DE LOYAUTE</h2>
+                    <span class="header-code">PYRAMIDE SOCIALE // 300+ PL MAX</span>
                 </div>
 
-                <div style="text-align: center; margin: 2rem 0; padding: 1.5rem; background: rgba(0, 212, 255, 0.05); border-radius: 10px;">
-                    <p style="font-size: 1.1rem; color: var(--text-secondary); line-height: 1.8;">
-                        Le système de <strong style="color: var(--accent-cyan);">Loyalisme</strong> organise la société en fonction des <strong>Points de Loyauté (PL)</strong>. Chaque niveau offre des privilèges spécifiques et détermine le statut social du citoyen.
+                <div style="text-align: center; margin: 1.5rem 0; padding: 1rem; background: rgba(0, 170, 255, 0.02); border: 1px solid rgba(0, 170, 255, 0.08);">
+                    <img src="assets/images/scanner-eye.svg" alt="Scanner" class="badge-pulse" style="width: 70px; height: 70px; margin-bottom: 0.5rem; opacity: 0.7;">
+                    <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7;">
+                        Le systeme de <strong style="color: var(--accent-cyan);">Loyalisme</strong> organise la societe en fonction des <strong style="color: var(--text-primary);">Points de Loyaute (PL)</strong>. Chaque niveau offre des privileges specifiques et determine le statut social du citoyen.
                     </p>
                 </div>
 
-                <!-- Grille de Cartes Interactives -->
+                <!-- Boutons de Filtrage -->
+                <div style="display: flex; gap: 0.5rem; justify-content: center; margin: 1.2rem 0; flex-wrap: wrap;">
+                    <button class="loyalty-filter-btn active" data-filter="all" style="padding: 0.5rem 1.2rem; background: var(--accent-cyan); color: #000; border: 1px solid var(--accent-cyan); font-weight: 700; cursor: pointer; transition: all 0.1s ease; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;">
+                        TOUS
+                    </button>
+                    <button class="loyalty-filter-btn" data-filter="anticitizen" style="padding: 0.5rem 1.2rem; background: rgba(204, 34, 34, 0.08); color: #cc4444; border: 1px solid rgba(204, 34, 34, 0.3); font-weight: 700; cursor: pointer; transition: all 0.1s ease; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;">
+                        ANTI-CITOYENS
+                    </button>
+                    <button class="loyalty-filter-btn" data-filter="citizen" style="padding: 0.5rem 1.2rem; background: rgba(112, 128, 144, 0.08); color: #708090; border: 1px solid rgba(112, 128, 144, 0.3); font-weight: 700; cursor: pointer; transition: all 0.1s ease; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;">
+                        CITOYENS
+                    </button>
+                    <button class="loyalty-filter-btn" data-filter="loyalist" style="padding: 0.5rem 1.2rem; background: rgba(0, 170, 255, 0.08); color: var(--accent-cyan); border: 1px solid rgba(0, 170, 255, 0.3); font-weight: 700; cursor: pointer; transition: all 0.1s ease; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;">
+                        LOYALISTES
+                    </button>
+                </div>
+
+                <!-- Grille de Cartes -->
                 <div id="loyalty-grid" class="interactive-grid">
-                    
+
+                    <!-- ========== SECTION ANTI-CITOYENS ========== -->
+                    <div class="section-divider" data-category="anticitizen" style="grid-column: 1 / -1; padding: 1rem 1.5rem; margin: 0 0 0.5rem 0; background: rgba(204, 34, 34, 0.04); border: 1px solid rgba(204, 34, 34, 0.2); border-left: 3px solid rgba(204, 34, 34, 0.5);">
+                        <h2 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #cc4444; font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 2px;">
+                            // ANTI-CITOYENS (-30 a -1 PL)
+                        </h2>
+                        <p style="margin: 0.3rem 0 0 0; color: var(--text-muted); font-size: 0.8rem; font-family: 'Share Tech Mono', monospace;">
+                            Individus sous surveillance constante | Brassards Noir, Bleu Connard, Beige
+                        </p>
+                    </div>
+
                     <!-- Anti-Citoyen Niveau 3 -->
-                    <div class="info-card" data-category="anticitizen" style="border-color: #95a5a6;">
+                    <div class="info-card" data-category="anticitizen" style="border-color: rgba(149, 165, 166, 0.2);">
                         <div class="card-header">
                             <div class="card-title" style="color: #95a5a6;">
-                                <span class="card-icon">☠️</span>
                                 ANTI-CITOYEN NIVEAU 3
                             </div>
-                            <div class="card-badge" style="color: #95a5a6; border-color: #95a5a6;">
-                                -21 à -30 PL
+                            <div class="card-badge" style="color: #95a5a6; border-color: rgba(149, 165, 166, 0.3);">
+                                -21 a -30 PL
                             </div>
                         </div>
                         <div class="card-content">
-                            <div style="text-align: center; padding: 1rem; margin: 1rem 0; background: rgba(0, 0, 0, 0.4); border-radius: 6px;">
-                                <div style="font-size: 1.2rem; font-weight: 700; color: #000; background: #95a5a6; padding: 0.5rem 1rem; border-radius: 4px; display: inline-block;">
-                                    🏷️ BRASSARD: NOIR
+                            <div style="text-align: center; padding: 0.6rem; margin: 0.6rem 0; background: rgba(0, 0, 0, 0.3);">
+                                <div style="font-size: 0.95rem; font-weight: 700; color: #000; background: #95a5a6; padding: 0.3rem 0.8rem; display: inline-block; font-family: 'Share Tech Mono', monospace;">
+                                    BRASSARD: NOIR
                                 </div>
                             </div>
                             <ul>
-                                <li><span class="card-highlight" style="background: rgba(255, 85, 85, 0.2); border-color: #ff5555; color: #ff5555;">NIVEAU CRITIQUE</span></li>
+                                <li><span class="card-highlight" style="background: rgba(204, 34, 34, 0.08); border-color: rgba(204, 34, 34, 0.3); color: #cc4444;">NIVEAU CRITIQUE</span></li>
                                 <li>Logement dans le CCH2</li>
                                 <li>Surveillance constante</li>
                             </ul>
@@ -70,127 +101,120 @@
                     </div>
 
                     <!-- Anti-Citoyen Niveau 2 -->
-                    <div class="info-card" data-category="anticitizen" style="border-color: #6b7f99;">
+                    <div class="info-card" data-category="anticitizen" style="border-color: rgba(107, 127, 153, 0.2);">
                         <div class="card-header">
                             <div class="card-title" style="color: #6b7f99;">
-                                <span class="card-icon">⛔</span>
                                 ANTI-CITOYEN NIVEAU 2
                             </div>
-                            <div class="card-badge" style="color: #6b7f99; border-color: #6b7f99;">
-                                -11 à -20 PL
+                            <div class="card-badge" style="color: #6b7f99; border-color: rgba(107, 127, 153, 0.3);">
+                                -11 a -20 PL
                             </div>
                         </div>
                         <div class="card-content">
-                            <div style="text-align: center; padding: 1rem; margin: 1rem 0; background: rgba(0, 0, 0, 0.4); border-radius: 6px;">
-                                <div style="font-size: 1.2rem; font-weight: 700; color: #fff; background: #0F172A; padding: 0.5rem 1rem; border-radius: 4px; display: inline-block;">
-                                    🏷️ BRASSARD: BLEU CONNARD
+                            <div style="text-align: center; padding: 0.6rem; margin: 0.6rem 0; background: rgba(0, 0, 0, 0.3);">
+                                <div style="font-size: 0.95rem; font-weight: 700; color: #fff; background: #0F172A; padding: 0.3rem 0.8rem; display: inline-block; font-family: 'Share Tech Mono', monospace;">
+                                    BRASSARD: BLEU CONNARD
                                 </div>
                             </div>
                             <ul>
-                                <li><span class="card-highlight" style="background: rgba(230, 217, 133, 0.2); border-color: #E6D985; color: #E6D985;">NIVEAU DANGER</span></li>
+                                <li><span class="card-highlight" style="background: rgba(230, 217, 133, 0.08); border-color: rgba(230, 217, 133, 0.3); color: #E6D985;">NIVEAU DANGER</span></li>
                                 <li>Logement dans le CCH2</li>
-                                <li>Restrictions sévères</li>
+                                <li>Restrictions severes</li>
                             </ul>
                         </div>
                     </div>
 
                     <!-- Anti-Citoyen Niveau 1 -->
-                    <div class="info-card" data-category="anticitizen" style="border-color: #E6D985;">
+                    <div class="info-card" data-category="anticitizen" style="border-color: rgba(230, 217, 133, 0.2);">
                         <div class="card-header">
                             <div class="card-title" style="color: #E6D985;">
-                                <span class="card-icon">⚠️</span>
                                 ANTI-CITOYEN NIVEAU 1
                             </div>
-                            <div class="card-badge" style="color: #E6D985; border-color: #E6D985;">
-                                -1 à -10 PL
+                            <div class="card-badge" style="color: #E6D985; border-color: rgba(230, 217, 133, 0.3);">
+                                -1 a -10 PL
                             </div>
                         </div>
                         <div class="card-content">
-                            <div style="text-align: center; padding: 1rem; margin: 1rem 0; background: rgba(0, 0, 0, 0.4); border-radius: 6px;">
-                                <div style="font-size: 1.2rem; font-weight: 700; color: #000; background: #E6D985; padding: 0.5rem 1rem; border-radius: 4px; display: inline-block;">
-                                    🏷️ BRASSARD: BEIGE
+                            <div style="text-align: center; padding: 0.6rem; margin: 0.6rem 0; background: rgba(0, 0, 0, 0.3);">
+                                <div style="font-size: 0.95rem; font-weight: 700; color: #000; background: #E6D985; padding: 0.3rem 0.8rem; display: inline-block; font-family: 'Share Tech Mono', monospace;">
+                                    BRASSARD: BEIGE
                                 </div>
                             </div>
                             <ul>
-                                <li>Logement dans le CCH4 (limité)</li>
+                                <li>Logement dans le CCH4 (limite)</li>
                                 <li>Pas de commerce</li>
                                 <li>Surveillance requise</li>
                             </ul>
                         </div>
                     </div>
 
-                    <!-- Citoyen (0 PL) -->
-                    <div class="info-card" data-category="citizen" style="border-color: #7f8c8d;">
+                    <!-- ========== SECTION CITOYENS ========== -->
+                    <div class="section-divider" data-category="citizen" style="grid-column: 1 / -1; padding: 1rem 1.5rem; margin: 1.5rem 0 0.5rem 0; background: rgba(112, 128, 144, 0.04); border: 1px solid rgba(112, 128, 144, 0.2); border-left: 3px solid rgba(112, 128, 144, 0.5);">
+                        <h2 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: #7f8c8d; font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 2px;">
+                            // CITOYENS (0 a 19 PL)
+                        </h2>
+                        <p style="margin: 0.3rem 0 0 0; color: var(--text-muted); font-size: 0.8rem; font-family: 'Share Tech Mono', monospace;">
+                            Statut de base | Aucun brassard | Droits limites
+                        </p>
+                    </div>
+
+                    <!-- Citoyen (0-19 PL) -->
+                    <div class="info-card" data-category="citizen" style="border-color: rgba(127, 140, 141, 0.2);">
                         <div class="card-header">
                             <div class="card-title" style="color: #7f8c8d;">
-                                <span class="card-icon">👤</span>
                                 CITOYEN
                             </div>
-                            <div class="card-badge" style="color: #7f8c8d; border-color: #7f8c8d;">
-                                0 PL
+                            <div class="card-badge" style="color: #7f8c8d; border-color: rgba(127, 140, 141, 0.3);">
+                                0 a 19 PL
                             </div>
                         </div>
                         <div class="card-content">
-                            <div style="text-align: center; padding: 1rem; margin: 1rem 0; background: rgba(0, 0, 0, 0.4); border-radius: 6px;">
-                                <div style="font-size: 1.2rem; font-weight: 700; color: #aaa; padding: 0.5rem 1rem; border-radius: 4px; display: inline-block;">
-                                    🚫 PAS DE BRASSARD
+                            <div style="text-align: center; padding: 0.6rem; margin: 0.6rem 0; background: rgba(0, 0, 0, 0.3);">
+                                <div style="font-size: 0.95rem; font-weight: 700; color: var(--text-muted); padding: 0.3rem 0.8rem; display: inline-block; font-family: 'Share Tech Mono', monospace; border: 1px solid var(--text-muted);">
+                                    PAS DE BRASSARD
                                 </div>
                             </div>
                             <ul>
                                 <li>Logement dans le CCH4</li>
                                 <li>Ration de base</li>
-                                <li>Accès limité</li>
+                                <li>Acces limite</li>
+                                <li>Commerce (Min 10PL)</li>
+                                <li>Acces Courrier Admin (10PL+)</li>
                             </ul>
                         </div>
                     </div>
 
-                    <!-- Citoyen Exemplaire (1-19 PL) -->
-                    <div class="info-card" data-category="citizen" style="border-color: #bdc3c7;">
-                        <div class="card-header">
-                            <div class="card-title" style="color: #bdc3c7;">
-                                <span class="card-icon">⭐</span>
-                                CITOYEN EXEMPLAIRE
-                            </div>
-                            <div class="card-badge" style="color: #bdc3c7; border-color: #bdc3c7;">
-                                1 à 19 PL
-                            </div>
-                        </div>
-                        <div class="card-content">
-                            <div style="text-align: center; padding: 1rem; margin: 1rem 0; background: rgba(0, 0, 0, 0.4); border-radius: 6px;">
-                                <div style="font-size: 1.2rem; font-weight: 700; color: #000; background: #bdc3c7; padding: 0.5rem 1rem; border-radius: 4px; display: inline-block;">
-                                    🏷️ BRASSARD: GRIS
-                                </div>
-                            </div>
-                            <ul>
-                                <li>Logement dans le CCH4</li>
-                                <li>Commerce (Min 10PL)</li>
-                                <li>Accès Courrier Admin</li>
-                            </ul>
-                        </div>
+                    <!-- ========== SECTION RANGS DE LOYAUTE ========== -->
+                    <div class="section-divider" data-category="loyalist" style="grid-column: 1 / -1; padding: 1rem 1.5rem; margin: 1.5rem 0 0.5rem 0; background: rgba(0, 170, 255, 0.03); border: 1px solid rgba(0, 170, 255, 0.15); border-left: 3px solid rgba(0, 170, 255, 0.4);">
+                        <h2 style="margin: 0; font-size: 1.2rem; font-weight: 700; color: var(--accent-cyan); font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 2px;">
+                            // RANGS DE LOYAUTE (20 a 300+ PL)
+                        </h2>
+                        <p style="margin: 0.3rem 0 0 0; color: var(--text-muted); font-size: 0.8rem; font-family: 'Share Tech Mono', monospace;">
+                            Progression loyaliste | Du Blanc au Platine
+                        </p>
                     </div>
 
                     <!-- Loyaliste Niveau 1 -->
-                    <div class="info-card" data-category="loyalist" style="border-color: #ecf0f1;">
+                    <div class="info-card" data-category="loyalist" style="border-color: rgba(236, 240, 241, 0.15);">
                         <div class="card-header">
                             <div class="card-title" style="color: #ecf0f1;">
-                                <span class="card-icon">⚪</span>
                                 LOYALISTE NIVEAU 1
                             </div>
-                            <div class="card-badge" style="color: #ecf0f1; border-color: #ecf0f1;">
-                                20 à 39 PL
+                            <div class="card-badge" style="color: #ecf0f1; border-color: rgba(236, 240, 241, 0.3);">
+                                20 a 39 PL
                             </div>
                         </div>
                         <div class="card-content">
-                            <div style="text-align: center; padding: 1rem; margin: 1rem 0; background: rgba(0, 0, 0, 0.4); border-radius: 6px;">
-                                <div style="font-size: 1.2rem; font-weight: 700; color: #000; background: #ecf0f1; padding: 0.5rem 1rem; border-radius: 4px; display: inline-block;">
-                                    🏷️ BRASSARD: BLANC
+                            <div style="text-align: center; padding: 0.6rem; margin: 0.6rem 0; background: rgba(0, 0, 0, 0.3);">
+                                <div style="font-size: 0.95rem; font-weight: 700; color: #000; background: #ecf0f1; padding: 0.3rem 0.8rem; display: inline-block; font-family: 'Share Tech Mono', monospace;">
+                                    BRASSARD: BLANC
                                 </div>
                             </div>
                             <ul>
                                 <li>Logement dans le CCH 4</li>
                                 <li>Ouvrir un commerce</li>
-                                <li>Malette autorisée</li>
-                                <li>Courrier à l'Administrateur</li>
+                                <li>Malette autorisee</li>
+                                <li>Courrier a l'Administrateur</li>
                                 <li>Ration de niveau 1</li>
                                 <li>Costume court</li>
                                 <li>Acheter des cigarettes</li>
@@ -199,207 +223,197 @@
                     </div>
 
                     <!-- Loyaliste Niveau 2 -->
-                    <div class="info-card" data-category="loyalist" style="border-color: #f1c40f;">
+                    <div class="info-card" data-category="loyalist" style="border-color: rgba(241, 196, 15, 0.2);">
                         <div class="card-header">
                             <div class="card-title" style="color: #f1c40f;">
-                                <span class="card-icon">🟡</span>
                                 LOYALISTE NIVEAU 2
                             </div>
-                            <div class="card-badge" style="color: #f1c40f; border-color: #f1c40f;">
-                                40 à 59 PL
+                            <div class="card-badge" style="color: #f1c40f; border-color: rgba(241, 196, 15, 0.3);">
+                                40 a 59 PL
                             </div>
                         </div>
                         <div class="card-content">
-                            <div style="text-align: center; padding: 1rem; margin: 1rem 0; background: rgba(0, 0, 0, 0.4); border-radius: 6px;">
-                                <div style="font-size: 1.2rem; font-weight: 700; color: #000; background: #f1c40f; padding: 0.5rem 1rem; border-radius: 4px; display: inline-block;">
-                                    🏷️ BRASSARD: JAUNE
+                            <div style="text-align: center; padding: 0.6rem; margin: 0.6rem 0; background: rgba(0, 0, 0, 0.3);">
+                                <div style="font-size: 0.95rem; font-weight: 700; color: #000; background: #f1c40f; padding: 0.3rem 0.8rem; display: inline-block; font-family: 'Share Tech Mono', monospace;">
+                                    BRASSARD: JAUNE
                                 </div>
                             </div>
                             <ul>
                                 <li>Logement dans le CCH 4</li>
                                 <li>Ouvrir un commerce</li>
-                                <li>Courrier à l'Administrateur</li>
+                                <li>Courrier a l'Administrateur</li>
                                 <li>Ration de niveau 2</li>
                                 <li>Costume court</li>
-                                <li><span class="card-highlight" style="border-color: #f1c40f; color: #f1c40f;">Cigarette Électronique</span></li>
+                                <li><span class="card-highlight" style="border-color: rgba(241, 196, 15, 0.3); color: #f1c40f; background: rgba(241, 196, 15, 0.06);">Cigarette Electronique</span></li>
                                 <li>Acheter des cigarettes</li>
                             </ul>
                         </div>
                     </div>
 
                     <!-- Loyaliste Niveau 3 -->
-                    <div class="info-card" data-category="loyalist" style="border-color: #3498db;">
+                    <div class="info-card" data-category="loyalist" style="border-color: rgba(52, 152, 219, 0.2);">
                         <div class="card-header">
                             <div class="card-title" style="color: #3498db;">
-                                <span class="card-icon">🔵</span>
                                 LOYALISTE NIVEAU 3
                             </div>
-                            <div class="card-badge" style="color: #3498db; border-color: #3498db;">
-                                60 à 79 PL
+                            <div class="card-badge" style="color: #3498db; border-color: rgba(52, 152, 219, 0.3);">
+                                60 a 79 PL
                             </div>
                         </div>
                         <div class="card-content">
-                            <div style="text-align: center; padding: 1rem; margin: 1rem 0; background: rgba(0, 0, 0, 0.4); border-radius: 6px;">
-                                <div style="font-size: 1.2rem; font-weight: 700; color: #fff; background: #3498db; padding: 0.5rem 1rem; border-radius: 4px; display: inline-block;">
-                                    🏷️ BRASSARD: BLEU
+                            <div style="text-align: center; padding: 0.6rem; margin: 0.6rem 0; background: rgba(0, 0, 0, 0.3);">
+                                <div style="font-size: 0.95rem; font-weight: 700; color: #fff; background: #3498db; padding: 0.3rem 0.8rem; display: inline-block; font-family: 'Share Tech Mono', monospace;">
+                                    BRASSARD: BLEU
                                 </div>
                             </div>
                             <ul>
                                 <li>Logement dans le CCH 4</li>
                                 <li>Ouvrir un commerce</li>
-                                <li>Courrier à l'Administrateur</li>
+                                <li>Courrier a l'Administrateur</li>
                                 <li>Ration de niveau 3</li>
                                 <li>Costume court</li>
-                                <li>Cigarette Électronique</li>
+                                <li>Cigarette Electronique</li>
                                 <li>Acheter des cigarettes</li>
                             </ul>
                         </div>
                     </div>
 
                     <!-- Loyaliste Niveau 4 -->
-                    <div class="info-card" data-category="loyalist" style="border-color: #e74c3c;">
+                    <div class="info-card" data-category="loyalist" style="border-color: rgba(231, 76, 60, 0.2);">
                         <div class="card-header">
                             <div class="card-title" style="color: #e74c3c;">
-                                <span class="card-icon">🔴</span>
                                 LOYALISTE NIVEAU 4
                             </div>
-                            <div class="card-badge" style="color: #e74c3c; border-color: #e74c3c;">
-                                80 à 99 PL
+                            <div class="card-badge" style="color: #e74c3c; border-color: rgba(231, 76, 60, 0.3);">
+                                80 a 99 PL
                             </div>
                         </div>
                         <div class="card-content">
-                            <div style="text-align: center; padding: 1rem; margin: 1rem 0; background: rgba(0, 0, 0, 0.4); border-radius: 6px;">
-                                <div style="font-size: 1.2rem; font-weight: 700; color: #fff; background: #e74c3c; padding: 0.5rem 1rem; border-radius: 4px; display: inline-block;">
-                                    🏷️ BRASSARD: ROUGE
+                            <div style="text-align: center; padding: 0.6rem; margin: 0.6rem 0; background: rgba(0, 0, 0, 0.3);">
+                                <div style="font-size: 0.95rem; font-weight: 700; color: #fff; background: #e74c3c; padding: 0.3rem 0.8rem; display: inline-block; font-family: 'Share Tech Mono', monospace;">
+                                    BRASSARD: ROUGE
                                 </div>
                             </div>
                             <ul>
-                                <li><span class="card-highlight" style="border-color: #ff5555; color: #ff5555;">✓ ACCÈS NEXUS</span></li>
+                                <li><span class="card-highlight" style="border-color: rgba(231, 76, 60, 0.3); color: #e74c3c; background: rgba(231, 76, 60, 0.06);">ACCES NEXUS</span></li>
                                 <li>Logement dans le CCH 1</li>
                                 <li>Ouvrir un commerce</li>
-                                <li>Courrier à l'Administrateur</li>
+                                <li>Courrier a l'Administrateur</li>
                                 <li>Ration de niveau 4</li>
                                 <li>Costume court et long</li>
                                 <li>Se mettre en couple (N4 min)</li>
-                                <li>Accès hall Nexus (danger/JW)</li>
-                                <li>Droit de posséder un request</li>
-                                <li>Cigarette Électronique</li>
+                                <li>Acces hall Nexus (danger/JW)</li>
+                                <li>Droit de posseder un request</li>
+                                <li>Cigarette Electronique</li>
                             </ul>
                         </div>
                     </div>
 
                     <!-- Loyaliste Niveau 5 -->
-                    <div class="info-card" data-category="loyalist" style="border-color: #2ecc71;">
+                    <div class="info-card" data-category="loyalist" style="border-color: rgba(46, 204, 113, 0.2);">
                         <div class="card-header">
                             <div class="card-title" style="color: #2ecc71;">
-                                <span class="card-icon">🟢</span>
                                 LOYALISTE NIVEAU 5
                             </div>
-                            <div class="card-badge" style="color: #2ecc71; border-color: #2ecc71;">
-                                100 à 119 PL
+                            <div class="card-badge" style="color: #2ecc71; border-color: rgba(46, 204, 113, 0.3);">
+                                100 a 119 PL
                             </div>
                         </div>
                         <div class="card-content">
-                            <div style="text-align: center; padding: 1rem; margin: 1rem 0; background: rgba(0, 0, 0, 0.4); border-radius: 6px;">
-                                <div style="font-size: 1.2rem; font-weight: 700; color: #fff; background: #2ecc71; padding: 0.5rem 1rem; border-radius: 4px; display: inline-block;">
-                                    🏷️ BRASSARD: VERT
+                            <div style="text-align: center; padding: 0.6rem; margin: 0.6rem 0; background: rgba(0, 0, 0, 0.3);">
+                                <div style="font-size: 0.95rem; font-weight: 700; color: #fff; background: #2ecc71; padding: 0.3rem 0.8rem; display: inline-block; font-family: 'Share Tech Mono', monospace;">
+                                    BRASSARD: VERT
                                 </div>
                             </div>
                             <ul>
                                 <li>Logement dans le CCH 1</li>
                                 <li>Ouvrir un commerce</li>
-                                <li>Courrier à l'Administrateur</li>
+                                <li>Courrier a l'Administrateur</li>
                                 <li>Ration de niveau 5</li>
                                 <li>Costume court et long</li>
                                 <li>Se mettre en couple (N4 min)</li>
-                                <li><span class="card-highlight" style="border-color: #2ecc71; color: #2ecc71;">✓ Se marier</span></li>
-                                <li>Accès hall Nexus (danger/JW)</li>
-                                <li>Droit de posséder un request</li>
-                                <li>Cigarette Électronique</li>
+                                <li><span class="card-highlight" style="border-color: rgba(46, 204, 113, 0.3); color: #2ecc71; background: rgba(46, 204, 113, 0.06);">Se marier</span></li>
+                                <li>Acces hall Nexus (danger/JW)</li>
+                                <li>Droit de posseder un request</li>
+                                <li>Cigarette Electronique</li>
                             </ul>
                         </div>
                     </div>
 
                     <!-- Loyaliste Niveau 6 -->
-                    <div class="info-card" data-category="loyalist" style="border-color: #9b59b6;">
+                    <div class="info-card" data-category="loyalist" style="border-color: rgba(155, 89, 182, 0.2);">
                         <div class="card-header">
                             <div class="card-title" style="color: #9b59b6;">
-                                <span class="card-icon">🟣</span>
                                 LOYALISTE NIVEAU 6
                             </div>
-                            <div class="card-badge" style="color: #9b59b6; border-color: #9b59b6;">
-                                120 à 299 PL
+                            <div class="card-badge" style="color: #9b59b6; border-color: rgba(155, 89, 182, 0.3);">
+                                120 a 299 PL
                             </div>
                         </div>
                         <div class="card-content">
-                            <div style="text-align: center; padding: 1rem; margin: 1rem 0; background: rgba(0, 0, 0, 0.4); border-radius: 6px;">
-                                <div style="font-size: 1.2rem; font-weight: 700; color: #fff; background: #9b59b6; padding: 0.5rem 1rem; border-radius: 4px; display: inline-block;">
-                                    🏷️ BRASSARD: VIOLET
+                            <div style="text-align: center; padding: 0.6rem; margin: 0.6rem 0; background: rgba(0, 0, 0, 0.3);">
+                                <div style="font-size: 0.95rem; font-weight: 700; color: #fff; background: #9b59b6; padding: 0.3rem 0.8rem; display: inline-block; font-family: 'Share Tech Mono', monospace;">
+                                    BRASSARD: VIOLET
                                 </div>
                             </div>
                             <ul>
                                 <li>Logement dans le CCH 1</li>
                                 <li>Ouvrir un commerce</li>
-                                <li>Courrier à l'Administrateur</li>
+                                <li>Courrier a l'Administrateur</li>
                                 <li>Ration de niveau 6</li>
                                 <li>Costume court et long</li>
                                 <li>Se mettre en couple / Se marier</li>
-                                <li>Accès hall Nexus (danger/JW)</li>
-                                <li>Droit de posséder un request</li>
-                                <li><span class="card-highlight" style="border-color: #9b59b6; color: #9b59b6;">✓ Pardon potentiel de l'Admin</span></li>
-                                <li>Cigarette Électronique</li>
+                                <li>Acces hall Nexus (danger/JW)</li>
+                                <li>Droit de posseder un request</li>
+                                <li><span class="card-highlight" style="border-color: rgba(155, 89, 182, 0.3); color: #9b59b6; background: rgba(155, 89, 182, 0.06);">Pardon potentiel de l'Admin</span></li>
+                                <li>Cigarette Electronique</li>
                             </ul>
                         </div>
                     </div>
 
-                    <!-- Platine -->
-                    <div class="info-card" data-category="platinum" style="border-color: #00d2d3; grid-column: 1 / -1;">
-                        <div class="card-header" style="flex-direction: column; align-items: center; text-align: center;">
-                            <div style="font-size: 3rem; margin-bottom: 0.5rem;">👑</div>
-                            <div class="card-title" style="color: #00d2d3; font-size: 2rem; letter-spacing: 3px;">
-                                LOYALISTE NIVEAU 7 - PLATINE
+                    <!-- Platine (meme taille que les autres) -->
+                    <div class="info-card" data-category="loyalist" style="border-color: rgba(0, 210, 211, 0.2);">
+                        <div class="card-header">
+                            <div class="card-title" style="color: #00d2d3;">
+                                LOYALISTE NIVEAU 7
                             </div>
-                            <div class="card-badge" style="color: #00d2d3; border-color: #00d2d3; margin-top: 1rem; font-size: 1rem; padding: 0.6rem 1.5rem;">
+                            <div class="card-badge" style="color: #00d2d3; border-color: rgba(0, 210, 211, 0.3);">
                                 300+ PL
                             </div>
                         </div>
                         <div class="card-content">
-                            <div style="text-align: center; padding: 1.5rem; margin: 1.5rem 0; background: rgba(0, 210, 211, 0.1); border-radius: 8px;">
-                                <div style="font-size: 1.5rem; font-weight: 700; color: #00d2d3; border: 2px solid #00d2d3; padding: 1rem 2rem; border-radius: 8px; display: inline-block; box-shadow: 0 0 30px rgba(0, 210, 211, 0.5);">
-                                    🏷️ BRASSARD: BLEU PLATINE
+                            <div style="text-align: center; padding: 0.6rem; margin: 0.6rem 0; background: rgba(0, 0, 0, 0.3);">
+                                <div style="font-size: 0.95rem; font-weight: 700; color: #00d2d3; border: 1px solid rgba(0, 210, 211, 0.3); padding: 0.3rem 0.8rem; display: inline-block; font-family: 'Share Tech Mono', monospace;">
+                                    BRASSARD: BLEU PLATINE
                                 </div>
                             </div>
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
-                                <ul>
-                                    <li style="font-size: 1.05rem;">✓ Logement dans le CCH 1</li>
-                                    <li style="font-size: 1.05rem;">✓ Ouvrir un commerce</li>
-                                    <li style="font-size: 1.05rem;">✓ Courrier à l'Administrateur</li>
-                                    <li style="font-size: 1.05rem;">✓ Ration de niveau 7</li>
-                                    <li style="font-size: 1.05rem;">✓ Costume court et long</li>
-                                    <li style="font-size: 1.05rem;">✓ Se mettre en couple / Se marier</li>
-                                </ul>
-                                <ul>
-                                    <li style="font-size: 1.05rem;">✓ Accès hall Nexus (danger/JW)</li>
-                                    <li style="font-size: 1.05rem;">✓ Droit de posséder un request</li>
-                                    <li style="font-size: 1.05rem;">✓ Pardon potentiel de l'Admin</li>
-                                    <li style="font-size: 1.05rem;">✓ Cigarette Électronique</li>
-                                    <li style="font-size: 1.05rem;"><span class="card-highlight" style="border-color: #00d2d3; color: #00d2d3; font-size: 1.1rem;">✓ PRIVILÈGES ULTIMES</span></li>
-                                </ul>
-                            </div>
+                            <ul>
+                                <li>Logement dans le CCH 1</li>
+                                <li>Ouvrir un commerce</li>
+                                <li>Courrier a l'Administrateur</li>
+                                <li>Ration de niveau 7</li>
+                                <li>Costume court et long</li>
+                                <li>Se mettre en couple / Se marier</li>
+                                <li>Acces hall Nexus (danger/JW)</li>
+                                <li>Droit de posseder un request</li>
+                                <li>Pardon potentiel de l'Admin</li>
+                                <li>Cigarette Electronique</li>
+                                <li><span class="card-highlight" style="border-color: rgba(0, 210, 211, 0.3); color: #00d2d3; background: rgba(0, 210, 211, 0.06);">PRIVILEGES ULTIMES</span></li>
+                            </ul>
                         </div>
                     </div>
 
                 </div>
 
                 <!-- Alerte Nexus -->
-                <div style="margin: 3rem 0; padding: 2rem; background: linear-gradient(135deg, rgba(255, 85, 85, 0.1), rgba(255, 43, 43, 0.05)); border: 2px solid #ff5555; border-radius: 12px;">
-                    <h3 style="color: #ff5555; font-family: 'Orbitron', sans-serif; font-size: 1.5rem; margin-bottom: 1rem;">⚠️ ACCÈS NEXUS RESTREINT</h3>
-                    <p style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary);">L'accès au hall du Nexus requiert un <strong style="color: #ff5555;">NIVEAU 4 MINIMUM</strong> (80+ PL).</p>
-                    <p style="margin-top: 1rem; color: var(--text-secondary);">Seuls les citoyens ayant démontré une loyauté exceptionnelle peuvent bénéficier de cette protection privilégiée.</p>
+                <div style="margin: 2rem 0; padding: 1.2rem; background: rgba(204, 34, 34, 0.03); border: 1px solid rgba(204, 34, 34, 0.15); border-left: 3px solid rgba(204, 34, 34, 0.4);">
+                    <h3 style="color: #cc4444; font-family: 'Orbitron', sans-serif; font-size: 1rem; margin-bottom: 0.5rem; letter-spacing: 1px;">// ACCES NEXUS RESTREINT</h3>
+                    <p style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary);">L'acces au hall du Nexus requiert un <strong style="color: #cc4444;">NIVEAU 4 MINIMUM</strong> (80+ PL).</p>
+                    <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">Seuls les citoyens ayant demontre une loyaute exceptionnelle peuvent beneficier de cette protection privilegiee.</p>
                 </div>
 
                 <div class="combine-footer">
-                    [REF: LOYALTY-PYRAMID-v4.0 - SYSTÈME INTERACTIF ACTIF ]
+                    [REF: LOYALTY-PYRAMID-v4.0 // SYSTEME INTERACTIF ACTIF]
                 </div>
             </div>
         </div>
@@ -407,5 +421,63 @@
 
     <script src="assets/js/global-nav.js"></script>
     <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const filterButtons = document.querySelectorAll('.loyalty-filter-btn');
+            const cards = document.querySelectorAll('#loyalty-grid .info-card');
+            const dividers = document.querySelectorAll('#loyalty-grid .section-divider');
+
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Reset all buttons
+                    filterButtons.forEach(b => {
+                        b.classList.remove('active');
+                        if (b.dataset.filter === 'anticitizen') {
+                            b.style.background = 'rgba(204, 34, 34, 0.08)';
+                            b.style.color = '#cc4444';
+                        } else if (b.dataset.filter === 'citizen') {
+                            b.style.background = 'rgba(112, 128, 144, 0.08)';
+                            b.style.color = '#708090';
+                        } else if (b.dataset.filter === 'loyalist') {
+                            b.style.background = 'rgba(0, 170, 255, 0.08)';
+                            b.style.color = 'var(--accent-cyan)';
+                        } else {
+                            b.style.background = 'rgba(0, 170, 255, 0.08)';
+                            b.style.color = 'var(--accent-cyan)';
+                        }
+                    });
+
+                    // Activate clicked
+                    btn.classList.add('active');
+                    const filter = btn.dataset.filter;
+
+                    if (filter === 'all') {
+                        btn.style.background = 'var(--accent-cyan)';
+                        btn.style.color = '#000';
+                    } else if (filter === 'anticitizen') {
+                        btn.style.background = '#cc4444';
+                        btn.style.color = '#000';
+                    } else if (filter === 'citizen') {
+                        btn.style.background = '#708090';
+                        btn.style.color = '#000';
+                    } else if (filter === 'loyalist') {
+                        btn.style.background = 'var(--accent-cyan)';
+                        btn.style.color = '#000';
+                    }
+
+                    // Filter cards
+                    cards.forEach(card => {
+                        card.style.display = (filter === 'all' || card.dataset.category === filter) ? '' : 'none';
+                    });
+
+                    // Filter dividers
+                    dividers.forEach(div => {
+                        div.style.display = (filter === 'all' || div.dataset.category === filter) ? '' : 'none';
+                    });
+                });
+            });
+        });
+    </script>
 </body>
 </html>

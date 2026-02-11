@@ -3,11 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Judgement Waiver - MPF Documentation</title>
+    <title>JUDGEMENT WAIVER - MPF Documentation</title>
     <link rel="stylesheet" href="assets/css/main-style.css">
     <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/global-nav.css">
+    <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
+    <link rel="stylesheet" href="assets/css/dynamic-features.css">
 </head>
 <body>
+    <!-- Scanline overlay -->
+    <div class="scanline-overlay"></div>
     <div class="particles-bg"></div>
 
     <header class="site-header">
@@ -15,23 +21,11 @@
             <div class="header-content">
                 <div class="logo-section">
                     <div class="logo-icon">M</div>
-                    <h1 class="logo">MPF</h1>
+                    <div>
+                        <h1 class="logo">MPF</h1>
+                        <p class="logo-subtitle">Metropolice Force Documentation</p>
+                    </div>
                 </div>
-                <nav class="main-nav">
-                    <ul class="nav">
-                        <li><a href="index.html">Accueil</a></li>
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle">Activité ▾</a>
-                            <ul class="dropdown-menu">
-                                <li><a href="worker-announcement.html">Worker Announcement</a></li>
-                                <li><a href="ration-announcement.html">Ration Announcement</a></li>
-                                <li><a href="suspended-rations.html">Suspended Rations</a></li>
-                                <li><a href="social-infraction.html">Social Infraction</a></li>
-                                <li><a href="judgement-waiver.html" class="active">Judgement Waiver</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </nav>
                 <div id="authBtn"></div>
             </div>
         </div>
@@ -39,69 +33,91 @@
 
     <main>
         <div class="container">
-            <div class="combine-terminal-wrapper animate-fadeInUp">
+            <div class="combine-terminal-wrapper">
                 <div class="combine-header">
                     <h2>JUDGEMENT WAIVER</h2>
-                    <span class="header-code badge-pink">01+</span>
+                    <span class="header-code badge-pink">ACT-05</span>
                 </div>
                 
                 <div class="combine-body">
-                    <p>Il peut être activé <strong>uniquement lorsque dans la salle de l'administration</strong>, qu'elles réagissent le plus rapidement possible et si tout faire afin de sauver les hauts grades.</p>
+                    <p class="terminal-text">> BOUTON DISPATCH : JUDGEMENT WAIVER</p>
+                    <p class="terminal-text">> AUTORISATION REQUISE : 01+</p>
+                    <p class="terminal-text">> CLASSIFICATION : HAUTE PRIORITE</p>
 
-                    <h3>📋 Conditions d'Activation :</h3>
-                    <div style="margin: 1.5rem 0; padding: 1.5rem; background: rgba(255, 159, 160, 0.05); border-left: 4px solid var(--accent-pink); border-radius: 6px;">
+                    <div class="info-card" style="margin: 2rem 0;">
+                        <h3>DESCRIPTION</h3>
+                        <p>Le Judgement Waiver est un <strong>protocole de derogation exceptionnelle</strong> permettant de suspendre temporairement les procedures standard de jugement. Il ne peut etre active que par les <strong>grades 01+</strong> (commandement superieur) et uniquement dans des situations d'urgence justifiees.</p>
+                    </div>
+
+                    <div class="info-card" style="margin: 2rem 0;">
+                        <h3>CONDITIONS D'ACTIVATION</h3>
+                        <table class="data-table" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>CONDITION</th>
+                                    <th>DETAIL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Grade requis</td>
+                                    <td>01+ exclusivement (commandement superieur)</td>
+                                </tr>
+                                <tr>
+                                    <td>Lieu</td>
+                                    <td>Uniquement depuis la salle d'administration du Nexus</td>
+                                </tr>
+                                <tr>
+                                    <td>Situation</td>
+                                    <td>Urgence necessitant une derogation aux procedures de jugement</td>
+                                </tr>
+                                <tr>
+                                    <td>Documentation</td>
+                                    <td>Rapport de situation detaille obligatoire avant et apres activation</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="info-card" style="margin: 2rem 0;">
+                        <h3>PROTOCOLE D'URGENCE</h3>
+                        <ol>
+                            <li>Evaluation de la situation par le commandement 01+</li>
+                            <li>Decision de derogation avec justification documentee</li>
+                            <li>Activation du Judgement Waiver depuis la salle d'administration</li>
+                            <li>Notification automatique a l'ensemble des unites de la Protection Civile</li>
+                            <li>Les unites se deploient pour securiser et neutraliser la menace</li>
+                            <li>Le plus haut grade present coordonne les operations de terrain</li>
+                            <li>Rapport post-intervention obligatoire</li>
+                        </ol>
+                    </div>
+
+                    <div class="info-card" style="margin: 2rem 0; border-left-color: var(--accent-red);">
+                        <h3>AVERTISSEMENT CRITIQUE</h3>
+                        <p>Ce protocole est <strong>strictement exceptionnel</strong>. Toute activation non justifiee constitue un abus de pouvoir sanctionnable. La derogation s'applique a l'ensemble des unites de la Protection Civile presentes et autorise des mesures extraordinaires pour proteger les hauts grades et retablir l'ordre.</p>
+                    </div>
+
+                    <div class="info-card" style="margin: 2rem 0; border-left-color: var(--accent-yellow);">
+                        <h3>DOCUMENTATION REQUISE</h3>
                         <ul>
-                            <li>Accord préalable avec les 01+</li>
-                            <li>Situation nécessitant une <strong>dérogation exceptionnelle</strong></li>
-                            <li>Documentation complète requise</li>
-                            <li>Validation finale par l'administration</li>
+                            <li>Rapport de situation detaille (avant activation)</li>
+                            <li>Justification ecrite de la derogation</li>
+                            <li>Liste des unites impliquees dans l'operation</li>
+                            <li>Rapport post-intervention avec bilan</li>
+                            <li>Approbation finale par l'administration superieure</li>
                         </ul>
                     </div>
-
-                    <p>Lors de l'activation de ce <strong>dispositif si le dispatch et vous indiquera la sortie</strong> :</p>
-
-                    <div class="alert-box" style="margin: 2rem 0;">
-                        <h3>⚠️ Protocole d'Urgence</h3>
-                        <p>En cas de grade, un <strong>dispositif s'offrant au vous indiquera la sortie unités</strong>.</p>
-                        <p>Il faut <strong>de, applique à l'ensemble des unités de la Protection Civile pour écarter et neutraliser l'ennemi</strong> afin sauver les plus grades.</p>
-                    </div>
-
-                    <h3>🎯 Objectif :</h3>
-                    <p style="font-weight: 600;">Автом automatiquement, applique à l'ensemble des <strong>unités</strong>.</p>
-
-                    <div style="margin: 2rem 0; padding: 1.5rem; background: rgba(0, 212, 255, 0.05); border-left: 4px solid var(--accent-cyan); border-radius: 6px;">
-                        <h3 style="color: var(--accent-cyan); margin-bottom: 1rem;">📝 Documentation Requise :</h3>
-                        <ul>
-                            <li>Rapport de situation détaillé</li>
-                            <li>Justification de la dérogation</li>
-                            <li>Approbation administrative</li>
-                            <li>Suivi post-intervention</li>
-                        </ul>
-                    </div>
-
-                    <p style="margin-top: 2rem; padding: 1rem; background: rgba(255, 215, 0, 0.1); border-radius: 6px; border: 1px solid rgba(255, 215, 0, 0.3);">
-                        <strong style="color: var(--accent-yellow);">Note Importante :</strong> Cette mesure est <strong>exceptionnelle</strong> et ne doit être utilisée qu'en cas d'absolue nécessité avec l'accord des 01+.
-                    </p>
                 </div>
                 
                 <div class="combine-footer">
-                    [METROPOLICE FORCE - ADMINISTRATIVE WAIVER PROTOCOL]
+                    [METROPOLICE FORCE // ADMINISTRATIVE WAIVER PROTOCOL // CLASSIFICATION HAUTE]
                 </div>
-            </div>
-
-            <div style="text-align: center; margin: 3rem 0;">
-                <a href="index.html" style="display: inline-block; padding: 1rem 2rem; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue)); color: var(--bg-primary); text-decoration: none; font-weight: 700; border-radius: 8px; text-transform: uppercase; letter-spacing: 1px;">
-                    ← Retour à l'Accueil
-                </a>
             </div>
         </div>
     </main>
 
-    <script type="module" src="assets/js/auth.js"></script>
-    <script>
-        document.getElementById('mobileMenuToggle')?.addEventListener('click', function() {
-            document.getElementById('mainNav')?.classList.toggle('active');
-        });
-    </script>
+    <script src="assets/js/global-nav.js"></script>
+    <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
 </body>
 </html>

@@ -8,8 +8,11 @@
     <link rel="stylesheet" href="assets/css/combine-terminals.css">
     <link rel="stylesheet" href="assets/css/global-nav.css">
     <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
 </head>
 <body>
+    <!-- Scanline overlay -->
+    <div class="scanline-overlay"></div>
     <div class="particles-bg"></div>
 
     <header class="site-header">
@@ -25,156 +28,148 @@
         </div>
     </header>
 
-    <!-- Navigation globale insérée automatiquement par global-nav.js -->
-
     <main>
         <div class="container">
-            <div class="combine-terminal-wrapper animate-fadeInUp">
+            <div class="combine-terminal-wrapper animate-fadeInUp holo-container">
                 <div class="combine-header">
-                    <div class="combine-top-bar">
-                        <span>UNION://CODE_PENAL_REF_17</span>
-                        <span class="badge badge-red">STATUS: ACTIVE</span>
-                    </div>
-                    <h2>PROTOCOLES DE CONTREBANDE</h2>
-                    <div class="dispatch-line">
-                        <span>> CLASSIFICATION_SYSTEM // 3_NIVEAUX</span>
-                        <span class="combine-cursor"></span>
-                    </div>
-                    <div class="combine-symbol">📦</div>
+                    <h2 class="glitch-text" data-text="PROTOCOLES DE CONTREBANDE"><span class="status-dot alert" style="margin-right: 8px;"></span> PROTOCOLES DE CONTREBANDE</h2>
+                    <span class="header-code">CLASSIFICATION 3 NIVEAUX</span>
                 </div>
 
                 <div class="combine-body">
-                    <div style="background: rgba(255, 43, 43, 0.1); border: 2px dashed var(--accent-red); padding: 1.5rem; margin-bottom: 2rem; border-radius: 8px;">
-                        <div style="color: var(--accent-red); font-weight: 700; font-size: 1.1rem; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.8rem;">
-                            <span>⚠️</span> PROTOCOLE DE SAISIE
+                    <!-- Grille Ultra-Compacte 3 Niveaux -->
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0;">
+                        
+                        <!-- CnB 1 -->
+                        <div class="info-card" style="border-color: #facc15;">
+                            <div class="card-header" style="background: rgba(250, 204, 21, 0.1); padding: 0.8rem; border-bottom: 2px solid #facc15;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span style="font-size: 1.5rem;">📦</span>
+                                    <div>
+                                        <div style="color: #facc15; font-weight: 700; font-size: 1rem;">CnB 1</div>
+                                        <div style="font-size: 0.75rem; color: #facc15; opacity: 0.8;">Mineure</div>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="background: #facc15; color: #000; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.8rem; font-weight: 700;">V2</div>
+                                    <div style="font-size: 0.7rem; color: #facc15; margin-top: 0.2rem;">-2PL • 1CY</div>
+                                </div>
+                            </div>
+                            <div class="card-content" style="padding: 0.8rem;">
+                                <ul style="font-size: 0.75rem; line-height: 1.3; columns: 2; column-gap: 0.5rem; margin: 0; padding-left: 1rem;">
+                                    <li>Tenue non conforme</li>
+                                    <li>Eau de Javel</li>
+                                    <li>Lampe torche (sauf CWU)</li>
+                                    <li>Livres non-UU</li>
+                                    <li>Stock vivres (>4)</li>
+                                    <li>Ingrédients (>20)</li>
+                                    <li>Matériaux récup</li>
+                                    <li>Bombe peinture</li>
+                                    <li>Nourriture non-UU</li>
+                                    <li>Sac à dos / Baril</li>
+                                    <li>Équipement sport</li>
+                                    <li>Calculatrice</li>
+                                    <li>Export rations/eau</li>
+                                    <li>Boussole / Jumelles</li>
+                                    <li>Extincteur</li>
+                                    <li>E-cig (sauf Loy.)</li>
+                                    <li>Matériel entretien</li>
+                                    <li>Request (sauf L4+)</li>
+                                </ul>
+                            </div>
                         </div>
-                        <div style="font-size: 0.95rem; line-height: 1.6; color: var(--text-secondary);">
-                            Toute contrebande identifiée doit être immédiatement confisquée et stockée au NEXUS. Le porteur est soumis au verdict déterminé par le niveau de la contrebande.
+
+                        <!-- CnB 2 -->
+                        <div class="info-card" style="border-color: #fb923c;">
+                            <div class="card-header" style="background: rgba(251, 146, 60, 0.1); padding: 0.8rem; border-bottom: 2px solid #fb923c;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span style="font-size: 1.5rem;">⚠️</span>
+                                    <div>
+                                        <div style="color: #fb923c; font-weight: 700; font-size: 1rem;">CnB 2</div>
+                                        <div style="font-size: 0.75rem; color: #fb923c; opacity: 0.8;">Majeure</div>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="background: #fb923c; color: #fff; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.8rem; font-weight: 700;">V5</div>
+                                    <div style="font-size: 0.7rem; color: #fb923c; margin-top: 0.2rem;">-8PL • 3CY</div>
+                                </div>
+                            </div>
+                            <div class="card-content" style="padding: 0.8rem;">
+                                <ul style="font-size: 0.75rem; line-height: 1.3; columns: 2; column-gap: 0.5rem; margin: 0; padding-left: 1rem;">
+                                    <li>Radio portative</li>
+                                    <li>Printer</li>
+                                    <li>Matériel médical</li>
+                                    <li>Armes non-tranchantes</li>
+                                    <li>Pied de biche (Duke)</li>
+                                    <li>Menottes / Retenue</li>
+                                    <li>Narcotiques</li>
+                                    <li>Matière biologique</li>
+                                    <li>Jerrican essence</li>
+                                    <li>NVG (nocturne)</li>
+                                    <li>Kit crochetage</li>
+                                    <li>Cristal d'énergie</li>
+                                    <li>Carte CID volée</li>
+                                    <li>Tenue/Brass. CWU</li>
+                                    <li>Carte comm. illégale</li>
+                                    <li>Tenue Hazmat</li>
+                                    <li>Matraque / Taser</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- CnB 3 -->
+                        <div class="info-card" style="border-color: #ef4444;">
+                            <div class="card-header" style="background: rgba(239, 68, 68, 0.1); padding: 0.8rem; border-bottom: 2px solid #ef4444;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span style="font-size: 1.5rem;">💀</span>
+                                    <div>
+                                        <div style="color: #ef4444; font-weight: 700; font-size: 1rem;">CnB 3</div>
+                                        <div style="font-size: 0.75rem; color: #ef4444; opacity: 0.8;">Critique</div>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="background: #ef4444; color: #fff; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.8rem; font-weight: 700;">V7</div>
+                                    <div style="font-size: 0.7rem; color: #ef4444; margin-top: 0.2rem;">-31PL • AMP</div>
+                                </div>
+                            </div>
+                            <div class="card-content" style="padding: 0.8rem;">
+                                <ul style="font-size: 0.75rem; line-height: 1.3; columns: 2; column-gap: 0.5rem; margin: 0; padding-left: 1rem;">
+                                    <li>Arme tranchante</li>
+                                    <li>Pied de biche (vrai)</li>
+                                    <li>Couteau / Hache</li>
+                                    <li>Armes à feu</li>
+                                    <li>Tenue Rebelle</li>
+                                    <li>Munitions</li>
+                                    <li>Protection corps</li>
+                                    <li>Kevlar énergétique</li>
+                                    <li>Carte accès Cartel</li>
+                                    <li>Explosifs</li>
+                                    <li>Matériel MPF</li>
+                                    <li>Combine Lock</li>
+                                    <li>Tourelle / Manhack</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
 
-                    <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 0.95rem; line-height: 1.6;">
-                        La contrebande est classée en 3 niveaux de gravité selon la dangerosité pour l'ordre public. Chaque niveau correspond à un verdict spécifique. Cliquez sur chaque niveau pour voir la liste complète des objets interdits.
-                    </p>
-
-                    <!-- CnB 1 - Niveau Mineur -->
-                    <div style="border: 3px solid #facc15; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; background: linear-gradient(135deg, rgba(250, 204, 21, 0.05), rgba(250, 204, 21, 0.02));">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid rgba(250, 204, 21, 0.3);">
-                            <h3 style="margin: 0; font-size: 1.5rem; color: #facc15; font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 2px;">
-                                📦 CnB 1 - CONTREBANDE MINEURE
-                            </h3>
-                            <span style="font-size: 0.9rem; padding: 0.5rem 1rem; background: rgba(250, 204, 21, 0.2); border: 2px solid #facc15; border-radius: 8px; font-weight: 700; color: #facc15;">
-                                VERDICT 2
-                            </span>
+                    <!-- Procédure -->
+                    <div style="background: rgba(0, 212, 255, 0.05); border-left: 3px solid var(--accent-cyan); padding: 0.8rem; margin-top: 1rem; border-radius: 4px;">
+                        <strong style="color: var(--accent-cyan); font-size: 0.9rem;">⚡ PROCÉDURE</strong>
+                        <div style="margin-top: 0.3rem; color: var(--text-secondary); font-size: 0.8rem; line-height: 1.4;">
+                            Saisie immédiate → Stockage NEXUS → Documentation CID + nature + date/heure → Application verdict → Transmission Canal D
                         </div>
-                        <ul>
-                            <li><strong>Tenue non conforme</strong> - Tenue obtenue illégalement / Non port du brassard</li>
-                            <li><strong>Eau de Javel</strong></li>
-                            <li><strong>Lampe torche</strong> - Excepté CWU</li>
-                            <li><strong>Livres</strong> - Excepté ceux approuvés par l'Union</li>
-                            <li><strong>Stock de vivres (>4)</strong> - Pas de verdict si travail à la distillerie</li>
-                            <li><strong>Ingrédients (>20)</strong></li>
-                            <li><strong>Matériaux de récupération</strong> - Récupérés dans les poubelles</li>
-                            <li><strong>Bombe de peinture</strong></li>
-                            <li><strong>Nourriture non approuvée</strong></li>
-                            <li><strong>Sac à dos et Baril</strong></li>
-                            <li><strong>Équipement de sport</strong> - Ballons de basket, foot, tennis...</li>
-                            <li><strong>Calculatrice</strong> - Hors commerçant & CWU</li>
-                            <li><strong>Exportation Rations / Eau</strong> - Sortie Haute-Ville ou >4 canettes Breen's</li>
-                            <li><strong>Boussole / Jumelles</strong></li>
-                            <li><strong>Extincteur</strong></li>
-                            <li><strong>Cigarette électronique</strong> - Sauf Loyaliste</li>
-                            <li><strong>Matériel d'entretien</strong> - Éponge, balai...</li>
-                            <li><strong>Request Device</strong> - Sauf Loyaliste Rang 4+</li>
-                        </ul>
-                        <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(250, 204, 21, 0.1); border-left: 4px solid #facc15; border-radius: 6px;">
-                            <strong style="color: #facc15; font-size: 1.1rem;">Sanction :</strong> <span style="color: var(--text-primary);">-2 PL | 1 CY | Confiscation</span>
-                        </div>
-                    </div>
-
-                    <!-- CnB 2 - Niveau Majeur -->
-                    <div style="border: 3px solid #fb923c; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; background: linear-gradient(135deg, rgba(251, 146, 60, 0.05), rgba(251, 146, 60, 0.02));">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid rgba(251, 146, 60, 0.3);">
-                            <h3 style="margin: 0; font-size: 1.5rem; color: #fb923c; font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 2px;">
-                                📦 CnB 2 - CONTREBANDE MAJEURE
-                            </h3>
-                            <span style="font-size: 0.9rem; padding: 0.5rem 1rem; background: rgba(251, 146, 60, 0.2); border: 2px solid #fb923c; border-radius: 8px; font-weight: 700; color: #fb923c;">
-                                VERDICT 5
-                            </span>
-                        </div>
-                        <ul>
-                            <li><strong>Radio portative</strong></li>
-                            <li><strong>Printer</strong></li>
-                            <li><strong>Matériel médical</strong></li>
-                            <li><strong>Armes blanches non tranchantes</strong> - Inclus: Pied de biche (Duke)</li>
-                            <li><strong>Menottes / Retenue</strong></li>
-                            <li><strong>Narcotique (Drogue)</strong></li>
-                            <li><strong>Matière Biologique</strong> - Chair humaine / Chair à zombie</li>
-                            <li><strong>Jerrican d'essence</strong></li>
-                            <li><strong>NVG (Vision Nocturne)</strong></li>
-                            <li><strong>Kit de Crochetage</strong></li>
-                            <li><strong>Cristal d'énergie</strong></li>
-                            <li><strong>Carte CID volée</strong></li>
-                            <li><strong>Tenue ou Brassard CWU</strong> - Usurpation d'identité</li>
-                            <li><strong>Carte Commerçante</strong> - Illégale / Volée</li>
-                            <li><strong>Tenue Hazmat</strong></li>
-                            <li><strong>Matraque / Taser</strong> - Armement de la Protection Civile</li>
-                            <li><strong>Barricade / Echelle</strong></li>
-                        </ul>
-                        <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(251, 146, 60, 0.1); border-left: 4px solid #fb923c; border-radius: 6px;">
-                            <strong style="color: #fb923c; font-size: 1.1rem;">Sanction :</strong> <span style="color: var(--text-primary);">-8 PL | 3 CY | Confiscation + Interrogatoire Musclé</span>
-                        </div>
-                    </div>
-
-                    <!-- CnB 3 - Niveau Critique -->
-                    <div style="border: 3px solid #ef4444; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(239, 68, 68, 0.03)); box-shadow: 0 0 30px rgba(239, 68, 68, 0.2);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid rgba(239, 68, 68, 0.4);">
-                            <h3 style="margin: 0; font-size: 1.5rem; color: #ef4444; font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 15px rgba(239, 68, 68, 0.5);">
-                                📦 CnB 3 - CONTREBANDE CRITIQUE
-                            </h3>
-                            <span style="font-size: 0.9rem; padding: 0.5rem 1rem; background: rgba(239, 68, 68, 0.25); border: 2px solid #ef4444; border-radius: 8px; font-weight: 700; color: #ffffff;">
-                                VERDICT 7
-                            </span>
-                        </div>
-                        <ul style="color: #ffcccc;">
-                            <li><strong>Arme blanche tranchante +</strong> - Ex: Vrai Pied de biche, couteau, hache...</li>
-                            <li><strong>Armes à feu</strong> - Tout type d'arme de tir</li>
-                            <li><strong>Tenue Rebelle</strong> - Symbole de la résistance</li>
-                            <li><strong>Munitions</strong> - De tous types</li>
-                            <li><strong>Protection Corporelle</strong> - Kevlar & Kevlar énergétique</li>
-                            <li><strong>Carte d'accès Cartel</strong></li>
-                            <li><strong>Explosifs</strong></li>
-                            <li><strong>Matériel MPF</strong> - Combine Lock, Tourelle, Manhack...</li>
-                        </ul>
-                        <div style="margin-top: 1.5rem; padding: 1.2rem; background: rgba(239, 68, 68, 0.18); border-left: 4px solid #ef4444; border-radius: 6px;">
-                            <strong style="color: #ffffff; font-size: 1.1rem; text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);">Sanction :</strong> <span style="color: #ffcccc;">-31 PL | AMPUTATION / STÉRILISATION</span>
-                        </div>
-                    </div>
-
-                    <!-- Note procédurale -->
-                    <div style="background: rgba(0, 212, 255, 0.08); border: 2px solid var(--accent-cyan); padding: 1.5rem; margin-top: 2rem; border-radius: 8px;">
-                        <div style="color: var(--accent-cyan); font-weight: 700; font-size: 1rem; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.8rem;">
-                            <span>ℹ️</span> PROCÉDURE OPÉRATIONNELLE
-                        </div>
-                        <ul style="margin: 0; padding-left: 1.5rem; color: var(--text-secondary);">
-                            <li style="margin-bottom: 0.5rem;">Fouille systématique lors des inspections et contrôles</li>
-                            <li style="margin-bottom: 0.5rem;">Saisie immédiate et stockage au NEXUS dans le casier approprié</li>
-                            <li style="margin-bottom: 0.5rem;">Documentation obligatoire : CID du porteur, nature de la contrebande, date/heure</li>
-                            <li style="margin-bottom: 0.5rem;">Application du verdict correspondant au niveau de contrebande</li>
-                            <li>Transmission au Canal D (#contrebande) pour traçabilité</li>
-                        </ul>
                     </div>
                 </div>
 
                 <div class="combine-footer">
-                    CONTRABAND_CLASSIFICATION_COMPLETE // 3_LEVELS_DEFINED // ENFORCEMENT_PROTOCOLS_ACTIVE
+                    [CONTRABAND_SYSTEM_v3.1 - 3_LEVELS_ACTIVE]
                 </div>
             </div>
         </div>
     </main>
 
-    <script type="module" src="assets/js/auth.js"></script>
     <script src="assets/js/global-nav.js"></script>
     <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
 </body>
 </html>

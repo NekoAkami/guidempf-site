@@ -1,131 +1,150 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Unités & Grades — Metropolice</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-  </head>
-  <body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unites et Grades - MPF Documentation</title>
+    <link rel="stylesheet" href="assets/css/main-style.css">
+    <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/global-nav.css">
+    <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
+</head>
+<body>
+    <!-- Scanline overlay -->
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
     <header class="site-header">
-      <div class="container">
-        <h1 class="logo">METROPOLICE FORCE</h1>
-        <nav>
-          <ul class="nav">
-            <li><a href="index.html">Accueil</a></li>
-            <li><a href="about.html">Présentation</a></li>
-            <li><a href="units.html" class="active">Unités</a></li>
-            <li><a href="tactics.html">Tactiques</a></li>
-            <li><a href="equipment.html">Équipement</a></li>
-            <li><a href="contact.html">Contact</a></li>
-            <li id="authBtn"></li>
-          </ul>
-        </nav>
-      </div>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <div>
+                        <h1 class="logo">MPF</h1>
+                        <p class="logo-subtitle">Metropolice Force Documentation</p>
+                    </div>
+                </div>
+                <div id="authBtn"></div>
+            </div>
+        </div>
     </header>
 
-    <main class="container">
-      <h1 style="color:var(--accent)">Unités & Grades</h1>
+    <main>
+        <div class="container">
+            <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;">
+                <div class="combine-header">
+                    <h2>UNITES ET GRADES</h2>
+                    <span class="header-code">UNT // STRUCTURE DU PERSONNEL</span>
+                </div>
 
-      <div class="section">
-        <h2>Hiérarchie</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Rang</th>
-              <th>Titre</th>
-              <th>Responsabilités</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>1</strong></td>
-              <td>Officier de Patrouille</td>
-              <td>Exécution des missions, terrain</td>
-            </tr>
-            <tr>
-              <td><strong>2</strong></td>
-              <td>Sergent</td>
-              <td>Supervision d'escouade, coordinateur terrain</td>
-            </tr>
-            <tr>
-              <td><strong>3</strong></td>
-              <td>Lieutenant</td>
-              <td>Chef de secteur, coordination tactique</td>
-            </tr>
-            <tr>
-              <td><strong>4</strong></td>
-              <td>Commandant</td>
-              <td>Chef de zone, responsable opérationnel</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+                <div style="text-align: center; margin: 1.5rem 0; padding: 1rem; background: rgba(0, 170, 255, 0.02); border: 1px solid rgba(0, 170, 255, 0.08);">
+                    <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7;">
+                        Nomenclature officielle des grades et designations d'unites au sein de la <strong style="color: var(--accent-cyan);">Metropolice Force</strong>. Chaque grade confere des autorisations et responsabilites specifiques.
+                    </p>
+                </div>
 
-      <div class="section">
-        <h2>Unités Spécialisées</h2>
-        <div class="cards">
-          <div class="card">
-            <h3>Patrouille Urbaine</h3>
-            <p>Unités standards assurant les rondes de routine, contrôles d'identité et présence dissuasive dans les secteurs assignés.</p>
-          </div>
-          <div class="card">
-            <h3>Escouades Tactiques</h3>
-            <p>Équipes spécialisées pour interventions à haut risque, opérations coordonnées et soutien aux patrouilles standards.</p>
-          </div>
-          <div class="card">
-            <h3>Unités de Réaction Rapide</h3>
-            <p>Déploiement immédiat pour gestion de crise, contrôle de foule et opérations d'urgence.</p>
-          </div>
+                <!-- Grades principaux -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>GRADES PRINCIPAUX</h2>
+                        <span class="header-code">HIERARCHIE ASCENDANTE</span>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid rgba(0, 170, 255, 0.15);">
+                                <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">GRADE</th>
+                                <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">DESIGNATION</th>
+                                <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">ROLE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-muted);">RCT</td>
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Recrue</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">En formation. Toujours accompagnee d'un 03+.</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-muted);">01</td>
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Garde</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Patrouille accompagnee. Execution d'ordres.</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--text-muted);">02</td>
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Soldat</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Patrouille sous supervision. Verdicts V1.</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--accent-cyan);">03</td>
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Officier</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Patrouille autonome. Verdicts V1-V2. Formation RCT.</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: var(--accent-cyan);">04</td>
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Caporal</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Dispatch. Verdicts V1-V3. Conscription. Test loyaute.</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: #ff8800;">05</td>
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Sergent</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Commandement d'escouade. Verdicts V1-V4. Divisions.</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: #ff4444;">OfC</td>
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Officier en Chef</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Supervision terrain. Verdicts V1-V5. Formations.</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
+                                <td style="padding: 0.5rem; color: #ff4444;">DvL</td>
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Division Leader</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Direction de division. Promotions. V7 autorise.</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.5rem; color: #fff;">CMD</td>
+                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Commandant</td>
+                                <td style="padding: 0.5rem; color: var(--text-muted);">Autorite totale. Decisions strategiques. Contact Overwatch.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Designation d'unite -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
+                    <div class="combine-header">
+                        <h2>FORMAT DE DESIGNATION</h2>
+                        <span class="header-code">NOMENCLATURE</span>
+                    </div>
+                    <div style="padding: 0.5rem 0;">
+                        <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.6; margin-bottom: 0.8rem;">Chaque unite est identifiee par un format standardise :</p>
+                        <div style="text-align: center; padding: 1rem; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 170, 255, 0.15); margin-bottom: 0.8rem;">
+                            <span style="font-family: 'Share Tech Mono', monospace; font-size: 1.2rem; color: var(--accent-cyan); letter-spacing: 3px;">MPF-[DIVISION].[GRADE]-[NUMERO]</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+                            <div style="padding: 0.5rem; border-left: 2px solid var(--accent-cyan);">
+                                <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan);">EXEMPLE 1</div>
+                                <div style="color: var(--text-primary); font-size: 0.9rem;">MPF-UNION.03-472</div>
+                                <div style="color: var(--text-muted); font-size: 0.8rem;">Officier 03 de la division UNION, matricule 472</div>
+                            </div>
+                            <div style="padding: 0.5rem; border-left: 2px solid var(--accent-cyan);">
+                                <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan);">EXEMPLE 2</div>
+                                <div style="color: var(--text-primary); font-size: 0.9rem;">MPF-HELIX.05-118</div>
+                                <div style="color: var(--text-muted); font-size: 0.8rem;">Sergent 05 de la division HELIX, matricule 118</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lien vers hierarchie -->
+                <div style="margin-top: 1.5rem; text-align: center;">
+                    <a href="hierarchie.html" style="display: inline-block; padding: 0.8rem 2rem; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); text-decoration: none; font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; letter-spacing: 1px; transition: all 0.1s ease;">
+                        VOIR ORGANIGRAMME COMPLET
+                    </a>
+                </div>
+            </div>
         </div>
-      </div>
-
-      <div class="section">
-        <h2>Codes & Designations</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Code</th>
-              <th>Signification</th>
-              <th>Priorité</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>10-0</strong></td>
-              <td>Alerte maximale - Toutes unités</td>
-              <td><span class="badge admin">CRITIQUE</span></td>
-            </tr>
-            <tr>
-              <td><strong>10-15</strong></td>
-              <td>Civil en détention</td>
-              <td><span class="badge pending">MOYEN</span></td>
-            </tr>
-            <tr>
-              <td><strong>10-20</strong></td>
-              <td>Position/Localisation</td>
-              <td><span class="badge user">BAS</span></td>
-            </tr>
-            <tr>
-              <td><strong>10-99</strong></td>
-              <td>Officier en danger</td>
-              <td><span class="badge admin">CRITIQUE</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div style="text-align:center;margin:2rem 0">
-        <a href="index.html" class="btn">← Retour Accueil</a>
-      </div>
     </main>
 
-    <footer class="site-footer">
-      <div class="container">© 2026 — Guide Metropolice Force</div>
-    </footer>
-    
-    <script type="module">
-      import { updateAuthButton } from './assets/js/auth.js';
-    </script>
-  </body>
+    <script src="assets/js/global-nav.js"></script>
+    <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
+</body>
 </html>

@@ -1,42 +1,73 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>En attente — Metropolice</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-    <style>
-      .pending-container{max-width:600px;margin:4rem auto;background:var(--bg-alt);border:2px solid var(--warning);border-radius:8px;padding:3rem;text-align:center}
-      .pending-icon{font-size:4rem;margin-bottom:1rem}
-      .pending-container h1{color:var(--warning);text-shadow:0 0 10px var(--warning)}
-      .pending-container p{color:var(--muted);line-height:1.8;margin:1rem 0}
-      .btn-group{margin-top:2rem}
-      .btn-group a{margin:0 .5rem}
-    </style>
-  </head>
-  <body style="display:flex;flex-direction:column;min-height:100vh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>En Attente - MPF Documentation</title>
+    <link rel="stylesheet" href="assets/css/main-style.css">
+    <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/global-nav.css">
+    <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
+</head>
+<body>
+    <!-- Scanline overlay -->
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
     <header class="site-header">
-      <div class="container">
-        <h1 class="logo">METROPOLICE FORCE</h1>
-      </div>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <div>
+                        <h1 class="logo">MPF</h1>
+                        <p class="logo-subtitle">Metropolice Force Documentation</p>
+                    </div>
+                </div>
+                <div id="authBtn"></div>
+            </div>
+        </div>
     </header>
 
-    <main style="flex:1">
-      <div class="pending-container">
-        <div class="pending-icon">⏳</div>
-        <h1>En Attente de Validation</h1>
-        <p>Ton compte a été enregistré avec succès.</p>
-        <p style="color:var(--text)">Un administrateur doit valider ton accès avant que tu puisses te connecter.</p>
-        <p style="color:var(--muted);font-size:.95rem">Cela prendre généralement quelques minutes. Réessaye de te connecter dans un instant.</p>
-        <div class="btn-group">
-          <a href="login.html" class="btn">Essayer de se connecter</a>
-          <a href="index.html" class="btn secondary">Retour Accueil</a>
+    <main>
+        <div class="container">
+            <div class="combine-terminal-wrapper" style="margin-top: 3rem;">
+                <div class="combine-header">
+                    <h2>EN ATTENTE DE VALIDATION</h2>
+                    <span class="header-code">SYS // PENDING APPROVAL</span>
+                </div>
+
+                <div style="text-align: center; padding: 3rem 1rem;">
+                    <div style="font-family: 'Share Tech Mono', monospace; font-size: 3rem; color: var(--accent-cyan); margin-bottom: 1rem; letter-spacing: 5px;">...</div>
+                    <h3 style="font-family: 'Orbitron', sans-serif; color: var(--text-primary); font-size: 1.2rem; margin-bottom: 1rem; letter-spacing: 2px;">DEMANDE EN COURS DE TRAITEMENT</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.7; max-width: 500px; margin: 0 auto 1.5rem;">
+                        Votre inscription a ete enregistree. Un <strong style="color: var(--accent-cyan);">administrateur</strong> doit approuver votre compte avant que vous puissiez acceder au portail.
+                    </p>
+
+                    <div style="display: inline-block; padding: 1rem 2rem; background: rgba(0, 170, 255, 0.02); border: 1px solid rgba(0, 170, 255, 0.08); margin-bottom: 1.5rem;">
+                        <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan); margin-bottom: 0.5rem;">STATUT</div>
+                        <div style="color: #ff8800; font-family: 'Share Tech Mono', monospace; font-size: 0.9rem; letter-spacing: 2px;">PENDING_APPROVAL</div>
+                    </div>
+
+                    <div style="display: block;">
+                        <p style="color: var(--text-muted); font-size: 0.8rem; line-height: 1.6;">
+                            Si votre demande n'est pas traitee dans un delai raisonnable, contactez un <strong style="color: var(--text-primary);">04+</strong> directement.<br>
+                            Ne tentez pas de creer un nouveau compte.
+                        </p>
+                    </div>
+                </div>
+
+                <div style="text-align: center; padding-bottom: 1.5rem;">
+                    <a href="login.html" style="display: inline-block; padding: 0.6rem 1.5rem; border: 1px solid rgba(0, 170, 255, 0.3); color: var(--accent-cyan); text-decoration: none; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; letter-spacing: 1px; transition: all 0.1s ease;">
+                        RETOUR A LA CONNEXION
+                    </a>
+                </div>
+            </div>
         </div>
-      </div>
     </main>
 
-    <footer class="site-footer">
-      <div class="container">© 2026 — Metropolice Force</div>
-    </footer>
-  </body>
+    <script src="assets/js/global-nav.js"></script>
+    <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
+</body>
 </html>

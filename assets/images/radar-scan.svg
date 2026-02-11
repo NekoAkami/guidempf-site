@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">
+  <defs>
+    <radialGradient id="radarGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#00cc66;stop-opacity:0.1"/>
+      <stop offset="100%" style="stop-color:#001a0d;stop-opacity:0"/>
+    </radialGradient>
+    <filter id="greenGlow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <circle cx="150" cy="150" r="140" fill="url(#radarGlow)" stroke="#00cc66" stroke-width="1" opacity="0.4"/>
+
+  <!-- Range circles -->
+  <circle cx="150" cy="150" r="105" fill="none" stroke="#00cc66" stroke-width="0.5" opacity="0.2"/>
+  <circle cx="150" cy="150" r="70" fill="none" stroke="#00cc66" stroke-width="0.5" opacity="0.25"/>
+  <circle cx="150" cy="150" r="35" fill="none" stroke="#00cc66" stroke-width="0.5" opacity="0.3"/>
+
+  <!-- Crosshairs -->
+  <line x1="10" y1="150" x2="290" y2="150" stroke="#00cc66" stroke-width="0.5" opacity="0.15"/>
+  <line x1="150" y1="10" x2="150" y2="290" stroke="#00cc66" stroke-width="0.5" opacity="0.15"/>
+  <line x1="50" y1="50" x2="250" y2="250" stroke="#00cc66" stroke-width="0.3" opacity="0.1"/>
+  <line x1="250" y1="50" x2="50" y2="250" stroke="#00cc66" stroke-width="0.3" opacity="0.1"/>
+
+  <!-- Sweep beam -->
+  <g transform-origin="150 150">
+    <animateTransform attributeName="transform" type="rotate" from="0 150 150" to="360 150 150" dur="4s" repeatCount="indefinite"/>
+    <path d="M150 150 L150 10 A140 140 0 0 1 248 52 Z" fill="#00cc66" opacity="0.08"/>
+    <line x1="150" y1="150" x2="150" y2="10" stroke="#00cc66" stroke-width="1.5" opacity="0.6" filter="url(#greenGlow)"/>
+  </g>
+
+  <!-- Targets / blips -->
+  <g filter="url(#greenGlow)">
+    <circle cx="180" cy="90" r="3" fill="#00cc66">
+      <animate attributeName="opacity" values="0;1;1;0" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="r" values="3;3;2;2" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="110" cy="200" r="2.5" fill="#00cc66">
+      <animate attributeName="opacity" values="0;0;1;1;0" dur="4s" repeatCount="indefinite" begin="1s"/>
+    </circle>
+    <circle cx="220" cy="170" r="2" fill="#00cc66">
+      <animate attributeName="opacity" values="0;0;0;1;0" dur="4s" repeatCount="indefinite" begin="2s"/>
+    </circle>
+    <circle cx="130" cy="120" r="3.5" fill="#00ff66" opacity="0.8">
+      <animate attributeName="opacity" values="0.8;0.4;0.8" dur="1.5s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- Center dot -->
+  <circle cx="150" cy="150" r="4" fill="#00cc66" filter="url(#greenGlow)">
+    <animate attributeName="r" values="4;5;4" dur="2s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Labels -->
+  <text x="155" y="25" font-family="monospace" font-size="8" fill="#00cc66" opacity="0.5">N</text>
+  <text x="275" y="155" font-family="monospace" font-size="8" fill="#00cc66" opacity="0.5">E</text>
+  <text x="155" y="290" font-family="monospace" font-size="8" fill="#00cc66" opacity="0.5">S</text>
+  <text x="17" y="155" font-family="monospace" font-size="8" fill="#00cc66" opacity="0.5">W</text>
+
+  <!-- Scale text -->
+  <text x="150" y="296" text-anchor="middle" font-family="monospace" font-size="7" fill="#00cc66" opacity="0.3">
+    SECTOR SCAN // ACTIVE
+    <animate attributeName="opacity" values="0.3;0.6;0.3" dur="3s" repeatCount="indefinite"/>
+  </text>
+</svg>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procedures - MPF Documentation</title>
+    <link rel="stylesheet" href="assets/css/main-style.css">
+    <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/global-nav.css">
+    <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
+</head>
+<body>
+    <!-- Scanline overlay -->
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <div>
+                        <h1 class="logo">MPF</h1>
+                        <p class="logo-subtitle">Metropolice Force Documentation</p>
+                    </div>
+                </div>
+                <div id="authBtn"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;">
+                <div class="combine-header">
+                    <h2>PROCEDURES OPERATIONNELLES</h2>
+                    <span class="header-code">SOP // STANDARD OPERATING PROCEDURES</span>
+                </div>
+
+                <div style="text-align: center; margin: 1.5rem 0; padding: 1rem; background: rgba(0, 170, 255, 0.02); border: 1px solid rgba(0, 170, 255, 0.08);">
+                    <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7;">
+                        Ensemble des procedures standard a suivre en situation operationnelle. Le non-respect de ces protocoles constitue une <strong style="color: #ff4444;">breche disciplinaire</strong>.
+                    </p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+
+                    <a href="procedure-incarceration.html" class="info-card" style="text-decoration: none;">
+                        <div class="card-header">
+                            <span class="card-code">SOP-01</span>
+                            <h3>INCARCERATION</h3>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Procedure complete de detention : transfert, appel hierarchique, prononce du verdict. Inclut le protocole V7.</p>
+                        <div style="margin-top: 0.5rem; font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--accent-green);">TOUT GRADE</div>
+                    </a>
+
+                    <a href="procedure-code7.html" class="info-card" style="text-decoration: none;">
+                        <div class="card-header">
+                            <span class="card-code">SOP-02</span>
+                            <h3>CODE 7 - FORCE LETALE</h3>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Protocole d'autorisation de force letale : conditions, validation hierarchique et rapport post-incident.</p>
+                        <div style="margin-top: 0.5rem; font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: #ff4444;">03+ REQUIS</div>
+                    </a>
+
+                    <a href="procedure-conscription.html" class="info-card" style="text-decoration: none;">
+                        <div class="card-header">
+                            <span class="card-code">SOP-03</span>
+                            <h3>CONSCRIPTION</h3>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Processus de recrutement de nouvelles unites : selection, test d'aptitude, integration et formation initiale.</p>
+                        <div style="margin-top: 0.5rem; font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: #ff4444;">03+ REQUIS</div>
+                    </a>
+
+                    <a href="procedure-dispatch-admin.html" class="info-card" style="text-decoration: none;">
+                        <div class="card-header">
+                            <span class="card-code">SOP-04</span>
+                            <h3>DISPATCH ADMINISTRATIF</h3>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Gestion des transmissions administratives, registres de patrouille et coordination inter-unites.</p>
+                        <div style="margin-top: 0.5rem; font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: #ff4444;">04+ REQUIS</div>
+                    </a>
+
+                    <a href="test-loyaute.html" class="info-card" style="text-decoration: none;">
+                        <div class="card-header">
+                            <span class="card-code">SOP-05</span>
+                            <h3>TEST DE LOYAUTE</h3>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Evaluation de loyaute pour Loyalistes et CWU ayant accumule trop de verdicts. Succes ou amputation.</p>
+                        <div style="margin-top: 0.5rem; font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: #ff4444;">04+ REQUIS</div>
+                    </a>
+
+                    <a href="declarations.html" class="info-card" style="text-decoration: none;">
+                        <div class="card-header">
+                            <span class="card-code">SOP-06</span>
+                            <h3>DECLARATIONS</h3>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Formulaires de declaration d'activite, depenses/gains, rapports et protocole d'absence.</p>
+                        <div style="margin-top: 0.5rem; font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--accent-green);">TOUT GRADE</div>
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/global-nav.js"></script>
+    <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
+</body>
+</html>

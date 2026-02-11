@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Loyauté - MPF Documentation</title>
+    <link rel="stylesheet" href="assets/css/main-style.css">
+    <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/global-nav.css">
+    <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
+</head>
+<body>
+    <!-- Scanline overlay -->
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <h1 class="logo">MPF</h1>
+                    <p class="logo-subtitle">Metropolice Force Documentation</p>
+                </div>
+                <div id="authBtn"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="combine-terminal-wrapper animate-fadeInUp">
+                <div class="combine-header">
+                    <h2>⚖️ TEST DE LOYAUTÉ</h2>
+                    <span class="header-code">PROTOCOLE LOY-CHK-101 - HABILITATION 04+</span>
+                </div>
+
+                <div class="combine-body">
+                    <!-- Restriction -->
+                    <div style="background: rgba(255, 107, 107, 0.15); border: 2px dashed #ff6b6b; padding: 1.5rem; margin-bottom: 2rem; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 1.2rem; font-weight: 700; color: #ff6b6b; margin-bottom: 0.5rem;">
+                            ⚠️ HABILITATION REQUISE : UNITÉ 04 MINIMUM ⚠️
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 0.9rem;">
+                            Procédure réservée aux grades 04, 03, 02, 01 et OFC
+                        </div>
+                    </div>
+
+                    <!-- Déclencheur -->
+                    <div class="info-card" style="margin-bottom: 2rem;">
+                        <div class="card-header">
+                            <div class="card-icon">🎯</div>
+                            <div class="card-title">Conditions de Déclenchement</div>
+                        </div>
+                        <div class="card-content">
+                            <p style="font-size: 0.95rem; line-height: 1.6; margin-bottom: 1rem;">
+                                Ce protocole s'applique lorsqu'un <strong style="color: var(--accent-cyan);">Loyaliste de Rang 1</strong> ou un membre de la <strong style="color: var(--accent-cyan);">CWU</strong> reçoit une quantité excessive de verdicts.
+                            </p>
+                            <div style="background: rgba(66, 135, 245, 0.1); border-left: 4px solid #4287f5; padding: 1rem; border-radius: 4px;">
+                                <strong style="color: #4287f5;">Objectif :</strong> Vérifier si l'individu mérite toujours son statut privilégié ou s'il représente une défaillance potentielle pour l'ordre établi.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Résultats possibles -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
+                        
+                        <!-- Succès -->
+                        <div class="info-card" style="border-color: #52c41a; box-shadow: 0 0 20px rgba(82, 196, 26, 0.2);">
+                            <div class="card-header" style="background: rgba(82, 196, 26, 0.1);">
+                                <div class="card-icon">✅</div>
+                                <div class="card-title" style="color: #52c41a;">RÉSULTAT : SUCCÈS</div>
+                            </div>
+                            <div class="card-content">
+                                <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(82, 196, 26, 0.1); border-radius: 6px;">
+                                    <strong style="color: #52c41a;">L'individu a prouvé sa fidélité aux valeurs de l'Union.</strong>
+                                </div>
+                                <div style="background: rgba(255, 255, 255, 0.05); padding: 1rem; border-radius: 6px;">
+                                    <strong style="color: var(--accent-cyan);">ACTION IMMÉDIATE :</strong><br>
+                                    <span style="color: var(--text-secondary);">
+                                        → Libération immédiate du sujet<br>
+                                        → Maintien du statut et privilèges<br>
+                                        → Rapport de conformité à soumettre
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Échec -->
+                        <div class="info-card" style="border-color: #da3633; box-shadow: 0 0 20px rgba(218, 54, 51, 0.2);">
+                            <div class="card-header" style="background: rgba(218, 54, 51, 0.1);">
+                                <div class="card-icon">❌</div>
+                                <div class="card-title" style="color: #da3633;">RÉSULTAT : ÉCHEC</div>
+                            </div>
+                            <div class="card-content">
+                                <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(218, 54, 51, 0.1); border-radius: 6px;">
+                                    <strong style="color: #da3633;">Le sujet représente une défaillance potentielle.</strong>
+                                </div>
+                                <div style="background: rgba(255, 255, 255, 0.05); padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+                                    <strong style="color: var(--accent-red);">SANCTION IMMÉDIATE :</strong><br>
+                                    <span style="color: var(--text-secondary);">
+                                        → <strong style="color: #fff;">Verdict Niveau 5</strong> appliqué<br>
+                                        → Destitution de TOUS les grades<br>
+                                        → Retour au statut de Citoyen standard
+                                    </span>
+                                </div>
+                                <div style="border: 1px solid #d48806; background: rgba(212, 136, 6, 0.1); padding: 0.8rem; border-radius: 6px; font-size: 0.85rem;">
+                                    ⚠️ <strong style="color: #d48806;">NOTE IMPORTANTE :</strong><br>
+                                    <span style="color: var(--text-secondary);">L'échec ne signifie PAS une mise à mort automatique.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Procédures selon cible -->
+                    <div style="background: rgba(10, 10, 15, 0.8); border: 2px solid #2a4a6a; padding: 2rem; margin-top: 2rem; border-radius: 8px;">
+                        <div style="color: var(--accent-cyan); font-weight: 700; font-size: 1.1rem; margin-bottom: 1.5rem; text-align: center;">
+                            📋 PROCÉDURES SELON TYPE DE CIBLE
+                        </div>
+
+                        <div style="display: grid; gap: 1.5rem;">
+                            <!-- Citoyen / Anti-Citoyen -->
+                            <div style="background: rgba(66, 135, 245, 0.05); border-left: 4px solid #4287f5; padding: 1rem; border-radius: 6px;">
+                                <strong style="color: #4287f5; font-size: 1rem;">SI CIBLE = Anti-Citoyen ou Citoyen :</strong><br><br>
+                                <span style="color: var(--text-secondary); line-height: 1.6;">
+                                    Rédiger un rapport détaillé à transmettre au Commandement et appliquer le <strong style="color: #fff;">Verdict 5</strong> pour échec au test de loyauté.
+                                </span>
+                            </div>
+
+                            <!-- Loyaliste -->
+                            <div style="background: rgba(255, 215, 0, 0.05); border-left: 4px solid #ffd700; padding: 1rem; border-radius: 6px;">
+                                <strong style="color: #ffd700; font-size: 1rem;">SI CIBLE = LOYALISTE :</strong><br><br>
+                                <span style="color: var(--text-secondary); line-height: 1.6;">
+                                    Rédiger un rapport et le transmettre à la <strong style="color: #fff;">direction CWU</strong> (gestionnaires par intérim) ou à l'<strong style="color: #fff;">Administrateur</strong> pour décision finale.
+                                </span>
+                            </div>
+
+                            <!-- CWU -->
+                            <div style="background: rgba(255, 107, 107, 0.05); border-left: 4px solid #ff6b6b; padding: 1rem; border-radius: 6px;">
+                                <strong style="color: #ff6b6b; font-size: 1rem;">SI CIBLE = CWU :</strong><br><br>
+                                <span style="color: var(--text-secondary); line-height: 1.6;">
+                                    Rédiger un rapport transmis aux <strong style="color: #fff;">Supérieurs de la PC</strong> → <strong style="color: #fff;">Superviseur</strong> → <strong style="color: #fff;">Administrateur</strong> pour jugement final de niveau supérieur.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Citation finale -->
+                    <div style="text-align: center; margin-top: 2.5rem; padding: 1.5rem; background: rgba(10, 10, 15, 0.5); border-radius: 8px;">
+                        <div style="font-size: 1rem; color: #4287f5; font-weight: 700; margin-bottom: 0.5rem;">
+                            "LA LOYAUTÉ SE PROUVE PAR LES ACTES"
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px;">
+                            Union Policy - Loyalty Check v2
+                        </div>
+                    </div>
+                </div>
+
+                <div class="combine-footer">
+                    [PROTOCOL_LOY-CHK-101 - LOYALTY_TEST_PROCEDURE_ACTIVE]
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/global-nav.js"></script>
+    <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
+</body>
+</html>
