@@ -162,6 +162,9 @@
         .rang-STB   { background: rgba(160, 0, 200, 0.15); color: #bb44dd; border: 1px solid rgba(160, 0, 200, 0.3); }
         .rang-STBE  { background: rgba(180, 0, 220, 0.18); color: #cc44ee; border: 1px solid rgba(180, 0, 220, 0.35); }
         .rang-CABAL { background: rgba(200, 0, 200, 0.2); color: #dd44dd; border: 1px solid rgba(200, 0, 200, 0.4); }
+        /* Missing */
+        .rang-MISSING { background: rgba(255, 0, 0, 0.25); color: #ff2222; border: 1px solid rgba(255, 0, 0, 0.5); animation: pulse-missing 1.5s ease-in-out infinite; }
+        @keyframes pulse-missing { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
 
         /* Buttons */
         .btn-sm {
@@ -420,6 +423,9 @@
                                     <option value="STBE">STBE</option>
                                     <option value="CABAL">CABAL</option>
                                 </optgroup>
+                                <optgroup label="─ Autre ─">
+                                    <option value="MISSING">MISSING</option>
+                                </optgroup>
                             </select>
                             <button class="btn-action primary" onclick="openAddModal()">+ AJOUTER UNITÉ</button>
                             <button class="btn-action" onclick="configureToken()" style="background:rgba(255,200,0,0.15);border-color:rgba(255,200,0,0.4);color:#ffc800;margin-left:8px;" title="Configurer le token GitHub pour sauvegarder">⚙ TOKEN</button>
@@ -530,6 +536,9 @@
                     <option value="STBE">STBE</option>
                     <option value="CABAL">CABAL</option>
                 </optgroup>
+                <optgroup label="─ Autre ─">
+                    <option value="MISSING">MISSING</option>
+                </optgroup>
             </select>
 
             <label>ORDRE</label>
@@ -628,8 +637,12 @@
           return matchSearch && matchDiv && matchRang;
         });
 
-        // Sort
+        // Sort — MISSING toujours en bas
         filtered.sort((a, b) => {
+          const aMissing = (a.rang || '') === 'MISSING' ? 1 : 0;
+          const bMissing = (b.rang || '') === 'MISSING' ? 1 : 0;
+          if (aMissing !== bMissing) return aMissing - bMissing;
+
           let va, vb;
           const key = currentSort.key;
           if (key === 'ordre') {
