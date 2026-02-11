@@ -8,10 +8,36 @@ class GlobalNavigation {
     }
 
     init() {
+        this.injectFavicon();
+        this.injectServerLogo();
         this.createNavigationHTML();
         this.markActivePage();
         this.setupMobileMenu();
         this.setupDropdowns();
+    }
+
+    // Injecte le favicon sur toutes les pages
+    injectFavicon() {
+        if (!document.querySelector('link[rel="icon"]')) {
+            const link = document.createElement('link');
+            link.rel = 'icon';
+            link.type = 'image/x-icon';
+            link.href = 'favicon.ico';
+            document.head.appendChild(link);
+        }
+    }
+
+    // Remplace le logo-icon "M" par l'image du serveur RP
+    injectServerLogo() {
+        const logoIcon = document.querySelector('.logo-icon');
+        if (logoIcon) {
+            const img = document.createElement('img');
+            img.src = 'assets/images/logo-serveur.jpg';
+            img.alt = 'Logo Serveur';
+            img.className = 'header-server-logo';
+            img.style.cssText = 'width:38px;height:38px;border-radius:4px;object-fit:cover;';
+            logoIcon.parentNode.replaceChild(img, logoIcon);
+        }
     }
 
     getMenuStructure() {
@@ -131,21 +157,19 @@ class GlobalNavigation {
     }
 
     markActivePage() {
-        setTimeout(() => {
-            const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-            const navLinks = document.querySelectorAll('.nav-link, .dropdown-link');
+        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        const navLinks = document.querySelectorAll('.nav-link, .dropdown-link');
 
-            navLinks.forEach(link => {
-                const href = link.getAttribute('href');
-                if (href === currentPage) {
-                    link.classList.add('active');
-                    const parentItem = link.closest('.nav-item');
-                    if (parentItem) {
-                        parentItem.classList.add('active-parent');
-                    }
+        navLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (href === currentPage) {
+                link.classList.add('active');
+                const parentItem = link.closest('.nav-item');
+                if (parentItem) {
+                    parentItem.classList.add('active-parent');
                 }
-            });
-        }, 100);
+            }
+        });
     }
 
     toggleMobileMenu() {

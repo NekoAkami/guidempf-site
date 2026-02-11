@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guide MPF - Metropolice Force Documentation</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="assets/css/main-style.css">
     <link rel="stylesheet" href="assets/css/combine-terminals.css">
     <link rel="stylesheet" href="assets/css/global-nav.css">
     <link rel="stylesheet" href="assets/css/interactive-system.css">
     <link rel="stylesheet" href="assets/css/combine-animations.css">
+    <link rel="stylesheet" href="assets/css/components.css">
 </head>
 <body>
-    <!-- Scanline overlay -->
     <div class="scanline-overlay"></div>
     <div class="particles-bg"></div>
     <header class="site-header">
@@ -33,84 +34,121 @@
         <div class="container">
             <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;">
                 <div class="combine-header">
-                    <h2 class="glitch-text" data-text="GUIDE DU PERSONNEL MPF"><span class="status-dot online" style="margin-right: 8px;"></span> GUIDE DU PERSONNEL MPF</h2>
-                    <span class="header-code">REF-GUIDE // DOCUMENTATION OPERATIONNELLE</span>
+                    <h2 class="glitch-text" data-text="GUIDE DU PERSONNEL MPF">GUIDE DU PERSONNEL MPF</h2>
+                    <span class="header-code">REF-GUIDE // DOCUMENTATION</span>
                 </div>
 
-                <div style="text-align: center; margin: 1.5rem 0; padding: 1rem; background: rgba(0, 170, 255, 0.02); border: 1px solid rgba(0, 170, 255, 0.08);" class="holo-container">
-                    <img src="assets/images/combine-logo-yellow.svg" alt="Combine Logo" class="badge-pulse" style="width: 80px; height: 95px; margin-bottom: 0.8rem;">
-                    <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7;">
-                        Ensemble des directives, protocoles et references destines au personnel de la <strong style="color: var(--accent-cyan);">Metropolice Force</strong>. Chaque agent est tenu de maitriser l'integralite de ces manuels.
+                <div style="padding: 0.8rem 0;">
+                    <p style="font-size: 0.92rem; color: var(--text-primary); line-height: 1.7; margin-bottom: 1rem;">
+                        Ensemble des directives, protocoles et références destinés au personnel de la <strong style="color: var(--accent-cyan);">Metropolice Force</strong>. Chaque agent est tenu de maîtriser l'intégralité de ces manuels.
                     </p>
                 </div>
 
-                <div class="card-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
-
-                    <a href="guide-terminologie.html" class="info-card" style="text-decoration: none;">
-                        <div class="card-header">
-                            <span class="card-code">GDE-01</span>
-                            <h3>TERMINOLOGIE COMBINE</h3>
+                <!-- Sections accordéon -->
+                <div class="accordion-section" data-default-open>
+                    <div class="accordion-header" aria-expanded="true">
+                        <h3><span style="color: var(--accent-cyan);">GDE-01</span> Terminologie Combine</h3>
+                        <span class="accordion-arrow">&#9654;</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p>Lexique complet des termes, désignations et codes utilisés par l'Union Universelle et la MPF. Indispensable pour toute communication radio et rapport écrit.</p>
+                            <a href="guide-terminologie.html" class="accordion-link">Consulter le guide complet</a>
                         </div>
-                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Lexique complet des termes, designations et codes utilises par l'Union Universelle et la MPF.</p>
-                    </a>
-
-                    <a href="guide-respect.html" class="info-card" style="text-decoration: none;">
-                        <div class="card-header">
-                            <span class="card-code">GDE-02</span>
-                            <h3>HIERARCHIE ET SALUTATIONS</h3>
-                        </div>
-                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Protocoles de salutation par rang et regles de respect hierarchique entre unites.</p>
-                    </a>
-
-                    <a href="guide-commandement.html" class="info-card" style="text-decoration: none;">
-                        <div class="card-header">
-                            <span class="card-code">GDE-03</span>
-                            <h3>CHAINE DE COMMANDEMENT</h3>
-                        </div>
-                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Structure de commandement, delegation d'autorite et protocoles de prise de decision.</p>
-                    </a>
-
-                    <a href="guide-dispatch.html" class="info-card" style="text-decoration: none;">
-                        <div class="card-header">
-                            <span class="card-code">GDE-04</span>
-                            <h3>DISPATCH ET HAUT-PARLEUR</h3>
-                        </div>
-                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Procedures de communication radio, messages de service et protocoles de dispatch.</p>
-                    </a>
-
-                    <a href="guide-vestimentaire.html" class="info-card" style="text-decoration: none;">
-                        <div class="card-header">
-                            <span class="card-code">GDE-05</span>
-                            <h3>CODE VESTIMENTAIRE</h3>
-                        </div>
-                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Reglements uniformes, equipements autorises et standards visuels pour chaque rang.</p>
-                    </a>
-
-                    <a href="guide-formations.html" class="info-card" style="text-decoration: none;">
-                        <div class="card-header">
-                            <span class="card-code">GDE-06</span>
-                            <h3>FORMATIONS TACTIQUES</h3>
-                        </div>
-                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Formations de combat, positionnements d'equipe et manoeuvres tactiques standard.</p>
-                    </a>
-
-                    <a href="guide-sociostatus.html" class="info-card" style="text-decoration: none;">
-                        <div class="card-header">
-                            <span class="card-code">GDE-07</span>
-                            <h3>STATUT SOCIETAL</h3>
-                        </div>
-                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Systeme de classification sociale, droits et restrictions par categorie de population.</p>
-                    </a>
-
-                    <a href="guide-breches.html" class="info-card" style="text-decoration: none;">
-                        <div class="card-header">
-                            <span class="card-code">GDE-08</span>
-                            <h3>BRECHES ET SANCTIONS</h3>
-                        </div>
-                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Infractions internes, violations du code de conduite et sanctions disciplinaires applicables.</p>
-                    </a>
-
+                    </div>
                 </div>
+
+                <div class="accordion-section">
+                    <div class="accordion-header" aria-expanded="false">
+                        <h3><span style="color: var(--accent-cyan);">GDE-02</span> Hiérarchie & Salutations</h3>
+                        <span class="accordion-arrow">&#9654;</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p>Protocoles de salutation par rang et règles de respect hiérarchique entre unités. Obligation de salut et formules réglementaires.</p>
+                            <a href="guide-respect.html" class="accordion-link">Consulter le guide complet</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-section">
+                    <div class="accordion-header" aria-expanded="false">
+                        <h3><span style="color: var(--accent-cyan);">GDE-03</span> Chaîne de Commandement</h3>
+                        <span class="accordion-arrow">&#9654;</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p>Structure de commandement, délégation d'autorité et protocoles de prise de décision au sein de la MPF.</p>
+                            <a href="guide-commandement.html" class="accordion-link">Consulter le guide complet</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-section">
+                    <div class="accordion-header" aria-expanded="false">
+                        <h3><span style="color: var(--accent-cyan);">GDE-04</span> Dispatch & Haut-Parleur</h3>
+                        <span class="accordion-arrow">&#9654;</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p>Procédures de communication radio, messages de service et protocoles de dispatch. Utilisation du haut-parleur.</p>
+                            <a href="guide-dispatch.html" class="accordion-link">Consulter le guide complet</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-section">
+                    <div class="accordion-header" aria-expanded="false">
+                        <h3><span style="color: var(--accent-cyan);">GDE-05</span> Code Vestimentaire</h3>
+                        <span class="accordion-arrow">&#9654;</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p>Règlements uniformes, équipements autorisés et standards visuels pour chaque rang de la Metropolice Force.</p>
+                            <a href="guide-vestimentaire.html" class="accordion-link">Consulter le guide complet</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-section">
+                    <div class="accordion-header" aria-expanded="false">
+                        <h3><span style="color: var(--accent-cyan);">GDE-06</span> Formations Tactiques</h3>
+                        <span class="accordion-arrow">&#9654;</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p>Formations de combat, positionnements d'équipe et manœuvres tactiques standard sur le terrain.</p>
+                            <a href="guide-formations.html" class="accordion-link">Consulter le guide complet</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-section">
+                    <div class="accordion-header" aria-expanded="false">
+                        <h3><span style="color: var(--accent-cyan);">GDE-07</span> Statut Sociétal</h3>
+                        <span class="accordion-arrow">&#9654;</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p>Système de classification sociale, droits et restrictions par catégorie de population dans la Cité.</p>
+                            <a href="guide-sociostatus.html" class="accordion-link">Consulter le guide complet</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-section">
+                    <div class="accordion-header" aria-expanded="false">
+                        <h3><span style="color: var(--accent-red);">GDE-08</span> Brèches & Sanctions</h3>
+                        <span class="accordion-arrow">&#9654;</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p>Infractions internes, violations du code de conduite et sanctions disciplinaires applicables aux agents.</p>
+                            <a href="guide-breches.html" class="accordion-link">Consulter le guide complet</a>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </main>
@@ -118,5 +156,6 @@
     <script src="assets/js/global-nav.js"></script>
     <script src="assets/js/interactive-system.js"></script>
     <script src="assets/js/combine-animations.js"></script>
+    <script src="assets/js/accordion.js"></script>
 </body>
 </html>

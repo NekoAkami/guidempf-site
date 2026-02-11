@@ -76,8 +76,9 @@ export async function updateAuthButton() {
         
         if (userData && userData.approved) {
           const isAdmin = userData.is_admin === true;
+          const matricule = userData.matricule || '???';
           authBtn.innerHTML = `
-            <span style="color:var(--muted);margin-right:1rem">${userData.matricule || ''}</span>
+            <span style="font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--text-muted);margin-right:0.8rem;letter-spacing:1px;">MATRICULE : <span style="color:var(--accent-cyan);font-weight:700;">${matricule}</span></span>
             ${isAdmin ? '<a href="/admin/panel.html" class="btn" style="margin-right:.5rem">Admin</a>' : ''}
             <button onclick="window.logoutUser()" class="btn secondary">Déconnexion</button>
           `;

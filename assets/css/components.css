@@ -1,0 +1,155 @@
+/* ============================================================
+   ACCORDION SYSTEM - Sections déroulantes
+   ============================================================ */
+
+.accordion-section {
+  border: 1px solid rgba(0, 170, 255, 0.1);
+  margin-bottom: 0.4rem;
+  background: var(--bg-card);
+  transition: border-color 0.15s ease;
+}
+
+.accordion-section:hover {
+  border-color: rgba(0, 170, 255, 0.2);
+}
+
+.accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1.2rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease;
+}
+
+.accordion-header:hover {
+  background: rgba(0, 170, 255, 0.03);
+}
+
+.accordion-header h3 {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.accordion-header .accordion-code {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  border: 1px solid rgba(0, 170, 255, 0.1);
+  padding: 0.15rem 0.5rem;
+}
+
+.accordion-header .accordion-arrow {
+  font-size: 0.7rem;
+  color: var(--accent-cyan);
+  transition: transform 0.2s ease;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.accordion-section.open .accordion-arrow {
+  transform: rotate(90deg);
+}
+
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.accordion-section.open .accordion-content {
+  max-height: 2000px;
+}
+
+.accordion-content-inner {
+  padding: 0 1.2rem 1rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.accordion-content-inner p {
+  margin-bottom: 0.5rem;
+}
+
+.accordion-content-inner a.accordion-link {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.35rem 1rem;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--accent-cyan);
+  border: 1px solid rgba(0, 170, 255, 0.2);
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.accordion-content-inner a.accordion-link:hover {
+  background: rgba(0, 170, 255, 0.06);
+  border-color: rgba(0, 170, 255, 0.4);
+}
+
+/* Search bar component */
+#search-container {
+  margin: 0.8rem 0;
+}
+
+#site-search {
+  width: 100%;
+  padding: 0.55rem 1rem 0.55rem 2.2rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+#site-search:focus {
+  border-color: var(--accent-cyan);
+}
+
+#site-search::placeholder {
+  color: var(--text-muted);
+}
+
+#search-results {
+  display: none;
+  margin-top: 0.3rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+#search-results a {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.88rem;
+  border-bottom: 1px solid rgba(0, 170, 255, 0.06);
+}
+
+#search-results a:hover {
+  background: rgba(0, 170, 255, 0.06);
+}
+
+#search-results .search-category {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-left: 0.5rem;
+}

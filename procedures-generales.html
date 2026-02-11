@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Procedures - MPF Documentation</title>
+    <title>Procédures - MPF Documentation</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="assets/css/main-style.css">
     <link rel="stylesheet" href="assets/css/combine-terminals.css">
     <link rel="stylesheet" href="assets/css/global-nav.css">
     <link rel="stylesheet" href="assets/css/interactive-system.css">
     <link rel="stylesheet" href="assets/css/combine-animations.css">
+    <link rel="stylesheet" href="assets/css/components.css">
 </head>
 <body>
-    <!-- Scanline overlay -->
     <div class="scanline-overlay"></div>
     <div class="particles-bg"></div>
     <header class="site-header">
@@ -33,73 +34,94 @@
         <div class="container">
             <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;">
                 <div class="combine-header">
-                    <h2 class="glitch-text" data-text="PROCEDURES OPERATIONNELLES"><span class="status-dot warning" style="margin-right: 8px;"></span> PROCEDURES OPERATIONNELLES</h2>
-                    <span class="header-code">SOP // STANDARD OPERATING PROCEDURES</span>
+                    <h2 class="glitch-text" data-text="PROCEDURES OPERATIONNELLES">PROCEDURES OPERATIONNELLES</h2>
+                    <span class="header-code">SOP // STANDARD OPERATING</span>
                 </div>
 
-                <div style="text-align: center; margin: 1.5rem 0; padding: 1rem; background: rgba(0, 170, 255, 0.02); border: 1px solid rgba(0, 170, 255, 0.08);" class="holo-container">
-                    <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7;">
-                        Ensemble des procedures standard a suivre en situation operationnelle. Le non-respect de ces protocoles constitue une <strong style="color: #ff4444;">breche disciplinaire</strong>.
+                <div style="padding: 0.8rem 0;">
+                    <p style="font-size: 0.92rem; color: var(--text-primary); line-height: 1.7; margin-bottom: 1rem;">
+                        Procédures standard à suivre pour chaque situation opérationnelle. Le respect strict de ces protocoles est <strong style="color: var(--accent-red);">obligatoire</strong>.
                     </p>
                 </div>
 
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
-
-                    <a href="procedure-incarceration.html" class="info-card" style="text-decoration: none;">
-                        <div class="card-header">
-                            <span class="card-code">SOP-01</span>
-                            <h3>INCARCERATION</h3>
+                <div class="accordion-section" data-default-open>
+                    <div class="accordion-header" aria-expanded="true">
+                        <h3><span style="color: var(--accent-green);">SOP-01</span> Incarcération</h3>
+                        <div><span class="accordion-code">TOUT GRADE</span> <span class="accordion-arrow">&#9654;</span></div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p>Protocole complet de mise en détention : fouille, menottage, transfert vers cellule, enregistrement et durée de peine.</p>
+                            <a href="procedure-incarceration.html" class="accordion-link">Consulter la procédure</a>
                         </div>
-                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Procedure complete de detention : transfert, appel hierarchique, prononce du verdict. Inclut le protocole V7.</p>
-                        <div style="margin-top: 0.5rem; font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--accent-green);">TOUT GRADE</div>
-                    </a>
-
-                    <a href="procedure-code7.html" class="info-card" style="text-decoration: none;">
-                        <div class="card-header">
-                            <span class="card-code">SOP-02</span>
-                            <h3>CODE 7 - FORCE LETALE</h3>
-                        </div>
-                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Protocole d'autorisation de force letale : conditions, validation hierarchique et rapport post-incident.</p>
-                        <div style="margin-top: 0.5rem; font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: #ff4444;">03+ REQUIS</div>
-                    </a>
-
-                    <a href="procedure-conscription.html" class="info-card" style="text-decoration: none;">
-                        <div class="card-header">
-                            <span class="card-code">SOP-03</span>
-                            <h3>CONSCRIPTION</h3>
-                        </div>
-                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Processus de recrutement de nouvelles unites : selection, test d'aptitude, integration et formation initiale.</p>
-                        <div style="margin-top: 0.5rem; font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: #ff4444;">03+ REQUIS</div>
-                    </a>
-
-                    <a href="procedure-dispatch-admin.html" class="info-card" style="text-decoration: none;">
-                        <div class="card-header">
-                            <span class="card-code">SOP-04</span>
-                            <h3>DISPATCH ADMINISTRATIF</h3>
-                        </div>
-                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Gestion des transmissions administratives, registres de patrouille et coordination inter-unites.</p>
-                        <div style="margin-top: 0.5rem; font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: #ff4444;">04+ REQUIS</div>
-                    </a>
-
-                    <a href="test-loyaute.html" class="info-card" style="text-decoration: none;">
-                        <div class="card-header">
-                            <span class="card-code">SOP-05</span>
-                            <h3>TEST DE LOYAUTE</h3>
-                        </div>
-                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Evaluation de loyaute pour Loyalistes et CWU ayant accumule trop de verdicts. Succes ou amputation.</p>
-                        <div style="margin-top: 0.5rem; font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: #ff4444;">04+ REQUIS</div>
-                    </a>
-
-                    <a href="declarations.html" class="info-card" style="text-decoration: none;">
-                        <div class="card-header">
-                            <span class="card-code">SOP-06</span>
-                            <h3>DECLARATIONS</h3>
-                        </div>
-                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Formulaires de declaration d'activite, depenses/gains, rapports et protocole d'absence.</p>
-                        <div style="margin-top: 0.5rem; font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--accent-green);">TOUT GRADE</div>
-                    </a>
-
+                    </div>
                 </div>
+
+                <div class="accordion-section">
+                    <div class="accordion-header" aria-expanded="false">
+                        <h3><span style="color: var(--accent-red);">SOP-02</span> Code 7 - Force Létale</h3>
+                        <div><span class="accordion-code">03+</span> <span class="accordion-arrow">&#9654;</span></div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p>Déploiement d'escouade armée, règles d'engagement et protocole de force létale autorisée. Nécessite validation 03+.</p>
+                            <a href="procedure-code7.html" class="accordion-link">Consulter la procédure</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-section">
+                    <div class="accordion-header" aria-expanded="false">
+                        <h3><span style="color: var(--accent-green);">SOP-03</span> Conscription</h3>
+                        <div><span class="accordion-code">03+</span> <span class="accordion-arrow">&#9654;</span></div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p>Procédure de recrutement et enrôlement de nouveaux citoyens dans les rangs de la Metropolice Force.</p>
+                            <a href="procedure-conscription.html" class="accordion-link">Consulter la procédure</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-section">
+                    <div class="accordion-header" aria-expanded="false">
+                        <h3><span style="color: var(--accent-yellow);">SOP-04</span> Dispatch Administratif</h3>
+                        <div><span class="accordion-code">04+</span> <span class="accordion-arrow">&#9654;</span></div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p>Gestion administrative du dispatch, assignation des patrouilles et supervision des communications.</p>
+                            <a href="procedure-dispatch-admin.html" class="accordion-link">Consulter la procédure</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-section">
+                    <div class="accordion-header" aria-expanded="false">
+                        <h3><span style="color: var(--accent-purple);">SOP-05</span> Test de Loyauté</h3>
+                        <div><span class="accordion-code">04+</span> <span class="accordion-arrow">&#9654;</span></div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p>Interrogatoire et vérification de la fidélité des citoyens. Protocole de questions et critères d'évaluation.</p>
+                            <a href="test-loyaute.html" class="accordion-link">Consulter la procédure</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-section">
+                    <div class="accordion-header" aria-expanded="false">
+                        <h3><span style="color: var(--accent-cyan);">SOP-06</span> Déclarations MPF</h3>
+                        <div><span class="accordion-code">TOUT GRADE</span> <span class="accordion-arrow">&#9654;</span></div>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="accordion-content-inner">
+                            <p>Formulaires de déclaration pour rapports d'incident, demandes de transfert et autres documents administratifs.</p>
+                            <a href="declarations.html" class="accordion-link">Consulter la procédure</a>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </main>
@@ -107,5 +129,6 @@
     <script src="assets/js/global-nav.js"></script>
     <script src="assets/js/interactive-system.js"></script>
     <script src="assets/js/combine-animations.js"></script>
+    <script src="assets/js/accordion.js"></script>
 </body>
 </html>

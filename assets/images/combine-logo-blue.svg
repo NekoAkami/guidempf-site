@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" width="200" height="240">
+  <defs>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <linearGradient id="shieldGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#00bbff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#0066aa" stop-opacity="0.7"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer shield shape - Civil Protection badge -->
+  <path d="M100 10 L180 55 L180 155 L100 230 L20 155 L20 55 Z" 
+        fill="none" stroke="url(#shieldGrad)" stroke-width="3" filter="url(#glow)" opacity="0.8"/>
+  
+  <!-- Inner shield -->
+  <path d="M100 25 L168 63 L168 148 L100 215 L32 148 L32 63 Z" 
+        fill="rgba(0,100,170,0.08)" stroke="#0088cc" stroke-width="1.5" opacity="0.6"/>
+
+  <!-- Combine Civil Protection emblem - stylized CP cog/gear -->
+  <!-- Outer ring -->
+  <circle cx="100" cy="120" r="60" fill="none" stroke="#00aaff" stroke-width="2" opacity="0.5"/>
+  <circle cx="100" cy="120" r="52" fill="none" stroke="#0088cc" stroke-width="1" opacity="0.3"/>
+  
+  <!-- Gear teeth around the ring -->
+  <g stroke="#00aaff" stroke-width="2.5" opacity="0.7">
+    <line x1="100" y1="56" x2="100" y2="64"/>
+    <line x1="100" y1="176" x2="100" y2="184"/>
+    <line x1="36" y1="120" x2="44" y2="120"/>
+    <line x1="156" y1="120" x2="164" y2="120"/>
+    <!-- Diagonals -->
+    <line x1="55" y1="75" x2="61" y2="81"/>
+    <line x1="145" y1="75" x2="139" y2="81"/>
+    <line x1="55" y1="165" x2="61" y2="159"/>
+    <line x1="145" y1="165" x2="139" y2="159"/>
+  </g>
+
+  <!-- Inner emblem - Combine "C" with vertical bar -->
+  <path d="M120 90 A35 35 0 1 0 120 150" fill="none" stroke="#00ccff" stroke-width="4" stroke-linecap="round" filter="url(#glow)"/>
+  <line x1="100" y1="82" x2="100" y2="158" stroke="#00ccff" stroke-width="3" stroke-linecap="round" filter="url(#glow)"/>
+  
+  <!-- Small center dot -->
+  <circle cx="100" cy="120" r="4" fill="#00ccff" opacity="0.8" filter="url(#glow)"/>
+  
+  <!-- Top text: CIVIL PROTECTION -->
+  <text x="100" y="42" text-anchor="middle" font-family="'Share Tech Mono', monospace" font-size="9" fill="#00aaff" letter-spacing="3" opacity="0.7">CIVIL PROTECTION</text>
+
+  <!-- Bottom text: MPF -->
+  <text x="100" y="205" text-anchor="middle" font-family="'Orbitron', sans-serif" font-size="16" font-weight="700" fill="#00ccff" letter-spacing="6" filter="url(#glow)">M P F</text>
+</svg>
