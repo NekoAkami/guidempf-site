@@ -199,10 +199,11 @@
             font-weight: 700;
             font-size: 0.9rem;
         }
-        .hours-cell.high { color: #00cc55; }
-        .hours-cell.medium { color: var(--accent-yellow); }
-        .hours-cell.low { color: var(--accent-orange); }
-        .hours-cell.critical { color: #ff4444; }
+        .hours-cell.epic { color: #bb44ff; }
+        .hours-cell.good { color: #00cc55; }
+        .hours-cell.low { color: #ffaa00; }
+        .hours-cell.danger { color: #ff4444; }
+        .hours-cell.pause { color: #00aaff; }
 
         .unknown-badge {
             display: inline-block;
@@ -678,10 +679,10 @@
       }
 
       function hoursClass(h) {
-        if (h >= 20) return 'high';
-        if (h >= 10) return 'medium';
-        if (h >= 5) return 'low';
-        return 'critical';
+        if (h >= 15) return 'epic';
+        if (h >= 5) return 'good';
+        if (h >= 3) return 'low';
+        return 'danger';
       }
 
       // ========== LOAD UNITS MAP ==========
