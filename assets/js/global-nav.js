@@ -10,10 +10,13 @@ class GlobalNavigation {
     init() {
         this.injectFavicon();
         this.injectServerLogo();
+        this.injectMissingAssets();
         this.createNavigationHTML();
+        this.injectSearchBar();
         this.markActivePage();
         this.setupMobileMenu();
         this.setupDropdowns();
+        this.cleanGlitchText();
     }
 
     // Injecte le favicon sur toutes les pages
@@ -24,6 +27,30 @@ class GlobalNavigation {
             link.type = 'image/x-icon';
             link.href = 'favicon.ico';
             document.head.appendChild(link);
+        }
+    }
+
+    // Injecte CSS et JS manquants sur les pages qui ne les ont pas
+    injectMissingAssets() {
+        // components.css
+        if (!document.querySelector('link[href*="components.css"]')) {
+            const css = document.createElement('link');
+            css.rel = 'stylesheet';
+            css.href = 'assets/css/components.css';
+            document.head.appendChild(css);
+        }
+        // auth.js (module)
+        if (!document.querySelector('script[src*="auth.js"]')) {
+            const script = document.createElement('script');
+            script.type = 'module';
+            script.src = 'assets/js/auth.js';
+            document.body.appendChild(script);
+        }
+        // site-search.js
+        if (!document.querySelector('script[src*="site-search.js"]')) {
+            const script = document.createElement('script');
+            script.src = 'assets/js/site-search.js';
+            document.body.appendChild(script);
         }
     }
 
@@ -38,6 +65,34 @@ class GlobalNavigation {
             img.style.cssText = 'width:38px;height:38px;border-radius:4px;object-fit:cover;';
             logoIcon.parentNode.replaceChild(img, logoIcon);
         }
+    }
+
+    // Injecte la barre de recherche après la nav sur toutes les pages
+    injectSearchBar() {
+        // Ne pas dupliquer si déjà présent
+        if (document.getElementById('search-container')) return;
+        const nav = document.querySelector('.main-nav');
+        if (!nav) return;
+        const searchHTML = `
+            <div id="search-container" style="max-width:1400px;margin:0.5rem auto;padding:0 2rem;">
+                <div style="position:relative;">
+                    <input type="text" id="site-search" placeholder="Rechercher dans la documentation... (Ctrl+K)" 
+                           style="width:100%;padding:0.5rem 1rem 0.5rem 2.2rem;background:var(--bg-card);border:1px solid var(--border-color);color:var(--text-primary);font-family:'Rajdhani',sans-serif;font-size:0.88rem;outline:none;"
+                           autocomplete="off">
+                    <span style="position:absolute;left:0.8rem;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:0.85rem;">&#128269;</span>
+                </div>
+                <div id="search-results"></div>
+            </div>
+        `;
+        nav.insertAdjacentHTML('afterend', searchHTML);
+    }
+
+    // Remplace l'effet glitch par un style propre sur les titres
+    cleanGlitchText() {
+        document.querySelectorAll('.glitch-text').forEach(el => {
+            el.classList.remove('glitch-text');
+            el.removeAttribute('data-text');
+        });
     }
 
     getMenuStructure() {

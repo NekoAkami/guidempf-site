@@ -53,6 +53,12 @@
             font-family: 'Share Tech Mono', monospace;
             letter-spacing: 1px;
         }
+        #codex-filter:focus {
+            border-color: var(--accent-cyan);
+            background: rgba(0,170,255,0.08);
+            box-shadow: 0 0 8px rgba(0,170,255,0.15);
+        }
+        .code-item { transition: all 0.2s ease; }
     </style>
 </head>
 <body>
@@ -83,6 +89,17 @@
 
                 <div class="combine-body">
                     
+                    <!-- Barre de recherche de codes -->
+                    <div id="codex-search-box" style="margin-bottom: 1.5rem;">
+                        <div style="position: relative;">
+                            <input type="text" id="codex-filter" placeholder="Filtrer les codes... ex: 10-4, patrouille, nexus..." 
+                                   style="width:100%;padding:0.6rem 1rem 0.6rem 2.4rem;background:rgba(0,170,255,0.05);border:1px solid rgba(0,170,255,0.3);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.85rem;outline:none;border-radius:4px;transition:border-color 0.3s;"
+                                   autocomplete="off">
+                            <span style="position:absolute;left:0.8rem;top:50%;transform:translateY(-50%);color:var(--accent-cyan);font-size:0.9rem;">&#128269;</span>
+                        </div>
+                        <div id="codex-count" style="margin-top:0.4rem;font-size:0.75rem;color:var(--text-muted);font-family:'Share Tech Mono',monospace;"></div>
+                    </div>
+
                     <!-- CODES 10-XX GÉNÉRAUX -->
                     <div class="section-divider">
                         <h3>🔹 CODES 10-XX GÉNÉRAUX</h3>
@@ -289,5 +306,77 @@
     <script src="assets/js/global-nav.js"></script>
     <script src="assets/js/interactive-system.js"></script>
     <script src="assets/js/combine-animations.js"></script>
+    <script>
+    // Codex-specific code filter
+    (function() {
+        function initCodexFilter() {
+            const input = document.getElementById('codex-filter');
+            const countDiv = document.getElementById('codex-count');
+            if (!input) return;
+
+            const allItems = document.querySelectorAll('.code-item');
+            const sections = document.querySelectorAll('.section-divider');
+            const grids = document.querySelectorAll('.code-grid');
+            const total = allItems.length;
+
+            function normalize(s) {
+                return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+            }
+
+            function filter() {
+                const q = normalize(input.value);
+                let visible = 0;
+
+                if (!q) {
+                    // Show all
+                    allItems.forEach(el => { el.style.display = ''; });
+                    sections.forEach(el => { el.style.display = ''; });
+                    countDiv.textContent = '';
+                    return;
+                }
+
+                const terms = q.split(/\s+/).filter(t => t.length > 0);
+
+                allItems.forEach(item => {
+                    const num = normalize(item.querySelector('.code-num')?.textContent || '');
+                    const desc = normalize(item.querySelector('.code-desc')?.textContent || '');
+                    const haystack = num + ' ' + desc;
+
+                    const match = terms.every(t => haystack.includes(t));
+                    item.style.display = match ? '' : 'none';
+                    if (match) visible++;
+                });
+
+                // Hide section headers if their grid has no visible items
+                grids.forEach((grid, i) => {
+                    const hasVisible = [...grid.querySelectorAll('.code-item')].some(el => el.style.display !== 'none');
+                    if (sections[i]) sections[i].style.display = hasVisible ? '' : 'none';
+                    grid.style.display = hasVisible ? '' : 'none';
+                });
+
+                countDiv.textContent = visible === 0
+                    ? 'Aucun code trouvé.'
+                    : visible + ' / ' + total + ' codes';
+            }
+
+            input.addEventListener('input', filter);
+
+            // Focus shortcut: / key when not in another input
+            document.addEventListener('keydown', function(e) {
+                if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                    input.focus();
+                    input.select();
+                }
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initCodexFilter);
+        } else {
+            initCodexFilter();
+        }
+    })();
+    </script>
 </body>
 </html>
