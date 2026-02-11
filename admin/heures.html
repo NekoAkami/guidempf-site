@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Heures - MPF Documentation</title>
+    <link rel="stylesheet" href="../assets/css/main-style.css">
+    <link rel="stylesheet" href="../assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="../assets/css/global-nav.css">
+    <link rel="stylesheet" href="../assets/css/interactive-system.css">
+    <link rel="stylesheet" href="../assets/css/combine-animations.css">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <style>
+        /* Stats cards */
+        .hours-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+        .stat-box {
+            background: rgba(0, 170, 255, 0.03);
+            border: 1px solid rgba(0, 170, 255, 0.15);
+            padding: 1rem;
+            text-align: center;
+            border-radius: 4px;
+        }
+        .stat-box .number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.6rem;
+            color: var(--accent-cyan);
+            font-weight: 700;
+        }
+        .stat-box .label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-top: 0.3rem;
+        }
+
+        /* Import zone */
+        .import-zone {
+            background: rgba(0, 170, 255, 0.02);
+            border: 1px solid rgba(0, 170, 255, 0.15);
+            border-radius: 4px;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+        .import-zone h3 {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-cyan);
+            letter-spacing: 1px;
+            margin-bottom: 0.8rem;
+        }
+        .import-zone textarea {
+            width: 100%;
+            min-height: 200px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.82rem;
+            padding: 0.8rem;
+            resize: vertical;
+            outline: none;
+            border-radius: 2px;
+            line-height: 1.6;
+        }
+        .import-zone textarea:focus {
+            border-color: var(--accent-cyan);
+        }
+        .import-zone textarea::placeholder {
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+        .import-hint {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 0.4rem;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        .import-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        /* Buttons */
+        .btn-action {
+            padding: 0.5rem 1.2rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: 1px solid rgba(0, 170, 255, 0.4);
+            background: rgba(0, 170, 255, 0.1);
+            color: var(--accent-cyan);
+            border-radius: 3px;
+            transition: all 0.15s;
+            letter-spacing: 0.5px;
+        }
+        .btn-action:hover {
+            background: rgba(0, 170, 255, 0.2);
+            border-color: var(--accent-cyan);
+        }
+        .btn-action.primary {
+            background: rgba(0, 170, 255, 0.2);
+            border-color: var(--accent-cyan);
+            font-weight: 700;
+        }
+        .btn-action.primary:hover {
+            background: rgba(0, 170, 255, 0.35);
+        }
+        .btn-action.success {
+            border-color: rgba(0, 200, 80, 0.4);
+            background: rgba(0, 200, 80, 0.1);
+            color: #00cc55;
+        }
+        .btn-action.success:hover {
+            background: rgba(0, 200, 80, 0.25);
+        }
+        .btn-action.danger {
+            border-color: rgba(255, 60, 60, 0.4);
+            background: rgba(255, 60, 60, 0.08);
+            color: #ff4444;
+        }
+        .btn-action.danger:hover {
+            background: rgba(255, 60, 60, 0.2);
+        }
+        .btn-action:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* Preview table */
+        .preview-section {
+            display: none;
+            margin-bottom: 1.5rem;
+        }
+        .preview-section.visible {
+            display: block;
+        }
+
+        /* Table */
+        .hours-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+        .hours-table th {
+            text-align: left;
+            padding: 0.6rem 0.5rem;
+            color: var(--accent-cyan);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            border-bottom: 2px solid rgba(0, 170, 255, 0.2);
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+        }
+        .hours-table th:hover {
+            color: #fff;
+        }
+        .hours-table th .sort-arrow {
+            margin-left: 0.3rem;
+            opacity: 0.4;
+            font-size: 0.65rem;
+        }
+        .hours-table th .sort-arrow.active {
+            opacity: 1;
+            color: var(--accent-cyan);
+        }
+        .hours-table td {
+            padding: 0.5rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid rgba(0, 170, 255, 0.06);
+            vertical-align: middle;
+        }
+        .hours-table tr:hover {
+            background: rgba(0, 170, 255, 0.03);
+        }
+        .hours-table .matricule-cell {
+            font-weight: 700;
+            color: var(--accent-cyan);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+        }
+        .hours-table .steamid-cell {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-family: 'Share Tech Mono', monospace;
+        }
+        .hours-table .hours-cell {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        .hours-cell.high { color: #00cc55; }
+        .hours-cell.medium { color: var(--accent-yellow); }
+        .hours-cell.low { color: var(--accent-orange); }
+        .hours-cell.critical { color: #ff4444; }
+
+        .unknown-badge {
+            display: inline-block;
+            padding: 0.1rem 0.4rem;
+            font-size: 0.65rem;
+            background: rgba(255, 60, 60, 0.1);
+            border: 1px solid rgba(255, 60, 60, 0.3);
+            color: #ff4444;
+            border-radius: 2px;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        /* Alert */
+        .alert-msg {
+            padding: 0.6rem 1rem;
+            border-radius: 3px;
+            margin-bottom: 1rem;
+            font-size: 0.8rem;
+            font-family: 'Share Tech Mono', monospace;
+            display: none;
+        }
+        .alert-msg.success { background: rgba(0, 200, 80, 0.1); border: 1px solid rgba(0, 200, 80, 0.3); color: #00cc55; }
+        .alert-msg.error { background: rgba(255, 60, 60, 0.1); border: 1px solid rgba(255, 60, 60, 0.3); color: #ff4444; }
+        .alert-msg.info { background: rgba(0, 170, 255, 0.1); border: 1px solid rgba(0, 170, 255, 0.3); color: var(--accent-cyan); }
+
+        /* Filter */
+        .filter-row {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        .filter-row input, .filter-row select {
+            padding: 0.4rem 0.7rem;
+            background: rgba(0, 170, 255, 0.04);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            outline: none;
+            border-radius: 2px;
+        }
+        .filter-row input:focus {
+            border-color: var(--accent-cyan);
+        }
+        .filter-row input { flex: 1; min-width: 200px; }
+
+        .table-scroll { overflow-x: auto; }
+
+        #access-denied { display: none; text-align: center; padding: 3rem; }
+
+        /* Parse count */
+        .parse-status {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            padding: 0.3rem 0;
+        }
+        .parse-status .count { color: var(--accent-cyan); font-weight: 700; }
+        .parse-status .errors { color: #ff4444; }
+
+        /* Last import info */
+        .last-import-info {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            padding: 0.5rem 0.8rem;
+            background: rgba(0, 170, 255, 0.03);
+            border-left: 2px solid rgba(0, 170, 255, 0.2);
+        }
+        .last-import-info strong { color: var(--accent-cyan); }
+
+        /* Navigation links */
+        .admin-nav {
+            display: flex;
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+            flex-wrap: wrap;
+        }
+        .admin-nav a {
+            padding: 0.35rem 0.8rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border: 1px solid rgba(0, 170, 255, 0.15);
+            border-radius: 2px;
+            transition: all 0.15s;
+        }
+        .admin-nav a:hover, .admin-nav a.active {
+            color: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            background: rgba(0, 170, 255, 0.08);
+        }
+    </style>
+</head>
+<body>
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <h1 class="logo">MPF</h1>
+                    <p class="logo-subtitle">Gestion des Heures</p>
+                </div>
+                <div id="authBtn" class="header-auth"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Loading / Access denied -->
+            <div id="loading" style="text-align:center;padding:3rem;">
+                <p style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;">CHARGEMENT...</p>
+            </div>
+            <div id="access-denied">
+                <h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">ACCÈS REFUSÉ</h2>
+                <p style="color:var(--text-muted);">Vous n'avez pas les droits administrateur.</p>
+                <a href="../index.html" style="color:var(--accent-cyan);">Retour au site</a>
+            </div>
+
+            <!-- Main content -->
+            <div id="mainContent" style="display:none;">
+
+                <!-- Nav -->
+                <div class="admin-nav" style="margin-top: 1rem;">
+                    <a href="panel.html">← PANEL ADMIN</a>
+                    <a href="heures.html" class="active">HEURES DE JEU</a>
+                    <a href="heures-archives.html">ARCHIVES</a>
+                </div>
+
+                <!-- Stats -->
+                <div class="hours-stats">
+                    <div class="stat-box">
+                        <div class="number" id="statTotal">0</div>
+                        <div class="label">UNITÉS TRACKÉES</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="number" id="statAvg">0</div>
+                        <div class="label">MOYENNE (H)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="number" id="statMax">0</div>
+                        <div class="label">MAX (H)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="number" id="statUnknown" style="color:#ff4444;">0</div>
+                        <div class="label">NON IDENTIFIÉS</div>
+                    </div>
+                </div>
+
+                <!-- Last import info -->
+                <div id="lastImportInfo" class="last-import-info" style="display:none;"></div>
+
+                <!-- Alert -->
+                <div id="alertMsg" class="alert-msg"></div>
+
+                <!-- Import zone -->
+                <div class="combine-terminal-wrapper">
+                    <div class="combine-header">
+                        <h2>IMPORT DES HEURES</h2>
+                        <span class="header-code">SAISIE HEBDOMADAIRE</span>
+                    </div>
+                    <div class="combine-body">
+                        <div class="import-zone">
+                            <h3>▶ COLLER LES DONNÉES CI-DESSOUS</h3>
+                            <textarea id="importData" placeholder="Collez ici les données depuis votre source, une ligne par personne.&#10;&#10;Format accepté (séparé par tabulation ou plusieurs espaces) :&#10;76561198414645840    19 heures, 33 minutes, 35 secondes&#10;76561199850508848    02 heures, 59 minutes, 36 secondes&#10;76561198138354990    1 jours, 05 heures, 44 minutes, 17 secondes&#10;&#10;Le SteamID64 est automatiquement relié au matricule via la base de données."></textarea>
+                            <div class="import-hint">
+                                Format : SteamID64 [tab] temps (X jours, Y heures, Z minutes, W secondes) — une ligne par unité
+                            </div>
+                            <div id="parseStatus" class="parse-status"></div>
+                            <div class="import-actions">
+                                <button class="btn-action primary" id="btnParse" onclick="parseImport()">⟩ ANALYSER</button>
+                                <button class="btn-action success" id="btnSave" onclick="saveToFirebase()" disabled>✓ SAUVEGARDER DANS FIREBASE</button>
+                                <button class="btn-action danger" id="btnClear" onclick="clearImport()">✗ EFFACER</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview zone -->
+                <div id="previewSection" class="preview-section">
+                    <div class="combine-terminal-wrapper">
+                        <div class="combine-header">
+                            <h2>APERÇU DE L'IMPORT</h2>
+                            <span class="header-code" id="previewCount">0 ENTRÉES</span>
+                        </div>
+                        <div class="combine-body">
+                            <div class="table-scroll">
+                                <table class="hours-table">
+                                    <thead>
+                                        <tr>
+                                            <th onclick="sortPreview('matricule')">MATRICULE <span class="sort-arrow" id="sort-matricule">▼</span></th>
+                                            <th onclick="sortPreview('steamid')">STEAMID64 <span class="sort-arrow" id="sort-steamid">▼</span></th>
+                                            <th onclick="sortPreview('temps_raw')">TEMPS BRUT <span class="sort-arrow" id="sort-temps_raw">▼</span></th>
+                                            <th onclick="sortPreview('heures')">HEURES <span class="sort-arrow" id="sort-heures">▼</span></th>
+                                            <th>STATUT</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="previewBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Current data -->
+                <div class="combine-terminal-wrapper">
+                    <div class="combine-header">
+                        <h2>HEURES ACTUELLES</h2>
+                        <span class="header-code" id="currentCount">CHARGEMENT...</span>
+                    </div>
+                    <div class="combine-body">
+                        <div class="filter-row">
+                            <input type="text" id="searchInput" placeholder="Rechercher matricule, SteamID64..." autocomplete="off">
+                            <select id="sortSelect">
+                                <option value="heures-desc">Heures ↓</option>
+                                <option value="heures-asc">Heures ↑</option>
+                                <option value="matricule-asc">Matricule ↑</option>
+                                <option value="matricule-desc">Matricule ↓</option>
+                            </select>
+                        </div>
+                        <div class="table-scroll">
+                            <table class="hours-table">
+                                <thead>
+                                    <tr>
+                                        <th>MATRICULE</th>
+                                        <th>NOM STEAM</th>
+                                        <th>STEAMID64</th>
+                                        <th>TEMPS BRUT</th>
+                                        <th>HEURES</th>
+                                        <th>DERNIÈRE MAJ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="currentBody">
+                                    <tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Aucune donnée</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts standard -->
+    <script type="module" src="../assets/js/auth.js"></script>
+    <script src="../assets/js/global-nav.js"></script>
+    <script src="../assets/js/interactive-system.js"></script>
+    <script src="../assets/js/combine-animations.js"></script>
+
+    <script type="module">
+      import { auth, db } from '../assets/js/auth.js';
+      import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+      import {
+        collection, getDocs, doc, getDoc, setDoc, addDoc, query, orderBy, limit, Timestamp
+      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+      // ========== STATE ==========
+      let usersMap = {};        // steamid64 -> { matricule, nom_steam, discord }
+      let parsedEntries = [];   // preview entries before save
+      let currentData = [];     // loaded from Firebase
+      let previewSortKey = 'heures';
+      let previewSortAsc = false;
+
+      // ========== UTILS ==========
+      function showAlert(text, type = 'success') {
+        const el = document.getElementById('alertMsg');
+        el.style.display = 'block';
+        el.className = 'alert-msg ' + type;
+        el.textContent = text;
+        setTimeout(() => { el.style.display = 'none'; }, 5000);
+      }
+
+      /**
+       * Convertir un texte de temps en heures décimales  
+       * Ex: "1 jours, 09 heures, 13 minutes, 11 secondes" -> 33.2197...
+       * Même logique que la formule Google Sheet
+       */
+      function parseTimeToHours(timeStr) {
+        if (!timeStr || typeof timeStr !== 'string') return 0;
+        let hours = 0;
+
+        // Jours
+        const daysMatch = timeStr.match(/(\d+)\s*jours?/i);
+        if (daysMatch) hours += parseInt(daysMatch[1]) * 24;
+
+        // Heures
+        const hoursMatch = timeStr.match(/(\d+)\s*heures?/i);
+        if (hoursMatch) hours += parseInt(hoursMatch[1]);
+
+        // Minutes
+        const minsMatch = timeStr.match(/(\d+)\s*minutes?/i);
+        if (minsMatch) hours += parseInt(minsMatch[1]) / 60;
+
+        // Secondes
+        const secsMatch = timeStr.match(/(\d+)\s*secondes?/i);
+        if (secsMatch) hours += parseInt(secsMatch[1]) / 3600;
+
+        return hours;
+      }
+
+      /**
+       * Formater les heures en texte lisible
+       */
+      function formatHours(h) {
+        if (h === 0) return '0.00';
+        return h.toFixed(2).replace('.', ',');
+      }
+
+      /**
+       * Classe CSS selon le nombre d'heures
+       */
+      function hoursClass(h) {
+        if (h >= 20) return 'high';
+        if (h >= 10) return 'medium';
+        if (h >= 5) return 'low';
+        return 'critical';
+      }
+
+      // ========== LOAD USERS MAP ==========
+      async function loadUsersMap() {
+        try {
+          const snap = await getDocs(collection(db, 'users'));
+          usersMap = {};
+          snap.forEach(d => {
+            const data = d.data();
+            if (data.steamid64) {
+              usersMap[data.steamid64] = {
+                matricule: data.matricule || '???',
+                nom_steam: data.nom_steam || '',
+                discord: data.discord || ''
+              };
+            }
+          });
+          console.log(`[HEURES] ${Object.keys(usersMap).length} utilisateurs chargés dans le map`);
+        } catch (err) {
+          console.error('Erreur chargement users:', err);
+          showAlert('Erreur chargement utilisateurs: ' + err.message, 'error');
+        }
+      }
+
+      // ========== LOAD CURRENT DATA ==========
+      async function loadCurrentData() {
+        try {
+          const snap = await getDocs(collection(db, 'playtime'));
+          currentData = [];
+          snap.forEach(d => {
+            currentData.push({ id: d.id, ...d.data() });
+          });
+
+          // Update stats
+          updateStats();
+          renderCurrentTable();
+          loadLastImportInfo();
+        } catch (err) {
+          console.error('Erreur chargement playtime:', err);
+          document.getElementById('currentCount').textContent = 'ERREUR';
+        }
+      }
+
+      function updateStats() {
+        const total = currentData.length;
+        const heures = currentData.map(e => e.heures || 0);
+        const avg = total > 0 ? heures.reduce((a, b) => a + b, 0) / total : 0;
+        const max = total > 0 ? Math.max(...heures) : 0;
+        const unknown = currentData.filter(e => !e.matricule || e.matricule === '???').length;
+
+        document.getElementById('statTotal').textContent = total;
+        document.getElementById('statAvg').textContent = formatHours(avg);
+        document.getElementById('statMax').textContent = formatHours(max);
+        document.getElementById('statUnknown').textContent = unknown;
+      }
+
+      async function loadLastImportInfo() {
+        try {
+          const snap = await getDocs(query(collection(db, 'playtime_history'), orderBy('import_date', 'desc'), limit(1)));
+          if (!snap.empty) {
+            const data = snap.docs[0].data();
+            const date = data.import_date || 'Inconnue';
+            const count = data.entries ? data.entries.length : 0;
+            const el = document.getElementById('lastImportInfo');
+            el.style.display = 'block';
+            el.innerHTML = `Dernier import : <strong>${date}</strong> — <strong>${count}</strong> entrées`;
+          }
+        } catch (err) {
+          console.log('Pas d\'historique trouvé');
+        }
+      }
+
+      function renderCurrentTable() {
+        const tbody = document.getElementById('currentBody');
+        const search = (document.getElementById('searchInput').value || '').toLowerCase();
+        const sortVal = document.getElementById('sortSelect').value;
+
+        let filtered = currentData.filter(e => {
+          if (!search) return true;
+          return (e.matricule || '').toLowerCase().includes(search)
+            || (e.steamid64 || '').includes(search)
+            || (e.nom_steam || '').toLowerCase().includes(search);
+        });
+
+        // Sort
+        const [sortKey, sortDir] = sortVal.split('-');
+        filtered.sort((a, b) => {
+          let va, vb;
+          if (sortKey === 'heures') {
+            va = a.heures || 0;
+            vb = b.heures || 0;
+          } else {
+            va = (a.matricule || '').padStart(4, '0');
+            vb = (b.matricule || '').padStart(4, '0');
+          }
+          if (sortDir === 'asc') return va > vb ? 1 : va < vb ? -1 : 0;
+          return va < vb ? 1 : va > vb ? -1 : 0;
+        });
+
+        document.getElementById('currentCount').textContent = `${filtered.length} / ${currentData.length} ENTRÉES`;
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Aucune donnée</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = filtered.map(e => {
+          const hClass = hoursClass(e.heures || 0);
+          return `<tr>
+            <td class="matricule-cell">${e.matricule || '<span class="unknown-badge">INCONNU</span>'}</td>
+            <td>${e.nom_steam || '<span style="color:var(--text-muted);">-</span>'}</td>
+            <td class="steamid-cell">${e.steamid64 || '-'}</td>
+            <td style="font-size:0.78rem;color:var(--text-secondary);">${e.temps_raw || '-'}</td>
+            <td class="hours-cell ${hClass}">${formatHours(e.heures || 0)}h</td>
+            <td style="font-size:0.72rem;color:var(--text-muted);">${e.updated_at || '-'}</td>
+          </tr>`;
+        }).join('');
+      }
+
+      // ========== PARSE IMPORT ==========
+      window.parseImport = function() {
+        const raw = document.getElementById('importData').value.trim();
+        if (!raw) {
+          showAlert('Aucune donnée à analyser', 'error');
+          return;
+        }
+
+        const lines = raw.split('\n').filter(l => l.trim());
+        parsedEntries = [];
+        let errors = 0;
+
+        for (const line of lines) {
+          // Split by tab or 2+ spaces, then the first part is the SteamID64, the rest is the time
+          const parts = line.trim().split(/\t+|\s{2,}/);
+          if (parts.length < 2) {
+            errors++;
+            continue;
+          }
+
+          const steamid = parts[0].trim();
+          // Validate SteamID64 (should be 17 digits starting with 7656)
+          if (!/^7656\d{13}$/.test(steamid)) {
+            errors++;
+            continue;
+          }
+
+          const timeStr = parts.slice(1).join(', ').trim();
+          const heures = parseTimeToHours(timeStr);
+
+          // Lookup user
+          const user = usersMap[steamid];
+
+          parsedEntries.push({
+            steamid64: steamid,
+            temps_raw: timeStr,
+            heures: heures,
+            matricule: user ? user.matricule : null,
+            nom_steam: user ? user.nom_steam : '',
+            known: !!user
+          });
+        }
+
+        // Show parse status
+        const statusEl = document.getElementById('parseStatus');
+        const unknownCount = parsedEntries.filter(e => !e.known).length;
+        statusEl.innerHTML = `Analysé : <span class="count">${parsedEntries.length}</span> entrées valides`
+          + (errors > 0 ? ` — <span class="errors">${errors} ligne(s) ignorée(s)</span>` : '')
+          + (unknownCount > 0 ? ` — <span class="errors">${unknownCount} SteamID non identifié(s)</span>` : '');
+
+        // Enable save button
+        document.getElementById('btnSave').disabled = parsedEntries.length === 0;
+
+        // Show preview
+        renderPreview();
+      };
+
+      function renderPreview() {
+        if (parsedEntries.length === 0) {
+          document.getElementById('previewSection').classList.remove('visible');
+          return;
+        }
+
+        document.getElementById('previewSection').classList.add('visible');
+        document.getElementById('previewCount').textContent = `${parsedEntries.length} ENTRÉES`;
+
+        // Sort
+        const sorted = [...parsedEntries].sort((a, b) => {
+          let va, vb;
+          switch (previewSortKey) {
+            case 'matricule':
+              va = (a.matricule || 'zzz').padStart(4, '0');
+              vb = (b.matricule || 'zzz').padStart(4, '0');
+              break;
+            case 'steamid':
+              va = a.steamid64;
+              vb = b.steamid64;
+              break;
+            case 'temps_raw':
+              va = a.temps_raw;
+              vb = b.temps_raw;
+              break;
+            case 'heures':
+            default:
+              va = a.heures;
+              vb = b.heures;
+              break;
+          }
+          if (previewSortAsc) return va > vb ? 1 : va < vb ? -1 : 0;
+          return va < vb ? 1 : va > vb ? -1 : 0;
+        });
+
+        // Update sort arrows
+        document.querySelectorAll('.sort-arrow').forEach(el => el.classList.remove('active'));
+        const activeArrow = document.getElementById('sort-' + previewSortKey);
+        if (activeArrow) {
+          activeArrow.classList.add('active');
+          activeArrow.textContent = previewSortAsc ? '▲' : '▼';
+        }
+
+        const tbody = document.getElementById('previewBody');
+        tbody.innerHTML = sorted.map(e => {
+          const hClass = hoursClass(e.heures);
+          const matriculeDisplay = e.known
+            ? `<span class="matricule-cell">${e.matricule}</span>`
+            : '<span class="unknown-badge">INCONNU</span>';
+          const statusDisplay = e.known
+            ? '<span style="color:#00cc55;font-size:0.75rem;">✓ Identifié</span>'
+            : '<span style="color:#ff4444;font-size:0.75rem;">✗ Non trouvé</span>';
+
+          return `<tr>
+            <td>${matriculeDisplay}</td>
+            <td class="steamid-cell">${e.steamid64}</td>
+            <td style="font-size:0.78rem;color:var(--text-secondary);">${e.temps_raw}</td>
+            <td class="hours-cell ${hClass}">${formatHours(e.heures)}h</td>
+            <td>${statusDisplay}</td>
+          </tr>`;
+        }).join('');
+      }
+
+      window.sortPreview = function(key) {
+        if (previewSortKey === key) {
+          previewSortAsc = !previewSortAsc;
+        } else {
+          previewSortKey = key;
+          previewSortAsc = false;
+        }
+        renderPreview();
+      };
+
+      // ========== SAVE TO FIREBASE ==========
+      window.saveToFirebase = async function() {
+        if (parsedEntries.length === 0) return;
+
+        const btn = document.getElementById('btnSave');
+        btn.disabled = true;
+        btn.textContent = '⏳ SAUVEGARDE EN COURS...';
+
+        try {
+          const now = new Date().toISOString();
+          const dateLabel = now.substring(0, 10);
+
+          // 1) Save/update each entry in `playtime` collection (doc ID = steamid64)
+          const savePromises = parsedEntries.map(entry => {
+            return setDoc(doc(db, 'playtime', entry.steamid64), {
+              steamid64: entry.steamid64,
+              matricule: entry.matricule || '???',
+              nom_steam: entry.nom_steam || '',
+              temps_raw: entry.temps_raw,
+              heures: entry.heures,
+              updated_at: dateLabel
+            });
+          });
+          await Promise.all(savePromises);
+
+          // 2) Save archive in `playtime_history`
+          const archiveEntries = parsedEntries.map(e => ({
+            steamid64: e.steamid64,
+            matricule: e.matricule || '???',
+            nom_steam: e.nom_steam || '',
+            temps_raw: e.temps_raw,
+            heures: e.heures
+          }));
+
+          await addDoc(collection(db, 'playtime_history'), {
+            import_date: dateLabel,
+            import_timestamp: now,
+            entries_count: archiveEntries.length,
+            entries: archiveEntries
+          });
+
+          showAlert(`✓ ${parsedEntries.length} entrées sauvegardées avec succès !`, 'success');
+
+          // Reset
+          parsedEntries = [];
+          document.getElementById('importData').value = '';
+          document.getElementById('parseStatus').textContent = '';
+          document.getElementById('previewSection').classList.remove('visible');
+          btn.textContent = '✓ SAUVEGARDER DANS FIREBASE';
+          btn.disabled = true;
+
+          // Reload data
+          await loadCurrentData();
+
+        } catch (err) {
+          console.error('Erreur sauvegarde:', err);
+          showAlert('✗ Erreur de sauvegarde: ' + err.message, 'error');
+          btn.disabled = false;
+          btn.textContent = '✓ SAUVEGARDER DANS FIREBASE';
+        }
+      };
+
+      // ========== CLEAR ==========
+      window.clearImport = function() {
+        parsedEntries = [];
+        document.getElementById('importData').value = '';
+        document.getElementById('parseStatus').textContent = '';
+        document.getElementById('previewSection').classList.remove('visible');
+        document.getElementById('btnSave').disabled = true;
+      };
+
+      // ========== FILTERS ==========
+      document.getElementById('searchInput').addEventListener('input', renderCurrentTable);
+      document.getElementById('sortSelect').addEventListener('change', renderCurrentTable);
+
+      // ========== AUTH CHECK ==========
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) return;
+        try {
+          const snap = await getDoc(doc(db, 'users', user.uid));
+          if (!snap.exists() || !snap.data().is_admin) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('access-denied').style.display = 'block';
+            return;
+          }
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('mainContent').style.display = 'block';
+
+          // Load data
+          await loadUsersMap();
+          await loadCurrentData();
+        } catch (err) {
+          console.error('Auth error:', err);
+          document.getElementById('loading').innerHTML = '<p style="color:#ff4444;">Erreur: ' + err.message + '</p>';
+        }
+      });
+    </script>
+</body>
+</html>

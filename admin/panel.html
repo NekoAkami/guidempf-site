@@ -188,6 +188,13 @@
             <!-- Main admin content (hidden until auth) -->
             <div id="adminContent" style="display:none;">
 
+                <!-- Admin navigation -->
+                <div style="display:flex;gap:0.6rem;margin:1rem 0 1.2rem;flex-wrap:wrap;">
+                    <a href="panel.html" style="padding:0.35rem 0.8rem;font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--accent-cyan);text-decoration:none;border:1px solid var(--accent-cyan);border-radius:2px;background:rgba(0,170,255,0.08);">PANEL ADMIN</a>
+                    <a href="heures.html" style="padding:0.35rem 0.8rem;font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--text-muted);text-decoration:none;border:1px solid rgba(0,170,255,0.15);border-radius:2px;transition:all 0.15s;" onmouseover="this.style.color='var(--accent-cyan)';this.style.borderColor='var(--accent-cyan)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='rgba(0,170,255,0.15)'">HEURES DE JEU</a>
+                    <a href="heures-archives.html" style="padding:0.35rem 0.8rem;font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--text-muted);text-decoration:none;border:1px solid rgba(0,170,255,0.15);border-radius:2px;transition:all 0.15s;" onmouseover="this.style.color='var(--accent-cyan)';this.style.borderColor='var(--accent-cyan)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='rgba(0,170,255,0.15)'">ARCHIVES</a>
+                </div>
+
                 <!-- Stats -->
                 <div class="admin-stats" style="margin-top:1rem;">
                     <div class="stat-box">

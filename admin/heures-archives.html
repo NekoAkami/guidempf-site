@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archives Heures - MPF Documentation</title>
+    <link rel="stylesheet" href="../assets/css/main-style.css">
+    <link rel="stylesheet" href="../assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="../assets/css/global-nav.css">
+    <link rel="stylesheet" href="../assets/css/interactive-system.css">
+    <link rel="stylesheet" href="../assets/css/combine-animations.css">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <style>
+        .admin-nav {
+            display: flex;
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+            flex-wrap: wrap;
+        }
+        .admin-nav a {
+            padding: 0.35rem 0.8rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border: 1px solid rgba(0, 170, 255, 0.15);
+            border-radius: 2px;
+            transition: all 0.15s;
+        }
+        .admin-nav a:hover, .admin-nav a.active {
+            color: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            background: rgba(0, 170, 255, 0.08);
+        }
+
+        .archive-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        .archive-card {
+            background: rgba(0, 170, 255, 0.02);
+            border: 1px solid rgba(0, 170, 255, 0.12);
+            border-left: 3px solid rgba(0, 170, 255, 0.3);
+            border-radius: 3px;
+            overflow: hidden;
+            transition: border-color 0.15s;
+        }
+        .archive-card:hover {
+            border-color: rgba(0, 170, 255, 0.3);
+        }
+        .archive-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s;
+        }
+        .archive-card-header:hover {
+            background: rgba(0, 170, 255, 0.04);
+        }
+        .archive-card-header .date {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            color: var(--accent-cyan);
+            font-weight: 700;
+        }
+        .archive-card-header .meta {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+        .archive-card-header .meta .count {
+            color: var(--accent-cyan);
+            font-weight: 700;
+        }
+        .archive-card-header .toggle-icon {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            transition: transform 0.2s;
+        }
+        .archive-card.open .toggle-icon {
+            transform: rotate(180deg);
+        }
+        .archive-card-body {
+            display: none;
+            padding: 0 1rem 1rem;
+        }
+        .archive-card.open .archive-card-body {
+            display: block;
+        }
+
+        .hours-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+        .hours-table th {
+            text-align: left;
+            padding: 0.5rem;
+            color: var(--accent-cyan);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 1px;
+            border-bottom: 2px solid rgba(0, 170, 255, 0.2);
+            white-space: nowrap;
+        }
+        .hours-table td {
+            padding: 0.4rem 0.5rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid rgba(0, 170, 255, 0.04);
+            vertical-align: middle;
+        }
+        .hours-table tr:hover {
+            background: rgba(0, 170, 255, 0.03);
+        }
+        .matricule-cell {
+            font-weight: 700;
+            color: var(--accent-cyan);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.82rem;
+        }
+        .steamid-cell {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-family: 'Share Tech Mono', monospace;
+        }
+        .hours-cell {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+        .hours-cell.high { color: #00cc55; }
+        .hours-cell.medium { color: var(--accent-yellow); }
+        .hours-cell.low { color: var(--accent-orange); }
+        .hours-cell.critical { color: #ff4444; }
+
+        .table-scroll { overflow-x: auto; }
+        #access-denied { display: none; text-align: center; padding: 3rem; }
+
+        .alert-msg {
+            padding: 0.6rem 1rem;
+            border-radius: 3px;
+            margin-bottom: 1rem;
+            font-size: 0.8rem;
+            font-family: 'Share Tech Mono', monospace;
+            display: none;
+        }
+        .alert-msg.error { background: rgba(255, 60, 60, 0.1); border: 1px solid rgba(255, 60, 60, 0.3); color: #ff4444; }
+
+        .no-data {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        .stat-summary {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 0.8rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+        }
+        .stat-summary strong {
+            color: var(--accent-cyan);
+        }
+
+        .btn-delete {
+            padding: 0.2rem 0.5rem;
+            font-size: 0.68rem;
+            font-family: 'Share Tech Mono', monospace;
+            cursor: pointer;
+            border: 1px solid rgba(255, 60, 60, 0.3);
+            background: rgba(255, 60, 60, 0.08);
+            color: #ff4444;
+            border-radius: 2px;
+            transition: all 0.15s;
+        }
+        .btn-delete:hover {
+            background: rgba(255, 60, 60, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <h1 class="logo">MPF</h1>
+                    <p class="logo-subtitle">Archives Heures</p>
+                </div>
+                <div id="authBtn" class="header-auth"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div id="loading" style="text-align:center;padding:3rem;">
+                <p style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;">CHARGEMENT...</p>
+            </div>
+            <div id="access-denied">
+                <h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">ACCÈS REFUSÉ</h2>
+                <p style="color:var(--text-muted);">Vous n'avez pas les droits administrateur.</p>
+                <a href="../index.html" style="color:var(--accent-cyan);">Retour au site</a>
+            </div>
+
+            <div id="mainContent" style="display:none;">
+                <!-- Nav -->
+                <div class="admin-nav" style="margin-top: 1rem;">
+                    <a href="panel.html">← PANEL ADMIN</a>
+                    <a href="heures.html">HEURES DE JEU</a>
+                    <a href="heures-archives.html" class="active">ARCHIVES</a>
+                </div>
+
+                <div id="alertMsg" class="alert-msg"></div>
+
+                <div class="combine-terminal-wrapper">
+                    <div class="combine-header">
+                        <h2>ARCHIVES DES IMPORTS</h2>
+                        <span class="header-code" id="archiveCount">CHARGEMENT...</span>
+                    </div>
+                    <div class="combine-body">
+                        <div id="archiveList" class="archive-list">
+                            <div class="no-data">Chargement des archives...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="../assets/js/auth.js"></script>
+    <script src="../assets/js/global-nav.js"></script>
+    <script src="../assets/js/interactive-system.js"></script>
+    <script src="../assets/js/combine-animations.js"></script>
+
+    <script type="module">
+      import { auth, db } from '../assets/js/auth.js';
+      import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+      import {
+        collection, getDocs, doc, getDoc, deleteDoc, query, orderBy
+      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+      let archives = [];
+
+      function formatHours(h) {
+        return (h || 0).toFixed(2).replace('.', ',');
+      }
+      function hoursClass(h) {
+        if (h >= 20) return 'high';
+        if (h >= 10) return 'medium';
+        if (h >= 5) return 'low';
+        return 'critical';
+      }
+
+      async function loadArchives() {
+        try {
+          const snap = await getDocs(query(collection(db, 'playtime_history'), orderBy('import_date', 'desc')));
+          archives = [];
+          snap.forEach(d => {
+            archives.push({ id: d.id, ...d.data() });
+          });
+
+          document.getElementById('archiveCount').textContent = `${archives.length} IMPORTS`;
+          renderArchives();
+        } catch (err) {
+          console.error('Erreur chargement archives:', err);
+          document.getElementById('archiveList').innerHTML = `<div class="no-data" style="color:#ff4444;">Erreur: ${err.message}</div>`;
+          document.getElementById('archiveCount').textContent = 'ERREUR';
+        }
+      }
+
+      function renderArchives() {
+        const container = document.getElementById('archiveList');
+
+        if (archives.length === 0) {
+          container.innerHTML = '<div class="no-data">Aucune archive trouvée. Les imports apparaîtront ici après la première sauvegarde.</div>';
+          return;
+        }
+
+        container.innerHTML = archives.map((arch, idx) => {
+          const entries = arch.entries || [];
+          const totalH = entries.reduce((s, e) => s + (e.heures || 0), 0);
+          const avgH = entries.length > 0 ? totalH / entries.length : 0;
+          const maxH = entries.length > 0 ? Math.max(...entries.map(e => e.heures || 0)) : 0;
+
+          // Sort entries by heures desc
+          const sorted = [...entries].sort((a, b) => (b.heures || 0) - (a.heures || 0));
+
+          const tableRows = sorted.map(e => {
+            const hClass = hoursClass(e.heures || 0);
+            return `<tr>
+              <td class="matricule-cell">${e.matricule || '???'}</td>
+              <td>${e.nom_steam || '-'}</td>
+              <td class="steamid-cell">${e.steamid64}</td>
+              <td style="font-size:0.75rem;color:var(--text-secondary);">${e.temps_raw || '-'}</td>
+              <td class="hours-cell ${hClass}">${formatHours(e.heures)}h</td>
+            </tr>`;
+          }).join('');
+
+          return `
+            <div class="archive-card" id="archive-${arch.id}">
+              <div class="archive-card-header" onclick="toggleArchive('${arch.id}')">
+                <div>
+                  <span class="date">${arch.import_date || 'Date inconnue'}</span>
+                </div>
+                <div class="meta">
+                  <span><span class="count">${entries.length}</span> unités</span>
+                  <span>Moy: <span class="count">${formatHours(avgH)}h</span></span>
+                  <span>Max: <span class="count">${formatHours(maxH)}h</span></span>
+                  <button class="btn-delete" onclick="event.stopPropagation(); deleteArchive('${arch.id}', '${arch.import_date || ''}')" title="Supprimer cet import">✗</button>
+                  <span class="toggle-icon">▼</span>
+                </div>
+              </div>
+              <div class="archive-card-body">
+                <div class="table-scroll">
+                  <table class="hours-table">
+                    <thead>
+                      <tr>
+                        <th>MATRICULE</th>
+                        <th>NOM STEAM</th>
+                        <th>STEAMID64</th>
+                        <th>TEMPS BRUT</th>
+                        <th>HEURES</th>
+                      </tr>
+                    </thead>
+                    <tbody>${tableRows}</tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      window.toggleArchive = function(id) {
+        const card = document.getElementById('archive-' + id);
+        if (card) card.classList.toggle('open');
+      };
+
+      window.deleteArchive = async function(id, date) {
+        if (!confirm(`Supprimer l'archive du ${date || 'date inconnue'} ?`)) return;
+        try {
+          await deleteDoc(doc(db, 'playtime_history', id));
+          archives = archives.filter(a => a.id !== id);
+          document.getElementById('archiveCount').textContent = `${archives.length} IMPORTS`;
+          renderArchives();
+        } catch (err) {
+          alert('Erreur suppression: ' + err.message);
+        }
+      };
+
+      // Auth check
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) return;
+        try {
+          const snap = await getDoc(doc(db, 'users', user.uid));
+          if (!snap.exists() || !snap.data().is_admin) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('access-denied').style.display = 'block';
+            return;
+          }
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('mainContent').style.display = 'block';
+          await loadArchives();
+        } catch (err) {
+          console.error('Auth error:', err);
+          document.getElementById('loading').innerHTML = '<p style="color:#ff4444;">Erreur: ' + err.message + '</p>';
+        }
+      });
+    </script>
+</body>
+</html>
