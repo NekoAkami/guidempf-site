@@ -283,6 +283,42 @@
         .jours-ok { color: var(--accent-cyan); }
         .jours-warn { color: #ffaa00; }
         .jours-danger { color: #ff4444; }
+
+        /* Sync indicator */
+        .sync-indicator {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 3px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem;
+            z-index: 999;
+            transition: all 0.3s;
+            pointer-events: none;
+            opacity: 0;
+        }
+        .sync-indicator.syncing {
+            opacity: 1;
+            background: rgba(255, 200, 0, 0.15);
+            border: 1px solid rgba(255, 200, 0, 0.4);
+            color: #ffc800;
+        }
+        .sync-indicator.synced {
+            opacity: 1;
+            background: rgba(0, 200, 80, 0.15);
+            border: 1px solid rgba(0, 200, 80, 0.4);
+            color: #00cc55;
+        }
+        .sync-indicator.error {
+            opacity: 1;
+            background: rgba(255, 60, 60, 0.15);
+            border: 1px solid rgba(255, 60, 60, 0.4);
+            color: #ff4444;
+        }
+        .sync-indicator.hidden { opacity: 0; }
+        @keyframes spin-sync { to { transform: rotate(360deg); } }
+        .sync-spinner { display: inline-block; animation: spin-sync 1s linear infinite; }
     </style>
 </head>
 <body>
@@ -439,8 +475,32 @@
       import {
         loadAbsences as ghLoadAbsences, saveAbsences as ghSaveAbsences,
         loadUnits as ghLoadUnits,
-        hasToken, promptToken
+        hasToken, promptToken, onSyncStatus
       } from '../assets/js/github-data.js';
+
+      // ========== SYNC INDICATOR ==========
+      {
+        const ind = document.createElement('div');
+        ind.id = 'syncIndicator';
+        ind.className = 'sync-indicator hidden';
+        document.body.appendChild(ind);
+        let hideTimer = null;
+        onSyncStatus(status => {
+          clearTimeout(hideTimer);
+          if (status === 'syncing') {
+            ind.innerHTML = '<span class="sync-spinner">⟳</span> Synchronisation...';
+            ind.className = 'sync-indicator syncing';
+          } else if (status === 'synced') {
+            ind.innerHTML = '✓ Synchronisé';
+            ind.className = 'sync-indicator synced';
+            hideTimer = setTimeout(() => { ind.className = 'sync-indicator hidden'; }, 2500);
+          } else {
+            ind.innerHTML = '⚠ Erreur sync';
+            ind.className = 'sync-indicator error';
+            hideTimer = setTimeout(() => { ind.className = 'sync-indicator hidden'; }, 6000);
+          }
+        });
+      }
 
       // ========== STATE ==========
       let allAbsences = [];

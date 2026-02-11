@@ -1,12 +1,26 @@
 /**
  * GitHub Data Manager
  * Remplace Firestore : lit/écrit des fichiers JSON dans le repo GitHub.
- * Utilisé par les pages admin pour gérer units, playtime, playtime_history.
+ * Utilisé par les pages admin pour gérer units, playtime, playtime_history, absences.
+ *
+ * Optimisations :
+ *  - Cache SHA : évite un GET avant chaque PUT
+ *  - File d'attente par fichier : sérialise les écritures pour éviter les conflits SHA
+ *  - Callbacks de statut de sync pour afficher un indicateur sur la page
  */
 
 const GITHUB_OWNER = 'NekoAkami';
 const GITHUB_REPO = 'guidempf-site';
 const GITHUB_BRANCH = 'main';
+
+// ========== SHA CACHE ==========
+const _shaCache = {};   // path → sha
+const _writeQueue = {};  // path → Promise chain
+let _syncListeners = []; // callbacks(status) : 'syncing' | 'synced' | 'error'
+let _pendingWrites = 0;
+
+function onSyncStatus(fn) { _syncListeners.push(fn); }
+function _notifySync(status) { _syncListeners.forEach(fn => fn(status)); }
 
 // ========== TOKEN ==========
 function getToken() {
@@ -54,9 +68,9 @@ async function readJsonFile(path) {
 
 // ========== WRITE ==========
 /**
- * Écrire un fichier JSON dans le repo via l'API GitHub
+ * Écriture interne — ne pas appeler directement, utiliser writeJsonFile()
  */
-async function writeJsonFile(path, data, message) {
+async function _doWrite(path, data, message) {
   const token = getToken();
   if (!token) {
     throw new Error('Token GitHub non configuré. Cliquez sur "⚙ TOKEN" pour le configurer.');
@@ -64,18 +78,21 @@ async function writeJsonFile(path, data, message) {
 
   const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`;
 
-  // 1) Get current SHA (needed for update)
-  let sha = null;
-  try {
-    const getResp = await fetch(apiUrl, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    if (getResp.ok) {
-      const info = await getResp.json();
-      sha = info.sha;
+  // 1) Utiliser le SHA en cache, sinon le récupérer
+  let sha = _shaCache[path] || null;
+  if (!sha) {
+    try {
+      const getResp = await fetch(apiUrl, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (getResp.ok) {
+        const info = await getResp.json();
+        sha = info.sha;
+        _shaCache[path] = sha;
+      }
+    } catch (e) {
+      // File might not exist yet
     }
-  } catch (e) {
-    // File might not exist yet, that's ok
   }
 
   // 2) Write file
@@ -97,11 +114,72 @@ async function writeJsonFile(path, data, message) {
   });
 
   if (!putResp.ok) {
+    // Si conflit SHA (409), invalider le cache et réessayer une fois
+    if (putResp.status === 409 || putResp.status === 422) {
+      delete _shaCache[path];
+      // Retry: refetch SHA
+      try {
+        const getResp2 = await fetch(apiUrl, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (getResp2.ok) {
+          const info2 = await getResp2.json();
+          body.sha = info2.sha;
+          const retry = await fetch(apiUrl, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+          });
+          if (retry.ok) {
+            const result = await retry.json();
+            _shaCache[path] = result.content.sha;
+            return result;
+          }
+        }
+      } catch (e2) { /* fall through to error */ }
+    }
     const errData = await putResp.json().catch(() => ({}));
     throw new Error(`Erreur écriture ${path}: ${putResp.status} — ${errData.message || 'Inconnu'}`);
   }
 
-  return putResp.json();
+  // 3) Mettre à jour le cache SHA avec le nouveau sha
+  const result = await putResp.json();
+  if (result.content && result.content.sha) {
+    _shaCache[path] = result.content.sha;
+  }
+  return result;
+}
+
+/**
+ * Écrire un fichier JSON — sérialisé via file d'attente par path
+ */
+async function writeJsonFile(path, data, message) {
+  // Chaîner les écritures au même fichier pour éviter les conflits
+  const prev = _writeQueue[path] || Promise.resolve();
+  const next = prev.then(
+    () => _wrappedWrite(path, data, message),
+    () => _wrappedWrite(path, data, message)  // continue même si la précédente a échoué
+  );
+  _writeQueue[path] = next.catch(() => {}); // empêcher unhandled rejection dans la chaîne
+  return next;
+}
+
+async function _wrappedWrite(path, data, message) {
+  _pendingWrites++;
+  _notifySync('syncing');
+  try {
+    const result = await _doWrite(path, data, message);
+    _pendingWrites--;
+    if (_pendingWrites === 0) _notifySync('synced');
+    return result;
+  } catch (err) {
+    _pendingWrites--;
+    if (_pendingWrites === 0) _notifySync('error');
+    throw err;
+  }
 }
 
 // ========== UNITS ==========
@@ -160,7 +238,7 @@ async function saveAbsences(absences, message) {
 // ========== EXPORT ==========
 export {
   getToken, setToken, hasToken, promptToken,
-  readJsonFile, writeJsonFile,
+  readJsonFile, writeJsonFile, onSyncStatus,
   loadUnits, saveUnits,
   loadPlaytime, savePlaytime,
   loadPlaytimeHistory, savePlaytimeHistory,
