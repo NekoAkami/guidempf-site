@@ -334,6 +334,91 @@
             border-color: var(--accent-cyan);
             background: rgba(0, 170, 255, 0.08);
         }
+
+        /* Edit buttons in table */
+        .btn-edit {
+            padding: 0.15rem 0.45rem;
+            font-size: 0.68rem;
+            font-family: 'Share Tech Mono', monospace;
+            cursor: pointer;
+            border: 1px solid rgba(0, 170, 255, 0.3);
+            background: rgba(0, 170, 255, 0.08);
+            color: var(--accent-cyan);
+            border-radius: 2px;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .btn-edit:hover { background: rgba(0, 170, 255, 0.2); }
+        .btn-edit.danger { border-color: rgba(255, 60, 60, 0.3); background: rgba(255, 60, 60, 0.08); color: #ff4444; }
+        .btn-edit.danger:hover { background: rgba(255, 60, 60, 0.2); }
+        .edit-actions { display: flex; gap: 0.3rem; }
+
+        /* Modal overlay */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 500;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.visible { display: flex; }
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid rgba(0, 170, 255, 0.3);
+            border-radius: 4px;
+            padding: 1.5rem;
+            width: 95%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.7);
+        }
+        .modal h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.95rem;
+            color: var(--accent-cyan);
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+        .modal label {
+            display: block;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-top: 0.7rem;
+            margin-bottom: 0.2rem;
+        }
+        .modal input, .modal select {
+            width: 100%;
+            padding: 0.45rem 0.6rem;
+            background: rgba(0, 170, 255, 0.04);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.82rem;
+            outline: none;
+            border-radius: 2px;
+        }
+        .modal input:focus { border-color: var(--accent-cyan); }
+        .modal-actions {
+            display: flex;
+            gap: 0.6rem;
+            margin-top: 1.2rem;
+            justify-content: flex-end;
+        }
+        .modal .current-val {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 0.5rem 0.8rem;
+            background: rgba(0, 170, 255, 0.03);
+            border-left: 2px solid rgba(0, 170, 255, 0.2);
+            margin-top: 0.5rem;
+        }
+        .modal .current-val strong { color: var(--accent-cyan); }
     </style>
 </head>
 <body>
@@ -479,10 +564,11 @@
                                         <th>TEMPS BRUT</th>
                                         <th>HEURES</th>
                                         <th>DERNIÈRE MAJ</th>
+                                        <th>ACTIONS</th>
                                     </tr>
                                 </thead>
                                 <tbody id="currentBody">
-                                    <tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Aucune donnée</td></tr>
+                                    <tr><td colspan="7" style="text-align:center;color:var(--text-muted);">Aucune donnée</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -492,6 +578,27 @@
             </div>
         </div>
     </main>
+
+    <!-- Modal: Edit viewtime -->
+    <div id="editModal" class="modal-overlay">
+        <div class="modal">
+            <h3 id="editModalTitle">MODIFIER HEURES</h3>
+            <input type="hidden" id="editSteamId" value="">
+
+            <div id="editCurrentInfo" class="current-val"></div>
+
+            <label>NOUVELLES HEURES *</label>
+            <input type="number" id="editHeures" step="0.01" min="0" placeholder="Ex: 12.50">
+
+            <label>TEMPS BRUT (optionnel)</label>
+            <input type="text" id="editTempsRaw" placeholder="Ex: 12 heures, 30 minutes">
+
+            <div class="modal-actions">
+                <button class="btn-action" onclick="closeEditModal()">ANNULER</button>
+                <button class="btn-action primary" onclick="saveEditedHours()">✓ SAUVEGARDER</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Scripts standard -->
     <script type="module" src="../assets/js/auth.js"></script>
@@ -669,12 +776,13 @@
         document.getElementById('currentCount').textContent = `${filtered.length} / ${currentData.length} ENTRÉES`;
 
         if (filtered.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Aucune donnée</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);">Aucune donnée</td></tr>';
           return;
         }
 
         tbody.innerHTML = filtered.map(e => {
           const hClass = hoursClass(e.heures || 0);
+          const idx = currentData.indexOf(e);
           return `<tr>
             <td class="matricule-cell">${e.matricule || '<span class="unknown-badge">INCONNU</span>'}</td>
             <td>${e.nom_steam || '<span style="color:var(--text-muted);">-</span>'}</td>
@@ -682,6 +790,10 @@
             <td style="font-size:0.78rem;color:var(--text-secondary);">${e.temps_raw || '-'}</td>
             <td class="hours-cell ${hClass}">${formatHours(e.heures || 0)}h</td>
             <td style="font-size:0.72rem;color:var(--text-muted);">${e.updated_at || '-'}</td>
+            <td class="edit-actions">
+              <button class="btn-edit" onclick="openEditModal(${idx})" title="Modifier les heures">✎</button>
+              <button class="btn-edit danger" onclick="deleteEntry(${idx})" title="Supprimer l'entrée">✗</button>
+            </td>
           </tr>`;
         }).join('');
       }
@@ -915,6 +1027,81 @@
         document.getElementById('parseStatus').textContent = '';
         document.getElementById('previewSection').classList.remove('visible');
         document.getElementById('btnSave').disabled = true;
+      };
+
+      // ========== EDIT MODAL ==========
+      window.openEditModal = function(idx) {
+        const entry = currentData[idx];
+        if (!entry) return;
+        document.getElementById('editSteamId').value = entry.steamid64;
+        document.getElementById('editModalTitle').textContent = `MODIFIER — ${entry.matricule || entry.steamid64}`;
+        document.getElementById('editCurrentInfo').innerHTML = `
+          Matricule: <strong>${entry.matricule || '???'}</strong> &nbsp;|&nbsp;
+          Nom: <strong>${entry.nom_steam || '-'}</strong><br>
+          Heures actuelles: <strong>${formatHours(entry.heures || 0)}h</strong> &nbsp;|&nbsp;
+          Temps brut: <strong>${entry.temps_raw || '-'}</strong>
+        `;
+        document.getElementById('editHeures').value = entry.heures ? entry.heures.toFixed(2) : '0';
+        document.getElementById('editTempsRaw').value = entry.temps_raw || '';
+        document.getElementById('editModal').classList.add('visible');
+      };
+
+      window.closeEditModal = function() {
+        document.getElementById('editModal').classList.remove('visible');
+      };
+
+      document.getElementById('editModal').addEventListener('click', e => {
+        if (e.target === document.getElementById('editModal')) closeEditModal();
+      });
+
+      window.saveEditedHours = async function() {
+        const steamid = document.getElementById('editSteamId').value;
+        const newHeures = parseFloat(document.getElementById('editHeures').value);
+        const newTempsRaw = document.getElementById('editTempsRaw').value.trim();
+
+        if (isNaN(newHeures) || newHeures < 0) {
+          showAlert('Veuillez entrer un nombre d\'heures valide', 'error');
+          return;
+        }
+
+        const idx = currentData.findIndex(e => e.steamid64 === steamid);
+        if (idx === -1) {
+          showAlert('Entrée introuvable', 'error');
+          return;
+        }
+
+        const oldHeures = currentData[idx].heures || 0;
+        currentData[idx].heures = newHeures;
+        if (newTempsRaw) currentData[idx].temps_raw = newTempsRaw;
+        currentData[idx].updated_at = new Date().toISOString().substring(0, 10) + ' (modifié)';
+
+        closeEditModal();
+        updateStats();
+        renderCurrentTable();
+        showAlert(`✓ Heures de ${currentData[idx].matricule || steamid} modifiées: ${formatHours(oldHeures)}h → ${formatHours(newHeures)}h`, 'success');
+
+        try {
+          await ghSavePlaytime([...currentData], `Modification manuelle heures ${currentData[idx].matricule || steamid}: ${formatHours(oldHeures)}h → ${formatHours(newHeures)}h`);
+        } catch (err) {
+          showAlert('⚠ Sync échouée: ' + err.message, 'error');
+        }
+      };
+
+      window.deleteEntry = async function(idx) {
+        const entry = currentData[idx];
+        if (!entry) return;
+        if (!confirm(`Supprimer l'entrée de ${entry.matricule || entry.steamid64} (${formatHours(entry.heures || 0)}h) ?`)) return;
+
+        currentData.splice(idx, 1);
+        updateStats();
+        renderCurrentTable();
+        showAlert(`✓ Entrée de ${entry.matricule || entry.steamid64} supprimée`, 'success');
+
+        try {
+          await ghSavePlaytime([...currentData], `Suppression entrée ${entry.matricule || entry.steamid64}`);
+        } catch (err) {
+          showAlert('⚠ Sync échouée: ' + err.message, 'error');
+        }
       };
 
       // ========== FILTERS ==========

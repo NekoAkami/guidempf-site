@@ -182,6 +182,8 @@ class GlobalNavigation {
                 ]
             },
             { label: 'SCANNER', url: 'scanner.html' },
+            { label: 'VIEWTIME', url: 'viewtime.html' },
+            { label: 'ABSENCES', url: 'declaration-absence.html' },
             { label: 'CARTE', url: 'carte.html' },
             { label: 'LIENS', url: 'liens.html' }
         ];

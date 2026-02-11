@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Déclaration d'Absence - MPF Documentation</title>
+    <link rel="stylesheet" href="assets/css/main-style.css">
+    <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/global-nav.css">
+    <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        .absence-form-wrapper {
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        .user-info-bar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem 1rem;
+            background: rgba(0, 170, 255, 0.04);
+            border: 1px solid rgba(0, 170, 255, 0.15);
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+        }
+        .user-info-bar .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: rgba(0, 170, 255, 0.15);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            color: var(--accent-cyan);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .user-info-bar .user-details {
+            flex: 1;
+        }
+        .user-info-bar .user-matricule {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            color: var(--accent-cyan);
+            font-weight: 700;
+        }
+        .user-info-bar .user-name {
+            color: var(--text-muted);
+            font-size: 0.72rem;
+        }
+        .user-info-bar .user-status {
+            font-size: 0.68rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 2px;
+            background: rgba(0, 200, 80, 0.1);
+            border: 1px solid rgba(0, 200, 80, 0.3);
+            color: #00cc55;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        .form-group label {
+            display: block;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-bottom: 0.3rem;
+        }
+        .form-group label .required {
+            color: #ff4444;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 0.5rem 0.7rem;
+            background: rgba(0, 170, 255, 0.04);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.82rem;
+            outline: none;
+            border-radius: 2px;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: var(--accent-cyan);
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .form-group .hint {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        .form-group.error input,
+        .form-group.error textarea {
+            border-color: #ff4444;
+        }
+        .form-group .error-msg {
+            font-size: 0.7rem;
+            color: #ff4444;
+            margin-top: 0.2rem;
+            font-family: 'Share Tech Mono', monospace;
+            display: none;
+        }
+        .form-group.error .error-msg {
+            display: block;
+        }
+
+        .date-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        @media (max-width: 500px) {
+            .date-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .calc-info {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 0.5rem 0.8rem;
+            background: rgba(0, 170, 255, 0.03);
+            border-left: 2px solid rgba(0, 170, 255, 0.2);
+            margin-bottom: 1rem;
+            display: none;
+        }
+        .calc-info.visible { display: block; }
+        .calc-info strong { color: var(--accent-cyan); }
+        .calc-info .pause-warn { color: #ff4444; font-weight: 700; }
+
+        .form-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1.5rem;
+            justify-content: flex-end;
+        }
+        .btn-action {
+            padding: 0.5rem 1.2rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: 1px solid rgba(0, 170, 255, 0.4);
+            background: rgba(0, 170, 255, 0.1);
+            color: var(--accent-cyan);
+            border-radius: 3px;
+            transition: all 0.15s;
+            letter-spacing: 0.5px;
+        }
+        .btn-action:hover { background: rgba(0, 170, 255, 0.2); border-color: var(--accent-cyan); }
+        .btn-action.primary { background: rgba(0, 170, 255, 0.2); border-color: var(--accent-cyan); font-weight: 700; }
+        .btn-action.primary:hover { background: rgba(0, 170, 255, 0.35); }
+        .btn-action:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* Alert */
+        .alert-msg {
+            padding: 0.6rem 1rem;
+            border-radius: 3px;
+            margin-bottom: 1rem;
+            font-size: 0.8rem;
+            font-family: 'Share Tech Mono', monospace;
+            display: none;
+        }
+        .alert-msg.success { background: rgba(0, 200, 80, 0.1); border: 1px solid rgba(0, 200, 80, 0.3); color: #00cc55; }
+        .alert-msg.error { background: rgba(255, 60, 60, 0.1); border: 1px solid rgba(255, 60, 60, 0.3); color: #ff4444; }
+        .alert-msg.info { background: rgba(0, 170, 255, 0.1); border: 1px solid rgba(0, 170, 255, 0.3); color: var(--accent-cyan); }
+
+        /* My absences history */
+        .my-absences-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+        .my-absences-table th {
+            text-align: left;
+            padding: 0.5rem 0.4rem;
+            color: var(--accent-cyan);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 1px;
+            border-bottom: 2px solid rgba(0, 170, 255, 0.2);
+        }
+        .my-absences-table td {
+            padding: 0.4rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid rgba(0, 170, 255, 0.06);
+            vertical-align: middle;
+        }
+        .my-absences-table tr:hover { background: rgba(0, 170, 255, 0.03); }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.1rem 0.4rem;
+            border-radius: 2px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .status-active {
+            background: rgba(255, 140, 0, 0.2);
+            color: #ffaa00;
+            border: 1px solid rgba(255, 140, 0, 0.4);
+        }
+        .status-pause {
+            background: rgba(255, 40, 40, 0.2);
+            color: #ff4444;
+            border: 1px solid rgba(255, 40, 40, 0.4);
+        }
+        .status-ended {
+            background: rgba(100, 100, 100, 0.15);
+            color: #888;
+            border: 1px solid rgba(100, 100, 100, 0.3);
+        }
+        .status-upcoming {
+            background: rgba(0, 170, 255, 0.15);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(0, 170, 255, 0.3);
+        }
+
+        /* Sync indicator */
+        .sync-indicator {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 3px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem;
+            z-index: 999;
+            transition: all 0.3s;
+            pointer-events: none;
+            opacity: 0;
+        }
+        .sync-indicator.syncing {
+            opacity: 1;
+            background: rgba(255, 200, 0, 0.15);
+            border: 1px solid rgba(255, 200, 0, 0.4);
+            color: #ffc800;
+        }
+        .sync-indicator.synced {
+            opacity: 1;
+            background: rgba(0, 200, 80, 0.15);
+            border: 1px solid rgba(0, 200, 80, 0.4);
+            color: #00cc55;
+        }
+        .sync-indicator.error {
+            opacity: 1;
+            background: rgba(255, 60, 60, 0.15);
+            border: 1px solid rgba(255, 60, 60, 0.4);
+            color: #ff4444;
+        }
+        .sync-indicator.hidden { opacity: 0; }
+        @keyframes spin-sync { to { transform: rotate(360deg); } }
+        .sync-spinner { display: inline-block; animation: spin-sync 1s linear infinite; }
+
+        #access-denied { display: none; text-align: center; padding: 3rem; }
+        #notApproved { display: none; text-align: center; padding: 3rem; }
+    </style>
+</head>
+<body>
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <h1 class="logo">MPF</h1>
+                    <p class="logo-subtitle">Déclaration d'Absence</p>
+                </div>
+                <div id="authBtn" class="header-auth"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Loading -->
+            <div id="loading" style="text-align:center;padding:3rem;">
+                <p style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;">CHARGEMENT...</p>
+            </div>
+
+            <!-- Not logged in -->
+            <div id="access-denied">
+                <h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">CONNEXION REQUISE</h2>
+                <p style="color:var(--text-muted);font-family:'Share Tech Mono',monospace;margin-top:0.5rem;">Vous devez être connecté pour déclarer une absence.</p>
+                <a href="login.html" style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;display:inline-block;margin-top:1rem;">→ SE CONNECTER</a>
+            </div>
+
+            <!-- Not approved -->
+            <div id="notApproved">
+                <h2 style="color:#ffaa00;font-family:'Orbitron',sans-serif;">EN ATTENTE D'APPROBATION</h2>
+                <p style="color:var(--text-muted);font-family:'Share Tech Mono',monospace;margin-top:0.5rem;">Votre compte n'a pas encore été approuvé par un administrateur.</p>
+                <a href="index.html" style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;display:inline-block;margin-top:1rem;">→ RETOUR À L'ACCUEIL</a>
+            </div>
+
+            <!-- Main content -->
+            <div id="mainContent" style="display:none;">
+                <div class="absence-form-wrapper">
+
+                    <!-- User info -->
+                    <div class="user-info-bar" id="userInfoBar">
+                        <div class="user-avatar" id="userAvatar">?</div>
+                        <div class="user-details">
+                            <div class="user-matricule" id="userMatricule">---</div>
+                            <div class="user-name" id="userName">Chargement...</div>
+                        </div>
+                        <div class="user-status">CONNECTÉ</div>
+                    </div>
+
+                    <!-- Alert -->
+                    <div id="alertMsg" class="alert-msg"></div>
+
+                    <!-- Absence form -->
+                    <div class="combine-terminal-wrapper">
+                        <div class="combine-header">
+                            <h2>NOUVELLE DÉCLARATION</h2>
+                            <span class="header-code">FORMULAIRE</span>
+                        </div>
+                        <div class="combine-body">
+
+                            <div class="form-group" id="grpMotif">
+                                <label>MOTIF DE L'ABSENCE <span class="required">*</span></label>
+                                <textarea id="fMotif" placeholder="Décrivez la raison de votre absence..."></textarea>
+                                <div class="error-msg" id="errMotif"></div>
+                            </div>
+
+                            <div class="date-row">
+                                <div class="form-group" id="grpDebut">
+                                    <label>DATE DE DÉBUT <span class="required">*</span></label>
+                                    <input type="date" id="fDebut">
+                                    <div class="error-msg" id="errDebut"></div>
+                                </div>
+                                <div class="form-group" id="grpFin">
+                                    <label>DATE DE FIN <span class="required">*</span></label>
+                                    <input type="date" id="fFin">
+                                    <div class="error-msg" id="errFin"></div>
+                                </div>
+                            </div>
+
+                            <div class="calc-info" id="calcInfo"></div>
+
+                            <div class="form-actions">
+                                <button class="btn-action" onclick="resetForm()">RÉINITIALISER</button>
+                                <button class="btn-action primary" id="btnSubmit" onclick="submitAbsence()">⟩ DÉCLARER L'ABSENCE</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- My absences -->
+                    <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;">
+                        <div class="combine-header">
+                            <h2>MES ABSENCES</h2>
+                            <span class="header-code" id="myAbsCount">0</span>
+                        </div>
+                        <div class="combine-body">
+                            <div style="overflow-x:auto;">
+                                <table class="my-absences-table">
+                                    <thead>
+                                        <tr>
+                                            <th>MOTIF</th>
+                                            <th>DÉBUT</th>
+                                            <th>FIN</th>
+                                            <th>JOURS</th>
+                                            <th>STATUT</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="myAbsBody">
+                                        <tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Aucune absence déclarée</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script type="module" src="assets/js/auth.js"></script>
+    <script src="assets/js/global-nav.js"></script>
+    <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
+
+    <script type="module">
+      import { auth, db } from './assets/js/auth.js';
+      import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+      import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+      import {
+        loadAbsences as ghLoadAbsences, saveAbsences as ghSaveAbsences,
+        onSyncStatus
+      } from './assets/js/github-data.js';
+
+      // ========== SYNC INDICATOR ==========
+      {
+        const ind = document.createElement('div');
+        ind.id = 'syncIndicator';
+        ind.className = 'sync-indicator hidden';
+        document.body.appendChild(ind);
+        let hideTimer = null;
+        onSyncStatus(status => {
+          clearTimeout(hideTimer);
+          if (status === 'syncing') {
+            ind.innerHTML = '<span class="sync-spinner">⟳</span> Synchronisation...';
+            ind.className = 'sync-indicator syncing';
+          } else if (status === 'synced') {
+            ind.innerHTML = '✓ Synchronisé';
+            ind.className = 'sync-indicator synced';
+            hideTimer = setTimeout(() => { ind.className = 'sync-indicator hidden'; }, 2500);
+          } else {
+            ind.innerHTML = '⚠ Erreur sync';
+            ind.className = 'sync-indicator error';
+            hideTimer = setTimeout(() => { ind.className = 'sync-indicator hidden'; }, 6000);
+          }
+        });
+      }
+
+      // ========== STATE ==========
+      let currentUser = null;    // { matricule, nom_steam, steamid64, discord }
+      let allAbsences = [];
+
+      // ========== UTILS ==========
+      function showAlert(text, type = 'success') {
+        const el = document.getElementById('alertMsg');
+        el.style.display = 'block';
+        el.className = 'alert-msg ' + type;
+        el.textContent = text;
+        setTimeout(() => { el.style.display = 'none'; }, 6000);
+      }
+
+      function totalDays(debut, fin) {
+        const d1 = new Date(debut);
+        const d2 = new Date(fin);
+        return Math.max(1, Math.ceil((d2 - d1) / (1000 * 60 * 60 * 24)) + 1);
+      }
+
+      function getWeekMonday(d) {
+        const date = new Date(d);
+        const day = date.getDay();
+        const diff = day === 0 ? -6 : 1 - day;
+        date.setDate(date.getDate() + diff);
+        date.setHours(0, 0, 0, 0);
+        return date;
+      }
+
+      function getWeekSunday(d) {
+        const mon = getWeekMonday(d);
+        const sun = new Date(mon);
+        sun.setDate(sun.getDate() + 6);
+        sun.setHours(23, 59, 59, 999);
+        return sun;
+      }
+
+      function daysInCurrentWeek(debut, fin) {
+        const now = new Date();
+        const weekStart = getWeekMonday(now);
+        const weekEnd = getWeekSunday(now);
+        const absStart = new Date(debut);
+        const absEnd = new Date(fin);
+        const overlapStart = absStart > weekStart ? absStart : weekStart;
+        const overlapEnd = absEnd < weekEnd ? absEnd : weekEnd;
+        if (overlapStart > overlapEnd) return 0;
+        return Math.ceil((overlapEnd - overlapStart) / (1000 * 60 * 60 * 24)) + 1;
+      }
+
+      function getStatus(abs) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const debut = new Date(abs.debut);
+        const fin = new Date(abs.fin);
+        debut.setHours(0, 0, 0, 0);
+        fin.setHours(23, 59, 59, 999);
+        if (today < debut) return 'upcoming';
+        if (today > fin) return 'ended';
+        const dw = daysInCurrentWeek(abs.debut, abs.fin);
+        return dw >= 3 ? 'pause' : 'active';
+      }
+
+      function statusBadge(status) {
+        const map = {
+          active: '<span class="status-badge status-active">ABSENCE</span>',
+          pause: '<span class="status-badge status-pause">PAUSE</span>',
+          ended: '<span class="status-badge status-ended">TERMINÉE</span>',
+          upcoming: '<span class="status-badge status-upcoming">À VENIR</span>'
+        };
+        return map[status] || status;
+      }
+
+      function formatDate(d) {
+        if (!d) return '-';
+        const parts = d.split('-');
+        if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        return d;
+      }
+
+      // ========== DATE CALC ==========
+      function updateCalc() {
+        const debut = document.getElementById('fDebut').value;
+        const fin = document.getElementById('fFin').value;
+        const el = document.getElementById('calcInfo');
+        if (!debut || !fin) { el.classList.remove('visible'); return; }
+
+        if (new Date(fin) < new Date(debut)) {
+          el.innerHTML = '<span style="color:#ff4444;">⚠ La date de fin est avant la date de début</span>';
+          el.classList.add('visible');
+          return;
+        }
+
+        const td = totalDays(debut, fin);
+        const dw = daysInCurrentWeek(debut, fin);
+        const pauseStr = dw >= 3 ? ' → <span class="pause-warn">PAUSE AUTOMATIQUE</span>' : '';
+        el.innerHTML = `Durée: <strong>${td} jour${td > 1 ? 's' : ''}</strong> &nbsp;|&nbsp; Cette semaine: <strong>${dw}j</strong>${pauseStr}`;
+        el.classList.add('visible');
+      }
+
+      document.getElementById('fDebut').addEventListener('change', updateCalc);
+      document.getElementById('fFin').addEventListener('change', updateCalc);
+
+      // ========== VALIDATION ==========
+      function clearErrors() {
+        ['grpMotif', 'grpDebut', 'grpFin'].forEach(id => {
+          document.getElementById(id).classList.remove('error');
+        });
+      }
+
+      function validateForm() {
+        clearErrors();
+        let valid = true;
+
+        const motif = document.getElementById('fMotif').value.trim();
+        const debut = document.getElementById('fDebut').value;
+        const fin = document.getElementById('fFin').value;
+
+        if (!motif) {
+          document.getElementById('grpMotif').classList.add('error');
+          document.getElementById('errMotif').textContent = 'Le motif est obligatoire';
+          valid = false;
+        }
+
+        if (!debut) {
+          document.getElementById('grpDebut').classList.add('error');
+          document.getElementById('errDebut').textContent = 'La date de début est obligatoire';
+          valid = false;
+        }
+
+        if (!fin) {
+          document.getElementById('grpFin').classList.add('error');
+          document.getElementById('errFin').textContent = 'La date de fin est obligatoire';
+          valid = false;
+        }
+
+        if (debut && fin && new Date(fin) < new Date(debut)) {
+          document.getElementById('grpFin').classList.add('error');
+          document.getElementById('errFin').textContent = 'La date de fin ne peut pas être avant la date de début';
+          valid = false;
+        }
+
+        return valid;
+      }
+
+      // ========== SUBMIT ==========
+      window.submitAbsence = async function() {
+        if (!currentUser || !currentUser.matricule) {
+          showAlert('Erreur: utilisateur non identifié', 'error');
+          return;
+        }
+
+        if (!validateForm()) return;
+
+        const btn = document.getElementById('btnSubmit');
+        btn.disabled = true;
+        btn.textContent = '⏳ ENVOI...';
+
+        const motif = document.getElementById('fMotif').value.trim();
+        const debut = document.getElementById('fDebut').value;
+        const fin = document.getElementById('fFin').value;
+
+        const absData = {
+          matricule: currentUser.matricule,
+          steamid64: currentUser.steamid64 || '',
+          nom_steam: currentUser.nom_steam || '',
+          motif,
+          debut,
+          fin,
+          created_at: new Date().toISOString().substring(0, 10),
+          declared_by: 'user'
+        };
+
+        allAbsences.push(absData);
+
+        try {
+          await ghSaveAbsences([...allAbsences], `Déclaration absence ${currentUser.matricule} (${debut} → ${fin})`);
+          showAlert('✓ Absence déclarée avec succès !', 'success');
+          resetForm();
+          renderMyAbsences();
+        } catch (err) {
+          // Rollback
+          allAbsences.pop();
+          showAlert('✗ Erreur: ' + err.message, 'error');
+        } finally {
+          btn.disabled = false;
+          btn.textContent = '⟩ DÉCLARER L\'ABSENCE';
+        }
+      };
+
+      window.resetForm = function() {
+        document.getElementById('fMotif').value = '';
+        document.getElementById('fDebut').value = '';
+        document.getElementById('fFin').value = '';
+        document.getElementById('calcInfo').classList.remove('visible');
+        clearErrors();
+      };
+
+      // ========== MY ABSENCES ==========
+      function renderMyAbsences() {
+        if (!currentUser) return;
+        const mine = allAbsences
+          .filter(a => a.matricule === currentUser.matricule)
+          .map(a => ({ ...a, _status: getStatus(a) }))
+          .sort((a, b) => b.debut.localeCompare(a.debut));
+
+        document.getElementById('myAbsCount').textContent = `${mine.length} ABSENCE${mine.length > 1 ? 'S' : ''}`;
+
+        const tbody = document.getElementById('myAbsBody');
+        if (mine.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Aucune absence déclarée</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = mine.map(a => {
+          const td = totalDays(a.debut, a.fin);
+          return `<tr>
+            <td style="font-size:0.75rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${(a.motif || '').replace(/"/g, '&quot;')}">${a.motif || '-'}</td>
+            <td style="font-size:0.75rem;">${formatDate(a.debut)}</td>
+            <td style="font-size:0.75rem;">${formatDate(a.fin)}</td>
+            <td style="font-family:'Orbitron',sans-serif;font-size:0.78rem;font-weight:700;color:var(--accent-cyan);">${td}j</td>
+            <td>${statusBadge(a._status)}</td>
+          </tr>`;
+        }).join('');
+      }
+
+      // ========== AUTH CHECK ==========
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('access-denied').style.display = 'block';
+          return;
+        }
+
+        try {
+          const snap = await getDoc(doc(db, 'users', user.uid));
+          if (!snap.exists()) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('access-denied').style.display = 'block';
+            return;
+          }
+
+          const userData = snap.data();
+          if (!userData.approved) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('notApproved').style.display = 'block';
+            return;
+          }
+
+          // Set current user info
+          currentUser = {
+            matricule: userData.matricule || '???',
+            nom_steam: userData.nom_steam || '',
+            steamid64: userData.steamid64 || '',
+            discord: userData.discord || ''
+          };
+
+          // Update user info bar
+          document.getElementById('userMatricule').textContent = currentUser.matricule;
+          document.getElementById('userName').textContent = currentUser.nom_steam || user.email;
+          document.getElementById('userAvatar').textContent = currentUser.matricule.substring(0, 2);
+
+          // Show content
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('mainContent').style.display = 'block';
+
+          // Load absences
+          try {
+            allAbsences = await ghLoadAbsences();
+          } catch (err) {
+            console.error('Erreur chargement absences:', err);
+            allAbsences = [];
+          }
+
+          renderMyAbsences();
+
+        } catch (err) {
+          console.error('Auth check failed:', err);
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('access-denied').style.display = 'block';
+        }
+      });
+    </script>
+</body>
+</html>

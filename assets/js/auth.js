@@ -117,7 +117,7 @@ function initAuth() {
 
   // Pages publiques (accessibles sans connexion)
   const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-  const publicPages = ['login.html', 'register.html', 'pending.html', 'index.html'];
+  const publicPages = ['login.html', 'register.html', 'pending.html', 'index.html', 'viewtime.html'];
   
   if (publicPages.includes(currentPage)) return;
 
