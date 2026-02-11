@@ -1,7 +1,7 @@
 // Script d'authentification global pour Metropolice Force Guide
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, deleteDoc, serverTimestamp, query, where, Timestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDPs4x2EE1pyeQTC_V-Ze5uyZ8Rs2N8qF4",
@@ -117,14 +117,22 @@ export async function updateAuthButton() {
             ${isAdmin ? `<a href="${_basePath}admin/panel.html" class="btn" style="margin-right:.5rem">Admin</a>` : ''}
             <button onclick="window.logoutUser()" class="btn secondary">Déconnexion</button>
           `;
+          // Démarrer la présence en ligne
+          startPresence(user.uid);
         } else {
           authBtn.innerHTML = `<a href="${_basePath}login.html" class="btn">Connexion</a>`;
+          injectOnlineCounter();
+          updateOnlineCounter();
         }
       } catch (err) {
         authBtn.innerHTML = `<a href="${_basePath}login.html" class="btn">Connexion</a>`;
+        injectOnlineCounter();
+        updateOnlineCounter();
       }
     } else {
       authBtn.innerHTML = `<a href="${_basePath}login.html" class="btn">Connexion</a>`;
+      injectOnlineCounter();
+      updateOnlineCounter();
     }
   });
 }
@@ -138,6 +146,67 @@ window.logoutUser = async () => {
     console.error('Erreur de déconnexion:', err);
   }
 };
+
+// ========== PRÉSENCE EN LIGNE ==========
+let _presenceInterval = null;
+
+async function updatePresence(uid) {
+  try {
+    await setDoc(doc(db, 'presence', uid), {
+      last_seen: serverTimestamp(),
+      uid
+    });
+  } catch (_) {}
+}
+
+async function countOnlineUsers() {
+  try {
+    const cutoff = Timestamp.fromDate(new Date(Date.now() - 2 * 60 * 1000)); // 2 min
+    const snap = await getDocs(query(collection(db, 'presence'), where('last_seen', '>', cutoff)));
+    return snap.size;
+  } catch (_) { return 0; }
+}
+
+async function updateOnlineCounter() {
+  const el = document.getElementById('onlineCount');
+  if (!el) return;
+  const count = await countOnlineUsers();
+  el.textContent = count;
+}
+
+function injectOnlineCounter() {
+  const headerContent = document.querySelector('.header-content');
+  if (!headerContent || document.getElementById('onlineCounter')) return;
+  const counter = document.createElement('div');
+  counter.id = 'onlineCounter';
+  counter.style.cssText = 'display:flex;flex-direction:column;align-items:center;font-family:"Share Tech Mono",monospace;';
+  counter.innerHTML = `
+    <span style="font-size:1.4rem;font-weight:700;color:var(--accent-cyan);line-height:1;" id="onlineCount">-</span>
+    <span style="font-size:0.6rem;color:var(--text-muted);letter-spacing:1.5px;text-transform:uppercase;">En ligne</span>
+  `;
+  // Insérer entre logo-section et authBtn
+  const authBtn = document.getElementById('authBtn');
+  if (authBtn) {
+    headerContent.insertBefore(counter, authBtn);
+  } else {
+    headerContent.appendChild(counter);
+  }
+}
+
+function startPresence(uid) {
+  updatePresence(uid);
+  _presenceInterval = setInterval(() => updatePresence(uid), 60000); // heartbeat chaque 60s
+
+  injectOnlineCounter();
+  updateOnlineCounter();
+  setInterval(updateOnlineCounter, 30000); // refresh compteur chaque 30s
+
+  // Cleanup au départ
+  window.addEventListener('beforeunload', () => {
+    // On ne supprime pas le doc — il expirera naturellement dans 2 min
+    clearInterval(_presenceInterval);
+  });
+}
 
 // Initialisation automatique du bouton d'authentification + protection des pages
 function initAuth() {
