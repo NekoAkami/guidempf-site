@@ -19,13 +19,20 @@ const db = getFirestore(app);
 // Export pour utilisation dans d'autres scripts
 export { app, auth, db };
 
+// Détection automatique du chemin de base (pour les sous-dossiers comme admin/)
+const _basePath = (() => {
+    const s = document.querySelector('script[src*="auth.js"]');
+    if (s) return (s.getAttribute('src') || '').replace('assets/js/auth.js', '');
+    return '';
+})();
+
 // Fonction pour vérifier si l'utilisateur est authentifié et approuvé
 export async function requireAuth(redirectToLogin = true) {
   return new Promise((resolve, reject) => {
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         if (redirectToLogin) {
-          window.location.href = 'login.html';
+          window.location.href = _basePath + 'login.html';
         }
         reject(new Error('Non authentifié'));
         return;
@@ -36,7 +43,7 @@ export async function requireAuth(redirectToLogin = true) {
         if (!userDoc.exists()) {
           if (redirectToLogin) {
             await signOut(auth);
-            window.location.href = 'login.html';
+            window.location.href = _basePath + 'login.html';
           }
           reject(new Error('Utilisateur non trouvé'));
           return;
@@ -45,7 +52,7 @@ export async function requireAuth(redirectToLogin = true) {
         const userData = userDoc.data();
         if (userData.approved !== true) {
           if (redirectToLogin) {
-            window.location.href = 'pending.html';
+            window.location.href = _basePath + 'pending.html';
           }
           reject(new Error('Utilisateur non approuvé'));
           return;
@@ -79,17 +86,17 @@ export async function updateAuthButton() {
           const matricule = userData.matricule || '???';
           authBtn.innerHTML = `
             <span style="font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--text-muted);margin-right:0.8rem;letter-spacing:1px;">MATRICULE : <span style="color:var(--accent-cyan);font-weight:700;">${matricule}</span></span>
-            ${isAdmin ? '<a href="admin/panel.html" class="btn" style="margin-right:.5rem">Admin</a>' : ''}
+            ${isAdmin ? `<a href="${_basePath}admin/panel.html" class="btn" style="margin-right:.5rem">Admin</a>` : ''}
             <button onclick="window.logoutUser()" class="btn secondary">Déconnexion</button>
           `;
         } else {
-          authBtn.innerHTML = `<a href="login.html" class="btn">Connexion</a>`;
+          authBtn.innerHTML = `<a href="${_basePath}login.html" class="btn">Connexion</a>`;
         }
       } catch (err) {
-        authBtn.innerHTML = `<a href="login.html" class="btn">Connexion</a>`;
+        authBtn.innerHTML = `<a href="${_basePath}login.html" class="btn">Connexion</a>`;
       }
     } else {
-      authBtn.innerHTML = `<a href="login.html" class="btn">Connexion</a>`;
+      authBtn.innerHTML = `<a href="${_basePath}login.html" class="btn">Connexion</a>`;
     }
   });
 }
@@ -98,7 +105,7 @@ export async function updateAuthButton() {
 window.logoutUser = async () => {
   try {
     await signOut(auth);
-    window.location.href = 'index.html';
+    window.location.href = _basePath + 'index.html';
   } catch (err) {
     console.error('Erreur de déconnexion:', err);
   }
@@ -120,19 +127,19 @@ function initAuth() {
 
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
-      window.location.href = 'login.html';
+      window.location.href = _basePath + 'login.html';
       return;
     }
     try {
       const userDoc = await getDoc(doc(db, 'users', user.uid));
       if (!userDoc.exists()) {
         await signOut(auth);
-        window.location.href = 'login.html';
+        window.location.href = _basePath + 'login.html';
         return;
       }
       const userData = userDoc.data();
       if (userData.approved !== true) {
-        window.location.href = 'pending.html';
+        window.location.href = _basePath + 'pending.html';
         return;
       }
       // Utilisateur authentifié et approuvé — afficher le contenu
@@ -142,7 +149,7 @@ function initAuth() {
       }
     } catch (err) {
       console.error('Auth check failed:', err);
-      window.location.href = 'login.html';
+      window.location.href = _basePath + 'login.html';
     }
   });
 }

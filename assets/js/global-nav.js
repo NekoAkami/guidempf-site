@@ -8,6 +8,7 @@ class GlobalNavigation {
     }
 
     init() {
+        this.basePath = this.getBasePath();
         this.injectFavicon();
         this.injectServerLogo();
         this.injectMissingAssets();
@@ -19,13 +20,23 @@ class GlobalNavigation {
         this.cleanGlitchText();
     }
 
+    // Détecte le chemin de base pour les sous-dossiers (ex: admin/)
+    getBasePath() {
+        const navScript = document.querySelector('script[src*="global-nav.js"]');
+        if (navScript) {
+            const src = navScript.getAttribute('src') || '';
+            return src.replace('assets/js/global-nav.js', '');
+        }
+        return '';
+    }
+
     // Injecte le favicon sur toutes les pages
     injectFavicon() {
         if (!document.querySelector('link[rel="icon"]')) {
             const link = document.createElement('link');
             link.rel = 'icon';
             link.type = 'image/x-icon';
-            link.href = 'favicon.ico';
+            link.href = this.basePath + 'favicon.ico';
             document.head.appendChild(link);
         }
     }
@@ -36,20 +47,20 @@ class GlobalNavigation {
         if (!document.querySelector('link[href*="components.css"]')) {
             const css = document.createElement('link');
             css.rel = 'stylesheet';
-            css.href = 'assets/css/components.css';
+            css.href = this.basePath + 'assets/css/components.css';
             document.head.appendChild(css);
         }
         // auth.js (module)
         if (!document.querySelector('script[src*="auth.js"]')) {
             const script = document.createElement('script');
             script.type = 'module';
-            script.src = 'assets/js/auth.js';
+            script.src = this.basePath + 'assets/js/auth.js';
             document.body.appendChild(script);
         }
         // site-search.js
         if (!document.querySelector('script[src*="site-search.js"]')) {
             const script = document.createElement('script');
-            script.src = 'assets/js/site-search.js';
+            script.src = this.basePath + 'assets/js/site-search.js';
             document.body.appendChild(script);
         }
     }
@@ -59,7 +70,7 @@ class GlobalNavigation {
         const logoIcon = document.querySelector('.logo-icon');
         if (logoIcon) {
             const img = document.createElement('img');
-            img.src = 'assets/images/logo-serveur.jpg';
+            img.src = this.basePath + 'assets/images/logo-serveur.jpg';
             img.alt = 'Logo Serveur';
             img.className = 'header-server-logo';
             img.style.cssText = 'width:38px;height:38px;border-radius:4px;object-fit:cover;';
@@ -203,7 +214,7 @@ class GlobalNavigation {
 
         let html = `
             <li class="nav-item">
-                <a href="${item.url}" class="nav-link ${dropdownClass}">${item.label}</a>
+                <a href="${this.basePath + item.url}" class="nav-link ${dropdownClass}">${item.label}</a>
         `;
 
         if (hasDropdown) {
@@ -211,7 +222,7 @@ class GlobalNavigation {
                 <ul class="dropdown-menu">
                     ${item.dropdown.map(subItem => `
                         <li class="dropdown-item">
-                            <a href="${subItem.url}" class="dropdown-link">${subItem.label}</a>
+                            <a href="${this.basePath + subItem.url}" class="dropdown-link">${subItem.label}</a>
                         </li>
                     `).join('')}
                 </ul>
