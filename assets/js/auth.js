@@ -86,7 +86,7 @@ export async function updateAuthButton() {
           const matricule = userData.matricule || '???';
 
           // Enrichir avec les données d'unité (rang + division)
-          let identParts = [matricule];
+          let gradeMatDiv = matricule;
           try {
             const res = await fetch('https://raw.githubusercontent.com/NekoAkami/guidempf-site/main/data/units.json');
             if (res.ok) {
@@ -95,14 +95,13 @@ export async function updateAuthButton() {
               if (unit) {
                 const r = unit.rang && unit.rang !== 'MISSING' ? unit.rang : '';
                 const d = unit.division && unit.division !== 'N/A' ? unit.division : '';
-                identParts = [r, d, matricule].filter(Boolean);
+                gradeMatDiv = [r, matricule, d].filter(Boolean).join('-');
               }
             }
           } catch (_) {}
-          const identLabel = identParts.map(p => `<span style="color:var(--accent-cyan);font-weight:700;">${p}</span>`).join(' ');
 
           authBtn.innerHTML = `
-            <span style="font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--text-muted);margin-right:0.8rem;letter-spacing:1px;">${identLabel}</span>
+            <span style="font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--text-muted);margin-right:0.8rem;letter-spacing:0.5px;">Unité Connecté au terminal : <span style="color:var(--accent-cyan);font-weight:700;">${gradeMatDiv}</span></span>
             ${isAdmin ? `<a href="${_basePath}admin/panel.html" class="btn" style="margin-right:.5rem">Admin</a>` : ''}
             <button onclick="window.logoutUser()" class="btn secondary">Déconnexion</button>
           `;
