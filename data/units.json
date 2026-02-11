@@ -383,5 +383,17 @@
     "ordre": "",
     "date_entree": "",
     "updated_at": "2026-02-11"
+  },
+  {
+    "matricule": "954",
+    "steamid64": "76561198103824126",
+    "nom_steam": "Neko Akami",
+    "discord": "Neko Akami",
+    "division": "N/A",
+    "rang": "MISSING",
+    "ordre": "",
+    "date_entree": "2026-02-11",
+    "formateur": false,
+    "updated_at": "2026-02-11"
   }
 ]
