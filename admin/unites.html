@@ -137,11 +137,31 @@
 
         /* Rang badge */
         .rang-badge {
+            display: inline-block;
+            padding: 0.1rem 0.4rem;
+            border-radius: 2px;
             font-family: 'Orbitron', sans-serif;
             font-size: 0.72rem;
             font-weight: 700;
-            color: var(--accent-yellow);
+            letter-spacing: 0.5px;
         }
+        /* Haut Gradés */
+        .rang-Cmd  { background: rgba(255, 215, 0, 0.2); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.4); }
+        .rang-Ofc  { background: rgba(255, 180, 0, 0.2); color: #ffbb00; border: 1px solid rgba(255, 180, 0, 0.4); }
+        /* MPEF */
+        .rang-DvL  { background: rgba(255, 40, 40, 0.2); color: #ff3333; border: 1px solid rgba(255, 40, 40, 0.4); }
+        .rang-01   { background: rgba(255, 50, 50, 0.18); color: #ff4444; border: 1px solid rgba(255, 50, 50, 0.35); }
+        .rang-02   { background: rgba(255, 140, 0, 0.18); color: #ff8800; border: 1px solid rgba(255, 140, 0, 0.35); }
+        /* MPF */
+        .rang-03   { background: rgba(200, 200, 0, 0.15); color: #bbbb00; border: 1px solid rgba(200, 200, 0, 0.3); }
+        .rang-04   { background: rgba(0, 180, 120, 0.15); color: #00bb77; border: 1px solid rgba(0, 180, 120, 0.3); }
+        .rang-05   { background: rgba(0, 140, 255, 0.15); color: #0099ff; border: 1px solid rgba(0, 140, 255, 0.3); }
+        /* Recrues */
+        .rang-RCT  { background: rgba(128, 128, 128, 0.15); color: #999; border: 1px solid rgba(128, 128, 128, 0.3); }
+        /* Vortigaunts */
+        .rang-STB   { background: rgba(160, 0, 200, 0.15); color: #bb44dd; border: 1px solid rgba(160, 0, 200, 0.3); }
+        .rang-STBE  { background: rgba(180, 0, 220, 0.18); color: #cc44ee; border: 1px solid rgba(180, 0, 220, 0.35); }
+        .rang-CABAL { background: rgba(200, 0, 200, 0.2); color: #dd44dd; border: 1px solid rgba(200, 0, 200, 0.4); }
 
         /* Buttons */
         .btn-sm {
@@ -558,6 +578,12 @@
         return `<span class="div-badge div-${div}">${div}</span>`;
       }
 
+      function rangClass(rang) {
+        if (!rang) return '';
+        const r = rang.replace('.', '');
+        return 'rang-' + r;
+      }
+
       // ========== TOKEN CONFIG ==========
       window.configureToken = function() {
         if (promptToken()) {
@@ -636,7 +662,7 @@
             <td class="steamid-cell">${u.steamid64 || '-'}</td>
             <td style="font-size:0.78rem;">${u.discord || '<span style="color:var(--text-muted);">-</span>'}</td>
             <td>${divBadge(u.division)}</td>
-            <td><span class="rang-badge">${u.rang || '-'}</span></td>
+            <td><span class="rang-badge ${rangClass(u.rang)}">${u.rang || '-'}</span></td>
             <td style="font-size:0.78rem;color:var(--text-muted);">${u.ordre || '-'}</td>
             <td style="font-size:0.72rem;color:var(--text-muted);">${u.date_entree || '-'}</td>
             <td class="action-cell">
