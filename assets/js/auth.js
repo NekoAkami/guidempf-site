@@ -86,18 +86,20 @@ export async function updateAuthButton() {
           const matricule = userData.matricule || '???';
 
           // Enrichir avec les données d'unité (rang + division)
-          let identLabel = `MATRICULE : <span style="color:var(--accent-cyan);font-weight:700;">${matricule}</span>`;
+          let identParts = [matricule];
           try {
             const res = await fetch('https://raw.githubusercontent.com/NekoAkami/guidempf-site/main/data/units.json');
             if (res.ok) {
               const units = await res.json();
               const unit = units.find(u => u.matricule === matricule);
-              if (unit && unit.rang && unit.rang !== 'MISSING') {
-                const parts = [unit.rang, unit.division && unit.division !== 'N/A' ? unit.division : '', matricule].filter(Boolean);
-                identLabel = parts.map(p => `<span style="color:var(--accent-cyan);font-weight:700;">${p}</span>`).join(' ');
+              if (unit) {
+                const r = unit.rang && unit.rang !== 'MISSING' ? unit.rang : '';
+                const d = unit.division && unit.division !== 'N/A' ? unit.division : '';
+                identParts = [r, d, matricule].filter(Boolean);
               }
             }
           } catch (_) {}
+          const identLabel = identParts.map(p => `<span style="color:var(--accent-cyan);font-weight:700;">${p}</span>`).join(' ');
 
           authBtn.innerHTML = `
             <span style="font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--text-muted);margin-right:0.8rem;letter-spacing:1px;">${identLabel}</span>
