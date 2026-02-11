@@ -335,6 +335,7 @@
                 <!-- Nav -->
                 <div class="admin-nav" style="margin-top: 1rem;">
                     <a href="panel.html">← PANEL ADMIN</a>
+                    <a href="unites.html">UNITÉS</a>
                     <a href="heures.html" class="active">HEURES DE JEU</a>
                     <a href="heures-archives.html">ARCHIVES</a>
                 </div>
@@ -530,10 +531,11 @@
         return 'critical';
       }
 
-      // ========== LOAD USERS MAP ==========
+      // ========== LOAD UNITS MAP ==========
       async function loadUsersMap() {
         try {
-          const snap = await getDocs(collection(db, 'users'));
+          // Charger depuis la collection 'units' (registre des unités)
+          const snap = await getDocs(collection(db, 'units'));
           usersMap = {};
           snap.forEach(d => {
             const data = d.data();
@@ -545,10 +547,10 @@
               };
             }
           });
-          console.log(`[HEURES] ${Object.keys(usersMap).length} utilisateurs chargés dans le map`);
+          console.log(`[HEURES] ${Object.keys(usersMap).length} unités chargées dans le map`);
         } catch (err) {
-          console.error('Erreur chargement users:', err);
-          showAlert('Erreur chargement utilisateurs: ' + err.message, 'error');
+          console.error('Erreur chargement units:', err);
+          showAlert('Erreur chargement unités: ' + err.message, 'error');
         }
       }
 

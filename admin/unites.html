@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Unités - MPF Documentation</title>
+    <link rel="stylesheet" href="../assets/css/main-style.css">
+    <link rel="stylesheet" href="../assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="../assets/css/global-nav.css">
+    <link rel="stylesheet" href="../assets/css/interactive-system.css">
+    <link rel="stylesheet" href="../assets/css/combine-animations.css">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <style>
+        /* Admin nav */
+        .admin-nav {
+            display: flex;
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+            flex-wrap: wrap;
+        }
+        .admin-nav a {
+            padding: 0.35rem 0.8rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border: 1px solid rgba(0, 170, 255, 0.15);
+            border-radius: 2px;
+            transition: all 0.15s;
+        }
+        .admin-nav a:hover, .admin-nav a.active {
+            color: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            background: rgba(0, 170, 255, 0.08);
+        }
+
+        /* Stats */
+        .unit-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+        .stat-box {
+            background: rgba(0, 170, 255, 0.03);
+            border: 1px solid rgba(0, 170, 255, 0.15);
+            padding: 0.8rem;
+            text-align: center;
+            border-radius: 4px;
+        }
+        .stat-box .number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: var(--accent-cyan);
+            font-weight: 700;
+        }
+        .stat-box .label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-top: 0.2rem;
+        }
+
+        /* Table */
+        .units-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+        .units-table th {
+            text-align: left;
+            padding: 0.55rem 0.4rem;
+            color: var(--accent-cyan);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 1px;
+            border-bottom: 2px solid rgba(0, 170, 255, 0.2);
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+        }
+        .units-table th:hover { color: #fff; }
+        .units-table td {
+            padding: 0.45rem 0.4rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid rgba(0, 170, 255, 0.06);
+            vertical-align: middle;
+        }
+        .units-table tr:hover { background: rgba(0, 170, 255, 0.03); }
+        .units-table .matricule-cell {
+            font-weight: 700;
+            color: var(--accent-cyan);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+        }
+        .units-table .steamid-cell {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        /* Division badges */
+        .div-badge {
+            display: inline-block;
+            padding: 0.12rem 0.45rem;
+            border-radius: 2px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+        .div-EXOGEN { background: rgba(0, 200, 80, 0.15); color: #00cc55; border: 1px solid rgba(0, 200, 80, 0.3); }
+        .div-UNION { background: rgba(100, 100, 220, 0.15); color: #8888ee; border: 1px solid rgba(100, 100, 220, 0.3); }
+        .div-JUDGE { background: rgba(128, 0, 128, 0.15); color: #cc44cc; border: 1px solid rgba(128, 0, 128, 0.3); }
+        .div-APEX { background: rgba(0, 100, 200, 0.15); color: #0088dd; border: 1px solid rgba(0, 100, 200, 0.3); }
+        .div-MACE { background: rgba(0, 128, 128, 0.15); color: #00aaaa; border: 1px solid rgba(0, 128, 128, 0.3); }
+        .div-GRID { background: rgba(200, 200, 0, 0.15); color: #cccc00; border: 1px solid rgba(200, 200, 0, 0.3); }
+        .div-HELIX { background: rgba(0, 170, 255, 0.15); color: var(--accent-cyan); border: 1px solid rgba(0, 170, 255, 0.3); }
+        .div-DEFENDER { background: rgba(0, 150, 100, 0.15); color: #00bb77; border: 1px solid rgba(0, 150, 100, 0.3); }
+        .div-ZONE { background: rgba(255, 0, 100, 0.15); color: #ff3377; border: 1px solid rgba(255, 0, 100, 0.3); }
+        .div-RAZOR { background: rgba(255, 60, 60, 0.15); color: #ff4444; border: 1px solid rgba(255, 60, 60, 0.3); }
+        .div-CABAL { background: rgba(200, 0, 200, 0.15); color: #dd44dd; border: 1px solid rgba(200, 0, 200, 0.3); }
+        .div-RCT { background: rgba(128, 128, 128, 0.15); color: #999; border: 1px solid rgba(128, 128, 128, 0.3); }
+        .div-NONE { background: rgba(60, 60, 60, 0.15); color: #666; border: 1px solid rgba(60, 60, 60, 0.3); }
+
+        /* Rang badge */
+        .rang-badge {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent-yellow);
+        }
+
+        /* Buttons */
+        .btn-sm {
+            padding: 0.2rem 0.5rem;
+            font-size: 0.7rem;
+            font-family: 'Share Tech Mono', monospace;
+            cursor: pointer;
+            border: 1px solid rgba(0, 170, 255, 0.3);
+            background: rgba(0, 170, 255, 0.08);
+            color: var(--accent-cyan);
+            border-radius: 2px;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .btn-sm:hover { background: rgba(0, 170, 255, 0.2); }
+        .btn-sm.danger { border-color: rgba(255, 60, 60, 0.3); background: rgba(255, 60, 60, 0.08); color: #ff4444; }
+        .btn-sm.danger:hover { background: rgba(255, 60, 60, 0.2); }
+        .btn-sm.success { border-color: rgba(0, 200, 80, 0.3); background: rgba(0, 200, 80, 0.08); color: #00cc55; }
+        .btn-sm.success:hover { background: rgba(0, 200, 80, 0.2); }
+        .action-cell { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+
+        .btn-action {
+            padding: 0.5rem 1.2rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: 1px solid rgba(0, 170, 255, 0.4);
+            background: rgba(0, 170, 255, 0.1);
+            color: var(--accent-cyan);
+            border-radius: 3px;
+            transition: all 0.15s;
+            letter-spacing: 0.5px;
+        }
+        .btn-action:hover { background: rgba(0, 170, 255, 0.2); border-color: var(--accent-cyan); }
+        .btn-action.primary { background: rgba(0, 170, 255, 0.2); border-color: var(--accent-cyan); font-weight: 700; }
+        .btn-action.primary:hover { background: rgba(0, 170, 255, 0.35); }
+
+        /* Filter */
+        .filter-row {
+            display: flex;
+            gap: 0.6rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filter-row input, .filter-row select {
+            padding: 0.4rem 0.6rem;
+            background: rgba(0, 170, 255, 0.04);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.78rem;
+            outline: none;
+            border-radius: 2px;
+        }
+        .filter-row input:focus, .filter-row select:focus { border-color: var(--accent-cyan); }
+        .filter-row input { flex: 1; min-width: 180px; }
+
+        /* Alert */
+        .alert-msg {
+            padding: 0.6rem 1rem;
+            border-radius: 3px;
+            margin-bottom: 1rem;
+            font-size: 0.8rem;
+            font-family: 'Share Tech Mono', monospace;
+            display: none;
+        }
+        .alert-msg.success { background: rgba(0, 200, 80, 0.1); border: 1px solid rgba(0, 200, 80, 0.3); color: #00cc55; }
+        .alert-msg.error { background: rgba(255, 60, 60, 0.1); border: 1px solid rgba(255, 60, 60, 0.3); color: #ff4444; }
+        .alert-msg.info { background: rgba(0, 170, 255, 0.1); border: 1px solid rgba(0, 170, 255, 0.3); color: var(--accent-cyan); }
+
+        .table-scroll { overflow-x: auto; }
+        #access-denied { display: none; text-align: center; padding: 3rem; }
+
+        /* Modal overlay */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 500;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.visible {
+            display: flex;
+        }
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid rgba(0, 170, 255, 0.3);
+            border-radius: 4px;
+            padding: 1.5rem;
+            width: 95%;
+            max-width: 550px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.7);
+        }
+        .modal h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.95rem;
+            color: var(--accent-cyan);
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+        .modal label {
+            display: block;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-top: 0.7rem;
+            margin-bottom: 0.2rem;
+        }
+        .modal input, .modal select {
+            width: 100%;
+            padding: 0.45rem 0.6rem;
+            background: rgba(0, 170, 255, 0.04);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.82rem;
+            outline: none;
+            border-radius: 2px;
+        }
+        .modal input:focus, .modal select:focus { border-color: var(--accent-cyan); }
+        .modal-actions {
+            display: flex;
+            gap: 0.6rem;
+            margin-top: 1.2rem;
+            justify-content: flex-end;
+        }
+    </style>
+</head>
+<body>
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <h1 class="logo">MPF</h1>
+                    <p class="logo-subtitle">Gestion des Unités</p>
+                </div>
+                <div id="authBtn" class="header-auth"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div id="loading" style="text-align:center;padding:3rem;">
+                <p style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;">CHARGEMENT...</p>
+            </div>
+            <div id="access-denied">
+                <h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">ACCÈS REFUSÉ</h2>
+                <p style="color:var(--text-muted);">Vous n'avez pas les droits administrateur.</p>
+                <a href="../index.html" style="color:var(--accent-cyan);">Retour au site</a>
+            </div>
+
+            <div id="mainContent" style="display:none;">
+                <!-- Nav -->
+                <div class="admin-nav" style="margin-top: 1rem;">
+                    <a href="panel.html">← PANEL ADMIN</a>
+                    <a href="unites.html" class="active">UNITÉS</a>
+                    <a href="heures.html">HEURES DE JEU</a>
+                    <a href="heures-archives.html">ARCHIVES</a>
+                </div>
+
+                <!-- Stats -->
+                <div class="unit-stats">
+                    <div class="stat-box">
+                        <div class="number" id="statTotal">0</div>
+                        <div class="label">TOTAL UNITÉS</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="number" id="statActive">0</div>
+                        <div class="label">ACTIVES</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="number" id="statDivisions">0</div>
+                        <div class="label">DIVISIONS</div>
+                    </div>
+                </div>
+
+                <!-- Alert -->
+                <div id="alertMsg" class="alert-msg"></div>
+
+                <!-- Units table -->
+                <div class="combine-terminal-wrapper">
+                    <div class="combine-header">
+                        <h2>REGISTRE DES UNITÉS</h2>
+                        <span class="header-code" id="unitCount">CHARGEMENT...</span>
+                    </div>
+                    <div class="combine-body">
+                        <div class="filter-row">
+                            <input type="text" id="searchInput" placeholder="Rechercher matricule, nom, SteamID, Discord..." autocomplete="off">
+                            <select id="divisionFilter">
+                                <option value="">Toutes divisions</option>
+                                <option value="EXOGEN">EXOGEN</option>
+                                <option value="UNION">UNION</option>
+                                <option value="JUDGE">JUDGE</option>
+                                <option value="APEX">APEX</option>
+                                <option value="MACE">MACE</option>
+                                <option value="GRID">GRID</option>
+                                <option value="HELIX">HELIX</option>
+                                <option value="DEFENDER">DEFENDER</option>
+                                <option value="ZONE">ZONE</option>
+                                <option value="RAZOR">RAZOR</option>
+                                <option value="CABAL">CABAL</option>
+                                <option value="RCT">RCT</option>
+                                <option value="N/A">N/A</option>
+                            </select>
+                            <select id="rangFilter">
+                                <option value="">Tous rangs</option>
+                                <option value=".01">.01</option>
+                                <option value=".02">.02</option>
+                                <option value=".03">.03</option>
+                                <option value=".04">.04</option>
+                                <option value=".05">.05</option>
+                                <option value="N/A">N/A</option>
+                            </select>
+                            <button class="btn-action primary" onclick="openAddModal()">+ AJOUTER UNITÉ</button>
+                        </div>
+                        <div class="table-scroll">
+                            <table class="units-table">
+                                <thead>
+                                    <tr>
+                                        <th onclick="sortBy('matricule')">MATRICULE</th>
+                                        <th onclick="sortBy('nom_steam')">NOM STEAM</th>
+                                        <th onclick="sortBy('steamid64')">STEAMID64</th>
+                                        <th onclick="sortBy('discord')">DISCORD</th>
+                                        <th onclick="sortBy('division')">DIVISION</th>
+                                        <th onclick="sortBy('rang')">RANG</th>
+                                        <th onclick="sortBy('ordre')">ORDRE</th>
+                                        <th onclick="sortBy('date_entree')">ENTRÉE</th>
+                                        <th>ACTIONS</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="unitsBody">
+                                    <tr><td colspan="9" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal: Add/Edit unit -->
+    <div id="unitModal" class="modal-overlay">
+        <div class="modal">
+            <h3 id="modalTitle">AJOUTER UNE UNITÉ</h3>
+            <input type="hidden" id="editId">
+
+            <label>MATRICULE *</label>
+            <input type="text" id="fMatricule" placeholder="Ex: 230" maxlength="10">
+
+            <label>STEAMID64</label>
+            <input type="text" id="fSteamid" placeholder="Ex: 76561198414645840" maxlength="20">
+
+            <label>NOM STEAM</label>
+            <input type="text" id="fNomSteam" placeholder="Ex: yellowaitc">
+
+            <label>DISCORD</label>
+            <input type="text" id="fDiscord" placeholder="Ex: yellowaitc#1234">
+
+            <label>DIVISION</label>
+            <select id="fDivision">
+                <option value="">— Aucune —</option>
+                <option value="EXOGEN">EXOGEN</option>
+                <option value="UNION">UNION</option>
+                <option value="JUDGE">JUDGE</option>
+                <option value="APEX">APEX</option>
+                <option value="MACE">MACE</option>
+                <option value="GRID">GRID</option>
+                <option value="HELIX">HELIX</option>
+                <option value="DEFENDER">DEFENDER</option>
+                <option value="ZONE">ZONE</option>
+                <option value="RAZOR">RAZOR</option>
+                <option value="CABAL">CABAL</option>
+                <option value="RCT">RCT</option>
+                <option value="N/A">N/A</option>
+            </select>
+
+            <label>RANG</label>
+            <select id="fRang">
+                <option value="">— Aucun —</option>
+                <option value=".01">.01</option>
+                <option value=".02">.02</option>
+                <option value=".03">.03</option>
+                <option value=".04">.04</option>
+                <option value=".05">.05</option>
+                <option value="N/A">N/A</option>
+            </select>
+
+            <label>ORDRE</label>
+            <input type="number" id="fOrdre" placeholder="Ex: 5" min="1" max="99">
+
+            <label>DATE D'ENTRÉE MILICE</label>
+            <input type="date" id="fDateEntree">
+
+            <div class="modal-actions">
+                <button class="btn-action" onclick="closeModal()">ANNULER</button>
+                <button class="btn-action primary" id="btnModalSave" onclick="saveUnit()">SAUVEGARDER</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="../assets/js/auth.js"></script>
+    <script src="../assets/js/global-nav.js"></script>
+    <script src="../assets/js/interactive-system.js"></script>
+    <script src="../assets/js/combine-animations.js"></script>
+
+    <script type="module">
+      import { auth, db } from '../assets/js/auth.js';
+      import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+      import {
+        collection, getDocs, doc, getDoc, setDoc, deleteDoc
+      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+      // ========== STATE ==========
+      let allUnits = [];
+      let currentSort = { key: 'ordre', asc: true };
+
+      // ========== UTILS ==========
+      function showAlert(text, type = 'success') {
+        const el = document.getElementById('alertMsg');
+        el.style.display = 'block';
+        el.className = 'alert-msg ' + type;
+        el.textContent = text;
+        setTimeout(() => { el.style.display = 'none'; }, 5000);
+      }
+
+      function divBadge(div) {
+        if (!div) return '<span class="div-badge div-NONE">—</span>';
+        return `<span class="div-badge div-${div}">${div}</span>`;
+      }
+
+      // ========== LOAD UNITS ==========
+      async function loadUnits() {
+        try {
+          const snap = await getDocs(collection(db, 'units'));
+          allUnits = [];
+          snap.forEach(d => {
+            allUnits.push({ id: d.id, ...d.data() });
+          });
+          updateStats();
+          renderTable();
+        } catch (err) {
+          console.error('Erreur chargement units:', err);
+          showAlert('Erreur chargement: ' + err.message, 'error');
+        }
+      }
+
+      function updateStats() {
+        document.getElementById('statTotal').textContent = allUnits.length;
+        document.getElementById('statActive').textContent = allUnits.filter(u => u.division && u.division !== 'N/A' && u.division !== 'RCT').length;
+        const divisions = new Set(allUnits.map(u => u.division).filter(d => d && d !== 'N/A'));
+        document.getElementById('statDivisions').textContent = divisions.size;
+      }
+
+      function renderTable() {
+        const search = (document.getElementById('searchInput').value || '').toLowerCase();
+        const divFilter = document.getElementById('divisionFilter').value;
+        const rangFilter = document.getElementById('rangFilter').value;
+
+        let filtered = allUnits.filter(u => {
+          const matchSearch = !search ||
+            (u.matricule || '').toLowerCase().includes(search) ||
+            (u.nom_steam || '').toLowerCase().includes(search) ||
+            (u.steamid64 || '').includes(search) ||
+            (u.discord || '').toLowerCase().includes(search);
+          const matchDiv = !divFilter || u.division === divFilter;
+          const matchRang = !rangFilter || u.rang === rangFilter;
+          return matchSearch && matchDiv && matchRang;
+        });
+
+        // Sort
+        filtered.sort((a, b) => {
+          let va, vb;
+          const key = currentSort.key;
+          if (key === 'ordre') {
+            va = parseInt(a.ordre) || 999;
+            vb = parseInt(b.ordre) || 999;
+          } else if (key === 'matricule') {
+            va = (a.matricule || '').padStart(4, '0');
+            vb = (b.matricule || '').padStart(4, '0');
+          } else {
+            va = (a[key] || '').toLowerCase();
+            vb = (b[key] || '').toLowerCase();
+          }
+          if (currentSort.asc) return va > vb ? 1 : va < vb ? -1 : 0;
+          return va < vb ? 1 : va > vb ? -1 : 0;
+        });
+
+        document.getElementById('unitCount').textContent = `${filtered.length} / ${allUnits.length} UNITÉS`;
+
+        const tbody = document.getElementById('unitsBody');
+        if (filtered.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text-muted);">Aucune unité trouvée</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = filtered.map(u => {
+          return `<tr>
+            <td class="matricule-cell">${u.matricule || '-'}</td>
+            <td>${u.nom_steam || '<span style="color:var(--text-muted);">-</span>'}</td>
+            <td class="steamid-cell">${u.steamid64 || '-'}</td>
+            <td style="font-size:0.78rem;">${u.discord || '<span style="color:var(--text-muted);">-</span>'}</td>
+            <td>${divBadge(u.division)}</td>
+            <td><span class="rang-badge">${u.rang || '-'}</span></td>
+            <td style="font-size:0.78rem;color:var(--text-muted);">${u.ordre || '-'}</td>
+            <td style="font-size:0.72rem;color:var(--text-muted);">${u.date_entree || '-'}</td>
+            <td class="action-cell">
+              <button class="btn-sm" onclick="editUnit('${u.id}')">✎</button>
+              <button class="btn-sm danger" onclick="deleteUnit('${u.id}', '${(u.matricule || '').replace(/'/g, "\\'")}')">✗</button>
+            </td>
+          </tr>`;
+        }).join('');
+      }
+
+      // ========== SORT ==========
+      window.sortBy = function(key) {
+        if (currentSort.key === key) {
+          currentSort.asc = !currentSort.asc;
+        } else {
+          currentSort = { key, asc: true };
+        }
+        renderTable();
+      };
+
+      // ========== MODAL ==========
+      window.openAddModal = function() {
+        document.getElementById('modalTitle').textContent = 'AJOUTER UNE UNITÉ';
+        document.getElementById('editId').value = '';
+        document.getElementById('fMatricule').value = '';
+        document.getElementById('fMatricule').disabled = false;
+        document.getElementById('fSteamid').value = '';
+        document.getElementById('fNomSteam').value = '';
+        document.getElementById('fDiscord').value = '';
+        document.getElementById('fDivision').value = '';
+        document.getElementById('fRang').value = '';
+        document.getElementById('fOrdre').value = '';
+        document.getElementById('fDateEntree').value = '';
+        document.getElementById('unitModal').classList.add('visible');
+      };
+
+      window.editUnit = function(id) {
+        const unit = allUnits.find(u => u.id === id);
+        if (!unit) return;
+
+        document.getElementById('modalTitle').textContent = 'MODIFIER UNITÉ — ' + (unit.matricule || id);
+        document.getElementById('editId').value = id;
+        document.getElementById('fMatricule').value = unit.matricule || '';
+        document.getElementById('fMatricule').disabled = true; // Can't change matricule (it's the doc ID key)
+        document.getElementById('fSteamid').value = unit.steamid64 || '';
+        document.getElementById('fNomSteam').value = unit.nom_steam || '';
+        document.getElementById('fDiscord').value = unit.discord || '';
+        document.getElementById('fDivision').value = unit.division || '';
+        document.getElementById('fRang').value = unit.rang || '';
+        document.getElementById('fOrdre').value = unit.ordre || '';
+        document.getElementById('fDateEntree').value = unit.date_entree || '';
+        document.getElementById('unitModal').classList.add('visible');
+      };
+
+      window.closeModal = function() {
+        document.getElementById('unitModal').classList.remove('visible');
+      };
+
+      // Close modal on overlay click
+      document.getElementById('unitModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('unitModal')) closeModal();
+      });
+
+      // ========== SAVE UNIT ==========
+      window.saveUnit = async function() {
+        const editId = document.getElementById('editId').value;
+        const matricule = document.getElementById('fMatricule').value.trim();
+        const steamid64 = document.getElementById('fSteamid').value.trim();
+        const nom_steam = document.getElementById('fNomSteam').value.trim();
+        const discord = document.getElementById('fDiscord').value.trim();
+        const division = document.getElementById('fDivision').value;
+        const rang = document.getElementById('fRang').value;
+        const ordre = document.getElementById('fOrdre').value.trim();
+        const date_entree = document.getElementById('fDateEntree').value;
+
+        if (!matricule) {
+          showAlert('Le matricule est obligatoire', 'error');
+          return;
+        }
+
+        // Use matricule as doc ID for new units
+        const docId = editId || matricule;
+
+        // Check for duplicate matricule on creation
+        if (!editId && allUnits.some(u => u.matricule === matricule)) {
+          showAlert('Ce matricule existe déjà !', 'error');
+          return;
+        }
+
+        const btn = document.getElementById('btnModalSave');
+        btn.disabled = true;
+        btn.textContent = '⏳...';
+
+        try {
+          await setDoc(doc(db, 'units', docId), {
+            matricule,
+            steamid64: steamid64 || '',
+            nom_steam: nom_steam || '',
+            discord: discord || '',
+            division: division || '',
+            rang: rang || '',
+            ordre: ordre ? parseInt(ordre) : '',
+            date_entree: date_entree || '',
+            updated_at: new Date().toISOString().substring(0, 10)
+          });
+
+          showAlert(editId ? '✓ Unité modifiée' : '✓ Unité ajoutée', 'success');
+          closeModal();
+          await loadUnits();
+        } catch (err) {
+          showAlert('✗ Erreur: ' + err.message, 'error');
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'SAUVEGARDER';
+        }
+      };
+
+      // ========== DELETE UNIT ==========
+      window.deleteUnit = async function(id, matricule) {
+        if (!confirm(`Supprimer l'unité ${matricule || id} de la liste ?`)) return;
+        try {
+          await deleteDoc(doc(db, 'units', id));
+          showAlert('✓ Unité supprimée', 'success');
+          await loadUnits();
+        } catch (err) {
+          showAlert('✗ Erreur: ' + err.message, 'error');
+        }
+      };
+
+      // ========== FILTERS ==========
+      document.getElementById('searchInput').addEventListener('input', renderTable);
+      document.getElementById('divisionFilter').addEventListener('change', renderTable);
+      document.getElementById('rangFilter').addEventListener('change', renderTable);
+
+      // ========== AUTH CHECK ==========
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) return;
+        try {
+          const snap = await getDoc(doc(db, 'users', user.uid));
+          if (!snap.exists() || !snap.data().is_admin) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('access-denied').style.display = 'block';
+            return;
+          }
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('mainContent').style.display = 'block';
+          await loadUnits();
+        } catch (err) {
+          console.error('Auth error:', err);
+          document.getElementById('loading').innerHTML = '<p style="color:#ff4444;">Erreur: ' + err.message + '</p>';
+        }
+      });
+    </script>
+</body>
+</html>

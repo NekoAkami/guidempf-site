@@ -191,6 +191,7 @@
                 <!-- Admin navigation -->
                 <div style="display:flex;gap:0.6rem;margin:1rem 0 1.2rem;flex-wrap:wrap;">
                     <a href="panel.html" style="padding:0.35rem 0.8rem;font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--accent-cyan);text-decoration:none;border:1px solid var(--accent-cyan);border-radius:2px;background:rgba(0,170,255,0.08);">PANEL ADMIN</a>
+                    <a href="unites.html" style="padding:0.35rem 0.8rem;font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--text-muted);text-decoration:none;border:1px solid rgba(0,170,255,0.15);border-radius:2px;transition:all 0.15s;" onmouseover="this.style.color='var(--accent-cyan)';this.style.borderColor='var(--accent-cyan)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='rgba(0,170,255,0.15)'">UNITÉS</a>
                     <a href="heures.html" style="padding:0.35rem 0.8rem;font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--text-muted);text-decoration:none;border:1px solid rgba(0,170,255,0.15);border-radius:2px;transition:all 0.15s;" onmouseover="this.style.color='var(--accent-cyan)';this.style.borderColor='var(--accent-cyan)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='rgba(0,170,255,0.15)'">HEURES DE JEU</a>
                     <a href="heures-archives.html" style="padding:0.35rem 0.8rem;font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--text-muted);text-decoration:none;border:1px solid rgba(0,170,255,0.15);border-radius:2px;transition:all 0.15s;" onmouseover="this.style.color='var(--accent-cyan)';this.style.borderColor='var(--accent-cyan)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='rgba(0,170,255,0.15)'">ARCHIVES</a>
                 </div>
@@ -276,7 +277,7 @@
     <script type="module">
       import { auth, db } from '../assets/js/auth.js';
       import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-      import { collection, getDocs, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+      import { collection, getDocs, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
       let allUsers = [];
 
@@ -409,12 +410,30 @@
 
       window.approveUser = async (userId) => {
         try {
+          // 1) Approve the user
           await updateDoc(doc(db, 'users', userId), {
             approved: true,
             status: 'APPROVED',
             approved_at: new Date().toISOString()
           });
-          showMessage('✓ Utilisateur approuvé', 'success');
+
+          // 2) Auto-create unit in 'units' collection
+          const userData = allUsers.find(u => u.id === userId);
+          if (userData && userData.matricule) {
+            await setDoc(doc(db, 'units', userData.matricule), {
+              matricule: userData.matricule,
+              steamid64: userData.steamid64 || '',
+              nom_steam: userData.nom_steam || '',
+              discord: userData.discord || '',
+              division: '',
+              rang: '.05',
+              ordre: '',
+              date_entree: new Date().toISOString().substring(0, 10),
+              updated_at: new Date().toISOString().substring(0, 10)
+            });
+          }
+
+          showMessage('\u2713 Utilisateur approuv\u00e9 + ajout\u00e9 aux unit\u00e9s', 'success');
           await loadUsers();
         } catch (err) {
           showMessage('✗ Erreur: ' + err.message, 'error');
