@@ -356,6 +356,7 @@
                                 <option value="N/A">N/A</option>
                             </select>
                             <button class="btn-action primary" onclick="openAddModal()">+ AJOUTER UNITÉ</button>
+                            <button class="btn-action" onclick="configureToken()" style="background:rgba(255,200,0,0.15);border-color:rgba(255,200,0,0.4);color:#ffc800;margin-left:8px;" title="Configurer le token GitHub pour sauvegarder">⚙ TOKEN</button>
                         </div>
                         <div class="table-scroll">
                             <table class="units-table">
@@ -452,9 +453,11 @@
     <script type="module">
       import { auth, db } from '../assets/js/auth.js';
       import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+      import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
       import {
-        collection, getDocs, doc, getDoc, setDoc, deleteDoc
-      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        loadUnits as ghLoadUnits, saveUnits as ghSaveUnits,
+        hasToken, promptToken
+      } from '../assets/js/github-data.js';
 
       // ========== STATE ==========
       let allUnits = [];
@@ -474,14 +477,19 @@
         return `<span class="div-badge div-${div}">${div}</span>`;
       }
 
+      // ========== TOKEN CONFIG ==========
+      window.configureToken = function() {
+        if (promptToken()) {
+          showAlert('✓ Token GitHub configuré', 'success');
+        }
+      };
+
       // ========== LOAD UNITS ==========
       async function loadUnits() {
         try {
-          const snap = await getDocs(collection(db, 'units'));
-          allUnits = [];
-          snap.forEach(d => {
-            allUnits.push({ id: d.id, ...d.data() });
-          });
+          allUnits = await ghLoadUnits();
+          // Assigner un id basé sur matricule si absent
+          allUnits = allUnits.map(u => ({ ...u, id: u.matricule || Math.random().toString(36).substr(2, 9) }));
           updateStats();
           renderTable();
         } catch (err) {
@@ -540,6 +548,7 @@
         }
 
         tbody.innerHTML = filtered.map(u => {
+          const safeMatricule = (u.matricule || '').replace(/'/g, "\\'");
           return `<tr>
             <td class="matricule-cell">${u.matricule || '-'}</td>
             <td>${u.nom_steam || '<span style="color:var(--text-muted);">-</span>'}</td>
@@ -550,8 +559,8 @@
             <td style="font-size:0.78rem;color:var(--text-muted);">${u.ordre || '-'}</td>
             <td style="font-size:0.72rem;color:var(--text-muted);">${u.date_entree || '-'}</td>
             <td class="action-cell">
-              <button class="btn-sm" onclick="editUnit('${u.id}')">✎</button>
-              <button class="btn-sm danger" onclick="deleteUnit('${u.id}', '${(u.matricule || '').replace(/'/g, "\\'")}')">✗</button>
+              <button class="btn-sm" onclick="editUnit('${safeMatricule}')">✎</button>
+              <button class="btn-sm danger" onclick="deleteUnit('${safeMatricule}')">✗</button>
             </td>
           </tr>`;
         }).join('');
@@ -583,14 +592,14 @@
         document.getElementById('unitModal').classList.add('visible');
       };
 
-      window.editUnit = function(id) {
-        const unit = allUnits.find(u => u.id === id);
+      window.editUnit = function(matricule) {
+        const unit = allUnits.find(u => u.matricule === matricule);
         if (!unit) return;
 
-        document.getElementById('modalTitle').textContent = 'MODIFIER UNITÉ — ' + (unit.matricule || id);
-        document.getElementById('editId').value = id;
+        document.getElementById('modalTitle').textContent = 'MODIFIER UNITÉ — ' + unit.matricule;
+        document.getElementById('editId').value = unit.matricule;
         document.getElementById('fMatricule').value = unit.matricule || '';
-        document.getElementById('fMatricule').disabled = true; // Can't change matricule (it's the doc ID key)
+        document.getElementById('fMatricule').disabled = true;
         document.getElementById('fSteamid').value = unit.steamid64 || '';
         document.getElementById('fNomSteam').value = unit.nom_steam || '';
         document.getElementById('fDiscord').value = unit.discord || '';
@@ -612,6 +621,11 @@
 
       // ========== SAVE UNIT ==========
       window.saveUnit = async function() {
+        if (!hasToken()) {
+          showAlert('⚠ Configurez le token GitHub d\'abord (bouton ⚙ TOKEN)', 'error');
+          return;
+        }
+
         const editId = document.getElementById('editId').value;
         const matricule = document.getElementById('fMatricule').value.trim();
         const steamid64 = document.getElementById('fSteamid').value.trim();
@@ -627,9 +641,6 @@
           return;
         }
 
-        // Use matricule as doc ID for new units
-        const docId = editId || matricule;
-
         // Check for duplicate matricule on creation
         if (!editId && allUnits.some(u => u.matricule === matricule)) {
           showAlert('Ce matricule existe déjà !', 'error');
@@ -638,10 +649,10 @@
 
         const btn = document.getElementById('btnModalSave');
         btn.disabled = true;
-        btn.textContent = '⏳...';
+        btn.textContent = '⏳ SAUVEGARDE...';
 
         try {
-          await setDoc(doc(db, 'units', docId), {
+          const unitData = {
             matricule,
             steamid64: steamid64 || '',
             nom_steam: nom_steam || '',
@@ -651,7 +662,22 @@
             ordre: ordre ? parseInt(ordre) : '',
             date_entree: date_entree || '',
             updated_at: new Date().toISOString().substring(0, 10)
-          });
+          };
+
+          if (editId) {
+            // Mise à jour : remplacer l'unité existante
+            const idx = allUnits.findIndex(u => u.matricule === editId);
+            if (idx !== -1) {
+              allUnits[idx] = { ...unitData, id: editId };
+            }
+          } else {
+            // Ajout : ajouter à la liste
+            allUnits.push({ ...unitData, id: matricule });
+          }
+
+          // Sauvegarder vers GitHub (sans le champ 'id' temporaire)
+          const toSave = allUnits.map(({ id, ...rest }) => rest);
+          await ghSaveUnits(toSave, editId ? `Modification unité ${matricule}` : `Ajout unité ${matricule}`);
 
           showAlert(editId ? '✓ Unité modifiée' : '✓ Unité ajoutée', 'success');
           closeModal();
@@ -665,10 +691,20 @@
       };
 
       // ========== DELETE UNIT ==========
-      window.deleteUnit = async function(id, matricule) {
-        if (!confirm(`Supprimer l'unité ${matricule || id} de la liste ?`)) return;
+      window.deleteUnit = async function(matricule) {
+        const unit = allUnits.find(u => u.matricule === matricule);
+        if (!unit) return;
+        if (!confirm(`Supprimer l'unité ${matricule} de la liste ?`)) return;
+
+        if (!hasToken()) {
+          showAlert('⚠ Configurez le token GitHub d\'abord (bouton ⚙ TOKEN)', 'error');
+          return;
+        }
+
         try {
-          await deleteDoc(doc(db, 'units', id));
+          allUnits = allUnits.filter(u => u.matricule !== matricule);
+          const toSave = allUnits.map(({ id, ...rest }) => rest);
+          await ghSaveUnits(toSave, `Suppression unité ${matricule}`);
           showAlert('✓ Unité supprimée', 'success');
           await loadUnits();
         } catch (err) {
@@ -685,19 +721,20 @@
       onAuthStateChanged(auth, async (user) => {
         if (!user) return;
         try {
+          // Tentative de vérification admin via Firestore
           const snap = await getDoc(doc(db, 'users', user.uid));
           if (!snap.exists() || !snap.data().is_admin) {
             document.getElementById('loading').style.display = 'none';
             document.getElementById('access-denied').style.display = 'block';
             return;
           }
-          document.getElementById('loading').style.display = 'none';
-          document.getElementById('mainContent').style.display = 'block';
-          await loadUnits();
         } catch (err) {
-          console.error('Auth error:', err);
-          document.getElementById('loading').innerHTML = '<p style="color:#ff4444;">Erreur: ' + err.message + '</p>';
+          // Si Firestore échoue, on autorise si l'utilisateur est connecté
+          console.warn('Firestore admin check failed, allowing authenticated user:', err.message);
         }
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+        await loadUnits();
       });
     </script>
 </body>

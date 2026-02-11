@@ -382,8 +382,9 @@
                             <div id="parseStatus" class="parse-status"></div>
                             <div class="import-actions">
                                 <button class="btn-action primary" id="btnParse" onclick="parseImport()">⟩ ANALYSER</button>
-                                <button class="btn-action success" id="btnSave" onclick="saveToFirebase()" disabled>✓ SAUVEGARDER DANS FIREBASE</button>
+                                <button class="btn-action success" id="btnSave" onclick="saveToFirebase()" disabled>✓ SAUVEGARDER</button>
                                 <button class="btn-action danger" id="btnClear" onclick="clearImport()">✗ EFFACER</button>
+                                <button class="btn-action" onclick="configureToken()" style="background:rgba(255,200,0,0.15);border-color:rgba(255,200,0,0.4);color:#ffc800;margin-left:auto;" title="Configurer le token GitHub">⚙ TOKEN</button>
                             </div>
                         </div>
                     </div>
@@ -465,14 +466,19 @@
     <script type="module">
       import { auth, db } from '../assets/js/auth.js';
       import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+      import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
       import {
-        collection, getDocs, doc, getDoc, setDoc, addDoc, query, orderBy, limit, Timestamp
-      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        loadUnits as ghLoadUnits,
+        loadPlaytime as ghLoadPlaytime, savePlaytime as ghSavePlaytime,
+        loadPlaytimeHistory as ghLoadHistory, savePlaytimeHistory as ghSaveHistory,
+        hasToken, promptToken
+      } from '../assets/js/github-data.js';
 
       // ========== STATE ==========
       let usersMap = {};        // steamid64 -> { matricule, nom_steam, discord }
       let parsedEntries = [];   // preview entries before save
-      let currentData = [];     // loaded from Firebase
+      let currentData = [];     // loaded from JSON
+      let historyData = [];     // loaded from JSON
       let previewSortKey = 'heures';
       let previewSortAsc = false;
 
@@ -485,45 +491,25 @@
         setTimeout(() => { el.style.display = 'none'; }, 5000);
       }
 
-      /**
-       * Convertir un texte de temps en heures décimales  
-       * Ex: "1 jours, 09 heures, 13 minutes, 11 secondes" -> 33.2197...
-       * Même logique que la formule Google Sheet
-       */
       function parseTimeToHours(timeStr) {
         if (!timeStr || typeof timeStr !== 'string') return 0;
         let hours = 0;
-
-        // Jours
         const daysMatch = timeStr.match(/(\d+)\s*jours?/i);
         if (daysMatch) hours += parseInt(daysMatch[1]) * 24;
-
-        // Heures
         const hoursMatch = timeStr.match(/(\d+)\s*heures?/i);
         if (hoursMatch) hours += parseInt(hoursMatch[1]);
-
-        // Minutes
         const minsMatch = timeStr.match(/(\d+)\s*minutes?/i);
         if (minsMatch) hours += parseInt(minsMatch[1]) / 60;
-
-        // Secondes
         const secsMatch = timeStr.match(/(\d+)\s*secondes?/i);
         if (secsMatch) hours += parseInt(secsMatch[1]) / 3600;
-
         return hours;
       }
 
-      /**
-       * Formater les heures en texte lisible
-       */
       function formatHours(h) {
         if (h === 0) return '0.00';
         return h.toFixed(2).replace('.', ',');
       }
 
-      /**
-       * Classe CSS selon le nombre d'heures
-       */
       function hoursClass(h) {
         if (h >= 20) return 'high';
         if (h >= 10) return 'medium';
@@ -531,22 +517,27 @@
         return 'critical';
       }
 
+      // ========== TOKEN CONFIG ==========
+      window.configureToken = function() {
+        if (promptToken()) {
+          showAlert('✓ Token GitHub configuré', 'success');
+        }
+      };
+
       // ========== LOAD UNITS MAP ==========
       async function loadUsersMap() {
         try {
-          // Charger depuis la collection 'units' (registre des unités)
-          const snap = await getDocs(collection(db, 'units'));
+          const units = await ghLoadUnits();
           usersMap = {};
-          snap.forEach(d => {
-            const data = d.data();
-            if (data.steamid64) {
-              usersMap[data.steamid64] = {
-                matricule: data.matricule || '???',
-                nom_steam: data.nom_steam || '',
-                discord: data.discord || ''
+          for (const u of units) {
+            if (u.steamid64) {
+              usersMap[u.steamid64] = {
+                matricule: u.matricule || '???',
+                nom_steam: u.nom_steam || '',
+                discord: u.discord || ''
               };
             }
-          });
+          }
           console.log(`[HEURES] ${Object.keys(usersMap).length} unités chargées dans le map`);
         } catch (err) {
           console.error('Erreur chargement units:', err);
@@ -557,13 +548,7 @@
       // ========== LOAD CURRENT DATA ==========
       async function loadCurrentData() {
         try {
-          const snap = await getDocs(collection(db, 'playtime'));
-          currentData = [];
-          snap.forEach(d => {
-            currentData.push({ id: d.id, ...d.data() });
-          });
-
-          // Update stats
+          currentData = await ghLoadPlaytime();
           updateStats();
           renderCurrentTable();
           loadLastImportInfo();
@@ -588,11 +573,11 @@
 
       async function loadLastImportInfo() {
         try {
-          const snap = await getDocs(query(collection(db, 'playtime_history'), orderBy('import_date', 'desc'), limit(1)));
-          if (!snap.empty) {
-            const data = snap.docs[0].data();
-            const date = data.import_date || 'Inconnue';
-            const count = data.entries ? data.entries.length : 0;
+          historyData = await ghLoadHistory();
+          if (historyData.length > 0) {
+            const last = historyData[0]; // sorted desc by date
+            const date = last.import_date || 'Inconnue';
+            const count = last.entries ? last.entries.length : 0;
             const el = document.getElementById('lastImportInfo');
             el.style.display = 'block';
             el.innerHTML = `Dernier import : <strong>${date}</strong> — <strong>${count}</strong> entrées`;
@@ -614,7 +599,6 @@
             || (e.nom_steam || '').toLowerCase().includes(search);
         });
 
-        // Sort
         const [sortKey, sortDir] = sortVal.split('-');
         filtered.sort((a, b) => {
           let va, vb;
@@ -663,18 +647,13 @@
 
         for (const line of lines) {
           const trimmed = line.trim();
-
-          // Ignorer les lignes d'en-tête comme "Rapport MPF :"
           if (!trimmed.includes('(') || !trimmed.includes(':')) {
-            continue; // skip header lines
+            continue;
           }
 
-          // Format du jeu : - Nom (SteamID64) : temps
-          // Regex : capture le nom, le SteamID64, et le temps
           const gameFormat = trimmed.match(/^-?\s*(.+?)\s*\((7656\d{13})\)\s*:\s*(.+)$/i);
 
           if (gameFormat) {
-            // Format jeu détecté
             const gameName = gameFormat[1].trim();
             const steamid = gameFormat[2];
             const timeStr = gameFormat[3].trim();
@@ -693,7 +672,6 @@
             continue;
           }
 
-          // Fallback : format SteamID64 [tab/espaces] temps
           const parts = trimmed.split(/\t+|\s{2,}/);
           if (parts.length >= 2) {
             const steamid = parts[0].trim();
@@ -718,17 +696,13 @@
           errors++;
         }
 
-        // Show parse status
         const statusEl = document.getElementById('parseStatus');
         const unknownCount = parsedEntries.filter(e => !e.known).length;
         statusEl.innerHTML = `Analysé : <span class="count">${parsedEntries.length}</span> entrées valides`
           + (errors > 0 ? ` — <span class="errors">${errors} ligne(s) ignorée(s)</span>` : '')
           + (unknownCount > 0 ? ` — <span class="errors">${unknownCount} SteamID non identifié(s)</span>` : '');
 
-        // Enable save button
         document.getElementById('btnSave').disabled = parsedEntries.length === 0;
-
-        // Show preview
         renderPreview();
       };
 
@@ -741,7 +715,6 @@
         document.getElementById('previewSection').classList.add('visible');
         document.getElementById('previewCount').textContent = `${parsedEntries.length} ENTRÉES`;
 
-        // Sort
         const sorted = [...parsedEntries].sort((a, b) => {
           let va, vb;
           switch (previewSortKey) {
@@ -771,7 +744,6 @@
           return va < vb ? 1 : va > vb ? -1 : 0;
         });
 
-        // Update sort arrows
         document.querySelectorAll('.sort-arrow').forEach(el => el.classList.remove('active'));
         const activeArrow = document.getElementById('sort-' + previewSortKey);
         if (activeArrow) {
@@ -810,9 +782,14 @@
         renderPreview();
       };
 
-      // ========== SAVE TO FIREBASE ==========
+      // ========== SAVE TO GITHUB ==========
       window.saveToFirebase = async function() {
         if (parsedEntries.length === 0) return;
+
+        if (!hasToken()) {
+          showAlert('⚠ Configurez le token GitHub d\'abord (bouton ⚙ TOKEN)', 'error');
+          return;
+        }
 
         const btn = document.getElementById('btnSave');
         btn.disabled = true;
@@ -822,9 +799,10 @@
           const now = new Date().toISOString();
           const dateLabel = now.substring(0, 10);
 
-          // 1) Save/update each entry in `playtime` collection (doc ID = steamid64)
-          const savePromises = parsedEntries.map(entry => {
-            return setDoc(doc(db, 'playtime', entry.steamid64), {
+          // 1) Update playtime : remplacer ou ajouter par steamid64
+          for (const entry of parsedEntries) {
+            const idx = currentData.findIndex(e => e.steamid64 === entry.steamid64);
+            const record = {
               steamid64: entry.steamid64,
               matricule: entry.matricule || '???',
               nom_steam: entry.nom_steam || '',
@@ -832,11 +810,17 @@
               temps_raw: entry.temps_raw,
               heures: entry.heures,
               updated_at: dateLabel
-            });
-          });
-          await Promise.all(savePromises);
+            };
+            if (idx !== -1) {
+              currentData[idx] = record;
+            } else {
+              currentData.push(record);
+            }
+          }
 
-          // 2) Save archive in `playtime_history`
+          await ghSavePlaytime(currentData, `Import heures ${dateLabel}`);
+
+          // 2) Ajouter à l'historique
           const archiveEntries = parsedEntries.map(e => ({
             steamid64: e.steamid64,
             matricule: e.matricule || '???',
@@ -846,12 +830,14 @@
             heures: e.heures
           }));
 
-          await addDoc(collection(db, 'playtime_history'), {
+          historyData.push({
             import_date: dateLabel,
             import_timestamp: now,
             entries_count: archiveEntries.length,
             entries: archiveEntries
           });
+
+          await ghSaveHistory(historyData, `Archive heures ${dateLabel}`);
 
           showAlert(`✓ ${parsedEntries.length} entrées sauvegardées avec succès !`, 'success');
 
@@ -860,7 +846,7 @@
           document.getElementById('importData').value = '';
           document.getElementById('parseStatus').textContent = '';
           document.getElementById('previewSection').classList.remove('visible');
-          btn.textContent = '✓ SAUVEGARDER DANS FIREBASE';
+          btn.textContent = '✓ SAUVEGARDER';
           btn.disabled = true;
 
           // Reload data
@@ -870,7 +856,7 @@
           console.error('Erreur sauvegarde:', err);
           showAlert('✗ Erreur de sauvegarde: ' + err.message, 'error');
           btn.disabled = false;
-          btn.textContent = '✓ SAUVEGARDER DANS FIREBASE';
+          btn.textContent = '✓ SAUVEGARDER';
         }
       };
 
@@ -897,16 +883,14 @@
             document.getElementById('access-denied').style.display = 'block';
             return;
           }
-          document.getElementById('loading').style.display = 'none';
-          document.getElementById('mainContent').style.display = 'block';
-
-          // Load data
-          await loadUsersMap();
-          await loadCurrentData();
         } catch (err) {
-          console.error('Auth error:', err);
-          document.getElementById('loading').innerHTML = '<p style="color:#ff4444;">Erreur: ' + err.message + '</p>';
+          console.warn('Firestore admin check failed, allowing authenticated user:', err.message);
         }
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+
+        await loadUsersMap();
+        await loadCurrentData();
       });
     </script>
 </body>
