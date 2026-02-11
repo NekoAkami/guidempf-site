@@ -275,13 +275,14 @@
                                         <th>DISCORD</th>
                                         <th>STEAMID64</th>
                                         <th>ADMIN</th>
+                                        <th>FORMATEUR</th>
                                         <th>STATUT</th>
                                         <th>DATE</th>
                                         <th>ACTIONS</th>
                                     </tr>
                                 </thead>
                                 <tbody id="usersList">
-                                    <tr><td colspan="9" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr>
+                                    <tr><td colspan="10" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -307,6 +308,7 @@
       } from '../assets/js/github-data.js';
 
       let allUsers = [];
+      let allUnitsCache = [];
 
       function showMessage(text, type = 'success') {
         const msg = document.getElementById('actionMessage');
@@ -318,7 +320,11 @@
 
       async function loadUsers() {
         try {
-          const q = await getDocs(collection(db, 'users'));
+          const [q, units] = await Promise.all([
+            getDocs(collection(db, 'users')),
+            ghLoadUnits().catch(() => [])
+          ]);
+          allUnitsCache = units;
           allUsers = [];
           q.forEach(snap => {
             allUsers.push({ id: snap.id, ...snap.data() });
@@ -379,7 +385,7 @@
       function renderUsers(users) {
         const tbody = document.getElementById('usersList');
         if (users.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text-muted);">Aucun utilisateur</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--text-muted);">Aucun utilisateur</td></tr>';
           return;
         }
         tbody.innerHTML = users.map(u => {
@@ -391,6 +397,15 @@
           const adminBadge = u.is_admin
             ? '<span class="badge badge-admin">ADMIN</span>'
             : '<span style="color:var(--text-muted);">-</span>';
+
+          const unitEntry = allUnitsCache.find(unit => unit.matricule === u.matricule);
+          const isFormateur = unitEntry && unitEntry.formateur;
+          const formateurBadge = isFormateur
+            ? '<span class="badge badge-admin" style="background:rgba(0,229,255,0.12);border-color:rgba(0,229,255,0.3);color:#00e5ff;">FORMATEUR</span>'
+            : '<span style="color:var(--text-muted);">-</span>';
+          const formateurToggle = u.approved && u.status !== 'REVOKED' && u.matricule
+            ? `<button class="btn-sm" style="font-size:0.62rem;" onclick="toggleFormateur('${(u.matricule || '').replace(/'/g, "\\'")}')">F</button>`
+            : '';
 
           let actions = '';
           if (!u.approved && u.status !== 'REVOKED') {
@@ -411,9 +426,10 @@
             <td>${u.discord || '<span style="color:var(--text-muted);">-</span>'}</td>
             <td style="font-size:0.72rem;">${u.steamid64 || '<span style="color:var(--text-muted);">-</span>'}</td>
             <td>${adminBadge}</td>
+            <td>${formateurBadge}</td>
             <td>${statusBadge}</td>
             <td style="font-size:0.72rem;color:var(--text-muted);">${u.created_at ? u.created_at.substring(0, 10) : '-'}</td>
-            <td class="action-cell">${actions}</td>
+            <td class="action-cell">${formateurToggle} ${actions}</td>
           </tr>`;
         }).join('');
       }
@@ -525,6 +541,26 @@
           await loadUsers();
         } catch (err) {
           showMessage('✗ Erreur: ' + err.message, 'error');
+        }
+      };
+
+      window.toggleFormateur = async (matricule) => {
+        try {
+          const units = await ghLoadUnits();
+          const idx = units.findIndex(u => u.matricule === matricule);
+          if (idx === -1) {
+            showMessage('⚠ Unité introuvable pour ' + matricule, 'error');
+            return;
+          }
+          const current = units[idx].formateur || false;
+          units[idx].formateur = !current;
+          units[idx].updated_at = new Date().toISOString().substring(0, 10);
+          await ghSaveUnits(units, `${!current ? 'Ajout' : 'Retrait'} formateur ${matricule}`);
+          allUnitsCache = units;
+          renderUsers(allUsers);
+          showMessage(`✓ ${matricule} — Formateur ${!current ? 'ACTIVÉ' : 'DÉSACTIVÉ'}`, 'success');
+        } catch (err) {
+          showMessage('✗ Erreur formateur: ' + err.message, 'error');
         }
       };
 

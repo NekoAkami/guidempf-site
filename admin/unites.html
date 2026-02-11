@@ -502,6 +502,7 @@
                                         <th onclick="sortBy('discord')">DISCORD</th>
                                         <th onclick="sortBy('division')">DIVISION</th>
                                         <th onclick="sortBy('rang')">RANG</th>
+                                        <th>FORMATEUR</th>
                                         <th>STATUT</th>
                                         <th onclick="sortBy('ordre')">ORDRE</th>
                                         <th onclick="sortBy('date_entree')">ENTRÉE</th>
@@ -509,7 +510,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="unitsBody">
-                                    <tr><td colspan="10" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr>
+                                    <tr><td colspan="11" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -609,6 +610,13 @@
 
             <label>DATE D'ENTRÉE MILICE</label>
             <input type="date" id="fDateEntree">
+
+            <div style="display:flex;align-items:center;gap:0.6rem;margin:0.6rem 0 0.2rem;">
+                <label style="margin:0;cursor:pointer;display:flex;align-items:center;gap:0.4rem;">
+                    <input type="checkbox" id="fFormateur" style="accent-color:var(--accent-cyan);width:16px;height:16px;cursor:pointer;">
+                    <span>FORMATEUR</span>
+                </label>
+            </div>
 
             <div class="modal-actions">
                 <button class="btn-action" onclick="closeModal()">ANNULER</button>
@@ -794,7 +802,7 @@
 
         const tbody = document.getElementById('unitsBody');
         if (filtered.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--text-muted);">Aucune unité trouvée</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:var(--text-muted);">Aucune unité trouvée</td></tr>';
           return;
         }
 
@@ -807,6 +815,7 @@
             <td style="font-size:0.78rem;">${u.discord || '<span style="color:var(--text-muted);">-</span>'}</td>
             <td>${divBadge(u.division)}</td>
             <td><span class="rang-badge ${rangClass(u.rang)}">${u.rang || '-'}</span></td>
+            <td>${u.formateur ? '<span style="color:#00e5ff;font-size:0.7rem;font-weight:700;">FORMATEUR</span>' : '<span style="color:var(--text-muted);">-</span>'}</td>
             <td>${statutBadge(u.matricule)}</td>
             <td style="font-size:0.78rem;color:var(--text-muted);">${u.ordre || '-'}</td>
             <td style="font-size:0.72rem;color:var(--text-muted);">${u.date_entree || '-'}</td>
@@ -841,6 +850,7 @@
         document.getElementById('fRang').value = '';
         document.getElementById('fOrdre').value = '';
         document.getElementById('fDateEntree').value = '';
+        document.getElementById('fFormateur').checked = false;
         document.getElementById('unitModal').classList.add('visible');
       };
 
@@ -859,6 +869,7 @@
         document.getElementById('fRang').value = unit.rang || '';
         document.getElementById('fOrdre').value = unit.ordre || '';
         document.getElementById('fDateEntree').value = unit.date_entree || '';
+        document.getElementById('fFormateur').checked = unit.formateur || false;
         document.getElementById('unitModal').classList.add('visible');
       };
 
@@ -884,6 +895,7 @@
         const rang = document.getElementById('fRang').value;
         const ordre = document.getElementById('fOrdre').value.trim();
         const date_entree = document.getElementById('fDateEntree').value;
+        const formateur = document.getElementById('fFormateur').checked;
 
         if (!matricule) {
           showAlert('Le matricule est obligatoire', 'error');
@@ -904,6 +916,7 @@
           rang: rang || '',
           ordre: ordre ? parseInt(ordre) : '',
           date_entree: date_entree || '',
+          formateur: formateur,
           updated_at: new Date().toISOString().substring(0, 10)
         };
 

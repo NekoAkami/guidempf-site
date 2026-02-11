@@ -48,13 +48,9 @@
         }
         .user-info-bar .user-matricule {
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.9rem;
+            font-size: 0.82rem;
             color: var(--accent-cyan);
             font-weight: 700;
-        }
-        .user-info-bar .user-name {
-            color: var(--text-muted);
-            font-size: 0.72rem;
         }
         .user-info-bar .user-status {
             font-size: 0.68rem;
@@ -319,8 +315,8 @@
                     <div class="user-info-bar" id="userInfoBar">
                         <div class="user-avatar" id="userAvatar">?</div>
                         <div class="user-details">
-                            <div class="user-matricule" id="userMatricule">---</div>
-                            <div class="user-name" id="userName">Chargement...</div>
+                            <div class="user-matricule" id="userIdentification">---</div>
+                            <div class="user-accreditation" id="userAccreditation" style="font-size:0.7rem;color:var(--text-muted);font-family:'Share Tech Mono',monospace;margin-top:0.15rem;"></div>
                         </div>
                         <div class="user-status">CONNECTÉ</div>
                     </div>
@@ -407,8 +403,24 @@
       import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
       import {
         loadAbsences as ghLoadAbsences, saveAbsences as ghSaveAbsences,
+        loadUnits as ghLoadUnits,
         onSyncStatus
       } from './assets/js/github-data.js';
+
+      // ========== ACCRÉDITATION ==========
+      function getAccreditation(rang) {
+        if (rang === 'RCT') return 'Recrue';
+        if (['.05', '.04', '.03'].includes(rang)) return 'MPF';
+        if (['.02', '.01', 'DvL'].includes(rang)) return 'MPEF';
+        if (['Ofc', 'Cmd'].includes(rang)) return 'HautGradé';
+        return '';
+      }
+
+      function getFormateurLabel(accreditation) {
+        if (accreditation === 'MPF' || accreditation === 'Recrue') return 'Unité Formatrice MPF';
+        if (accreditation === 'MPEF' || accreditation === 'HautGradé') return 'Unité Formatrice MPEF';
+        return 'Unité Formatrice';
+      }
 
       // ========== SYNC INDICATOR ==========
       {
@@ -689,10 +701,31 @@
             discord: userData.discord || ''
           };
 
-          // Update user info bar
-          document.getElementById('userMatricule').textContent = currentUser.matricule;
-          document.getElementById('userName').textContent = currentUser.nom_steam || user.email;
+          // Load unit data for enriched display
+          let unitInfo = null;
+          try {
+            const units = await ghLoadUnits();
+            unitInfo = units.find(u => u.matricule === currentUser.matricule)
+                   || units.find(u => u.steamid64 && u.steamid64 === currentUser.steamid64)
+                   || null;
+          } catch (e) { console.warn('Units load for identity:', e.message); }
+
+          const rang = unitInfo ? (unitInfo.rang || '') : '';
+          const division = unitInfo ? (unitInfo.division || '') : '';
+          const isFormateur = unitInfo ? (unitInfo.formateur || false) : false;
+          const accreditation = getAccreditation(rang);
+
+          // Update user info bar — Identification
+          const identParts = [rang, division, currentUser.matricule].filter(Boolean);
+          document.getElementById('userIdentification').textContent = 'Identification : ' + identParts.join(' ');
           document.getElementById('userAvatar').textContent = currentUser.matricule.substring(0, 2);
+
+          // Accréditation line
+          let accLine = accreditation ? ('Accréditation : ' + accreditation) : '';
+          if (isFormateur && accreditation) {
+            accLine += ' — ' + getFormateurLabel(accreditation);
+          }
+          document.getElementById('userAccreditation').textContent = accLine;
 
           // Show content
           document.getElementById('loading').style.display = 'none';
