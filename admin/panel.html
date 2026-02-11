@@ -420,14 +420,34 @@
             approved_at: new Date().toISOString()
           });
 
-          // 2) Auto-create unit in JSON data file via GitHub API
+          // 2) Auto-link or create unit in JSON via GitHub API
           const userData = allUsers.find(u => u.id === userId);
           if (userData && userData.matricule) {
             try {
               if (hasToken()) {
                 const units = await ghLoadUnits();
-                // Vérifier qu'il n'existe pas déjà
-                if (!units.some(u => u.matricule === userData.matricule)) {
+                const today = new Date().toISOString().substring(0, 10);
+
+                // Chercher par SteamID64 OU par matricule (lien automatique)
+                const bySteam = userData.steamid64 ? units.findIndex(u => u.steamid64 === userData.steamid64) : -1;
+                const byMatricule = units.findIndex(u => u.matricule === userData.matricule);
+                const existingIdx = bySteam !== -1 ? bySteam : byMatricule;
+
+                if (existingIdx !== -1) {
+                  // Unité existante trouvée → mise à jour avec les infos d'inscription
+                  const existing = units[existingIdx];
+                  units[existingIdx] = {
+                    ...existing,
+                    matricule: userData.matricule,
+                    steamid64: userData.steamid64 || existing.steamid64 || '',
+                    nom_steam: userData.nom_steam || existing.nom_steam || '',
+                    discord: userData.discord || existing.discord || '',
+                    updated_at: today
+                  };
+                  await ghSaveUnits(units, `Liaison unité ${userData.matricule} (approbation — SteamID match)`);
+                  showMessage('✓ Utilisateur approuvé — unité existante liée automatiquement', 'success');
+                } else {
+                  // Aucune unité existante → en créer une nouvelle
                   units.push({
                     matricule: userData.matricule,
                     steamid64: userData.steamid64 || '',
@@ -436,19 +456,23 @@
                     division: '',
                     rang: '.05',
                     ordre: '',
-                    date_entree: new Date().toISOString().substring(0, 10),
-                    updated_at: new Date().toISOString().substring(0, 10)
+                    date_entree: today,
+                    updated_at: today
                   });
                   await ghSaveUnits(units, `Ajout unité ${userData.matricule} (approbation)`);
+                  showMessage('✓ Utilisateur approuvé + nouvelle unité créée', 'success');
                 }
+              } else {
+                showMessage('✓ Utilisateur approuvé (token GitHub absent — unité non ajoutée)', 'success');
               }
             } catch (ghErr) {
               console.warn('GitHub units update failed:', ghErr.message);
-              // Non-bloquant : l'approbation Firestore a réussi
+              showMessage('✓ Approuvé (⚠ erreur mise à jour unités: ' + ghErr.message + ')', 'success');
             }
+          } else {
+            showMessage('✓ Utilisateur approuvé', 'success');
           }
 
-          showMessage('\u2713 Utilisateur approuv\u00e9 + ajout\u00e9 aux unit\u00e9s', 'success');
           await loadUsers();
         } catch (err) {
           showMessage('✗ Erreur: ' + err.message, 'error');
