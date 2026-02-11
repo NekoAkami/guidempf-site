@@ -25,7 +25,7 @@ export async function requireAuth(redirectToLogin = true) {
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         if (redirectToLogin) {
-          window.location.href = '/login.html';
+          window.location.href = 'login.html';
         }
         reject(new Error('Non authentifié'));
         return;
@@ -36,7 +36,7 @@ export async function requireAuth(redirectToLogin = true) {
         if (!userDoc.exists()) {
           if (redirectToLogin) {
             await signOut(auth);
-            window.location.href = '/login.html';
+            window.location.href = 'login.html';
           }
           reject(new Error('Utilisateur non trouvé'));
           return;
@@ -45,7 +45,7 @@ export async function requireAuth(redirectToLogin = true) {
         const userData = userDoc.data();
         if (userData.approved !== true) {
           if (redirectToLogin) {
-            window.location.href = '/pending.html';
+            window.location.href = 'pending.html';
           }
           reject(new Error('Utilisateur non approuvé'));
           return;
@@ -79,17 +79,17 @@ export async function updateAuthButton() {
           const matricule = userData.matricule || '???';
           authBtn.innerHTML = `
             <span style="font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--text-muted);margin-right:0.8rem;letter-spacing:1px;">MATRICULE : <span style="color:var(--accent-cyan);font-weight:700;">${matricule}</span></span>
-            ${isAdmin ? '<a href="/admin/panel.html" class="btn" style="margin-right:.5rem">Admin</a>' : ''}
+            ${isAdmin ? '<a href="admin/panel.html" class="btn" style="margin-right:.5rem">Admin</a>' : ''}
             <button onclick="window.logoutUser()" class="btn secondary">Déconnexion</button>
           `;
         } else {
-          authBtn.innerHTML = `<a href="/login.html" class="btn">Connexion</a>`;
+          authBtn.innerHTML = `<a href="login.html" class="btn">Connexion</a>`;
         }
       } catch (err) {
-        authBtn.innerHTML = `<a href="/login.html" class="btn">Connexion</a>`;
+        authBtn.innerHTML = `<a href="login.html" class="btn">Connexion</a>`;
       }
     } else {
-      authBtn.innerHTML = `<a href="/login.html" class="btn">Connexion</a>`;
+      authBtn.innerHTML = `<a href="login.html" class="btn">Connexion</a>`;
     }
   });
 }
@@ -98,7 +98,7 @@ export async function updateAuthButton() {
 window.logoutUser = async () => {
   try {
     await signOut(auth);
-    window.location.href = '/index.html';
+    window.location.href = 'index.html';
   } catch (err) {
     console.error('Erreur de déconnexion:', err);
   }
