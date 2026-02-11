@@ -1,8 +1,21 @@
+# Dependencies
 node_modules/
 package-lock.json
+
+# Secrets / Firebase
 serviceAccountKey.json
+*.pem
+*.key
+
+# Database
 data.db
+*.sqlite
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Logs / Env
 *.log
 .env
 .env.local
