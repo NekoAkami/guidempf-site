@@ -18,6 +18,13 @@
     display: block;
 }
 
+.city-map-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    background: transparent;
+}
+
 /* Zone base styles */
 .map-zone {
     cursor: default;
