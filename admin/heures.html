@@ -374,9 +374,9 @@
                     <div class="combine-body">
                         <div class="import-zone">
                             <h3>▶ COLLER LES DONNÉES CI-DESSOUS</h3>
-                            <textarea id="importData" placeholder="Collez ici les données depuis votre source, une ligne par personne.&#10;&#10;Format accepté (séparé par tabulation ou plusieurs espaces) :&#10;76561198414645840    19 heures, 33 minutes, 35 secondes&#10;76561199850508848    02 heures, 59 minutes, 36 secondes&#10;76561198138354990    1 jours, 05 heures, 44 minutes, 17 secondes&#10;&#10;Le SteamID64 est automatiquement relié au matricule via la base de données."></textarea>
+                            <textarea id="importData" placeholder="Collez directement le rapport MPF depuis le jeu :&#10;&#10;Rapport MPF :&#10;    - yellowait (76561198414645840) : 19 heures, 33 minutes, 35 secondes&#10;    - [OL] Scooby (76561199850508848) : 02 heures, 59 minutes, 36 secondes&#10;    - MG (76561198138354990) : 1 jours, 05 heures, 44 minutes, 17 secondes&#10;&#10;Le SteamID64 est automatiquement relié au matricule via la base de données."></textarea>
                             <div class="import-hint">
-                                Format : SteamID64 [tab] temps (X jours, Y heures, Z minutes, W secondes) — une ligne par unité
+                                Collez directement le rapport MPF du jeu — format : - Nom (SteamID64) : temps
                             </div>
                             <div id="parseStatus" class="parse-status"></div>
                             <div class="import-actions">
@@ -401,6 +401,7 @@
                                     <thead>
                                         <tr>
                                             <th onclick="sortPreview('matricule')">MATRICULE <span class="sort-arrow" id="sort-matricule">▼</span></th>
+                                            <th onclick="sortPreview('nom_jeu')">NOM JEU <span class="sort-arrow" id="sort-nom_jeu">▼</span></th>
                                             <th onclick="sortPreview('steamid')">STEAMID64 <span class="sort-arrow" id="sort-steamid">▼</span></th>
                                             <th onclick="sortPreview('temps_raw')">TEMPS BRUT <span class="sort-arrow" id="sort-temps_raw">▼</span></th>
                                             <th onclick="sortPreview('heures')">HEURES <span class="sort-arrow" id="sort-heures">▼</span></th>
@@ -659,34 +660,60 @@
         let errors = 0;
 
         for (const line of lines) {
-          // Split by tab or 2+ spaces, then the first part is the SteamID64, the rest is the time
-          const parts = line.trim().split(/\t+|\s{2,}/);
-          if (parts.length < 2) {
-            errors++;
+          const trimmed = line.trim();
+
+          // Ignorer les lignes d'en-tête comme "Rapport MPF :"
+          if (!trimmed.includes('(') || !trimmed.includes(':')) {
+            continue; // skip header lines
+          }
+
+          // Format du jeu : - Nom (SteamID64) : temps
+          // Regex : capture le nom, le SteamID64, et le temps
+          const gameFormat = trimmed.match(/^-?\s*(.+?)\s*\((7656\d{13})\)\s*:\s*(.+)$/i);
+
+          if (gameFormat) {
+            // Format jeu détecté
+            const gameName = gameFormat[1].trim();
+            const steamid = gameFormat[2];
+            const timeStr = gameFormat[3].trim();
+            const heures = parseTimeToHours(timeStr);
+            const user = usersMap[steamid];
+
+            parsedEntries.push({
+              steamid64: steamid,
+              temps_raw: timeStr,
+              heures: heures,
+              matricule: user ? user.matricule : null,
+              nom_steam: user ? user.nom_steam : gameName,
+              nom_jeu: gameName,
+              known: !!user
+            });
             continue;
           }
 
-          const steamid = parts[0].trim();
-          // Validate SteamID64 (should be 17 digits starting with 7656)
-          if (!/^7656\d{13}$/.test(steamid)) {
-            errors++;
-            continue;
+          // Fallback : format SteamID64 [tab/espaces] temps
+          const parts = trimmed.split(/\t+|\s{2,}/);
+          if (parts.length >= 2) {
+            const steamid = parts[0].trim();
+            if (/^7656\d{13}$/.test(steamid)) {
+              const timeStr = parts.slice(1).join(', ').trim();
+              const heures = parseTimeToHours(timeStr);
+              const user = usersMap[steamid];
+
+              parsedEntries.push({
+                steamid64: steamid,
+                temps_raw: timeStr,
+                heures: heures,
+                matricule: user ? user.matricule : null,
+                nom_steam: user ? user.nom_steam : '',
+                nom_jeu: '',
+                known: !!user
+              });
+              continue;
+            }
           }
 
-          const timeStr = parts.slice(1).join(', ').trim();
-          const heures = parseTimeToHours(timeStr);
-
-          // Lookup user
-          const user = usersMap[steamid];
-
-          parsedEntries.push({
-            steamid64: steamid,
-            temps_raw: timeStr,
-            heures: heures,
-            matricule: user ? user.matricule : null,
-            nom_steam: user ? user.nom_steam : '',
-            known: !!user
-          });
+          errors++;
         }
 
         // Show parse status
@@ -719,6 +746,10 @@
             case 'matricule':
               va = (a.matricule || 'zzz').padStart(4, '0');
               vb = (b.matricule || 'zzz').padStart(4, '0');
+              break;
+            case 'nom_jeu':
+              va = (a.nom_jeu || '').toLowerCase();
+              vb = (b.nom_jeu || '').toLowerCase();
               break;
             case 'steamid':
               va = a.steamid64;
@@ -758,6 +789,7 @@
 
           return `<tr>
             <td>${matriculeDisplay}</td>
+            <td style="font-size:0.8rem;color:var(--text-secondary);">${e.nom_jeu || e.nom_steam || '-'}</td>
             <td class="steamid-cell">${e.steamid64}</td>
             <td style="font-size:0.78rem;color:var(--text-secondary);">${e.temps_raw}</td>
             <td class="hours-cell ${hClass}">${formatHours(e.heures)}h</td>
@@ -794,6 +826,7 @@
               steamid64: entry.steamid64,
               matricule: entry.matricule || '???',
               nom_steam: entry.nom_steam || '',
+              nom_jeu: entry.nom_jeu || '',
               temps_raw: entry.temps_raw,
               heures: entry.heures,
               updated_at: dateLabel
@@ -806,6 +839,7 @@
             steamid64: e.steamid64,
             matricule: e.matricule || '???',
             nom_steam: e.nom_steam || '',
+            nom_jeu: e.nom_jeu || '',
             temps_raw: e.temps_raw,
             heures: e.heures
           }));
