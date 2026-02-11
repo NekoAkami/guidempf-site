@@ -139,6 +139,28 @@ async function saveAbsences(absences, message) {
   return absences;
 }
 
+// ========== RAPPORTS ==========
+async function loadReports() {
+  return await readData('reports');
+}
+
+async function saveReports(reports, message) {
+  reports.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+  await writeData('reports', reports, message || 'Mise à jour rapports');
+  return reports;
+}
+
+// ========== DEPOTS ==========
+async function loadDeposits() {
+  return await readData('deposits');
+}
+
+async function saveDeposits(deposits, message) {
+  deposits.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+  await writeData('deposits', deposits, message || 'Mise à jour dépôts');
+  return deposits;
+}
+
 // ========== EXPORT ==========
 export {
   readJsonFile, writeJsonFile, onSyncStatus,
@@ -146,5 +168,7 @@ export {
   loadPlaytime, savePlaytime,
   loadPlaytimeHistory, savePlaytimeHistory,
   loadAbsences, saveAbsences,
+  loadReports, saveReports,
+  loadDeposits, saveDeposits,
   GITHUB_OWNER, GITHUB_REPO
 };

@@ -3,12 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulaire Test - MPF Documentation</title>
+    <title>Formulaire de Test - MPF</title>
     <link rel="stylesheet" href="assets/css/main-style.css">
     <link rel="stylesheet" href="assets/css/combine-terminals.css">
     <link rel="stylesheet" href="assets/css/global-nav.css">
     <link rel="stylesheet" href="assets/css/interactive-system.css">
     <link rel="stylesheet" href="assets/css/combine-animations.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        .test-wrapper { max-width: 700px; margin: 0 auto; }
+
+        .user-info-bar {
+            display: flex; align-items: center; gap: 1rem;
+            padding: 0.8rem 1rem;
+            background: rgba(0, 170, 255, 0.04);
+            border: 1px solid rgba(0, 170, 255, 0.15);
+            border-radius: 4px; margin-bottom: 1.5rem;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;
+        }
+        .user-info-bar .user-avatar {
+            width: 42px; height: 42px;
+            background: rgba(0, 170, 255, 0.15);
+            border: 1px solid var(--accent-cyan); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Orbitron', sans-serif; font-size: 0.85rem;
+            color: var(--accent-cyan); font-weight: 700; flex-shrink: 0;
+        }
+        .user-info-bar .user-details { flex: 1; }
+        .user-info-bar .user-matricule {
+            font-family: 'Orbitron', sans-serif; font-size: 0.82rem;
+            color: var(--accent-cyan); font-weight: 700;
+        }
+        .user-info-bar .user-status {
+            font-size: 0.68rem; padding: 0.15rem 0.5rem; border-radius: 2px;
+            background: rgba(0, 200, 80, 0.1); border: 1px solid rgba(0, 200, 80, 0.3); color: #00cc55;
+        }
+
+        /* Candidat selector */
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label {
+            display: block; font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem; color: var(--text-muted);
+            letter-spacing: 1px; margin-bottom: 0.3rem;
+        }
+        .form-group label .req { color: #ff4444; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%; padding: 0.5rem 0.7rem;
+            background: rgba(0, 170, 255, 0.04);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace; font-size: 0.82rem;
+            outline: none; border-radius: 2px;
+        }
+        .form-group input:focus, .form-group select:focus { border-color: var(--accent-cyan); }
+        .form-group select { cursor: pointer; }
+        .form-group select option { background: #0a1628; color: var(--text-primary); }
+
+        /* Questions */
+        .question-block {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: rgba(0, 170, 255, 0.02);
+            border: 1px solid rgba(0, 170, 255, 0.1);
+            border-radius: 4px;
+            transition: border-color 0.2s;
+        }
+        .question-block:hover { border-color: rgba(0, 170, 255, 0.25); }
+        .question-block .q-number {
+            font-family: 'Orbitron', sans-serif; font-size: 0.7rem;
+            color: var(--accent-cyan); letter-spacing: 1px; margin-bottom: 0.4rem;
+            opacity: 0.7;
+        }
+        .question-block .q-text {
+            font-family: 'Share Tech Mono', monospace; font-size: 0.88rem;
+            color: var(--text-primary); margin-bottom: 0.8rem; line-height: 1.5;
+        }
+        .question-block .q-options { display: flex; flex-direction: column; gap: 0.4rem; }
+        .q-option {
+            display: flex; align-items: center; gap: 0.6rem;
+            padding: 0.4rem 0.6rem; border-radius: 3px; cursor: pointer;
+            border: 1px solid rgba(0, 170, 255, 0.1);
+            transition: all 0.15s;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        .q-option:hover { background: rgba(0, 170, 255, 0.06); border-color: rgba(0, 170, 255, 0.25); }
+        .q-option.selected {
+            background: rgba(0, 170, 255, 0.1);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+        .q-option .q-radio {
+            width: 16px; height: 16px; border-radius: 50%;
+            border: 2px solid rgba(0, 170, 255, 0.3);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; transition: all 0.15s;
+        }
+        .q-option.selected .q-radio {
+            border-color: var(--accent-cyan);
+        }
+        .q-option.selected .q-radio::after {
+            content: ''; width: 8px; height: 8px; border-radius: 50%;
+            background: var(--accent-cyan);
+        }
+
+        /* Results */
+        .result-banner {
+            text-align: center; padding: 1.5rem;
+            border-radius: 4px; margin-bottom: 1.5rem;
+            font-family: 'Share Tech Mono', monospace;
+            display: none;
+        }
+        .result-banner.pass {
+            display: block;
+            background: rgba(0, 200, 80, 0.08);
+            border: 1px solid rgba(0, 200, 80, 0.3);
+        }
+        .result-banner.fail {
+            display: block;
+            background: rgba(255, 60, 60, 0.08);
+            border: 1px solid rgba(255, 60, 60, 0.3);
+        }
+        .result-score {
+            font-family: 'Orbitron', sans-serif; font-size: 2rem;
+            font-weight: 700; line-height: 1;
+        }
+        .result-banner.pass .result-score { color: #00cc55; }
+        .result-banner.fail .result-score { color: #ff4444; }
+        .result-label { font-size: 0.82rem; color: var(--text-muted); margin-top: 0.4rem; }
+        .result-verdict { font-size: 0.9rem; font-weight: 700; margin-top: 0.3rem; }
+        .result-banner.pass .result-verdict { color: #00cc55; }
+        .result-banner.fail .result-verdict { color: #ff4444; }
+
+        /* Answer feedback */
+        .question-block.correct { border-color: rgba(0, 200, 80, 0.4); }
+        .question-block.incorrect { border-color: rgba(255, 60, 60, 0.4); }
+        .q-option.correct-answer { background: rgba(0, 200, 80, 0.1); border-color: rgba(0, 200, 80, 0.4); color: #00cc55; }
+        .q-option.wrong-answer { background: rgba(255, 60, 60, 0.1); border-color: rgba(255, 60, 60, 0.4); color: #ff4444; }
+
+        .form-actions {
+            display: flex; gap: 0.8rem; margin-top: 1.5rem; justify-content: flex-end;
+        }
+        .btn-action {
+            padding: 0.5rem 1.2rem; font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem; cursor: pointer;
+            border: 1px solid rgba(0, 170, 255, 0.4);
+            background: rgba(0, 170, 255, 0.1); color: var(--accent-cyan);
+            border-radius: 3px; transition: all 0.15s; letter-spacing: 0.5px;
+        }
+        .btn-action:hover { background: rgba(0, 170, 255, 0.2); border-color: var(--accent-cyan); }
+        .btn-action.primary { background: rgba(0, 170, 255, 0.2); border-color: var(--accent-cyan); font-weight: 700; }
+        .btn-action.primary:hover { background: rgba(0, 170, 255, 0.35); }
+        .btn-action:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .alert-msg {
+            padding: 0.6rem 1rem; border-radius: 3px; margin-bottom: 1rem;
+            font-size: 0.8rem; font-family: 'Share Tech Mono', monospace; display: none;
+        }
+        .alert-msg.error { display: block; background: rgba(255, 60, 60, 0.1); border: 1px solid rgba(255, 60, 60, 0.3); color: #ff4444; }
+
+        #access-denied, #notApproved, #noAccess { display: none; text-align: center; padding: 3rem; }
+    </style>
 </head>
 <body>
     <div class="scanline-overlay"></div>
@@ -21,43 +176,270 @@
                     <div class="logo-icon">M</div>
                     <div>
                         <h1 class="logo">MPF</h1>
-                        <p class="logo-subtitle">Metropolice Force Documentation</p>
+                        <p class="logo-subtitle">Formulaire de Test</p>
                     </div>
                 </div>
-                <div id="authBtn"></div>
+                <div id="authBtn" class="header-auth"></div>
             </div>
         </div>
     </header>
 
     <main>
         <div class="container">
-            <div class="combine-terminal-wrapper animate-fadeInUp" style="margin-top: 1.5rem;">
-                <div class="combine-header">
-                    <h2>📝 FORMULAIRE TEST</h2>
-                    <span class="header-code">FORMULAIRE // EVALUATION</span>
-                </div>
-                <div class="combine-body" style="padding: 0;">
-                    <div style="padding: 0.8rem 1rem 0.5rem; border-bottom: 1px solid rgba(0,170,255,0.1);">
-                        <p style="color: var(--text-muted); font-size: 0.82rem; font-family: 'Share Tech Mono', monospace;">
-                            ▸ Formulaire de test et évaluation.
-                        </p>
+            <div id="loading" style="text-align:center;padding:3rem;">
+                <p style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;">CHARGEMENT...</p>
+            </div>
+            <div id="access-denied">
+                <h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">CONNEXION REQUISE</h2>
+                <p style="color:var(--text-muted);font-family:'Share Tech Mono',monospace;margin-top:0.5rem;">Vous devez être connecté.</p>
+                <a href="login.html" style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;display:inline-block;margin-top:1rem;">→ SE CONNECTER</a>
+            </div>
+            <div id="notApproved">
+                <h2 style="color:#ffaa00;font-family:'Orbitron',sans-serif;">EN ATTENTE D'APPROBATION</h2>
+                <p style="color:var(--text-muted);font-family:'Share Tech Mono',monospace;margin-top:0.5rem;">Votre compte n'a pas encore été approuvé.</p>
+            </div>
+            <div id="noAccess">
+                <h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">ACCÈS RESTREINT</h2>
+                <p style="color:var(--text-muted);font-family:'Share Tech Mono',monospace;margin-top:0.5rem;">
+                    Ce formulaire est réservé aux <span style="color:var(--accent-cyan);font-weight:700;">Unités Formatrices</span> et <span style="color:var(--accent-cyan);font-weight:700;">HautGradés</span>.
+                </p>
+                <a href="formulaires.html" style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;display:inline-block;margin-top:1rem;">← RETOUR AUX FORMULAIRES</a>
+            </div>
+
+            <div id="mainContent" style="display:none;">
+                <div class="test-wrapper">
+
+                    <div class="user-info-bar">
+                        <div class="user-avatar" id="userAvatar">?</div>
+                        <div class="user-details">
+                            <div class="user-matricule" id="userIdentification">---</div>
+                            <div id="userAccreditation" style="font-size:0.7rem;color:var(--text-muted);font-family:'Share Tech Mono',monospace;margin-top:0.15rem;"></div>
+                        </div>
+                        <div class="user-status">CONNECTÉ</div>
                     </div>
-                    <iframe 
-                        src="https://docs.google.com/forms/d/e/1FAIpQLSfSoL2m_e9JDLvpdc5sZUNphZlwM97WBlGUnkThA7guccdnag/viewform?embedded=true"
-                        style="width: 100%; height: 800px; border: none;"
-                        loading="lazy"
-                        title="Formulaire Test">
-                    </iframe>
-                </div>
-                <div class="combine-footer">
-                    <a href="formulaires.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.75rem;">← RETOUR AUX FORMULAIRES</a>
+
+                    <div id="alertMsg" class="alert-msg"></div>
+
+                    <!-- Candidat info -->
+                    <div class="combine-terminal-wrapper" style="margin-bottom:1.5rem;">
+                        <div class="combine-header">
+                            <h2>📝 ÉVALUATION</h2>
+                            <span class="header-code">FORM-04</span>
+                        </div>
+                        <div class="combine-body">
+                            <div class="form-group">
+                                <label>MATRICULE DU CANDIDAT <span class="req">*</span></label>
+                                <input type="text" id="fCandidat" placeholder="Ex: 123" maxlength="3" pattern="\d{3}">
+                                <div class="hint">Le matricule du RCT ou de l'unité évaluée</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Result banner (shown after submit) -->
+                    <div id="resultBanner" class="result-banner"></div>
+
+                    <!-- Questions container -->
+                    <div class="combine-terminal-wrapper">
+                        <div class="combine-header">
+                            <h2>QUESTIONS</h2>
+                            <span class="header-code" id="qCount">0 / 0</span>
+                        </div>
+                        <div class="combine-body" id="questionsContainer">
+                            <p style="color:var(--text-muted);text-align:center;font-family:'Share Tech Mono',monospace;font-size:0.85rem;">
+                                Aucune question configurée. Ajoutez des questions dans le tableau <code>QUESTIONS</code> du script.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="form-actions" id="formActions" style="display:none;">
+                        <button class="btn-action" onclick="resetTest()">RÉINITIALISER</button>
+                        <button class="btn-action primary" id="btnSubmit" onclick="submitTest()">⟩ SOUMETTRE LE TEST</button>
+                    </div>
+
                 </div>
             </div>
         </div>
     </main>
 
+    <script type="module" src="assets/js/auth.js"></script>
     <script src="assets/js/global-nav.js"></script>
     <script src="assets/js/interactive-system.js"></script>
     <script src="assets/js/combine-animations.js"></script>
+
+    <script type="module">
+      import { auth, db } from './assets/js/auth.js';
+      import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+      import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+      import { loadUnits as ghLoadUnits } from './assets/js/github-data.js';
+
+      // ══════════════════════════════════════════════════════
+      //  QUESTIONS — Modifiez ce tableau pour changer le test
+      //  Format: { q: "Question", options: ["A","B","C","D"], answer: 0 }
+      //  answer = index de la bonne réponse (0 = première option)
+      // ══════════════════════════════════════════════════════
+      const QUESTIONS = [
+        // Ajoutez vos questions ici, par exemple :
+        // { q: "Quel est le code radio pour une urgence ?", options: ["Code 1", "Code 3", "Code 7", "Code 10"], answer: 2 },
+        // { q: "Que signifie 10-4 ?", options: ["En route", "Bien reçu", "Négatif", "Besoin de renfort"], answer: 1 },
+      ];
+
+      const PASS_THRESHOLD = 0.7; // 70% pour réussir
+
+      function getAccreditation(r) {
+        if (r==='RCT') return 'Recrue';
+        if (['.05','.04','.03','STB'].includes(r)) return 'MPF';
+        if (['.02','.01','DvL','STBE','CABAL'].includes(r)) return 'MPEF';
+        if (['Ofc','Cmd'].includes(r)) return 'HautGradé';
+        return '';
+      }
+
+      let currentUser=null, userAnswers={}, testSubmitted=false;
+
+      // Build questions UI
+      function buildQuestions() {
+        const container = document.getElementById('questionsContainer');
+        if (!QUESTIONS.length) return;
+
+        document.getElementById('qCount').textContent = `0 / ${QUESTIONS.length}`;
+        document.getElementById('formActions').style.display = 'flex';
+
+        container.innerHTML = QUESTIONS.map((q, qi) => {
+          const optionsHtml = q.options.map((opt, oi) =>
+            `<div class="q-option" data-q="${qi}" data-o="${oi}" onclick="selectOption(${qi},${oi})">
+              <div class="q-radio"></div>
+              <span>${opt}</span>
+            </div>`
+          ).join('');
+          return `<div class="question-block" id="qBlock${qi}">
+            <div class="q-number">QUESTION ${qi + 1}</div>
+            <div class="q-text">${q.q}</div>
+            <div class="q-options">${optionsHtml}</div>
+          </div>`;
+        }).join('');
+      }
+
+      window.selectOption = function(qi, oi) {
+        if (testSubmitted) return;
+        userAnswers[qi] = oi;
+
+        // Update UI
+        document.querySelectorAll(`.q-option[data-q="${qi}"]`).forEach(el => el.classList.remove('selected'));
+        document.querySelector(`.q-option[data-q="${qi}"][data-o="${oi}"]`).classList.add('selected');
+
+        // Update counter
+        const answered = Object.keys(userAnswers).length;
+        document.getElementById('qCount').textContent = `${answered} / ${QUESTIONS.length}`;
+      };
+
+      window.submitTest = function() {
+        if (testSubmitted) return;
+        const candidat = document.getElementById('fCandidat').value.trim();
+        if (!candidat) {
+          const el = document.getElementById('alertMsg');
+          el.style.display = 'block'; el.className = 'alert-msg error';
+          el.textContent = 'Entrez le matricule du candidat'; setTimeout(() => el.style.display = 'none', 4000);
+          return;
+        }
+        if (Object.keys(userAnswers).length < QUESTIONS.length) {
+          const el = document.getElementById('alertMsg');
+          el.style.display = 'block'; el.className = 'alert-msg error';
+          el.textContent = 'Répondez à toutes les questions avant de soumettre'; setTimeout(() => el.style.display = 'none', 4000);
+          return;
+        }
+
+        testSubmitted = true;
+        document.getElementById('btnSubmit').disabled = true;
+
+        // Calculate score
+        let correct = 0;
+        QUESTIONS.forEach((q, qi) => {
+          const block = document.getElementById(`qBlock${qi}`);
+          const isCorrect = userAnswers[qi] === q.answer;
+          if (isCorrect) correct++;
+
+          block.classList.add(isCorrect ? 'correct' : 'incorrect');
+          // Show correct answer
+          const correctOpt = document.querySelector(`.q-option[data-q="${qi}"][data-o="${q.answer}"]`);
+          if (correctOpt) correctOpt.classList.add('correct-answer');
+          // Mark wrong if different
+          if (!isCorrect && userAnswers[qi] !== undefined) {
+            const wrongOpt = document.querySelector(`.q-option[data-q="${qi}"][data-o="${userAnswers[qi]}"]`);
+            if (wrongOpt) wrongOpt.classList.add('wrong-answer');
+          }
+        });
+
+        const score = correct / QUESTIONS.length;
+        const pct = Math.round(score * 100);
+        const passed = score >= PASS_THRESHOLD;
+
+        const banner = document.getElementById('resultBanner');
+        banner.className = 'result-banner ' + (passed ? 'pass' : 'fail');
+        banner.innerHTML = `
+          <div class="result-score">${pct}%</div>
+          <div class="result-label">${correct} / ${QUESTIONS.length} réponses correctes — Candidat: ${candidat}</div>
+          <div class="result-verdict">${passed ? '✓ TEST RÉUSSI' : '✗ TEST ÉCHOUÉ'}</div>
+        `;
+        banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      };
+
+      window.resetTest = function() {
+        testSubmitted = false;
+        userAnswers = {};
+        document.getElementById('btnSubmit').disabled = false;
+        document.getElementById('resultBanner').className = 'result-banner';
+        document.getElementById('resultBanner').innerHTML = '';
+        document.getElementById('fCandidat').value = '';
+        document.getElementById('alertMsg').style.display = 'none';
+        document.querySelectorAll('.question-block').forEach(el => { el.classList.remove('correct', 'incorrect'); });
+        document.querySelectorAll('.q-option').forEach(el => { el.classList.remove('selected', 'correct-answer', 'wrong-answer'); });
+        document.getElementById('qCount').textContent = `0 / ${QUESTIONS.length}`;
+      };
+
+      // Auth + access control
+      onAuthStateChanged(auth, async(user) => {
+        if (!user) { document.getElementById('loading').style.display='none'; document.getElementById('access-denied').style.display='block'; return; }
+        try {
+          const s = await getDoc(doc(db, 'users', user.uid));
+          if (!s.exists()) { document.getElementById('loading').style.display='none'; document.getElementById('access-denied').style.display='block'; return; }
+          const ud = s.data();
+          if (!ud.approved) { document.getElementById('loading').style.display='none'; document.getElementById('notApproved').style.display='block'; return; }
+
+          currentUser = { matricule: ud.matricule||'???', nom_steam: ud.nom_steam||'' };
+
+          let ui = null;
+          try { const u = await ghLoadUnits(); ui = u.find(x => x.matricule === currentUser.matricule) || null; } catch(_) {}
+
+          const rang = ui ? (ui.rang || '') : '';
+          const isHG = rang === 'Ofc' || rang === 'Cmd';
+          const isFormateur = ui ? (ui.formateur || false) : false;
+          const acc = getAccreditation(rang);
+
+          // ACCESS CHECK: formateur ou HautGradé uniquement
+          if (!isFormateur && !isHG) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('noAccess').style.display = 'block';
+            return;
+          }
+
+          // User info
+          const dv = !isHG && ui ? (ui.division || '') : '';
+          document.getElementById('userIdentification').textContent = 'Identification : ' + [rang, dv, currentUser.matricule].filter(Boolean).join(' ');
+          document.getElementById('userAvatar').textContent = currentUser.matricule.substring(0, 3);
+          if (acc) {
+            let l = 'Accréditation : ' + acc;
+            if (isFormateur) l += ' — ' + ((acc === 'MPF' || acc === 'Recrue') ? 'Unité Formatrice MPF' : 'Unité Formatrice MPEF');
+            document.getElementById('userAccreditation').textContent = l;
+          }
+
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('mainContent').style.display = 'block';
+          buildQuestions();
+        } catch(e) {
+          console.error(e);
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('access-denied').style.display = 'block';
+        }
+      });
+    </script>
 </body>
 </html>

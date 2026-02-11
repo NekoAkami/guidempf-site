@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rapport d'Activité - MPF</title>
+    <title>Dépôt d'Argent - MPF</title>
     <link rel="stylesheet" href="assets/css/main-style.css">
     <link rel="stylesheet" href="assets/css/combine-terminals.css">
     <link rel="stylesheet" href="assets/css/global-nav.css">
@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="assets/css/combine-animations.css">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <style>
-        .rapport-wrapper { max-width: 700px; margin: 0 auto; }
+        .depot-wrapper { max-width: 600px; margin: 0 auto; }
 
         .user-info-bar {
             display: flex; align-items: center; gap: 1rem;
@@ -59,14 +59,12 @@
         }
         .form-group select { cursor: pointer; }
         .form-group select option { background: #0a1628; color: var(--text-primary); }
-        .form-group textarea { resize: vertical; min-height: 80px; }
+        .form-group textarea { resize: vertical; min-height: 60px; }
         .form-group .hint {
             font-size: 0.68rem; color: var(--text-muted); margin-top: 0.2rem;
             font-family: 'Share Tech Mono', monospace;
         }
-        .form-group.error input, .form-group.error textarea, .form-group.error select {
-            border-color: #ff4444;
-        }
+        .form-group.error input, .form-group.error textarea, .form-group.error select { border-color: #ff4444; }
         .form-group .error-msg {
             font-size: 0.7rem; color: #ff4444; margin-top: 0.2rem;
             font-family: 'Share Tech Mono', monospace; display: none;
@@ -98,24 +96,28 @@
         .alert-msg.success { display: block; background: rgba(0, 200, 80, 0.1); border: 1px solid rgba(0, 200, 80, 0.3); color: #00cc55; }
         .alert-msg.error { display: block; background: rgba(255, 60, 60, 0.1); border: 1px solid rgba(255, 60, 60, 0.3); color: #ff4444; }
 
-        .my-reports-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-        .my-reports-table th {
+        .my-deposits-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        .my-deposits-table th {
             text-align: left; padding: 0.5rem 0.4rem;
             color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace;
             font-size: 0.68rem; letter-spacing: 1px;
             border-bottom: 2px solid rgba(0, 170, 255, 0.2);
         }
-        .my-reports-table td {
+        .my-deposits-table td {
             padding: 0.4rem; color: var(--text-primary);
             border-bottom: 1px solid rgba(0, 170, 255, 0.06); vertical-align: middle;
         }
-        .my-reports-table tr:hover { background: rgba(0, 170, 255, 0.03); }
-        .type-badge {
+        .my-deposits-table tr:hover { background: rgba(0, 170, 255, 0.03); }
+        .motif-badge {
             display: inline-block; padding: 0.1rem 0.4rem; border-radius: 2px;
             font-family: 'Share Tech Mono', monospace; font-size: 0.68rem;
             font-weight: 700; letter-spacing: 0.5px;
-            background: rgba(0, 170, 255, 0.15); color: var(--accent-cyan);
-            border: 1px solid rgba(0, 170, 255, 0.3);
+            background: rgba(255, 200, 0, 0.15); color: #ffcc00;
+            border: 1px solid rgba(255, 200, 0, 0.3);
+        }
+        .montant-value {
+            font-family: 'Orbitron', sans-serif; font-size: 0.82rem;
+            font-weight: 700; color: #00cc55;
         }
 
         .sync-indicator {
@@ -145,7 +147,7 @@
                     <div class="logo-icon">M</div>
                     <div>
                         <h1 class="logo">MPF</h1>
-                        <p class="logo-subtitle">Rapport d'Activité</p>
+                        <p class="logo-subtitle">Dépôt d'Argent</p>
                     </div>
                 </div>
                 <div id="authBtn" class="header-auth"></div>
@@ -160,7 +162,7 @@
             </div>
             <div id="access-denied">
                 <h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">CONNEXION REQUISE</h2>
-                <p style="color:var(--text-muted);font-family:'Share Tech Mono',monospace;margin-top:0.5rem;">Vous devez être connecté pour soumettre un rapport.</p>
+                <p style="color:var(--text-muted);font-family:'Share Tech Mono',monospace;margin-top:0.5rem;">Vous devez être connecté pour déclarer un dépôt.</p>
                 <a href="login.html" style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;display:inline-block;margin-top:1rem;">→ SE CONNECTER</a>
             </div>
             <div id="notApproved">
@@ -169,9 +171,9 @@
             </div>
 
             <div id="mainContent" style="display:none;">
-                <div class="rapport-wrapper">
+                <div class="depot-wrapper">
 
-                    <div class="user-info-bar" id="userInfoBar">
+                    <div class="user-info-bar">
                         <div class="user-avatar" id="userAvatar">?</div>
                         <div class="user-details">
                             <div class="user-matricule" id="userIdentification">---</div>
@@ -184,75 +186,63 @@
 
                     <div class="combine-terminal-wrapper">
                         <div class="combine-header">
-                            <h2>RAPPORT D'ACTIVITÉ</h2>
-                            <span class="header-code">FORM-01</span>
+                            <h2>💰 DÉCLARATION DE DÉPÔT</h2>
+                            <span class="header-code">FORM-02</span>
                         </div>
                         <div class="combine-body">
 
                             <div class="row-2">
-                                <div class="form-group" id="grpType">
-                                    <label>TYPE D'ACTIVITÉ <span class="req">*</span></label>
-                                    <select id="fType">
+                                <div class="form-group" id="grpMontant">
+                                    <label>MONTANT (TOKENS) <span class="req">*</span></label>
+                                    <input type="number" id="fMontant" min="1" placeholder="Ex: 500">
+                                    <div class="error-msg" id="errMontant"></div>
+                                </div>
+                                <div class="form-group" id="grpMotif">
+                                    <label>MOTIF <span class="req">*</span></label>
+                                    <select id="fMotif">
                                         <option value="">— Sélectionner —</option>
-                                        <option value="Patrouille">Patrouille</option>
-                                        <option value="Opération">Opération</option>
-                                        <option value="Garde">Garde</option>
-                                        <option value="Escorte">Escorte</option>
-                                        <option value="Jugement">Jugement</option>
-                                        <option value="Formation">Formation</option>
-                                        <option value="Maintenance">Maintenance</option>
+                                        <option value="Amende payée">Amende payée</option>
+                                        <option value="Confiscation de biens">Confiscation de biens</option>
+                                        <option value="Vente de rations">Vente de rations</option>
+                                        <option value="Saisie de contrebande">Saisie de contrebande</option>
+                                        <option value="Transfert de fonds">Transfert de fonds</option>
+                                        <option value="Gain opérationnel">Gain opérationnel</option>
                                         <option value="Autre">Autre</option>
                                     </select>
-                                    <div class="error-msg" id="errType"></div>
+                                    <div class="error-msg" id="errMotif"></div>
                                 </div>
-                                <div class="form-group" id="grpSecteur">
-                                    <label>SECTEUR / ZONE</label>
-                                    <input type="text" id="fSecteur" placeholder="Ex: Secteur 3, Nexus, Slums...">
-                                </div>
-                            </div>
-
-                            <div class="form-group" id="grpUnites">
-                                <label>UNITÉS IMPLIQUÉES</label>
-                                <input type="text" id="fUnites" placeholder="Ex: 954, 123, 456">
-                                <div class="hint">Séparer les matricules par des virgules</div>
-                            </div>
-
-                            <div class="form-group" id="grpResume">
-                                <label>RÉSUMÉ DE L'ACTIVITÉ <span class="req">*</span></label>
-                                <textarea id="fResume" rows="5" placeholder="Décrivez le déroulement de l'activité..."></textarea>
-                                <div class="error-msg" id="errResume"></div>
                             </div>
 
                             <div class="form-group">
-                                <label>NOTES SUPPLÉMENTAIRES</label>
-                                <textarea id="fNotes" rows="2" placeholder="Informations complémentaires (optionnel)"></textarea>
+                                <label>DÉTAILS / NOTES</label>
+                                <textarea id="fNotes" rows="2" placeholder="Précisions sur le dépôt (optionnel)"></textarea>
                             </div>
 
                             <div class="form-actions">
                                 <button class="btn-action" onclick="resetForm()">RÉINITIALISER</button>
-                                <button class="btn-action primary" id="btnSubmit" onclick="submitReport()">⟩ SOUMETTRE LE RAPPORT</button>
+                                <button class="btn-action primary" id="btnSubmit" onclick="submitDeposit()">⟩ DÉCLARER LE DÉPÔT</button>
                             </div>
                         </div>
                     </div>
 
                     <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;">
                         <div class="combine-header">
-                            <h2>MES RAPPORTS</h2>
-                            <span class="header-code" id="myReportCount">0</span>
+                            <h2>MES DÉPÔTS</h2>
+                            <span class="header-code" id="myDepositCount">0</span>
                         </div>
                         <div class="combine-body">
                             <div style="overflow-x:auto;">
-                                <table class="my-reports-table">
+                                <table class="my-deposits-table">
                                     <thead>
                                         <tr>
                                             <th>DATE</th>
-                                            <th>TYPE</th>
-                                            <th>SECTEUR</th>
-                                            <th>RÉSUMÉ</th>
+                                            <th>MONTANT</th>
+                                            <th>MOTIF</th>
+                                            <th>NOTES</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="myReportsBody">
-                                        <tr><td colspan="4" style="text-align:center;color:var(--text-muted);">Aucun rapport soumis</td></tr>
+                                    <tbody id="myDepositsBody">
+                                        <tr><td colspan="4" style="text-align:center;color:var(--text-muted);">Aucun dépôt déclaré</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -273,10 +263,10 @@
       import { auth, db } from './assets/js/auth.js';
       import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
       import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-      import { loadReports as ghLoadReports, saveReports as ghSaveReports, loadUnits as ghLoadUnits, onSyncStatus } from './assets/js/github-data.js';
+      import { loadDeposits as ghLoadDeposits, saveDeposits as ghSaveDeposits, loadUnits as ghLoadUnits, onSyncStatus } from './assets/js/github-data.js';
 
       function getAccreditation(r) {
-        if (r === 'RCT') return 'Recrue';
+        if (r==='RCT') return 'Recrue';
         if (['.05','.04','.03','STB'].includes(r)) return 'MPF';
         if (['.02','.01','DvL','STBE','CABAL'].includes(r)) return 'MPEF';
         if (['Ofc','Cmd'].includes(r)) return 'HautGradé';
@@ -287,60 +277,60 @@
         onSyncStatus(s=>{clearTimeout(t);if(s==='syncing'){i.innerHTML='<span class="sync-spinner">⟳</span> Synchronisation...';i.className='sync-indicator syncing';}else if(s==='synced'){i.innerHTML='✓ Synchronisé';i.className='sync-indicator synced';t=setTimeout(()=>i.className='sync-indicator hidden',2500);}else{i.innerHTML='⚠ Erreur sync';i.className='sync-indicator error';t=setTimeout(()=>i.className='sync-indicator hidden',6000);}});
       }
 
-      let currentUser = null, allReports = [];
+      let currentUser=null, allDeposits=[];
 
-      function showAlert(t, type='success') { const e=document.getElementById('alertMsg'); e.style.display='block'; e.className='alert-msg '+type; e.textContent=t; setTimeout(()=>e.style.display='none',6000); }
-      function fmtDate(d) { if(!d)return'-'; const p=d.split('-'); return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:d; }
+      function showAlert(t,type='success'){const e=document.getElementById('alertMsg');e.style.display='block';e.className='alert-msg '+type;e.textContent=t;setTimeout(()=>e.style.display='none',6000);}
+      function fmtDate(d){if(!d)return'-';const p=d.split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:d;}
 
-      window.submitReport = async function() {
-        if (!currentUser) { showAlert('Erreur: utilisateur non identifié','error'); return; }
+      window.submitDeposit = async function() {
+        if(!currentUser){showAlert('Erreur: utilisateur non identifié','error');return;}
         let ok=true;
-        ['grpType','grpResume'].forEach(id=>document.getElementById(id).classList.remove('error'));
-        if (!document.getElementById('fType').value) { document.getElementById('grpType').classList.add('error'); document.getElementById('errType').textContent='Sélectionnez un type'; ok=false; }
-        if (!document.getElementById('fResume').value.trim()) { document.getElementById('grpResume').classList.add('error'); document.getElementById('errResume').textContent='Le résumé est obligatoire'; ok=false; }
-        if (!ok) return;
+        ['grpMontant','grpMotif'].forEach(id=>document.getElementById(id).classList.remove('error'));
+        const montant=parseInt(document.getElementById('fMontant').value);
+        if(!montant||montant<1){document.getElementById('grpMontant').classList.add('error');document.getElementById('errMontant').textContent='Montant invalide';ok=false;}
+        if(!document.getElementById('fMotif').value){document.getElementById('grpMotif').classList.add('error');document.getElementById('errMotif').textContent='Sélectionnez un motif';ok=false;}
+        if(!ok)return;
 
-        const btn=document.getElementById('btnSubmit'); btn.disabled=true; btn.textContent='⏳ ENVOI...';
-        const r = {
-          matricule: currentUser.matricule, nom_steam: currentUser.nom_steam||'',
-          type: document.getElementById('fType').value,
-          secteur: document.getElementById('fSecteur').value.trim(),
-          unites: document.getElementById('fUnites').value.trim(),
-          resume: document.getElementById('fResume').value.trim(),
-          notes: document.getElementById('fNotes').value.trim(),
-          created_at: new Date().toISOString().substring(0,10)
+        const btn=document.getElementById('btnSubmit');btn.disabled=true;btn.textContent='⏳ ENVOI...';
+        const dep={
+          matricule:currentUser.matricule, nom_steam:currentUser.nom_steam||'',
+          montant, motif:document.getElementById('fMotif').value,
+          notes:document.getElementById('fNotes').value.trim(),
+          created_at:new Date().toISOString().substring(0,10)
         };
-        allReports.push(r);
+        allDeposits.push(dep);
         try {
-          await ghSaveReports([...allReports], `Rapport ${currentUser.matricule} - ${r.type}`);
-          showAlert('✓ Rapport soumis avec succès !','success');
-          resetForm(); renderMyReports();
-        } catch(e) { allReports.pop(); showAlert('✗ Erreur: '+e.message,'error'); }
-        finally { btn.disabled=false; btn.textContent='⟩ SOUMETTRE LE RAPPORT'; }
+          await ghSaveDeposits([...allDeposits],`Dépôt ${currentUser.matricule} - ${dep.montant} tokens`);
+          showAlert('✓ Dépôt déclaré avec succès !','success');
+          resetForm(); renderMyDeposits();
+        }catch(e){allDeposits.pop();showAlert('✗ Erreur: '+e.message,'error');}
+        finally{btn.disabled=false;btn.textContent='⟩ DÉCLARER LE DÉPÔT';}
       };
 
-      window.resetForm = function() {
-        ['fType','fSecteur','fUnites','fResume','fNotes'].forEach(id=>{const e=document.getElementById(id);if(e.tagName==='SELECT')e.value='';else e.value='';});
-        ['grpType','grpResume'].forEach(id=>document.getElementById(id).classList.remove('error'));
+      window.resetForm=function(){
+        document.getElementById('fMontant').value='';
+        document.getElementById('fMotif').value='';
+        document.getElementById('fNotes').value='';
+        ['grpMontant','grpMotif'].forEach(id=>document.getElementById(id).classList.remove('error'));
       };
 
-      function renderMyReports() {
+      function renderMyDeposits(){
         if(!currentUser)return;
-        const mine=allReports.filter(r=>r.matricule===currentUser.matricule).sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||''));
-        document.getElementById('myReportCount').textContent=`${mine.length} RAPPORT${mine.length>1?'S':''}`;
-        const tb=document.getElementById('myReportsBody');
-        if(!mine.length){tb.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text-muted);">Aucun rapport soumis</td></tr>';return;}
-        tb.innerHTML=mine.map(r=>`<tr>
-          <td style="font-size:0.75rem;">${fmtDate(r.created_at)}</td>
-          <td><span class="type-badge">${r.type}</span></td>
-          <td style="font-size:0.75rem;">${r.secteur||'-'}</td>
-          <td style="font-size:0.75rem;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${(r.resume||'').replace(/"/g,'&quot;')}">${r.resume||'-'}</td>
+        const mine=allDeposits.filter(d=>d.matricule===currentUser.matricule).sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||''));
+        document.getElementById('myDepositCount').textContent=`${mine.length} DÉPÔT${mine.length>1?'S':''}`;
+        const tb=document.getElementById('myDepositsBody');
+        if(!mine.length){tb.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text-muted);">Aucun dépôt déclaré</td></tr>';return;}
+        tb.innerHTML=mine.map(d=>`<tr>
+          <td style="font-size:0.75rem;">${fmtDate(d.created_at)}</td>
+          <td><span class="montant-value">${d.montant}</span></td>
+          <td><span class="motif-badge">${d.motif}</span></td>
+          <td style="font-size:0.75rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${(d.notes||'').replace(/"/g,'&quot;')}">${d.notes||'-'}</td>
         </tr>`).join('');
       }
 
-      onAuthStateChanged(auth, async(user) => {
+      onAuthStateChanged(auth,async(user)=>{
         if(!user){document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';return;}
-        try {
+        try{
           const s=await getDoc(doc(db,'users',user.uid));
           if(!s.exists()){document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';return;}
           const ud=s.data();
@@ -353,8 +343,8 @@
           document.getElementById('userAvatar').textContent=currentUser.matricule.substring(0,3);
           if(acc){let l='Accréditation : '+acc;if(ui&&ui.formateur)l+=' — '+((acc==='MPF'||acc==='Recrue')?'Unité Formatrice MPF':'Unité Formatrice MPEF');document.getElementById('userAccreditation').textContent=l;}
           document.getElementById('loading').style.display='none';document.getElementById('mainContent').style.display='block';
-          try{allReports=await ghLoadReports();}catch(_){allReports=[];}
-          renderMyReports();
+          try{allDeposits=await ghLoadDeposits();}catch(_){allDeposits=[];}
+          renderMyDeposits();
         }catch(e){console.error(e);document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';}
       });
     </script>
