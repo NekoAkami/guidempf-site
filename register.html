@@ -1,80 +1,160 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>S'inscrire — Metropolice</title>
-    <link rel="stylesheet" href="assets/css/style.css">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S'inscrire — Metropolice Force</title>
+    <link rel="stylesheet" href="assets/css/main-style.css">
+    <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/global-nav.css">
+    <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <style>
-      .auth-container{max-width:400px;margin:4rem auto;background:var(--bg-alt);border:2px solid var(--accent);border-radius:8px;padding:2rem}
-      .auth-container h1{text-align:center;color:var(--accent);margin-top:0;text-shadow:0 0 10px var(--accent)}
-      .form-group{margin:1.5rem 0}
-      .auth-container label{display:block;margin-bottom:.5rem;color:var(--accent);font-weight:bold}
-      .auth-container input{width:100%;padding:.6rem;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:4px;font-family:inherit}
-      .auth-container input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 8px rgba(0,212,255,.2)}
-      .auth-container .btn{width:100%;margin-top:1rem}
-      .link-group{text-align:center;margin-top:1rem}
-      .link-group a{color:var(--accent);text-decoration:none}
-      .link-group a:hover{text-decoration:underline}
-      .message{padding:.8rem;border-radius:4px;margin:1rem 0;text-align:center;font-weight:bold}
-      .message.error{background:rgba(255,107,53,.1);border:1px solid var(--warning);color:var(--warning)}
-      .message.success{background:rgba(0,255,136,.1);border:1px solid var(--success);color:var(--success)}
-      .hint{color:var(--muted);font-size:.85rem;margin-top:.3rem}
+        .auth-container {
+            max-width: 450px;
+            margin: 2rem auto;
+            background: rgba(0, 170, 255, 0.02);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+            border-radius: 4px;
+            padding: 2rem;
+        }
+        .auth-container h2 {
+            text-align: center;
+            color: var(--accent-cyan);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+        }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label {
+            display: block;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-bottom: 0.3rem;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.5rem 0.7rem;
+            background: rgba(0, 170, 255, 0.04);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.82rem;
+            outline: none;
+            border-radius: 2px;
+        }
+        .form-group input:focus {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 8px rgba(0, 170, 255, 0.15);
+        }
+        .form-group .hint {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 0.6rem;
+            background: rgba(0, 170, 255, 0.15);
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.15s;
+            margin-top: 0.5rem;
+        }
+        .btn-submit:hover { background: rgba(0, 170, 255, 0.3); }
+        .link-group {
+            text-align: center;
+            margin-top: 1rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+        .link-group a { color: var(--accent-cyan); text-decoration: none; }
+        .link-group a:hover { text-decoration: underline; }
+        .message {
+            padding: 0.6rem 1rem;
+            border-radius: 3px;
+            margin: 1rem 0 0;
+            text-align: center;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            display: none;
+        }
+        .message.error { display: block; background: rgba(255, 60, 60, 0.1); border: 1px solid rgba(255, 60, 60, 0.3); color: #ff4444; }
+        .message.success { display: block; background: rgba(0, 200, 80, 0.1); border: 1px solid rgba(0, 200, 80, 0.3); color: #00cc55; }
     </style>
-  </head>
-  <body style="display:flex;flex-direction:column;min-height:100vh">
+</head>
+<body>
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+
     <header class="site-header">
-      <div class="container">
-        <h1 class="logo">METROPOLICE FORCE</h1>
-        <nav style="text-align:right">
-          <a href="index.html" style="color:var(--muted);text-decoration:none">← Retour</a>
-        </nav>
-      </div>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <h1 class="logo">MPF</h1>
+                    <p class="logo-subtitle">Inscription</p>
+                </div>
+            </div>
+        </div>
     </header>
 
-    <main style="flex:1">
-      <div class="auth-container">
-        <h1>S'inscrire</h1>
-        <form id="registerForm">
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required>
-          </div>
-          <div class="form-group">
-            <label for="matricule">Matricule (3 chiffres)</label>
-            <input type="text" id="matricule" name="matricule" pattern="\d{3}" maxlength="3" required>
-            <div class="hint">Exemple: 123, 456, 789</div>
-          </div>
-          <div class="form-group">
-            <label for="nom_steam">Nom Steam</label>
-            <input type="text" id="nom_steam" name="nom_steam" required>
-          </div>
-          <div class="form-group">
-            <label for="discord">Discord</label>
-            <input type="text" id="discord" name="discord" required>
-            <div class="hint">Exemple: MonPseudo#1234 ou MonPseudo</div>
-          </div>
-          <div class="form-group">
-            <label for="steamid64">SteamID64</label>
-            <input type="text" id="steamid64" name="steamid64" required>
-            <div class="hint">Ressemble à ça: 76561199036384364</div>
-          </div>
-          <div class="form-group">
-            <label for="password">Mot de passe (min 8)</label>
-            <input type="password" id="password" name="password" minlength="8" required>
-          </div>
-          <button type="submit" class="btn">S'inscrire</button>
-        </form>
-        <div id="message"></div>
-        <div class="link-group">
-          Déjà inscrit ? <a href="login.html">Se connecter</a>
+    <main>
+        <div class="container">
+            <div class="auth-container">
+                <h2>INSCRIPTION</h2>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="email">EMAIL</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="matricule">MATRICULE (3 CHIFFRES)</label>
+                        <input type="text" id="matricule" name="matricule" pattern="\d{3}" maxlength="3" required placeholder="Ex: 123">
+                    </div>
+                    <div class="form-group">
+                        <label for="nom_steam">NOM STEAM</label>
+                        <input type="text" id="nom_steam" name="nom_steam" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="discord">DISCORD</label>
+                        <input type="text" id="discord" name="discord" required placeholder="Ex: MonPseudo#1234">
+                    </div>
+                    <div class="form-group">
+                        <label for="steamid64">STEAMID64</label>
+                        <input type="text" id="steamid64" name="steamid64" required>
+                        <div class="hint">Ex: 76561199036384364</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">MOT DE PASSE (MIN 8 CARACTÈRES)</label>
+                        <input type="password" id="password" name="password" minlength="8" required>
+                    </div>
+                    <button type="submit" class="btn-submit">S'INSCRIRE</button>
+                </form>
+                <div id="message" class="message"></div>
+                <div class="link-group">
+                    Déjà inscrit ? <a href="login.html">Se connecter</a>
+                </div>
+            </div>
         </div>
-      </div>
     </main>
 
-    <footer class="site-footer">
-      <div class="container">© 2026 — Metropolice Force</div>
-    </footer>
+    <script src="assets/js/global-nav.js"></script>
+    <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
 
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -98,6 +178,7 @@
       const msg = document.getElementById('message');
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
+        msg.className = 'message';
         msg.textContent = '';
         const fd = new FormData(form);
         const email = fd.get('email');
@@ -134,5 +215,5 @@
         }
       });
     </script>
-  </body>
+</body>
 </html>

@@ -43,6 +43,18 @@ class GlobalNavigation {
 
     // Injecte CSS et JS manquants sur les pages qui ne les ont pas
     injectMissingAssets() {
+        // Preconnect Google Fonts pour accélérer le chargement
+        if (!document.querySelector('link[href*="fonts.googleapis.com"][rel="preconnect"]')) {
+            const pc1 = document.createElement('link');
+            pc1.rel = 'preconnect';
+            pc1.href = 'https://fonts.googleapis.com';
+            document.head.prepend(pc1);
+            const pc2 = document.createElement('link');
+            pc2.rel = 'preconnect';
+            pc2.href = 'https://fonts.gstatic.com';
+            pc2.crossOrigin = 'anonymous';
+            document.head.prepend(pc2);
+        }
         // components.css
         if (!document.querySelector('link[href*="components.css"]')) {
             const css = document.createElement('link');
@@ -57,10 +69,11 @@ class GlobalNavigation {
             script.src = this.basePath + 'assets/js/auth.js';
             document.body.appendChild(script);
         }
-        // site-search.js
+        // site-search.js (defer)
         if (!document.querySelector('script[src*="site-search.js"]')) {
             const script = document.createElement('script');
             script.src = this.basePath + 'assets/js/site-search.js';
+            script.defer = true;
             document.body.appendChild(script);
         }
     }
