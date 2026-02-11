@@ -132,17 +132,6 @@
     "updated_at": "2026-02-11"
   },
   {
-    "matricule": "500",
-    "steamid64": "76561198994102934",
-    "nom_steam": "Zerkyox",
-    "discord": "Zerkyox",
-    "division": "UNION",
-    "rang": ".03",
-    "ordre": "",
-    "date_entree": "",
-    "updated_at": "2026-02-11"
-  },
-  {
     "matricule": "100",
     "steamid64": "76561198058163467",
     "nom_steam": "Gordon White",
@@ -170,6 +159,17 @@
     "nom_steam": "[OLRP] Maxime Delaire",
     "discord": "1429819566799847426",
     "division": "EXOGEN",
+    "rang": ".04",
+    "ordre": "",
+    "date_entree": "",
+    "updated_at": "2026-02-11"
+  },
+  {
+    "matricule": "500",
+    "steamid64": "76561198994102934",
+    "nom_steam": "Zerkyox",
+    "discord": "Zerkyox",
+    "division": "UNION",
     "rang": ".04",
     "ordre": "",
     "date_entree": "",
