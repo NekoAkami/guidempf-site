@@ -165,6 +165,17 @@
     "updated_at": "2026-02-11"
   },
   {
+    "matricule": "500",
+    "steamid64": "76561198994102934",
+    "nom_steam": "Zerkyox",
+    "discord": "Zerkyox",
+    "division": "UNION",
+    "rang": ".04",
+    "ordre": "",
+    "date_entree": "",
+    "updated_at": "2026-02-11"
+  },
+  {
     "matricule": "503",
     "steamid64": "76561198897339436",
     "nom_steam": "Mamaad69",
@@ -280,17 +291,6 @@
     "nom_steam": "Nishenn",
     "discord": ".nishen.",
     "division": "EXOGEN",
-    "rang": ".05",
-    "ordre": "",
-    "date_entree": "",
-    "updated_at": "2026-02-11"
-  },
-  {
-    "matricule": "500",
-    "steamid64": "76561198994102934",
-    "nom_steam": "Zerkyox",
-    "discord": "Zerkyox",
-    "division": "UNION",
     "rang": ".05",
     "ordre": "",
     "date_entree": "",
