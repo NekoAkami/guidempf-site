@@ -101,10 +101,11 @@
             min-width: 45px;
             text-align: right;
         }
+        .hours-epic { color: #bb44ff; }
         .hours-good { color: #00cc55; }
-        .hours-ok { color: var(--accent-cyan); }
         .hours-low { color: #ffaa00; }
         .hours-danger { color: #ff4444; }
+        .hours-pause { color: #00aaff; }
 
         /* 5h threshold marker */
         .hours-bar {
@@ -469,15 +470,17 @@
 
       const MIN_HOURS = 5;
 
-      function hoursColor(h) {
-        if (h >= 10) return 'hours-good';
-        if (h >= MIN_HOURS) return 'hours-ok';
+      function hoursColor(h, absStatus) {
+        if (absStatus === 'pause') return 'hours-pause';
+        if (h >= 15) return 'hours-epic';
+        if (h >= MIN_HOURS) return 'hours-good';
         if (h >= 3) return 'hours-low';
         return 'hours-danger';
       }
-      function hoursBarColor(h) {
-        if (h >= 10) return '#00cc55';
-        if (h >= MIN_HOURS) return '#00aaff';
+      function hoursBarColor(h, absStatus) {
+        if (absStatus === 'pause') return '#00aaff';
+        if (h >= 15) return '#bb44ff';
+        if (h >= MIN_HOURS) return '#00cc55';
         if (h >= 3) return '#ffaa00';
         return '#ff4444';
       }
@@ -655,8 +658,8 @@
 
         tbody.innerHTML = filtered.map(v => {
           const pct = Math.min(100, (v.hours / maxH) * 100);
-          const hColor = hoursColor(v.hours);
-          const barColor = hoursBarColor(v.hours);
+          const hColor = hoursColor(v.hours, v.absStatus);
+          const barColor = hoursBarColor(v.hours, v.absStatus);
           return `<tr>
             <td class="matricule-cell">${v.matricule || '-'}</td>
             <td>${v.nom_steam || '<span style="color:var(--text-muted);">-</span>'}</td>
