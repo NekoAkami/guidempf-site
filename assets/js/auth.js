@@ -85,8 +85,11 @@ export async function updateAuthButton() {
           const isAdmin = userData.is_admin === true;
           const matricule = userData.matricule || '???';
 
-          // Enrichir avec les données d'unité (rang + division)
+          // Enrichir avec les données d'unité (rang + division + accréditation)
           let gradeMatDiv = matricule;
+          let accredLine = '';
+          const _accredMap = { 'RCT': 'Recrue', '.05': 'MPF', '.04': 'MPF', '.03': 'MPF', '.02': 'MPEF', '.01': 'MPEF', 'DvL': 'MPEF', 'Ofc': 'HautGradé', 'Cmd': 'HautGradé' };
+          const _formateurLabel = (acc) => (acc === 'MPF' || acc === 'Recrue') ? 'Unité Formatrice MPF' : (acc === 'MPEF' || acc === 'HautGradé') ? 'Unité Formatrice MPEF' : '';
           try {
             const res = await fetch('https://raw.githubusercontent.com/NekoAkami/guidempf-site/main/data/units.json');
             if (res.ok) {
@@ -96,12 +99,20 @@ export async function updateAuthButton() {
                 const r = unit.rang && unit.rang !== 'MISSING' ? unit.rang : '';
                 const d = unit.division && unit.division !== 'N/A' ? unit.division : '';
                 gradeMatDiv = [r, matricule, d].filter(Boolean).join('-');
+                const acc = _accredMap[unit.rang] || '';
+                if (acc) {
+                  accredLine = 'Accréditation : ' + acc;
+                  if (unit.formateur) accredLine += ' — ' + _formateurLabel(acc);
+                }
               }
             }
           } catch (_) {}
 
           authBtn.innerHTML = `
-            <span style="font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--text-muted);margin-right:0.8rem;letter-spacing:0.5px;">Unité Connecté au terminal : <span style="color:var(--accent-cyan);font-weight:700;">${gradeMatDiv}</span></span>
+            <span style="font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--text-muted);margin-right:0.8rem;letter-spacing:0.5px;display:inline-flex;flex-direction:column;line-height:1.4;">
+              <span>Unité Connecté au terminal : <span style="color:var(--accent-cyan);font-weight:700;">${gradeMatDiv}</span></span>
+              ${accredLine ? `<span style="font-size:0.65rem;opacity:0.7;">${accredLine}</span>` : ''}
+            </span>
             ${isAdmin ? `<a href="${_basePath}admin/panel.html" class="btn" style="margin-right:.5rem">Admin</a>` : ''}
             <button onclick="window.logoutUser()" class="btn secondary">Déconnexion</button>
           `;
