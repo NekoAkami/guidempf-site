@@ -46,6 +46,20 @@
             <div class="hint">Exemple: 123, 456, 789</div>
           </div>
           <div class="form-group">
+            <label for="nom_steam">Nom Steam</label>
+            <input type="text" id="nom_steam" name="nom_steam" required>
+          </div>
+          <div class="form-group">
+            <label for="discord">Discord</label>
+            <input type="text" id="discord" name="discord" required>
+            <div class="hint">Exemple: MonPseudo#1234 ou MonPseudo</div>
+          </div>
+          <div class="form-group">
+            <label for="steamid64">SteamID64</label>
+            <input type="text" id="steamid64" name="steamid64" required>
+            <div class="hint">Ressemble à ça: 76561199036384364</div>
+          </div>
+          <div class="form-group">
             <label for="password">Mot de passe (min 8)</label>
             <input type="password" id="password" name="password" minlength="8" required>
           </div>
@@ -88,6 +102,9 @@
         const fd = new FormData(form);
         const email = fd.get('email');
         const matricule = fd.get('matricule');
+        const nom_steam = fd.get('nom_steam');
+        const discord = fd.get('discord');
+        const steamid64 = fd.get('steamid64');
         const password = fd.get('password');
 
         if (!/^\d{3}$/.test(matricule)) {
@@ -100,6 +117,9 @@
           await setDoc(doc(db, 'users', userCred.user.uid), {
             email,
             matricule,
+            nom_steam,
+            discord,
+            steamid64,
             is_admin: false,
             approved: false,
             status: 'PENDING',

@@ -59,6 +59,13 @@
     { url: 'cwu.html', title: 'CWU', category: 'CWU', keywords: 'cwu civil workers union union travailleur civil business commerce' },
     { url: 'cwu-procedure.html', title: 'Procédure CWU', category: 'CWU', keywords: 'cwu procédure protocole travailleur interaction' },
     { url: 'conscription.html', title: 'Conscription Citoyens', category: 'Recrutement', keywords: 'conscription rejoindre mpf recrutement candidature postuler inscription' },
+    // Formulaires
+    { url: 'formulaires.html', title: 'Formulaires', category: 'Formulaires', keywords: 'formulaire form google rapport déclaration depense gain formation test' },
+    { url: 'form-rapport.html', title: 'Rapport', category: 'Formulaires', keywords: 'rapport formulaire déclaration activité patrouille opération' },
+    { url: 'form-depenses.html', title: 'Dépense et Gain', category: 'Formulaires', keywords: 'dépense gain argent financier formulaire' },
+    { url: 'form-rapport-complet.html', title: 'Rapport Complet MPF', category: 'Formulaires', keywords: 'rapport complet détaillé formulaire opérationnel' },
+    { url: 'form-test.html', title: 'Formulaire Test', category: 'Formulaires', keywords: 'test évaluation examen formulaire' },
+    { url: 'form-formation.html', title: 'Formation', category: 'Formulaires', keywords: 'formation formateur session entraînement formulaire' },
   ];
 
   function normalize(str) {

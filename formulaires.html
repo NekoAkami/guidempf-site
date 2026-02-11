@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaires - MPF Documentation</title>
+    <link rel="stylesheet" href="assets/css/main-style.css">
+    <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/global-nav.css">
+    <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
+    <style>
+        .forms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.2rem;
+            margin: 1.5rem 0;
+        }
+        .form-card {
+            display: block;
+            background: rgba(0, 170, 255, 0.03);
+            border: 1px solid rgba(0, 170, 255, 0.15);
+            border-radius: 4px;
+            padding: 1.2rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .form-card:hover {
+            background: rgba(0, 170, 255, 0.08);
+            border-color: var(--accent-cyan);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 170, 255, 0.1);
+        }
+        .form-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-cyan);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .form-card:hover::before {
+            opacity: 1;
+        }
+        .form-card-icon {
+            font-size: 1.8rem;
+            margin-bottom: 0.6rem;
+        }
+        .form-card-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            color: var(--accent-cyan);
+            letter-spacing: 1px;
+            margin-bottom: 0.4rem;
+        }
+        .form-card-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+        .form-card-code {
+            display: inline-block;
+            margin-top: 0.6rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            background: rgba(0, 170, 255, 0.06);
+            padding: 0.2rem 0.5rem;
+            border-radius: 2px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <h1 class="logo">MPF</h1>
+                    <p class="logo-subtitle">Metropolice Force Documentation</p>
+                </div>
+                <div id="authBtn"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="combine-terminal-wrapper animate-fadeInUp" style="margin-top: 1.5rem;">
+                <div class="combine-header">
+                    <h2>📋 FORMULAIRES MPF</h2>
+                    <span class="header-code">DECLARATIONS // RAPPORTS // SUIVI</span>
+                </div>
+
+                <div class="combine-body">
+                    <div style="text-align: center; margin-bottom: 1.5rem; padding: 0.8rem; background: rgba(0, 170, 255, 0.02); border: 1px solid rgba(0, 170, 255, 0.08);">
+                        <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.7;">
+                            Tous les formulaires officiels de la Metropolice Force. Chaque unité est tenue de remplir les rapports et déclarations correspondants à ses activités.
+                        </p>
+                    </div>
+
+                    <div class="forms-grid">
+                        <a href="form-rapport.html" class="form-card">
+                            <div class="form-card-icon">📄</div>
+                            <div class="form-card-title">RAPPORT</div>
+                            <div class="form-card-desc">Rapport d'activité standard. À remplir après chaque session de patrouille ou opération.</div>
+                            <span class="form-card-code">FORM-01</span>
+                        </a>
+
+                        <a href="form-depenses.html" class="form-card">
+                            <div class="form-card-icon">💰</div>
+                            <div class="form-card-title">DEPENSE ET GAIN</div>
+                            <div class="form-card-desc">Déclaration des dépenses et gains. Suivi financier des opérations.</div>
+                            <span class="form-card-code">FORM-02</span>
+                        </a>
+
+                        <a href="form-rapport-complet.html" class="form-card">
+                            <div class="form-card-icon">📋</div>
+                            <div class="form-card-title">RAPPORT COMPLET MPF</div>
+                            <div class="form-card-desc">Rapport détaillé avec toutes les informations opérationnelles requises.</div>
+                            <span class="form-card-code">FORM-03</span>
+                        </a>
+
+                        <a href="form-test.html" class="form-card">
+                            <div class="form-card-icon">📝</div>
+                            <div class="form-card-title">FORMULAIRE TEST</div>
+                            <div class="form-card-desc">Formulaire de test et évaluation.</div>
+                            <span class="form-card-code">FORM-04</span>
+                        </a>
+
+                        <a href="form-formation.html" class="form-card">
+                            <div class="form-card-icon">🎓</div>
+                            <div class="form-card-title">FORMATION</div>
+                            <div class="form-card-desc">Déclaration et suivi de formation. À remplir par le formateur après chaque session.</div>
+                            <span class="form-card-code">FORM-05</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="combine-footer">
+                    [FORMULAIRES_MPF_v1.0 - ACCES: TOUTES UNITES]
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/global-nav.js"></script>
+    <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
+</body>
+</html>

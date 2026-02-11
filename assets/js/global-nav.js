@@ -159,6 +159,17 @@ class GlobalNavigation {
                     { label: 'Procedure CWU-MPF', url: 'cwu-procedure.html' }
                 ]
             },
+            {
+                label: 'FORMULAIRES',
+                url: 'formulaires.html',
+                dropdown: [
+                    { label: 'Rapport', url: 'form-rapport.html' },
+                    { label: 'Dépense et Gain', url: 'form-depenses.html' },
+                    { label: 'Rapport Complet', url: 'form-rapport-complet.html' },
+                    { label: 'Test', url: 'form-test.html' },
+                    { label: 'Formation', url: 'form-formation.html' }
+                ]
+            },
             { label: 'SCANNER', url: 'scanner.html' },
             { label: 'CARTE', url: 'carte.html' },
             { label: 'LIENS', url: 'liens.html' }
