@@ -405,7 +405,6 @@
                                 <option value="upcoming">À VENIR</option>
                             </select>
                             <button class="btn-action primary" onclick="openAddModal()">+ DÉCLARER ABSENCE</button>
-                            <button class="btn-action" onclick="configureToken()" style="background:rgba(255,200,0,0.15);border-color:rgba(255,200,0,0.4);color:#ffc800;" title="Configurer le token GitHub">⚙ TOKEN</button>
                         </div>
                         <div class="table-scroll">
                             <table class="abs-table">
@@ -475,7 +474,7 @@
       import {
         loadAbsences as ghLoadAbsences, saveAbsences as ghSaveAbsences,
         loadUnits as ghLoadUnits,
-        hasToken, promptToken, onSyncStatus
+        onSyncStatus
       } from '../assets/js/github-data.js';
 
       // ========== SYNC INDICATOR ==========
@@ -590,11 +589,6 @@
         if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
         return d;
       }
-
-      // ========== TOKEN CONFIG ==========
-      window.configureToken = function() {
-        if (promptToken()) showAlert('✓ Token GitHub configuré', 'success');
-      };
 
       // ========== WEEK INFO ==========
       function updateWeekInfo() {
@@ -763,11 +757,6 @@
 
       // ========== SAVE ABSENCE ==========
       window.saveAbsence = async function() {
-        if (!hasToken()) {
-          showAlert('⚠ Configurez le token GitHub d\'abord (bouton ⚙ TOKEN)', 'error');
-          return;
-        }
-
         const editIdx = parseInt(document.getElementById('editIdx').value);
         const matricule = document.getElementById('fMatricule').value.trim();
         const motif = document.getElementById('fMotif').value.trim();
@@ -813,7 +802,7 @@
 
         // Background save
         ghSaveAbsences([...allAbsences], editIdx >= 0 ? `Modification absence ${matricule}` : `Ajout absence ${matricule}`)
-          .catch(err => showAlert('⚠ Sync GitHub échouée: ' + err.message, 'error'));
+          .catch(err => showAlert('⚠ Sync échouée: ' + err.message, 'error'));
       };
 
       // ========== DELETE ABSENCE ==========
@@ -821,10 +810,6 @@
         const abs = allAbsences[idx];
         if (!abs) return;
         if (!confirm(`Supprimer l'absence de ${abs.matricule} (${formatDate(abs.debut)} → ${formatDate(abs.fin)}) ?`)) return;
-        if (!hasToken()) {
-          showAlert('⚠ Configurez le token GitHub d\'abord (bouton ⚙ TOKEN)', 'error');
-          return;
-        }
 
         allAbsences.splice(idx, 1);
         updateStats();
@@ -832,7 +817,7 @@
         showAlert('✓ Absence supprimée', 'success');
 
         ghSaveAbsences([...allAbsences], `Suppression absence ${abs.matricule}`)
-          .catch(err => showAlert('⚠ Sync GitHub échouée: ' + err.message, 'error'));
+          .catch(err => showAlert('⚠ Sync échouée: ' + err.message, 'error'));
       };
 
       // ========== FILTERS ==========

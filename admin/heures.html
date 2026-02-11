@@ -421,7 +421,6 @@
                                 <button class="btn-action primary" id="btnParse" onclick="parseImport()">⟩ ANALYSER</button>
                                 <button class="btn-action success" id="btnSave" onclick="saveToFirebase()" disabled>✓ SAUVEGARDER</button>
                                 <button class="btn-action danger" id="btnClear" onclick="clearImport()">✗ EFFACER</button>
-                                <button class="btn-action" onclick="configureToken()" style="background:rgba(255,200,0,0.15);border-color:rgba(255,200,0,0.4);color:#ffc800;margin-left:auto;" title="Configurer le token GitHub">⚙ TOKEN</button>
                             </div>
                         </div>
                     </div>
@@ -508,7 +507,7 @@
         loadUnits as ghLoadUnits,
         loadPlaytime as ghLoadPlaytime, savePlaytime as ghSavePlaytime,
         loadPlaytimeHistory as ghLoadHistory, savePlaytimeHistory as ghSaveHistory,
-        hasToken, promptToken, onSyncStatus
+        onSyncStatus
       } from '../assets/js/github-data.js';
 
       // ========== SYNC INDICATOR ==========
@@ -577,13 +576,6 @@
         if (h >= 5) return 'low';
         return 'critical';
       }
-
-      // ========== TOKEN CONFIG ==========
-      window.configureToken = function() {
-        if (promptToken()) {
-          showAlert('✓ Token GitHub configuré', 'success');
-        }
-      };
 
       // ========== LOAD UNITS MAP ==========
       async function loadUsersMap() {
@@ -843,14 +835,9 @@
         renderPreview();
       };
 
-      // ========== SAVE TO GITHUB ==========
+      // ========== SAVE TO FIRESTORE ==========
       window.saveToFirebase = async function() {
         if (parsedEntries.length === 0) return;
-
-        if (!hasToken()) {
-          showAlert('⚠ Configurez le token GitHub d\'abord (bouton ⚙ TOKEN)', 'error');
-          return;
-        }
 
         const btn = document.getElementById('btnSave');
         btn.disabled = true;

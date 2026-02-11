@@ -280,7 +280,7 @@
       import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
       import { collection, getDocs, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
       import {
-        loadUnits as ghLoadUnits, saveUnits as ghSaveUnits, hasToken
+        loadUnits as ghLoadUnits, saveUnits as ghSaveUnits
       } from '../assets/js/github-data.js';
 
       let allUsers = [];
@@ -425,7 +425,6 @@
           const userData = allUsers.find(u => u.id === userId);
           if (userData && userData.matricule) {
             try {
-              if (hasToken()) {
                 const units = await ghLoadUnits();
                 const today = new Date().toISOString().substring(0, 10);
 
@@ -463,11 +462,8 @@
                   await ghSaveUnits(units, `Ajout unité ${userData.matricule} (approbation)`);
                   showMessage('✓ Utilisateur approuvé + nouvelle unité créée', 'success');
                 }
-              } else {
-                showMessage('✓ Utilisateur approuvé (token GitHub absent — unité non ajoutée)', 'success');
-              }
             } catch (ghErr) {
-              console.warn('GitHub units update failed:', ghErr.message);
+              console.warn('Units update failed:', ghErr.message);
               showMessage('✓ Approuvé (⚠ erreur mise à jour unités: ' + ghErr.message + ')', 'success');
             }
           } else {

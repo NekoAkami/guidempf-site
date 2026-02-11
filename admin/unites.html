@@ -491,7 +491,6 @@
                                 </optgroup>
                             </select>
                             <button class="btn-action primary" onclick="openAddModal()">+ AJOUTER UNITÉ</button>
-                            <button class="btn-action" onclick="configureToken()" style="background:rgba(255,200,0,0.15);border-color:rgba(255,200,0,0.4);color:#ffc800;margin-left:8px;" title="Configurer le token GitHub pour sauvegarder">⚙ TOKEN</button>
                         </div>
                         <div class="table-scroll">
                             <table class="units-table">
@@ -631,7 +630,7 @@
       import {
         loadUnits as ghLoadUnits, saveUnits as ghSaveUnits,
         loadAbsences as ghLoadAbsences,
-        hasToken, promptToken, onSyncStatus
+        onSyncStatus
       } from '../assets/js/github-data.js';
 
       // ========== SYNC INDICATOR ==========
@@ -682,13 +681,6 @@
         const r = rang.replace('.', '');
         return 'rang-' + r;
       }
-
-      // ========== TOKEN CONFIG ==========
-      window.configureToken = function() {
-        if (promptToken()) {
-          showAlert('✓ Token GitHub configuré', 'success');
-        }
-      };
 
       // ========== LOAD UNITS ==========
       /** Lundi de la semaine contenant d */
@@ -881,10 +873,7 @@
 
       // ========== SAVE UNIT ==========
       window.saveUnit = async function() {
-        if (!hasToken()) {
-          showAlert('⚠ Configurez le token GitHub d\'abord (bouton ⚙ TOKEN)', 'error');
-          return;
-        }
+
 
         const editId = document.getElementById('editId').value;
         const matricule = document.getElementById('fMatricule').value.trim();
@@ -935,7 +924,7 @@
         const toSave = allUnits.map(({ id, ...rest }) => rest);
         ghSaveUnits(toSave, editId ? `Modification unité ${matricule}` : `Ajout unité ${matricule}`)
           .catch(err => {
-            showAlert('⚠ Sync GitHub échouée: ' + err.message + ' — les données locales sont à jour, rechargez pour réessayer.', 'error');
+            showAlert('⚠ Sync échouée: ' + err.message, 'error');
           });
       };
 
@@ -945,12 +934,7 @@
         if (!unit) return;
         if (!confirm(`Supprimer l'unité ${matricule} de la liste ?`)) return;
 
-        if (!hasToken()) {
-          showAlert('⚠ Configurez le token GitHub d\'abord (bouton ⚙ TOKEN)', 'error');
-          return;
-        }
-
-        // Suppression optimiste : retirer immédiatement du tableau
+        // Suppression optimiste
         allUnits = allUnits.filter(u => u.matricule !== matricule);
         updateStats();
         renderTable();
@@ -960,7 +944,7 @@
         const toSave = allUnits.map(({ id, ...rest }) => rest);
         ghSaveUnits(toSave, `Suppression unité ${matricule}`)
           .catch(err => {
-            showAlert('⚠ Sync GitHub échouée: ' + err.message, 'error');
+            showAlert('⚠ Sync échouée: ' + err.message, 'error');
           });
       };
 

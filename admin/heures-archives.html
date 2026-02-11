@@ -255,8 +255,7 @@
       import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
       import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
       import {
-        loadPlaytimeHistory as ghLoadHistory, savePlaytimeHistory as ghSaveHistory,
-        hasToken, promptToken
+        loadPlaytimeHistory as ghLoadHistory, savePlaytimeHistory as ghSaveHistory
       } from '../assets/js/github-data.js';
 
       let archives = [];
@@ -270,19 +269,6 @@
         if (h >= 5) return 'low';
         return 'critical';
       }
-
-      window.configureToken = function() {
-        if (promptToken()) {
-          const el = document.getElementById('alertMsg');
-          el.style.display = 'block';
-          el.className = 'alert-msg';
-          el.style.background = 'rgba(0,200,100,0.1)';
-          el.style.border = '1px solid rgba(0,200,100,0.3)';
-          el.style.color = '#00cc55';
-          el.textContent = '✓ Token GitHub configuré';
-          setTimeout(() => { el.style.display = 'none'; }, 3000);
-        }
-      };
 
       async function loadArchives() {
         try {
@@ -365,10 +351,6 @@
 
       window.deleteArchive = async function(idx, date) {
         if (!confirm(`Supprimer l'archive du ${date || 'date inconnue'} ?`)) return;
-        if (!hasToken()) {
-          alert('⚠ Configurez le token GitHub d\'abord');
-          return;
-        }
         try {
           archives.splice(idx, 1);
           await ghSaveHistory(archives, `Suppression archive ${date}`);
