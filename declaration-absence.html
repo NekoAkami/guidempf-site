@@ -29,8 +29,8 @@
             font-size: 0.8rem;
         }
         .user-info-bar .user-avatar {
-            width: 36px;
-            height: 36px;
+            width: 42px;
+            height: 42px;
             background: rgba(0, 170, 255, 0.15);
             border: 1px solid var(--accent-cyan);
             border-radius: 50%;
@@ -720,7 +720,7 @@
           const displayDiv = !isHG ? division : '';
           const identParts = [rang, displayDiv, currentUser.matricule].filter(Boolean);
           document.getElementById('userIdentification').textContent = 'Identification : ' + identParts.join(' ');
-          document.getElementById('userAvatar').textContent = currentUser.matricule.substring(0, 2);
+          document.getElementById('userAvatar').textContent = currentUser.matricule.substring(0, 3);
 
           // Accréditation line
           let accLine = accreditation ? ('Accréditation : ' + accreditation) : '';
