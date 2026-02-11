@@ -177,20 +177,16 @@ async function updateOnlineCounter() {
 function injectOnlineCounter() {
   const headerContent = document.querySelector('.header-content');
   if (!headerContent || document.getElementById('onlineCounter')) return;
+  // Rendre le header-content position:relative pour le centrage absolu
+  headerContent.style.position = 'relative';
   const counter = document.createElement('div');
   counter.id = 'onlineCounter';
-  counter.style.cssText = 'display:flex;flex-direction:column;align-items:center;font-family:"Share Tech Mono",monospace;';
+  counter.style.cssText = 'position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;font-family:"Share Tech Mono",monospace;pointer-events:none;z-index:1;';
   counter.innerHTML = `
     <span style="font-size:1.4rem;font-weight:700;color:var(--accent-cyan);line-height:1;" id="onlineCount">-</span>
     <span style="font-size:0.6rem;color:var(--text-muted);letter-spacing:1.5px;text-transform:uppercase;">En ligne</span>
   `;
-  // Insérer entre logo-section et authBtn
-  const authBtn = document.getElementById('authBtn');
-  if (authBtn) {
-    headerContent.insertBefore(counter, authBtn);
-  } else {
-    headerContent.appendChild(counter);
-  }
+  headerContent.appendChild(counter);
 }
 
 function startPresence(uid) {
