@@ -104,9 +104,51 @@ window.logoutUser = async () => {
   }
 };
 
-// Initialisation automatique du bouton d'authentification
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', updateAuthButton);
-} else {
+// Initialisation automatique du bouton d'authentification + protection des pages
+function initAuth() {
   updateAuthButton();
+
+  // Pages publiques (accessibles sans connexion)
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  const publicPages = ['login.html', 'register.html', 'pending.html', 'index.html'];
+  
+  if (publicPages.includes(currentPage)) return;
+
+  // Protéger toutes les autres pages : masquer le contenu et vérifier l'auth
+  const main = document.querySelector('main');
+  if (main) main.style.opacity = '0';
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.href = 'login.html';
+      return;
+    }
+    try {
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if (!userDoc.exists()) {
+        await signOut(auth);
+        window.location.href = 'login.html';
+        return;
+      }
+      const userData = userDoc.data();
+      if (userData.approved !== true) {
+        window.location.href = 'pending.html';
+        return;
+      }
+      // Utilisateur authentifié et approuvé — afficher le contenu
+      if (main) {
+        main.style.transition = 'opacity 0.3s';
+        main.style.opacity = '1';
+      }
+    } catch (err) {
+      console.error('Auth check failed:', err);
+      window.location.href = 'login.html';
+    }
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initAuth);
+} else {
+  initAuth();
 }
