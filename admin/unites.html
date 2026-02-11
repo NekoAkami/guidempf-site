@@ -761,53 +761,42 @@
           return;
         }
 
-        // Check for duplicate matricule on creation
         if (!editId && allUnits.some(u => u.matricule === matricule)) {
           showAlert('Ce matricule existe déjà !', 'error');
           return;
         }
 
-        const btn = document.getElementById('btnModalSave');
-        btn.disabled = true;
-        btn.textContent = '⏳ SAUVEGARDE...';
+        const unitData = {
+          matricule,
+          steamid64: steamid64 || '',
+          nom_steam: nom_steam || '',
+          discord: discord || '',
+          division: division || '',
+          rang: rang || '',
+          ordre: ordre ? parseInt(ordre) : '',
+          date_entree: date_entree || '',
+          updated_at: new Date().toISOString().substring(0, 10)
+        };
 
-        try {
-          const unitData = {
-            matricule,
-            steamid64: steamid64 || '',
-            nom_steam: nom_steam || '',
-            discord: discord || '',
-            division: division || '',
-            rang: rang || '',
-            ordre: ordre ? parseInt(ordre) : '',
-            date_entree: date_entree || '',
-            updated_at: new Date().toISOString().substring(0, 10)
-          };
-
-          if (editId) {
-            // Mise à jour : remplacer l'unité existante
-            const idx = allUnits.findIndex(u => u.matricule === editId);
-            if (idx !== -1) {
-              allUnits[idx] = { ...unitData, id: editId };
-            }
-          } else {
-            // Ajout : ajouter à la liste
-            allUnits.push({ ...unitData, id: matricule });
-          }
-
-          // Sauvegarder vers GitHub (sans le champ 'id' temporaire)
-          const toSave = allUnits.map(({ id, ...rest }) => rest);
-          await ghSaveUnits(toSave, editId ? `Modification unité ${matricule}` : `Ajout unité ${matricule}`);
-
-          showAlert(editId ? '✓ Unité modifiée' : '✓ Unité ajoutée', 'success');
-          closeModal();
-          await loadUnits();
-        } catch (err) {
-          showAlert('✗ Erreur: ' + err.message, 'error');
-        } finally {
-          btn.disabled = false;
-          btn.textContent = 'SAUVEGARDER';
+        // MAJ optimiste : appliquer immédiatement dans le tableau
+        if (editId) {
+          const idx = allUnits.findIndex(u => u.matricule === editId);
+          if (idx !== -1) allUnits[idx] = { ...unitData, id: editId };
+        } else {
+          allUnits.push({ ...unitData, id: matricule });
         }
+
+        closeModal();
+        updateStats();
+        renderTable();
+        showAlert(editId ? '✓ Unité modifiée' : '✓ Unité ajoutée', 'success');
+
+        // Sauvegarde en arrière-plan vers GitHub
+        const toSave = allUnits.map(({ id, ...rest }) => rest);
+        ghSaveUnits(toSave, editId ? `Modification unité ${matricule}` : `Ajout unité ${matricule}`)
+          .catch(err => {
+            showAlert('⚠ Sync GitHub échouée: ' + err.message + ' — les données locales sont à jour, rechargez pour réessayer.', 'error');
+          });
       };
 
       // ========== DELETE UNIT ==========
@@ -821,15 +810,18 @@
           return;
         }
 
-        try {
-          allUnits = allUnits.filter(u => u.matricule !== matricule);
-          const toSave = allUnits.map(({ id, ...rest }) => rest);
-          await ghSaveUnits(toSave, `Suppression unité ${matricule}`);
-          showAlert('✓ Unité supprimée', 'success');
-          await loadUnits();
-        } catch (err) {
-          showAlert('✗ Erreur: ' + err.message, 'error');
-        }
+        // Suppression optimiste : retirer immédiatement du tableau
+        allUnits = allUnits.filter(u => u.matricule !== matricule);
+        updateStats();
+        renderTable();
+        showAlert('✓ Unité supprimée', 'success');
+
+        // Sauvegarde en arrière-plan
+        const toSave = allUnits.map(({ id, ...rest }) => rest);
+        ghSaveUnits(toSave, `Suppression unité ${matricule}`)
+          .catch(err => {
+            showAlert('⚠ Sync GitHub échouée: ' + err.message, 'error');
+          });
       };
 
       // ========== FILTERS ==========
