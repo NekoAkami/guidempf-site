@@ -106,6 +106,54 @@
         .hours-low { color: #ffaa00; }
         .hours-danger { color: #ff4444; }
 
+        /* 5h threshold marker */
+        .hours-bar {
+            position: relative;
+        }
+        .hours-threshold {
+            position: absolute;
+            top: -2px;
+            bottom: -2px;
+            width: 2px;
+            background: rgba(255, 255, 255, 0.35);
+            z-index: 2;
+        }
+
+        /* Compliance badge */
+        .compliance-ok {
+            display: inline-block;
+            padding: 0.08rem 0.35rem;
+            border-radius: 2px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            font-weight: 700;
+            background: rgba(0, 200, 80, 0.15);
+            color: #00cc55;
+            border: 1px solid rgba(0, 200, 80, 0.3);
+        }
+        .compliance-fail {
+            display: inline-block;
+            padding: 0.08rem 0.35rem;
+            border-radius: 2px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            font-weight: 700;
+            background: rgba(255, 40, 40, 0.2);
+            color: #ff4444;
+            border: 1px solid rgba(255, 40, 40, 0.4);
+        }
+        .compliance-exempt {
+            display: inline-block;
+            padding: 0.08rem 0.35rem;
+            border-radius: 2px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            font-weight: 700;
+            background: rgba(255, 170, 0, 0.15);
+            color: #ffaa00;
+            border: 1px solid rgba(255, 170, 0, 0.3);
+        }
+
         /* Division badges */
         .div-badge {
             display: inline-block;
@@ -263,6 +311,7 @@
                 <!-- Week banner -->
                 <div class="week-banner">
                     <div>Données de la semaine : <strong id="weekLabel">—</strong></div>
+                    <div style="color:#ffaa00;">⚠ Minimum requis : <strong>5h / semaine</strong></div>
                     <div>Dernière mise à jour : <strong id="importDate">—</strong></div>
                 </div>
 
@@ -276,11 +325,15 @@
                         <div class="number" id="statAvg">0h</div>
                         <div class="label">MOYENNE</div>
                     </div>
+                    <div class="stat-box danger">
+                        <div class="number" id="statDefaut">0</div>
+                        <div class="label">EN DÉFAUT (&lt;5H)</div>
+                    </div>
                     <div class="stat-box warn">
                         <div class="number" id="statAbsent">0</div>
                         <div class="label">ABSENCES</div>
                     </div>
-                    <div class="stat-box danger">
+                    <div class="stat-box">
                         <div class="number" id="statPause">0</div>
                         <div class="label">EN PAUSE</div>
                     </div>
@@ -295,6 +348,12 @@
                     <div class="combine-body">
                         <div class="filter-row">
                             <input type="text" id="searchInput" placeholder="Rechercher matricule, nom..." autocomplete="off">
+                            <select id="complianceFilter">
+                                <option value="">Tous statuts VT</option>
+                                <option value="ok">✓ Conforme (≥5h)</option>
+                                <option value="fail">✗ En défaut (&lt;5h)</option>
+                                <option value="exempt">Exemptés (absence/pause)</option>
+                            </select>
                             <select id="divisionFilter">
                                 <option value="">Toutes divisions</option>
                                 <optgroup label="─ Helix / Apex ─">
@@ -339,12 +398,13 @@
                                         <th onclick="sortBy('nom_steam')">NOM STEAM</th>
                                         <th onclick="sortBy('division')">DIVISION</th>
                                         <th onclick="sortBy('rang')">RANG</th>
-                                        <th onclick="sortBy('hours')">HEURES</th>
+                                        <th onclick="sortBy('hours')">HEURES (MIN 5H)</th>
+                                        <th>CONFORMITÉ</th>
                                         <th>STATUT</th>
                                     </tr>
                                 </thead>
                                 <tbody id="vtBody">
-                                    <tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr>
+                                    <tr><td colspan="7" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -407,17 +467,34 @@
         return 'rang-' + rang.replace('.', '');
       }
 
+      const MIN_HOURS = 5;
+
       function hoursColor(h) {
         if (h >= 10) return 'hours-good';
-        if (h >= 5) return 'hours-ok';
-        if (h >= 2) return 'hours-low';
+        if (h >= MIN_HOURS) return 'hours-ok';
+        if (h >= 3) return 'hours-low';
         return 'hours-danger';
       }
       function hoursBarColor(h) {
         if (h >= 10) return '#00cc55';
-        if (h >= 5) return '#00aaff';
-        if (h >= 2) return '#ffaa00';
+        if (h >= MIN_HOURS) return '#00aaff';
+        if (h >= 3) return '#ffaa00';
         return '#ff4444';
+      }
+
+      function complianceBadge(v) {
+        // Exempt if absent/pause
+        if (v.absStatus === 'pause') return '<span class="compliance-exempt">EXEMPT</span>';
+        if (v.absStatus === 'absence') return '<span class="compliance-exempt">EXEMPT</span>';
+        if (v.rang === 'MISSING') return '<span style="color:rgba(100,100,100,0.4);font-size:0.65rem;">—</span>';
+        if (v.hours >= MIN_HOURS) return '<span class="compliance-ok">CONFORME</span>';
+        return '<span class="compliance-fail">DÉFAUT</span>';
+      }
+
+      function getComplianceStatus(v) {
+        if (v.absStatus === 'pause' || v.absStatus === 'absence') return 'exempt';
+        if (v.rang === 'MISSING') return 'exempt';
+        return v.hours >= MIN_HOURS ? 'ok' : 'fail';
       }
 
       function getAbsenceStatus(matricule, absences) {
@@ -511,9 +588,11 @@
           const avg = activeUnits.length ? (totalHours / activeUnits.length).toFixed(1) : 0;
           const absCount = viewData.filter(v => v.absStatus === 'absence').length;
           const pauseCount = viewData.filter(v => v.absStatus === 'pause').length;
+          const defautCount = viewData.filter(v => getComplianceStatus(v) === 'fail').length;
 
           document.getElementById('statUnits').textContent = activeUnits.length;
           document.getElementById('statAvg').textContent = avg + 'h';
+          document.getElementById('statDefaut').textContent = defautCount;
           document.getElementById('statAbsent').textContent = absCount;
           document.getElementById('statPause').textContent = pauseCount;
 
@@ -530,12 +609,15 @@
         const search = (document.getElementById('searchInput').value || '').toLowerCase();
         const divFilter = document.getElementById('divisionFilter').value;
 
+        const compFilter = document.getElementById('complianceFilter').value;
+
         let filtered = viewData.filter(v => {
           const matchSearch = !search ||
             (v.matricule || '').toLowerCase().includes(search) ||
             (v.nom_steam || '').toLowerCase().includes(search);
           const matchDiv = !divFilter || v.division === divFilter;
-          return matchSearch && matchDiv;
+          const matchComp = !compFilter || getComplianceStatus(v) === compFilter;
+          return matchSearch && matchDiv && matchComp;
         });
 
         // Sort — MISSING toujours en bas
@@ -564,11 +646,12 @@
 
         const tbody = document.getElementById('vtBody');
         if (filtered.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Aucune donnée</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);">Aucune donnée</td></tr>';
           return;
         }
 
-        const maxH = Math.max(...filtered.map(v => v.hours), 1);
+        const maxH = Math.max(...filtered.map(v => v.hours), MIN_HOURS);
+        const thresholdPct = (MIN_HOURS / maxH) * 100;
 
         tbody.innerHTML = filtered.map(v => {
           const pct = Math.min(100, (v.hours / maxH) * 100);
@@ -581,10 +664,14 @@
             <td><span class="rang-badge ${rangClass(v.rang)}">${v.rang || '-'}</span></td>
             <td>
               <div class="hours-bar-wrap">
-                <div class="hours-bar"><div class="hours-bar-fill" style="width:${pct}%;background:${barColor};"></div></div>
+                <div class="hours-bar">
+                  <div class="hours-bar-fill" style="width:${pct}%;background:${barColor};"></div>
+                  <div class="hours-threshold" style="left:${thresholdPct}%;" title="Minimum 5h"></div>
+                </div>
                 <span class="hours-value ${hColor}">${v.hours.toFixed(1)}h</span>
               </div>
             </td>
+            <td>${complianceBadge(v)}</td>
             <td>${statutBadge(v.absStatus)}</td>
           </tr>`;
         }).join('');
@@ -603,6 +690,7 @@
       // ========== FILTERS ==========
       document.getElementById('searchInput').addEventListener('input', renderTable);
       document.getElementById('divisionFilter').addEventListener('change', renderTable);
+      document.getElementById('complianceFilter').addEventListener('change', renderTable);
 
       // ========== INIT ==========
       init();
