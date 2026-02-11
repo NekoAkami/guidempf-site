@@ -96,8 +96,9 @@ export async function updateAuthButton() {
               const units = await res.json();
               const unit = units.find(u => u.matricule === matricule);
               if (unit) {
+                const isHG = unit.rang === 'Ofc' || unit.rang === 'Cmd';
                 const r = unit.rang && unit.rang !== 'MISSING' ? unit.rang : '';
-                const d = unit.division && unit.division !== 'N/A' ? unit.division : '';
+                const d = !isHG && unit.division && unit.division !== 'N/A' ? unit.division : '';
                 gradeMatDiv = [r, matricule, d].filter(Boolean).join('-');
                 const acc = _accredMap[unit.rang] || '';
                 if (acc) {

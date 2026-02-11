@@ -715,8 +715,10 @@
           const isFormateur = unitInfo ? (unitInfo.formateur || false) : false;
           const accreditation = getAccreditation(rang);
 
-          // Update user info bar — Identification
-          const identParts = [rang, division, currentUser.matricule].filter(Boolean);
+          // Update user info bar — Identification (HautGradés sans division)
+          const isHG = rang === 'Ofc' || rang === 'Cmd';
+          const displayDiv = !isHG ? division : '';
+          const identParts = [rang, displayDiv, currentUser.matricule].filter(Boolean);
           document.getElementById('userIdentification').textContent = 'Identification : ' + identParts.join(' ');
           document.getElementById('userAvatar').textContent = currentUser.matricule.substring(0, 2);
 
