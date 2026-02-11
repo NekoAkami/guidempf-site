@@ -776,11 +776,12 @@
           return matchSearch && matchDiv && matchRang;
         });
 
-        // Sort — MISSING toujours en bas
+        // Sort — hiérarchie militaire : Cmd > Ofc > DvL > .01 > .02 > .03 > .04 > .05 > RCT, MISSING en bas
+        const rangOrder = { 'Cmd': 0, 'Ofc': 1, 'DvL': 2, '.01': 3, '.02': 4, '.03': 5, '.04': 6, '.05': 7, 'RCT': 8, 'CABAL': 9, 'STBE': 10, 'STB': 11, 'MISSING': 99 };
         filtered.sort((a, b) => {
-          const aMissing = (a.rang || '') === 'MISSING' ? 1 : 0;
-          const bMissing = (b.rang || '') === 'MISSING' ? 1 : 0;
-          if (aMissing !== bMissing) return aMissing - bMissing;
+          const ra = rangOrder[a.rang] ?? 50;
+          const rb = rangOrder[b.rang] ?? 50;
+          if (ra !== rb) return ra - rb;
 
           let va, vb;
           const key = currentSort.key;

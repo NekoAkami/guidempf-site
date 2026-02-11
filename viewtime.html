@@ -558,8 +558,11 @@
             if (e.nom) hoursByNom[e.nom.toLowerCase()] = parseFloat(e.heures) || 0;
           });
 
-          // Merge: for each unit, find their hours
-          viewData = units.map(u => {
+          // Merge: for each unit, find their hours (exclude HautGradés: Ofc, Cmd)
+          const hautGrades = ['Ofc', 'Cmd'];
+          viewData = units
+            .filter(u => !hautGrades.includes(u.rang))
+            .map(u => {
             let hours = 0;
             if (u.steamid64 && hoursMap[u.steamid64] !== undefined) {
               hours = hoursMap[u.steamid64];
@@ -623,11 +626,12 @@
           return matchSearch && matchDiv && matchComp;
         });
 
-        // Sort — MISSING toujours en bas
+        // Sort — hiérarchie militaire, MISSING en bas
+        const rangOrder = { 'DvL': 0, '.01': 1, '.02': 2, '.03': 3, '.04': 4, '.05': 5, 'RCT': 6, 'CABAL': 7, 'STBE': 8, 'STB': 9, 'MISSING': 99 };
         filtered.sort((a, b) => {
-          const aMissing = a.rang === 'MISSING' ? 1 : 0;
-          const bMissing = b.rang === 'MISSING' ? 1 : 0;
-          if (aMissing !== bMissing) return aMissing - bMissing;
+          const ra = rangOrder[a.rang] ?? 50;
+          const rb = rangOrder[b.rang] ?? 50;
+          if (ra !== rb) return ra - rb;
 
           let va, vb;
           const key = currentSort.key;
