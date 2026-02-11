@@ -145,6 +145,18 @@ async function savePlaytimeHistory(history, message) {
   return history;
 }
 
+// ========== ABSENCES ==========
+async function loadAbsences() {
+  const data = await readJsonFile('data/absences.json');
+  return data || [];
+}
+
+async function saveAbsences(absences, message) {
+  absences.sort((a, b) => (b.debut || '').localeCompare(a.debut || ''));
+  await writeJsonFile('data/absences.json', absences, message || 'Mise à jour absences');
+  return absences;
+}
+
 // ========== EXPORT ==========
 export {
   getToken, setToken, hasToken, promptToken,
@@ -152,5 +164,6 @@ export {
   loadUnits, saveUnits,
   loadPlaytime, savePlaytime,
   loadPlaytimeHistory, savePlaytimeHistory,
+  loadAbsences, saveAbsences,
   GITHUB_OWNER, GITHUB_REPO
 };

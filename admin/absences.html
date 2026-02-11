@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Absences - MPF Documentation</title>
+    <link rel="stylesheet" href="../assets/css/main-style.css">
+    <link rel="stylesheet" href="../assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="../assets/css/global-nav.css">
+    <link rel="stylesheet" href="../assets/css/interactive-system.css">
+    <link rel="stylesheet" href="../assets/css/combine-animations.css">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <style>
+        /* Admin nav */
+        .admin-nav {
+            display: flex;
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+            flex-wrap: wrap;
+        }
+        .admin-nav a {
+            padding: 0.35rem 0.8rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border: 1px solid rgba(0, 170, 255, 0.15);
+            border-radius: 2px;
+            transition: all 0.15s;
+        }
+        .admin-nav a:hover, .admin-nav a.active {
+            color: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            background: rgba(0, 170, 255, 0.08);
+        }
+
+        /* Stats */
+        .abs-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+        .stat-box {
+            background: rgba(0, 170, 255, 0.03);
+            border: 1px solid rgba(0, 170, 255, 0.15);
+            padding: 0.8rem;
+            text-align: center;
+            border-radius: 4px;
+        }
+        .stat-box .number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: var(--accent-cyan);
+            font-weight: 700;
+        }
+        .stat-box .label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-top: 0.2rem;
+        }
+        .stat-box.warn .number { color: #ffaa00; }
+        .stat-box.danger .number { color: #ff4444; }
+
+        /* Table */
+        .abs-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+        .abs-table th {
+            text-align: left;
+            padding: 0.55rem 0.4rem;
+            color: var(--accent-cyan);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 1px;
+            border-bottom: 2px solid rgba(0, 170, 255, 0.2);
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+        }
+        .abs-table th:hover { color: #fff; }
+        .abs-table td {
+            padding: 0.45rem 0.4rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid rgba(0, 170, 255, 0.06);
+            vertical-align: middle;
+        }
+        .abs-table tr:hover { background: rgba(0, 170, 255, 0.03); }
+        .abs-table .matricule-cell {
+            font-weight: 700;
+            color: var(--accent-cyan);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+        }
+
+        /* Status badges */
+        .status-badge {
+            display: inline-block;
+            padding: 0.1rem 0.45rem;
+            border-radius: 2px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .status-active {
+            background: rgba(255, 140, 0, 0.2);
+            color: #ffaa00;
+            border: 1px solid rgba(255, 140, 0, 0.4);
+        }
+        .status-pause {
+            background: rgba(255, 40, 40, 0.2);
+            color: #ff4444;
+            border: 1px solid rgba(255, 40, 40, 0.4);
+            animation: pulse-pause 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse-pause { 0%,100% { opacity: 1; } 50% { opacity: 0.65; } }
+        .status-ended {
+            background: rgba(100, 100, 100, 0.15);
+            color: #888;
+            border: 1px solid rgba(100, 100, 100, 0.3);
+        }
+        .status-upcoming {
+            background: rgba(0, 170, 255, 0.15);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(0, 170, 255, 0.3);
+        }
+
+        /* Buttons */
+        .btn-sm {
+            padding: 0.2rem 0.5rem;
+            font-size: 0.7rem;
+            font-family: 'Share Tech Mono', monospace;
+            cursor: pointer;
+            border: 1px solid rgba(0, 170, 255, 0.3);
+            background: rgba(0, 170, 255, 0.08);
+            color: var(--accent-cyan);
+            border-radius: 2px;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .btn-sm:hover { background: rgba(0, 170, 255, 0.2); }
+        .btn-sm.danger { border-color: rgba(255, 60, 60, 0.3); background: rgba(255, 60, 60, 0.08); color: #ff4444; }
+        .btn-sm.danger:hover { background: rgba(255, 60, 60, 0.2); }
+        .action-cell { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+
+        .btn-action {
+            padding: 0.5rem 1.2rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: 1px solid rgba(0, 170, 255, 0.4);
+            background: rgba(0, 170, 255, 0.1);
+            color: var(--accent-cyan);
+            border-radius: 3px;
+            transition: all 0.15s;
+            letter-spacing: 0.5px;
+        }
+        .btn-action:hover { background: rgba(0, 170, 255, 0.2); border-color: var(--accent-cyan); }
+        .btn-action.primary { background: rgba(0, 170, 255, 0.2); border-color: var(--accent-cyan); font-weight: 700; }
+        .btn-action.primary:hover { background: rgba(0, 170, 255, 0.35); }
+
+        /* Filter */
+        .filter-row {
+            display: flex;
+            gap: 0.6rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filter-row input, .filter-row select {
+            padding: 0.4rem 0.6rem;
+            background: rgba(0, 170, 255, 0.04);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.78rem;
+            outline: none;
+            border-radius: 2px;
+        }
+        .filter-row input:focus, .filter-row select:focus { border-color: var(--accent-cyan); }
+        .filter-row input { flex: 1; min-width: 180px; }
+
+        /* Alert */
+        .alert-msg {
+            padding: 0.6rem 1rem;
+            border-radius: 3px;
+            margin-bottom: 1rem;
+            font-size: 0.8rem;
+            font-family: 'Share Tech Mono', monospace;
+            display: none;
+        }
+        .alert-msg.success { background: rgba(0, 200, 80, 0.1); border: 1px solid rgba(0, 200, 80, 0.3); color: #00cc55; }
+        .alert-msg.error { background: rgba(255, 60, 60, 0.1); border: 1px solid rgba(255, 60, 60, 0.3); color: #ff4444; }
+        .alert-msg.info { background: rgba(0, 170, 255, 0.1); border: 1px solid rgba(0, 170, 255, 0.3); color: var(--accent-cyan); }
+
+        .table-scroll { overflow-x: auto; }
+        #access-denied { display: none; text-align: center; padding: 3rem; }
+
+        /* Modal overlay */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 500;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.visible { display: flex; }
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid rgba(0, 170, 255, 0.3);
+            border-radius: 4px;
+            padding: 1.5rem;
+            width: 95%;
+            max-width: 550px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.7);
+        }
+        .modal h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.95rem;
+            color: var(--accent-cyan);
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+        .modal label {
+            display: block;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-top: 0.7rem;
+            margin-bottom: 0.2rem;
+        }
+        .modal input, .modal select, .modal textarea {
+            width: 100%;
+            padding: 0.45rem 0.6rem;
+            background: rgba(0, 170, 255, 0.04);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.82rem;
+            outline: none;
+            border-radius: 2px;
+        }
+        .modal textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        .modal input:focus, .modal select:focus, .modal textarea:focus { border-color: var(--accent-cyan); }
+        .modal-actions {
+            display: flex;
+            gap: 0.6rem;
+            margin-top: 1.2rem;
+            justify-content: flex-end;
+        }
+
+        /* Info section */
+        .week-info {
+            background: rgba(0, 170, 255, 0.04);
+            border: 1px solid rgba(0, 170, 255, 0.15);
+            border-radius: 4px;
+            padding: 0.7rem 1rem;
+            margin-bottom: 1rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        .week-info strong { color: var(--accent-cyan); }
+
+        .jours-cell {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+        .jours-ok { color: var(--accent-cyan); }
+        .jours-warn { color: #ffaa00; }
+        .jours-danger { color: #ff4444; }
+    </style>
+</head>
+<body>
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <h1 class="logo">MPF</h1>
+                    <p class="logo-subtitle">Gestion des Absences</p>
+                </div>
+                <div id="authBtn" class="header-auth"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div id="loading" style="text-align:center;padding:3rem;">
+                <p style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;">CHARGEMENT...</p>
+            </div>
+            <div id="access-denied">
+                <h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">ACCÈS REFUSÉ</h2>
+                <p style="color:var(--text-muted);">Vous n'avez pas les droits administrateur.</p>
+                <a href="../index.html" style="color:var(--accent-cyan);">Retour au site</a>
+            </div>
+
+            <div id="mainContent" style="display:none;">
+                <!-- Nav -->
+                <div class="admin-nav" style="margin-top: 1rem;">
+                    <a href="panel.html">← PANEL ADMIN</a>
+                    <a href="unites.html">UNITÉS</a>
+                    <a href="heures.html">HEURES DE JEU</a>
+                    <a href="heures-archives.html">ARCHIVES</a>
+                    <a href="absences.html" class="active">ABSENCES</a>
+                </div>
+
+                <!-- Week info -->
+                <div class="week-info" id="weekInfo">
+                    Semaine en cours : <strong id="weekRange">—</strong> &nbsp;|&nbsp;
+                    Seuil pause : <strong>≥ 3 jours d'absence cette semaine</strong>
+                </div>
+
+                <!-- Stats -->
+                <div class="abs-stats">
+                    <div class="stat-box">
+                        <div class="number" id="statTotal">0</div>
+                        <div class="label">TOTAL ABSENCES</div>
+                    </div>
+                    <div class="stat-box warn">
+                        <div class="number" id="statActive">0</div>
+                        <div class="label">EN COURS</div>
+                    </div>
+                    <div class="stat-box danger">
+                        <div class="number" id="statPause">0</div>
+                        <div class="label">EN PAUSE</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="number" id="statEnded">0</div>
+                        <div class="label">TERMINÉES</div>
+                    </div>
+                </div>
+
+                <!-- Alert -->
+                <div id="alertMsg" class="alert-msg"></div>
+
+                <!-- Absences table -->
+                <div class="combine-terminal-wrapper">
+                    <div class="combine-header">
+                        <h2>REGISTRE DES ABSENCES</h2>
+                        <span class="header-code" id="absCount">CHARGEMENT...</span>
+                    </div>
+                    <div class="combine-body">
+                        <div class="filter-row">
+                            <input type="text" id="searchInput" placeholder="Rechercher matricule, nom, motif..." autocomplete="off">
+                            <select id="statusFilter">
+                                <option value="">Tous statuts</option>
+                                <option value="active">EN COURS</option>
+                                <option value="pause">PAUSE</option>
+                                <option value="ended">TERMINÉE</option>
+                                <option value="upcoming">À VENIR</option>
+                            </select>
+                            <button class="btn-action primary" onclick="openAddModal()">+ DÉCLARER ABSENCE</button>
+                            <button class="btn-action" onclick="configureToken()" style="background:rgba(255,200,0,0.15);border-color:rgba(255,200,0,0.4);color:#ffc800;" title="Configurer le token GitHub">⚙ TOKEN</button>
+                        </div>
+                        <div class="table-scroll">
+                            <table class="abs-table">
+                                <thead>
+                                    <tr>
+                                        <th onclick="sortBy('matricule')">MATRICULE</th>
+                                        <th onclick="sortBy('nom_steam')">NOM STEAM</th>
+                                        <th onclick="sortBy('motif')">MOTIF</th>
+                                        <th onclick="sortBy('debut')">DÉBUT</th>
+                                        <th onclick="sortBy('fin')">FIN</th>
+                                        <th>JOURS</th>
+                                        <th>JOURS/SEM.</th>
+                                        <th>STATUT</th>
+                                        <th>ACTIONS</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="absBody">
+                                    <tr><td colspan="9" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal: Add/Edit absence -->
+    <div id="absModal" class="modal-overlay">
+        <div class="modal">
+            <h3 id="modalTitle">DÉCLARER UNE ABSENCE</h3>
+            <input type="hidden" id="editIdx" value="-1">
+
+            <label>MATRICULE *</label>
+            <select id="fMatricule">
+                <option value="">— Sélectionner une unité —</option>
+            </select>
+
+            <label>MOTIF *</label>
+            <textarea id="fMotif" placeholder="Raison de l'absence..."></textarea>
+
+            <label>DATE DE DÉBUT *</label>
+            <input type="date" id="fDebut">
+
+            <label>DATE DE FIN *</label>
+            <input type="date" id="fFin">
+
+            <div id="modalCalc" style="margin-top:0.8rem;font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--text-muted);"></div>
+
+            <div class="modal-actions">
+                <button class="btn-action" onclick="closeModal()">ANNULER</button>
+                <button class="btn-action primary" onclick="saveAbsence()">SAUVEGARDER</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="../assets/js/auth.js"></script>
+    <script src="../assets/js/global-nav.js"></script>
+    <script src="../assets/js/interactive-system.js"></script>
+    <script src="../assets/js/combine-animations.js"></script>
+
+    <script type="module">
+      import { auth, db } from '../assets/js/auth.js';
+      import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+      import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+      import {
+        loadAbsences as ghLoadAbsences, saveAbsences as ghSaveAbsences,
+        loadUnits as ghLoadUnits,
+        hasToken, promptToken
+      } from '../assets/js/github-data.js';
+
+      // ========== STATE ==========
+      let allAbsences = [];
+      let allUnits = [];
+      let currentSort = { key: 'debut', asc: false };
+
+      // ========== UTILS ==========
+      function showAlert(text, type = 'success') {
+        const el = document.getElementById('alertMsg');
+        el.style.display = 'block';
+        el.className = 'alert-msg ' + type;
+        el.textContent = text;
+        setTimeout(() => { el.style.display = 'none'; }, 5000);
+      }
+
+      /** Lundi de la semaine en cours */
+      function getWeekMonday(d) {
+        const date = new Date(d);
+        const day = date.getDay();
+        const diff = day === 0 ? -6 : 1 - day; // lundi = 1
+        date.setDate(date.getDate() + diff);
+        date.setHours(0, 0, 0, 0);
+        return date;
+      }
+
+      /** Dimanche de la semaine en cours */
+      function getWeekSunday(d) {
+        const mon = getWeekMonday(d);
+        const sun = new Date(mon);
+        sun.setDate(sun.getDate() + 6);
+        sun.setHours(23, 59, 59, 999);
+        return sun;
+      }
+
+      /** Nombre de jours total d'une absence */
+      function totalDays(debut, fin) {
+        const d1 = new Date(debut);
+        const d2 = new Date(fin);
+        return Math.max(1, Math.ceil((d2 - d1) / (1000 * 60 * 60 * 24)) + 1);
+      }
+
+      /** Nombre de jours d'absence dans la semaine en cours */
+      function daysInCurrentWeek(debut, fin) {
+        const now = new Date();
+        const weekStart = getWeekMonday(now);
+        const weekEnd = getWeekSunday(now);
+        const absStart = new Date(debut);
+        const absEnd = new Date(fin);
+
+        // Overlap
+        const overlapStart = absStart > weekStart ? absStart : weekStart;
+        const overlapEnd = absEnd < weekEnd ? absEnd : weekEnd;
+
+        if (overlapStart > overlapEnd) return 0;
+        return Math.ceil((overlapEnd - overlapStart) / (1000 * 60 * 60 * 24)) + 1;
+      }
+
+      /** Statut d'une absence */
+      function getStatus(abs) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const debut = new Date(abs.debut);
+        const fin = new Date(abs.fin);
+        debut.setHours(0, 0, 0, 0);
+        fin.setHours(23, 59, 59, 999);
+
+        if (today < debut) return 'upcoming';
+        if (today > fin) return 'ended';
+        // Active — check if pause (≥ 3 jours cette semaine)
+        const dw = daysInCurrentWeek(abs.debut, abs.fin);
+        return dw >= 3 ? 'pause' : 'active';
+      }
+
+      function statusBadge(status) {
+        const map = {
+          active: '<span class="status-badge status-active">ABSENCE</span>',
+          pause: '<span class="status-badge status-pause">PAUSE</span>',
+          ended: '<span class="status-badge status-ended">TERMINÉE</span>',
+          upcoming: '<span class="status-badge status-upcoming">À VENIR</span>'
+        };
+        return map[status] || status;
+      }
+
+      function formatDate(d) {
+        if (!d) return '-';
+        const parts = d.split('-');
+        if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        return d;
+      }
+
+      // ========== TOKEN CONFIG ==========
+      window.configureToken = function() {
+        if (promptToken()) showAlert('✓ Token GitHub configuré', 'success');
+      };
+
+      // ========== WEEK INFO ==========
+      function updateWeekInfo() {
+        const now = new Date();
+        const mon = getWeekMonday(now);
+        const sun = getWeekSunday(now);
+        const fmt = d => d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        document.getElementById('weekRange').textContent = `${fmt(mon)} → ${fmt(sun)}`;
+      }
+
+      // ========== LOAD ==========
+      async function loadData() {
+        try {
+          [allAbsences, allUnits] = await Promise.all([ghLoadAbsences(), ghLoadUnits()]);
+          populateUnitSelect();
+          updateStats();
+          renderTable();
+        } catch (err) {
+          console.error('Erreur chargement:', err);
+          showAlert('Erreur chargement: ' + err.message, 'error');
+        }
+      }
+
+      function populateUnitSelect() {
+        const select = document.getElementById('fMatricule');
+        // Keep first option
+        select.innerHTML = '<option value="">— Sélectionner une unité —</option>';
+        const sorted = [...allUnits].sort((a, b) => (a.matricule || '').localeCompare(b.matricule || ''));
+        sorted.forEach(u => {
+          const opt = document.createElement('option');
+          opt.value = u.matricule;
+          opt.textContent = `${u.matricule} — ${u.nom_steam || '?'}`;
+          opt.dataset.steamid64 = u.steamid64 || '';
+          opt.dataset.nom = u.nom_steam || '';
+          select.appendChild(opt);
+        });
+      }
+
+      function updateStats() {
+        let active = 0, pause = 0, ended = 0;
+        allAbsences.forEach(abs => {
+          const s = getStatus(abs);
+          if (s === 'active') active++;
+          else if (s === 'pause') pause++;
+          else if (s === 'ended') ended++;
+        });
+        document.getElementById('statTotal').textContent = allAbsences.length;
+        document.getElementById('statActive').textContent = active;
+        document.getElementById('statPause').textContent = pause;
+        document.getElementById('statEnded').textContent = ended;
+      }
+
+      function renderTable() {
+        const search = (document.getElementById('searchInput').value || '').toLowerCase();
+        const statusF = document.getElementById('statusFilter').value;
+
+        let filtered = allAbsences.map((abs, idx) => ({ ...abs, _idx: idx, _status: getStatus(abs) }));
+
+        filtered = filtered.filter(abs => {
+          const matchSearch = !search ||
+            (abs.matricule || '').toLowerCase().includes(search) ||
+            (abs.nom_steam || '').toLowerCase().includes(search) ||
+            (abs.motif || '').toLowerCase().includes(search);
+          const matchStatus = !statusF || abs._status === statusF;
+          return matchSearch && matchStatus;
+        });
+
+        // Sort
+        filtered.sort((a, b) => {
+          let va, vb;
+          const key = currentSort.key;
+          va = (a[key] || '').toLowerCase ? (a[key] || '').toLowerCase() : a[key];
+          vb = (b[key] || '').toLowerCase ? (b[key] || '').toLowerCase() : b[key];
+          if (currentSort.asc) return va > vb ? 1 : va < vb ? -1 : 0;
+          return va < vb ? 1 : va > vb ? -1 : 0;
+        });
+
+        document.getElementById('absCount').textContent = `${filtered.length} / ${allAbsences.length} ABSENCES`;
+
+        const tbody = document.getElementById('absBody');
+        if (filtered.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text-muted);">Aucune absence trouvée</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = filtered.map(abs => {
+          const td = totalDays(abs.debut, abs.fin);
+          const dw = daysInCurrentWeek(abs.debut, abs.fin);
+          const joursClass = dw >= 3 ? 'jours-danger' : dw > 0 ? 'jours-warn' : 'jours-ok';
+          return `<tr>
+            <td class="matricule-cell">${abs.matricule || '-'}</td>
+            <td>${abs.nom_steam || '<span style="color:var(--text-muted);">-</span>'}</td>
+            <td style="font-size:0.75rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${(abs.motif || '').replace(/"/g, '&quot;')}">${abs.motif || '-'}</td>
+            <td style="font-size:0.75rem;">${formatDate(abs.debut)}</td>
+            <td style="font-size:0.75rem;">${formatDate(abs.fin)}</td>
+            <td class="jours-cell jours-ok">${td}j</td>
+            <td class="jours-cell ${joursClass}">${dw}j</td>
+            <td>${statusBadge(abs._status)}</td>
+            <td class="action-cell">
+              <button class="btn-sm" onclick="editAbsence(${abs._idx})">✎</button>
+              <button class="btn-sm danger" onclick="deleteAbsence(${abs._idx})">✗</button>
+            </td>
+          </tr>`;
+        }).join('');
+      }
+
+      // ========== SORT ==========
+      window.sortBy = function(key) {
+        if (currentSort.key === key) {
+          currentSort.asc = !currentSort.asc;
+        } else {
+          currentSort = { key, asc: key === 'debut' ? false : true };
+        }
+        renderTable();
+      };
+
+      // ========== MODAL ==========
+      window.openAddModal = function() {
+        document.getElementById('modalTitle').textContent = 'DÉCLARER UNE ABSENCE';
+        document.getElementById('editIdx').value = '-1';
+        document.getElementById('fMatricule').value = '';
+        document.getElementById('fMatricule').disabled = false;
+        document.getElementById('fMotif').value = '';
+        document.getElementById('fDebut').value = '';
+        document.getElementById('fFin').value = '';
+        document.getElementById('modalCalc').textContent = '';
+        document.getElementById('absModal').classList.add('visible');
+      };
+
+      window.editAbsence = function(idx) {
+        const abs = allAbsences[idx];
+        if (!abs) return;
+        document.getElementById('modalTitle').textContent = 'MODIFIER ABSENCE — ' + abs.matricule;
+        document.getElementById('editIdx').value = idx;
+        document.getElementById('fMatricule').value = abs.matricule || '';
+        document.getElementById('fMatricule').disabled = false;
+        document.getElementById('fMotif').value = abs.motif || '';
+        document.getElementById('fDebut').value = abs.debut || '';
+        document.getElementById('fFin').value = abs.fin || '';
+        updateModalCalc();
+        document.getElementById('absModal').classList.add('visible');
+      };
+
+      window.closeModal = function() {
+        document.getElementById('absModal').classList.remove('visible');
+      };
+
+      document.getElementById('absModal').addEventListener('click', e => {
+        if (e.target === document.getElementById('absModal')) closeModal();
+      });
+
+      // Auto-calculate days in modal
+      function updateModalCalc() {
+        const debut = document.getElementById('fDebut').value;
+        const fin = document.getElementById('fFin').value;
+        const el = document.getElementById('modalCalc');
+        if (!debut || !fin) { el.textContent = ''; return; }
+        const td = totalDays(debut, fin);
+        const dw = daysInCurrentWeek(debut, fin);
+        const pauseStr = dw >= 3 ? ' → <span style="color:#ff4444;font-weight:700;">PAUSE</span>' : '';
+        el.innerHTML = `Durée totale: <strong>${td} jour${td > 1 ? 's' : ''}</strong> &nbsp;|&nbsp; Cette semaine: <strong>${dw}j</strong>${pauseStr}`;
+      }
+
+      document.getElementById('fDebut').addEventListener('change', updateModalCalc);
+      document.getElementById('fFin').addEventListener('change', updateModalCalc);
+
+      // ========== SAVE ABSENCE ==========
+      window.saveAbsence = async function() {
+        if (!hasToken()) {
+          showAlert('⚠ Configurez le token GitHub d\'abord (bouton ⚙ TOKEN)', 'error');
+          return;
+        }
+
+        const editIdx = parseInt(document.getElementById('editIdx').value);
+        const matricule = document.getElementById('fMatricule').value.trim();
+        const motif = document.getElementById('fMotif').value.trim();
+        const debut = document.getElementById('fDebut').value;
+        const fin = document.getElementById('fFin').value;
+
+        if (!matricule || !motif || !debut || !fin) {
+          showAlert('Tous les champs sont obligatoires', 'error');
+          return;
+        }
+
+        if (new Date(fin) < new Date(debut)) {
+          showAlert('La date de fin doit être après la date de début', 'error');
+          return;
+        }
+
+        // Find unit info
+        const unit = allUnits.find(u => u.matricule === matricule);
+        const nom_steam = unit ? unit.nom_steam : '';
+        const steamid64 = unit ? unit.steamid64 : '';
+
+        const absData = {
+          matricule,
+          steamid64,
+          nom_steam,
+          motif,
+          debut,
+          fin,
+          created_at: editIdx >= 0 ? (allAbsences[editIdx].created_at || new Date().toISOString().substring(0, 10)) : new Date().toISOString().substring(0, 10)
+        };
+
+        // Optimistic update
+        if (editIdx >= 0) {
+          allAbsences[editIdx] = absData;
+        } else {
+          allAbsences.push(absData);
+        }
+
+        closeModal();
+        updateStats();
+        renderTable();
+        showAlert(editIdx >= 0 ? '✓ Absence modifiée' : '✓ Absence ajoutée', 'success');
+
+        // Background save
+        ghSaveAbsences([...allAbsences], editIdx >= 0 ? `Modification absence ${matricule}` : `Ajout absence ${matricule}`)
+          .catch(err => showAlert('⚠ Sync GitHub échouée: ' + err.message, 'error'));
+      };
+
+      // ========== DELETE ABSENCE ==========
+      window.deleteAbsence = async function(idx) {
+        const abs = allAbsences[idx];
+        if (!abs) return;
+        if (!confirm(`Supprimer l'absence de ${abs.matricule} (${formatDate(abs.debut)} → ${formatDate(abs.fin)}) ?`)) return;
+        if (!hasToken()) {
+          showAlert('⚠ Configurez le token GitHub d\'abord (bouton ⚙ TOKEN)', 'error');
+          return;
+        }
+
+        allAbsences.splice(idx, 1);
+        updateStats();
+        renderTable();
+        showAlert('✓ Absence supprimée', 'success');
+
+        ghSaveAbsences([...allAbsences], `Suppression absence ${abs.matricule}`)
+          .catch(err => showAlert('⚠ Sync GitHub échouée: ' + err.message, 'error'));
+      };
+
+      // ========== FILTERS ==========
+      document.getElementById('searchInput').addEventListener('input', renderTable);
+      document.getElementById('statusFilter').addEventListener('change', renderTable);
+
+      // ========== AUTH CHECK ==========
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) return;
+        try {
+          const snap = await getDoc(doc(db, 'users', user.uid));
+          if (!snap.exists() || !snap.data().is_admin) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('access-denied').style.display = 'block';
+            return;
+          }
+        } catch (err) {
+          console.warn('Firestore admin check failed, allowing authenticated user:', err.message);
+        }
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+        updateWeekInfo();
+        await loadData();
+      });
+    </script>
+</body>
+</html>

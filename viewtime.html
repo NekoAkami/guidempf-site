@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viewtime - MPF Documentation</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="assets/css/main-style.css">
+    <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/global-nav.css">
+    <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
+    <link rel="stylesheet" href="assets/css/components.css">
+    <style>
+        /* Stats */
+        .vt-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+        .stat-box {
+            background: rgba(0, 170, 255, 0.03);
+            border: 1px solid rgba(0, 170, 255, 0.15);
+            padding: 0.8rem;
+            text-align: center;
+            border-radius: 4px;
+        }
+        .stat-box .number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            color: var(--accent-cyan);
+            font-weight: 700;
+        }
+        .stat-box .label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-top: 0.2rem;
+        }
+        .stat-box.warn .number { color: #ffaa00; }
+        .stat-box.danger .number { color: #ff4444; }
+
+        /* Table */
+        .vt-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+        .vt-table th {
+            text-align: left;
+            padding: 0.55rem 0.5rem;
+            color: var(--accent-cyan);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            border-bottom: 2px solid rgba(0, 170, 255, 0.2);
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+        }
+        .vt-table th:hover { color: #fff; }
+        .vt-table td {
+            padding: 0.45rem 0.5rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid rgba(0, 170, 255, 0.06);
+            vertical-align: middle;
+        }
+        .vt-table tr:hover { background: rgba(0, 170, 255, 0.03); }
+        .vt-table .matricule-cell {
+            font-weight: 700;
+            color: var(--accent-cyan);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+        }
+
+        /* Hours bar */
+        .hours-bar-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .hours-bar {
+            flex: 1;
+            height: 8px;
+            background: rgba(0, 170, 255, 0.08);
+            border-radius: 4px;
+            overflow: hidden;
+            min-width: 60px;
+        }
+        .hours-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.4s ease;
+        }
+        .hours-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            min-width: 45px;
+            text-align: right;
+        }
+        .hours-good { color: #00cc55; }
+        .hours-ok { color: var(--accent-cyan); }
+        .hours-low { color: #ffaa00; }
+        .hours-danger { color: #ff4444; }
+
+        /* Division badges */
+        .div-badge {
+            display: inline-block;
+            padding: 0.12rem 0.45rem;
+            border-radius: 2px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+        .div-HELIX { background: rgba(0, 170, 255, 0.15); color: var(--accent-cyan); border: 1px solid rgba(0, 170, 255, 0.3); }
+        .div-APEX { background: rgba(0, 100, 200, 0.15); color: #0088dd; border: 1px solid rgba(0, 100, 200, 0.3); }
+        .div-RAZOR { background: rgba(255, 60, 60, 0.15); color: #ff4444; border: 1px solid rgba(255, 60, 60, 0.3); }
+        .div-MACE { background: rgba(0, 128, 128, 0.15); color: #00aaaa; border: 1px solid rgba(0, 128, 128, 0.3); }
+        .div-ZONE { background: rgba(255, 0, 100, 0.15); color: #ff3377; border: 1px solid rgba(255, 0, 100, 0.3); }
+        .div-DEFENDER { background: rgba(0, 150, 100, 0.15); color: #00bb77; border: 1px solid rgba(0, 150, 100, 0.3); }
+        .div-JURY { background: rgba(180, 60, 180, 0.15); color: #bb55bb; border: 1px solid rgba(180, 60, 180, 0.3); }
+        .div-JUDGE { background: rgba(128, 0, 128, 0.15); color: #cc44cc; border: 1px solid rgba(128, 0, 128, 0.3); }
+        .div-EXOGEN { background: rgba(0, 200, 80, 0.15); color: #00cc55; border: 1px solid rgba(0, 200, 80, 0.3); }
+        .div-HUNTER { background: rgba(0, 160, 40, 0.15); color: #00aa33; border: 1px solid rgba(0, 160, 40, 0.3); }
+        .div-GRID { background: rgba(200, 200, 0, 0.15); color: #cccc00; border: 1px solid rgba(200, 200, 0, 0.3); }
+        .div-HAMMER { background: rgba(220, 170, 0, 0.15); color: #ddaa00; border: 1px solid rgba(220, 170, 0, 0.3); }
+        .div-SPECTRE { background: rgba(100, 100, 160, 0.15); color: #8888bb; border: 1px solid rgba(100, 100, 160, 0.3); }
+        .div-GHOST { background: rgba(140, 140, 200, 0.15); color: #aaaadd; border: 1px solid rgba(140, 140, 200, 0.3); }
+        .div-UNION { background: rgba(100, 100, 220, 0.15); color: #8888ee; border: 1px solid rgba(100, 100, 220, 0.3); }
+        .div-NONE { background: rgba(60, 60, 60, 0.15); color: #666; border: 1px solid rgba(60, 60, 60, 0.3); }
+
+        /* Rang badge */
+        .rang-badge {
+            display: inline-block;
+            padding: 0.1rem 0.4rem;
+            border-radius: 2px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .rang-Cmd  { background: rgba(255, 215, 0, 0.2); color: #ffd700; border: 1px solid rgba(255, 215, 0, 0.4); }
+        .rang-Ofc  { background: rgba(255, 180, 0, 0.2); color: #ffbb00; border: 1px solid rgba(255, 180, 0, 0.4); }
+        .rang-DvL  { background: rgba(255, 40, 40, 0.2); color: #ff3333; border: 1px solid rgba(255, 40, 40, 0.4); }
+        .rang-01   { background: rgba(255, 50, 50, 0.18); color: #ff4444; border: 1px solid rgba(255, 50, 50, 0.35); }
+        .rang-02   { background: rgba(255, 140, 0, 0.18); color: #ff8800; border: 1px solid rgba(255, 140, 0, 0.35); }
+        .rang-03   { background: rgba(200, 200, 0, 0.15); color: #bbbb00; border: 1px solid rgba(200, 200, 0, 0.3); }
+        .rang-04   { background: rgba(0, 180, 120, 0.15); color: #00bb77; border: 1px solid rgba(0, 180, 120, 0.3); }
+        .rang-05   { background: rgba(0, 140, 255, 0.15); color: #0099ff; border: 1px solid rgba(0, 140, 255, 0.3); }
+        .rang-RCT  { background: rgba(128, 128, 128, 0.15); color: #999; border: 1px solid rgba(128, 128, 128, 0.3); }
+        .rang-STB   { background: rgba(160, 0, 200, 0.15); color: #bb44dd; border: 1px solid rgba(160, 0, 200, 0.3); }
+        .rang-STBE  { background: rgba(180, 0, 220, 0.18); color: #cc44ee; border: 1px solid rgba(180, 0, 220, 0.35); }
+        .rang-CABAL { background: rgba(200, 0, 200, 0.2); color: #dd44dd; border: 1px solid rgba(200, 0, 200, 0.4); }
+        .rang-MISSING { background: rgba(255, 0, 0, 0.25); color: #ff2222; border: 1px solid rgba(255, 0, 0, 0.5); }
+
+        /* Status badges */
+        .statut-badge {
+            display: inline-block;
+            padding: 0.1rem 0.4rem;
+            border-radius: 2px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .statut-absence {
+            background: rgba(255, 140, 0, 0.2);
+            color: #ffaa00;
+            border: 1px solid rgba(255, 140, 0, 0.4);
+        }
+        .statut-pause {
+            background: rgba(255, 40, 40, 0.2);
+            color: #ff4444;
+            border: 1px solid rgba(255, 40, 40, 0.4);
+            animation: pulse-pause 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse-pause { 0%,100% { opacity: 1; } 50% { opacity: 0.65; } }
+        .statut-ok {
+            color: rgba(100,100,100,0.4);
+            font-size: 0.65rem;
+        }
+
+        .table-scroll { overflow-x: auto; }
+
+        .week-banner {
+            background: rgba(0, 170, 255, 0.06);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+            border-radius: 4px;
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 1.2rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .week-banner strong { color: var(--accent-cyan); }
+
+        .filter-row {
+            display: flex;
+            gap: 0.6rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filter-row input, .filter-row select {
+            padding: 0.4rem 0.6rem;
+            background: rgba(0, 170, 255, 0.04);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.78rem;
+            outline: none;
+            border-radius: 2px;
+        }
+        .filter-row input:focus, .filter-row select:focus { border-color: var(--accent-cyan); }
+        .filter-row input { flex: 1; min-width: 180px; }
+
+        .no-data {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+            font-family: 'Share Tech Mono', monospace;
+        }
+        .no-data h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: rgba(0, 170, 255, 0.5);
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <h1 class="logo">MPF</h1>
+                    <p class="logo-subtitle">Viewtime — Heures de Jeu</p>
+                </div>
+                <div id="authBtn" class="header-auth"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div id="loading" style="text-align:center;padding:3rem;">
+                <p style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;">CHARGEMENT DES DONNÉES...</p>
+            </div>
+
+            <div id="mainContent" style="display:none;margin-top:1.5rem;">
+                <!-- Week banner -->
+                <div class="week-banner">
+                    <div>Données de la semaine : <strong id="weekLabel">—</strong></div>
+                    <div>Dernière mise à jour : <strong id="importDate">—</strong></div>
+                </div>
+
+                <!-- Stats -->
+                <div class="vt-stats">
+                    <div class="stat-box">
+                        <div class="number" id="statUnits">0</div>
+                        <div class="label">UNITÉS ACTIVES</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="number" id="statAvg">0h</div>
+                        <div class="label">MOYENNE</div>
+                    </div>
+                    <div class="stat-box warn">
+                        <div class="number" id="statAbsent">0</div>
+                        <div class="label">ABSENCES</div>
+                    </div>
+                    <div class="stat-box danger">
+                        <div class="number" id="statPause">0</div>
+                        <div class="label">EN PAUSE</div>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="combine-terminal-wrapper">
+                    <div class="combine-header">
+                        <h2>REGISTRE VIEWTIME</h2>
+                        <span class="header-code" id="vtCount">—</span>
+                    </div>
+                    <div class="combine-body">
+                        <div class="filter-row">
+                            <input type="text" id="searchInput" placeholder="Rechercher matricule, nom..." autocomplete="off">
+                            <select id="divisionFilter">
+                                <option value="">Toutes divisions</option>
+                                <optgroup label="─ Helix / Apex ─">
+                                    <option value="HELIX">HELIX</option>
+                                    <option value="APEX">APEX</option>
+                                </optgroup>
+                                <optgroup label="─ Razor / Mace ─">
+                                    <option value="RAZOR">RAZOR</option>
+                                    <option value="MACE">MACE</option>
+                                </optgroup>
+                                <optgroup label="─ Zone / Defender ─">
+                                    <option value="ZONE">ZONE</option>
+                                    <option value="DEFENDER">DEFENDER</option>
+                                </optgroup>
+                                <optgroup label="─ Jury / Judge ─">
+                                    <option value="JURY">JURY</option>
+                                    <option value="JUDGE">JUDGE</option>
+                                </optgroup>
+                                <optgroup label="─ Exogen / Hunter ─">
+                                    <option value="EXOGEN">EXOGEN</option>
+                                    <option value="HUNTER">HUNTER</option>
+                                </optgroup>
+                                <optgroup label="─ Grid / Hammer ─">
+                                    <option value="GRID">GRID</option>
+                                    <option value="HAMMER">HAMMER</option>
+                                </optgroup>
+                                <optgroup label="─ Spectre / Ghost ─">
+                                    <option value="SPECTRE">SPECTRE</option>
+                                    <option value="GHOST">GHOST</option>
+                                </optgroup>
+                                <optgroup label="─ Autres ─">
+                                    <option value="UNION">UNION</option>
+                                    <option value="N/A">N/A</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="table-scroll">
+                            <table class="vt-table">
+                                <thead>
+                                    <tr>
+                                        <th onclick="sortBy('matricule')">MATRICULE</th>
+                                        <th onclick="sortBy('nom_steam')">NOM STEAM</th>
+                                        <th onclick="sortBy('division')">DIVISION</th>
+                                        <th onclick="sortBy('rang')">RANG</th>
+                                        <th onclick="sortBy('hours')">HEURES</th>
+                                        <th>STATUT</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="vtBody">
+                                    <tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="noData" class="no-data" style="display:none;">
+                <h3>AUCUNE DONNÉE DISPONIBLE</h3>
+                <p>Aucun viewtime n'a encore été importé.</p>
+                <a href="index.html" style="color:var(--accent-cyan);font-size:0.85rem;">← Retour à l'accueil</a>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="assets/js/auth.js"></script>
+    <script src="assets/js/global-nav.js"></script>
+    <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
+
+    <script type="module">
+      import {
+        loadUnits, loadPlaytimeHistory, loadAbsences, readJsonFile
+      } from './assets/js/github-data.js';
+
+      // ========== STATE ==========
+      let viewData = []; // merged: unit info + hours + absence status
+      let currentSort = { key: 'hours', asc: false };
+
+      // ========== UTILS ==========
+      function getWeekMonday(d) {
+        const date = new Date(d);
+        const day = date.getDay();
+        const diff = day === 0 ? -6 : 1 - day;
+        date.setDate(date.getDate() + diff);
+        date.setHours(0, 0, 0, 0);
+        return date;
+      }
+      function getWeekSunday(d) {
+        const mon = getWeekMonday(d);
+        const sun = new Date(mon);
+        sun.setDate(sun.getDate() + 6);
+        sun.setHours(23, 59, 59, 999);
+        return sun;
+      }
+      function daysInWeek(debut, fin, weekStart, weekEnd) {
+        const s = new Date(debut), e = new Date(fin);
+        const oS = s > weekStart ? s : weekStart;
+        const oE = e < weekEnd ? e : weekEnd;
+        if (oS > oE) return 0;
+        return Math.ceil((oE - oS) / 86400000) + 1;
+      }
+
+      function divBadge(div) {
+        if (!div) return '<span class="div-badge div-NONE">—</span>';
+        return `<span class="div-badge div-${div}">${div}</span>`;
+      }
+      function rangClass(rang) {
+        if (!rang) return '';
+        return 'rang-' + rang.replace('.', '');
+      }
+
+      function hoursColor(h) {
+        if (h >= 10) return 'hours-good';
+        if (h >= 5) return 'hours-ok';
+        if (h >= 2) return 'hours-low';
+        return 'hours-danger';
+      }
+      function hoursBarColor(h) {
+        if (h >= 10) return '#00cc55';
+        if (h >= 5) return '#00aaff';
+        if (h >= 2) return '#ffaa00';
+        return '#ff4444';
+      }
+
+      function getAbsenceStatus(matricule, absences) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const ws = getWeekMonday(today);
+        const we = getWeekSunday(today);
+        for (const abs of absences) {
+          if (abs.matricule !== matricule) continue;
+          const debut = new Date(abs.debut);
+          const fin = new Date(abs.fin);
+          debut.setHours(0, 0, 0, 0);
+          fin.setHours(23, 59, 59, 999);
+          if (today >= debut && today <= fin) {
+            const dw = daysInWeek(abs.debut, abs.fin, ws, we);
+            return dw >= 3 ? 'pause' : 'absence';
+          }
+        }
+        return null;
+      }
+
+      function statutBadge(status) {
+        if (status === 'pause') return '<span class="statut-badge statut-pause">PAUSE</span>';
+        if (status === 'absence') return '<span class="statut-badge statut-absence">ABSENCE</span>';
+        return '<span class="statut-ok">—</span>';
+      }
+
+      // ========== LOAD DATA ==========
+      async function init() {
+        try {
+          const [units, history, absences] = await Promise.all([
+            loadUnits(), loadPlaytimeHistory(), loadAbsences()
+          ]);
+
+          // Find the last week's import (the most recent entry in history)
+          // The viewtime shows LAST WEEK's data, not the current one
+          // history is sorted descending by import_date
+          if (!history || history.length === 0) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('noData').style.display = 'block';
+            return;
+          }
+
+          // Get the most recent import
+          const latestImport = history[0];
+          const importDate = latestImport.import_date || '';
+          const importEntries = latestImport.entries || [];
+
+          // Build a map of steamid64 → hours from the latest import
+          const hoursMap = {};
+          importEntries.forEach(e => {
+            if (e.steamid64) hoursMap[e.steamid64] = parseFloat(e.heures) || 0;
+          });
+
+          // Also build a map by nom for fallback matching
+          const hoursByNom = {};
+          importEntries.forEach(e => {
+            if (e.nom) hoursByNom[e.nom.toLowerCase()] = parseFloat(e.heures) || 0;
+          });
+
+          // Merge: for each unit, find their hours
+          viewData = units.map(u => {
+            let hours = 0;
+            if (u.steamid64 && hoursMap[u.steamid64] !== undefined) {
+              hours = hoursMap[u.steamid64];
+            } else if (u.nom_steam && hoursByNom[u.nom_steam.toLowerCase()] !== undefined) {
+              hours = hoursByNom[u.nom_steam.toLowerCase()];
+            }
+            const absStatus = getAbsenceStatus(u.matricule, absences);
+            return {
+              matricule: u.matricule,
+              nom_steam: u.nom_steam || '',
+              division: u.division || '',
+              rang: u.rang || '',
+              hours,
+              absStatus
+            };
+          });
+
+          // Week label
+          const impD = new Date(importDate);
+          const weekMon = getWeekMonday(impD);
+          const weekSun = getWeekSunday(impD);
+          const fmt = d => d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+          document.getElementById('weekLabel').textContent = `${fmt(weekMon)} → ${fmt(weekSun)}`;
+          document.getElementById('importDate').textContent = importDate;
+
+          // Stats
+          const activeUnits = viewData.filter(v => v.rang !== 'MISSING');
+          const totalHours = activeUnits.reduce((s, v) => s + v.hours, 0);
+          const avg = activeUnits.length ? (totalHours / activeUnits.length).toFixed(1) : 0;
+          const absCount = viewData.filter(v => v.absStatus === 'absence').length;
+          const pauseCount = viewData.filter(v => v.absStatus === 'pause').length;
+
+          document.getElementById('statUnits').textContent = activeUnits.length;
+          document.getElementById('statAvg').textContent = avg + 'h';
+          document.getElementById('statAbsent').textContent = absCount;
+          document.getElementById('statPause').textContent = pauseCount;
+
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('mainContent').style.display = 'block';
+          renderTable();
+        } catch (err) {
+          console.error('Erreur chargement viewtime:', err);
+          document.getElementById('loading').innerHTML = `<p style="color:#ff4444;font-family:'Share Tech Mono',monospace;">ERREUR: ${err.message}</p>`;
+        }
+      }
+
+      function renderTable() {
+        const search = (document.getElementById('searchInput').value || '').toLowerCase();
+        const divFilter = document.getElementById('divisionFilter').value;
+
+        let filtered = viewData.filter(v => {
+          const matchSearch = !search ||
+            (v.matricule || '').toLowerCase().includes(search) ||
+            (v.nom_steam || '').toLowerCase().includes(search);
+          const matchDiv = !divFilter || v.division === divFilter;
+          return matchSearch && matchDiv;
+        });
+
+        // Sort — MISSING toujours en bas
+        filtered.sort((a, b) => {
+          const aMissing = a.rang === 'MISSING' ? 1 : 0;
+          const bMissing = b.rang === 'MISSING' ? 1 : 0;
+          if (aMissing !== bMissing) return aMissing - bMissing;
+
+          let va, vb;
+          const key = currentSort.key;
+          if (key === 'hours') {
+            va = a.hours;
+            vb = b.hours;
+          } else if (key === 'matricule') {
+            va = (a.matricule || '').padStart(4, '0');
+            vb = (b.matricule || '').padStart(4, '0');
+          } else {
+            va = (a[key] || '').toLowerCase();
+            vb = (b[key] || '').toLowerCase();
+          }
+          if (currentSort.asc) return va > vb ? 1 : va < vb ? -1 : 0;
+          return va < vb ? 1 : va > vb ? -1 : 0;
+        });
+
+        document.getElementById('vtCount').textContent = `${filtered.length} UNITÉS`;
+
+        const tbody = document.getElementById('vtBody');
+        if (filtered.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Aucune donnée</td></tr>';
+          return;
+        }
+
+        const maxH = Math.max(...filtered.map(v => v.hours), 1);
+
+        tbody.innerHTML = filtered.map(v => {
+          const pct = Math.min(100, (v.hours / maxH) * 100);
+          const hColor = hoursColor(v.hours);
+          const barColor = hoursBarColor(v.hours);
+          return `<tr>
+            <td class="matricule-cell">${v.matricule || '-'}</td>
+            <td>${v.nom_steam || '<span style="color:var(--text-muted);">-</span>'}</td>
+            <td>${divBadge(v.division)}</td>
+            <td><span class="rang-badge ${rangClass(v.rang)}">${v.rang || '-'}</span></td>
+            <td>
+              <div class="hours-bar-wrap">
+                <div class="hours-bar"><div class="hours-bar-fill" style="width:${pct}%;background:${barColor};"></div></div>
+                <span class="hours-value ${hColor}">${v.hours.toFixed(1)}h</span>
+              </div>
+            </td>
+            <td>${statutBadge(v.absStatus)}</td>
+          </tr>`;
+        }).join('');
+      }
+
+      // ========== SORT ==========
+      window.sortBy = function(key) {
+        if (currentSort.key === key) {
+          currentSort.asc = !currentSort.asc;
+        } else {
+          currentSort = { key, asc: key === 'hours' ? false : true };
+        }
+        renderTable();
+      };
+
+      // ========== FILTERS ==========
+      document.getElementById('searchInput').addEventListener('input', renderTable);
+      document.getElementById('divisionFilter').addEventListener('change', renderTable);
+
+      // ========== INIT ==========
+      init();
+    </script>
+</body>
+</html>

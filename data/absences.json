@@ -1,0 +1,110 @@
+[
+  {
+    "matricule": "140",
+    "steamid64": "",
+    "nom_steam": "M3GATRONN94",
+    "motif": "séjour au ski à la montagne",
+    "debut": "2025-12-20",
+    "fin": "2025-12-27",
+    "created_at": "2025-12-13"
+  },
+  {
+    "matricule": "881",
+    "steamid64": "",
+    "nom_steam": "Link3046",
+    "motif": "Pause Noël",
+    "debut": "2025-12-25",
+    "fin": "2025-12-30",
+    "created_at": "2025-12-20"
+  },
+  {
+    "matricule": "610",
+    "steamid64": "",
+    "nom_steam": "Enguer",
+    "motif": "Vacances",
+    "debut": "2025-12-23",
+    "fin": "2026-01-01",
+    "created_at": "2025-12-23"
+  },
+  {
+    "matricule": "881",
+    "steamid64": "",
+    "nom_steam": "Link3046",
+    "motif": "Nouvelle ans",
+    "debut": "2026-01-01",
+    "fin": "2026-01-06",
+    "created_at": "2025-12-30"
+  },
+  {
+    "matricule": "424",
+    "steamid64": "",
+    "nom_steam": "NotBadSlayer",
+    "motif": "décision égoïste et favoritisme de qqn et pas la dernière",
+    "debut": "2026-01-05",
+    "fin": "2026-01-15",
+    "created_at": "2026-01-05"
+  },
+  {
+    "matricule": "547",
+    "steamid64": "",
+    "nom_steam": "Erzère",
+    "motif": "Pas de connexion",
+    "debut": "2026-01-12",
+    "fin": "2026-01-19",
+    "created_at": "2026-01-12"
+  },
+  {
+    "matricule": "424",
+    "steamid64": "",
+    "nom_steam": "NotBadSlayer",
+    "motif": "préparation event caritatif irl",
+    "debut": "2026-01-15",
+    "fin": "2026-01-31",
+    "created_at": "2026-01-15"
+  },
+  {
+    "matricule": "180",
+    "steamid64": "",
+    "nom_steam": "AXYORE",
+    "motif": "Les études",
+    "debut": "2026-01-14",
+    "fin": "2026-02-13",
+    "created_at": "2026-01-14"
+  },
+  {
+    "matricule": "372",
+    "steamid64": "",
+    "nom_steam": "Maxime Delaire",
+    "motif": "Besoin d'une pause",
+    "debut": "2026-01-15",
+    "fin": "2026-01-31",
+    "created_at": "2026-01-15"
+  },
+  {
+    "matricule": "214",
+    "steamid64": "",
+    "nom_steam": "Konr4D",
+    "motif": "Projet de cours",
+    "debut": "2026-01-26",
+    "fin": "2026-02-07",
+    "created_at": "2026-01-26"
+  },
+  {
+    "matricule": "356",
+    "steamid64": "",
+    "nom_steam": "BateMan FR",
+    "motif": "J'ai pas fait mes devoirs",
+    "debut": "2026-01-26",
+    "fin": "2026-02-02",
+    "created_at": "2026-01-26"
+  },
+  {
+    "matricule": "973",
+    "steamid64": "",
+    "nom_steam": "CQBScope",
+    "motif": "trop de taff et petit pause",
+    "debut": "2026-02-02",
+    "fin": "2026-02-22",
+    "created_at": "2026-02-02"
+  }
+]

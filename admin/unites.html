@@ -166,6 +166,32 @@
         .rang-MISSING { background: rgba(255, 0, 0, 0.25); color: #ff2222; border: 1px solid rgba(255, 0, 0, 0.5); animation: pulse-missing 1.5s ease-in-out infinite; }
         @keyframes pulse-missing { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
 
+        /* Statut absence badges */
+        .statut-badge {
+            display: inline-block;
+            padding: 0.1rem 0.4rem;
+            border-radius: 2px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .statut-absence {
+            background: rgba(255, 140, 0, 0.2);
+            color: #ffaa00;
+            border: 1px solid rgba(255, 140, 0, 0.4);
+        }
+        .statut-pause {
+            background: rgba(255, 40, 40, 0.2);
+            color: #ff4444;
+            border: 1px solid rgba(255, 40, 40, 0.4);
+            animation: pulse-missing 1.5s ease-in-out infinite;
+        }
+        .statut-ok {
+            color: rgba(100,100,100,0.4);
+            font-size: 0.65rem;
+        }
+
         /* Buttons */
         .btn-sm {
             padding: 0.2rem 0.5rem;
@@ -334,6 +360,7 @@
                     <a href="unites.html" class="active">UNITÉS</a>
                     <a href="heures.html">HEURES DE JEU</a>
                     <a href="heures-archives.html">ARCHIVES</a>
+                    <a href="absences.html">ABSENCES</a>
                 </div>
 
                 <!-- Stats -->
@@ -440,13 +467,14 @@
                                         <th onclick="sortBy('discord')">DISCORD</th>
                                         <th onclick="sortBy('division')">DIVISION</th>
                                         <th onclick="sortBy('rang')">RANG</th>
+                                        <th>STATUT</th>
                                         <th onclick="sortBy('ordre')">ORDRE</th>
                                         <th onclick="sortBy('date_entree')">ENTRÉE</th>
                                         <th>ACTIONS</th>
                                     </tr>
                                 </thead>
                                 <tbody id="unitsBody">
-                                    <tr><td colspan="9" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr>
+                                    <tr><td colspan="10" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -566,11 +594,13 @@
       import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
       import {
         loadUnits as ghLoadUnits, saveUnits as ghSaveUnits,
+        loadAbsences as ghLoadAbsences,
         hasToken, promptToken
       } from '../assets/js/github-data.js';
 
       // ========== STATE ==========
       let allUnits = [];
+      let allAbsences = [];
       let currentSort = { key: 'ordre', asc: true };
 
       // ========== UTILS ==========
@@ -601,10 +631,59 @@
       };
 
       // ========== LOAD UNITS ==========
+      /** Lundi de la semaine contenant d */
+      function getWeekMonday(d) {
+        const date = new Date(d);
+        const day = date.getDay();
+        const diff = day === 0 ? -6 : 1 - day;
+        date.setDate(date.getDate() + diff);
+        date.setHours(0, 0, 0, 0);
+        return date;
+      }
+      function getWeekSunday(d) {
+        const mon = getWeekMonday(d);
+        const sun = new Date(mon);
+        sun.setDate(sun.getDate() + 6);
+        sun.setHours(23, 59, 59, 999);
+        return sun;
+      }
+      function daysInCurrentWeek(debut, fin) {
+        const now = new Date();
+        const ws = getWeekMonday(now), we = getWeekSunday(now);
+        const s = new Date(debut), e = new Date(fin);
+        const oS = s > ws ? s : ws, oE = e < we ? e : we;
+        if (oS > oE) return 0;
+        return Math.ceil((oE - oS) / 86400000) + 1;
+      }
+
+      /** Retourne le statut absence d'une unité par matricule */
+      function getUnitAbsenceStatus(matricule) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        for (const abs of allAbsences) {
+          if (abs.matricule !== matricule) continue;
+          const debut = new Date(abs.debut);
+          const fin = new Date(abs.fin);
+          debut.setHours(0, 0, 0, 0);
+          fin.setHours(23, 59, 59, 999);
+          if (today >= debut && today <= fin) {
+            const dw = daysInCurrentWeek(abs.debut, abs.fin);
+            return dw >= 3 ? 'pause' : 'absence';
+          }
+        }
+        return null;
+      }
+
+      function statutBadge(matricule) {
+        const s = getUnitAbsenceStatus(matricule);
+        if (s === 'pause') return '<span class="statut-badge statut-pause">PAUSE</span>';
+        if (s === 'absence') return '<span class="statut-badge statut-absence">ABSENCE</span>';
+        return '<span class="statut-ok">—</span>';
+      }
+
       async function loadUnits() {
         try {
-          allUnits = await ghLoadUnits();
-          // Assigner un id basé sur matricule si absent
+          [allUnits, allAbsences] = await Promise.all([ghLoadUnits(), ghLoadAbsences()]);
           allUnits = allUnits.map(u => ({ ...u, id: u.matricule || Math.random().toString(36).substr(2, 9) }));
           updateStats();
           renderTable();
@@ -663,7 +742,7 @@
 
         const tbody = document.getElementById('unitsBody');
         if (filtered.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--text-muted);">Aucune unité trouvée</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--text-muted);">Aucune unité trouvée</td></tr>';
           return;
         }
 
@@ -676,6 +755,7 @@
             <td style="font-size:0.78rem;">${u.discord || '<span style="color:var(--text-muted);">-</span>'}</td>
             <td>${divBadge(u.division)}</td>
             <td><span class="rang-badge ${rangClass(u.rang)}">${u.rang || '-'}</span></td>
+            <td>${statutBadge(u.matricule)}</td>
             <td style="font-size:0.78rem;color:var(--text-muted);">${u.ordre || '-'}</td>
             <td style="font-size:0.72rem;color:var(--text-muted);">${u.date_entree || '-'}</td>
             <td class="action-cell">
