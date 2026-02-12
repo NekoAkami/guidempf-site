@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Division UNION - MPF</title>
+    <link rel="stylesheet" href="../assets/css/main-style.css">
+    <link rel="stylesheet" href="../assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="../assets/css/global-nav.css">
+    <link rel="stylesheet" href="../assets/css/interactive-system.css">
+    <link rel="stylesheet" href="../assets/css/combine-animations.css">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <style>
+        .div-wrapper { max-width: 1000px; margin: 0 auto; }
+        .div-header-card {
+            padding: 1.5rem; margin-bottom: 1.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-left: 4px solid #ffffff;
+            border-radius: 4px;
+        }
+        .div-header-card h2 {
+            font-family: 'Orbitron', sans-serif; font-size: 1.3rem;
+            color: #ffffff; margin-bottom: 0.5rem;
+        }
+        .div-header-card p { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; }
+        .div-info { color: var(--text-muted); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; margin-top: 0.5rem; }
+
+        .sub-pages { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+        .sub-page-card {
+            padding: 1rem; background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 4px;
+            text-decoration: none; display: block; transition: all 0.15s;
+        }
+        .sub-page-card:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.25); }
+        .sub-page-card h3 { color: #ffffff; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; margin-bottom: 0.3rem; }
+        .sub-page-card p { color: var(--text-muted); font-size: 0.8rem; }
+
+        .rapports-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        .rapports-table th {
+            text-align: left; padding: 0.5rem 0.4rem; color: #ffffff;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.68rem;
+            letter-spacing: 1px; border-bottom: 2px solid rgba(255,255,255,0.15);
+            cursor: pointer; user-select: none;
+        }
+        .rapports-table td {
+            padding: 0.4rem; color: var(--text-primary);
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            font-family: 'Share Tech Mono', monospace; vertical-align: middle;
+        }
+        .rapports-table tr:hover { background: rgba(255,255,255,0.02); }
+        .type-badge {
+            display: inline-block; padding: 0.1rem 0.4rem; border-radius: 2px;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.68rem;
+            font-weight: 700; background: rgba(255,255,255,0.1); color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .search-bar {
+            margin-bottom: 1rem; display: flex; gap: 0.5rem;
+        }
+        .search-bar input {
+            flex: 1; padding: 0.45rem 0.7rem; background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.15); color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;
+            outline: none; border-radius: 2px;
+        }
+        .search-bar input:focus { border-color: #ffffff; }
+        .pagination {
+            display: flex; gap: 0.5rem; justify-content: center; align-items: center;
+            margin-top: 1rem; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;
+        }
+        .pagination button {
+            padding: 0.3rem 0.7rem; background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.2); color: #fff;
+            cursor: pointer; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; border-radius: 2px;
+        }
+        .pagination button:hover { background: rgba(255,255,255,0.1); }
+        .pagination button:disabled { opacity: 0.3; cursor: not-allowed; }
+        .pagination button.active { background: rgba(255,255,255,0.15); font-weight: 700; }
+        .pagination .page-info { color: var(--text-muted); }
+
+        .report-detail-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.75); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        .report-detail-box { background: #0a1628; border: 1px solid rgba(255,255,255,0.2); padding: 1.5rem; border-radius: 6px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        .report-detail-box h3 { color: #fff; font-family: 'Orbitron', sans-serif; font-size: 0.9rem; margin-bottom: 1rem; }
+        .report-detail-box .detail-row { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; font-family: 'Share Tech Mono', monospace; font-size: 0.82rem; }
+        .report-detail-box .detail-label { color: var(--text-muted); min-width: 120px; }
+        .report-detail-box .detail-value { color: var(--text-primary); flex: 1; }
+        .report-detail-box .close-btn { margin-top: 1rem; padding: 0.4rem 1rem; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: #fff; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; cursor: pointer; border-radius: 3px; display: block; margin-left: auto; }
+
+        #access-denied { display: none; text-align: center; padding: 3rem; }
+    </style>
+</head>
+<body>
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <div>
+                        <h1 class="logo">MPF</h1>
+                        <p class="logo-subtitle">Division UNION</p>
+                    </div>
+                </div>
+                <div id="authBtn" class="header-auth"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div id="loading" style="text-align:center;padding:3rem;">
+                <p style="color:#ffffff;font-family:'Share Tech Mono',monospace;">CHARGEMENT...</p>
+            </div>
+            <div id="access-denied">
+                <h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">ACCÈS REFUSÉ</h2>
+                <p style="color:var(--text-muted);font-family:'Share Tech Mono',monospace;margin-top:0.5rem;">Vous n'êtes pas membre de cette division.</p>
+            </div>
+
+            <div id="mainContent" style="display:none;">
+                <div class="div-wrapper">
+                    <div class="div-header-card">
+                        <h2>🚨 DIVISION UNION</h2>
+                        <p>Unité de base — Maintien de l'ordre, patrouilles, contrôles citoyens, application des verdicts.</p>
+                        <div class="div-info">ACCÈS : TOUS GRADES — CODE COULEUR : BLANC</div>
+                    </div>
+
+                    <div id="divInfoSection">
+                        <!-- Informations divisionnaires à venir -->
+                    </div>
+
+                    <!-- Rapports divisionnaires UNION -->
+                    <div class="combine-terminal-wrapper animate-fadeInUp" style="border-color: rgba(255,255,255,0.15);">
+                        <div class="combine-header" style="border-color: rgba(255,255,255,0.1);">
+                            <h2 style="color:#ffffff;">RAPPORTS DIVISION UNION</h2>
+                            <span class="header-code" id="reportCount">0</span>
+                        </div>
+                        <div class="combine-body">
+                            <div class="search-bar">
+                                <input type="text" id="searchInput" placeholder="Rechercher dans les rapports..." oninput="applyFilters()">
+                            </div>
+                            <div style="overflow-x:auto;">
+                                <table class="rapports-table">
+                                    <thead>
+                                        <tr>
+                                            <th onclick="sortBy('created_at')">DATE ▼</th>
+                                            <th onclick="sortBy('matricule')">MATRICULE</th>
+                                            <th onclick="sortBy('nom_steam')">NOM</th>
+                                            <th onclick="sortBy('type')">TYPE</th>
+                                            <th>RÉSUMÉ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="reportsBody">
+                                        <tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="pagination" id="pagination"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="../assets/js/auth.js"></script>
+    <script src="../assets/js/global-nav.js"></script>
+    <script src="../assets/js/interactive-system.js"></script>
+    <script src="../assets/js/combine-animations.js"></script>
+
+    <script type="module">
+      import { auth, db } from '../assets/js/auth.js';
+      import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+      import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+      import { loadReports, loadUnits } from '../assets/js/github-data.js';
+
+      const DIVISION = 'UNION';
+      let allReports = [], filteredReports = [], currentPage = 1, perPage = 20;
+      let sortField = 'created_at', sortDir = 'desc';
+
+      function fmtDate(d) { if(!d) return '-'; const p=d.split('-'); return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:d; }
+
+      window.applyFilters = function() {
+        const q = (document.getElementById('searchInput').value || '').toLowerCase();
+        filteredReports = allReports.filter(r => {
+          if (r.type_rapport !== 'divisionnaire' || r.division !== DIVISION) return false;
+          if (q) {
+            const txt = `${r.matricule} ${r.nom_steam||''} ${r.type||''} ${r.resume||''}`.toLowerCase();
+            if (!txt.includes(q)) return false;
+          }
+          return true;
+        });
+        filteredReports.sort((a,b) => {
+          const va = (a[sortField]||'').toString().toLowerCase(), vb = (b[sortField]||'').toString().toLowerCase();
+          return sortDir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+        });
+        currentPage = 1; renderTable();
+      };
+
+      window.sortBy = function(f) {
+        if (sortField === f) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+        else { sortField = f; sortDir = 'desc'; }
+        applyFilters();
+      };
+
+      function renderTable() {
+        const start = (currentPage-1)*perPage;
+        const page = filteredReports.slice(start, start+perPage);
+        document.getElementById('reportCount').textContent = filteredReports.length + ' RAPPORT' + (filteredReports.length>1?'S':'');
+        const tb = document.getElementById('reportsBody');
+        if (!page.length) { tb.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Aucun rapport divisionnaire</td></tr>'; }
+        else {
+          tb.innerHTML = page.map(r => `<tr style="cursor:pointer;" onclick="showDetail('${r._id}')">
+            <td style="font-size:0.75rem;">${fmtDate(r.created_at)}</td>
+            <td>${r.matricule||'-'}</td>
+            <td style="font-size:0.75rem;">${r.nom_steam||'-'}</td>
+            <td><span class="type-badge">${r.type||'-'}</span></td>
+            <td style="font-size:0.75rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.resume||'-'}</td>
+          </tr>`).join('');
+        }
+        const totalPages = Math.ceil(filteredReports.length/perPage)||1;
+        const pag = document.getElementById('pagination');
+        let html = `<button onclick="goPage(1)" ${currentPage===1?'disabled':''}>«</button><button onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+        for (let i=Math.max(1,currentPage-2);i<=Math.min(totalPages,currentPage+2);i++) html+=`<button onclick="goPage(${i})" class="${i===currentPage?'active':''}">${i}</button>`;
+        html+=`<button onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button><button onclick="goPage(${totalPages})" ${currentPage===totalPages?'disabled':''}>»</button><span class="page-info">${currentPage}/${totalPages}</span>`;
+        pag.innerHTML = html;
+      }
+
+      window.goPage = function(p) { const t=Math.ceil(filteredReports.length/perPage)||1; currentPage=Math.max(1,Math.min(t,p)); renderTable(); };
+
+      window.showDetail = function(id) {
+        const r = allReports.find(x=>x._id===id); if(!r) return;
+        const o = document.createElement('div'); o.className='report-detail-overlay';
+        o.innerHTML=`<div class="report-detail-box"><h3>RAPPORT DIVISIONNAIRE — ${DIVISION}</h3>
+          <div class="detail-row"><span class="detail-label">DATE</span><span class="detail-value">${fmtDate(r.created_at)}</span></div>
+          <div class="detail-row"><span class="detail-label">MATRICULE</span><span class="detail-value">${r.matricule||'-'}</span></div>
+          <div class="detail-row"><span class="detail-label">NOM</span><span class="detail-value">${r.nom_steam||'-'}</span></div>
+          <div class="detail-row"><span class="detail-label">TYPE</span><span class="detail-value">${r.type||'-'}</span></div>
+          <div class="detail-row"><span class="detail-label">SECTEUR</span><span class="detail-value">${r.secteur||'-'}</span></div>
+          <div class="detail-row"><span class="detail-label">UNITÉS</span><span class="detail-value">${r.unites||'-'}</span></div>
+          <div class="detail-row"><span class="detail-label">RÉSUMÉ</span><span class="detail-value">${r.resume||'-'}</span></div>
+          ${r.notes?`<div class="detail-row"><span class="detail-label">NOTES</span><span class="detail-value">${r.notes}</span></div>`:''}
+          <button class="close-btn" onclick="this.closest('.report-detail-overlay').remove()">FERMER</button></div>`;
+        document.body.appendChild(o);
+        o.addEventListener('click',e=>{if(e.target===o)o.remove();});
+      };
+
+      onAuthStateChanged(auth, async(user) => {
+        if(!user){document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';return;}
+        try {
+          const s = await getDoc(doc(db,'users',user.uid));
+          if(!s.exists()||!s.data().approved){document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';return;}
+          const ud = s.data();
+          let units = []; try { units = await loadUnits(); } catch(_){}
+          const ui = units.find(x => x.matricule === ud.matricule);
+          const rg = ui?(ui.rang||''):'';
+          const isHG = rg === 'Ofc' || rg === 'Cmd';
+          const userDiv = ui?(ui.division||''):'';
+          // Accès : membre de la division OU haut-gradé
+          if (userDiv !== DIVISION && !isHG) {
+            document.getElementById('loading').style.display='none';
+            document.getElementById('access-denied').style.display='block'; return;
+          }
+          document.getElementById('loading').style.display='none';
+          document.getElementById('mainContent').style.display='block';
+          try { allReports = await loadReports(); } catch(_) { allReports = []; }
+          applyFilters();
+        } catch(e) { console.error(e); document.getElementById('loading').style.display='none'; document.getElementById('access-denied').style.display='block'; }
+      });
+    </script>
+</body>
+</html>

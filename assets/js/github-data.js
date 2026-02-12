@@ -345,6 +345,83 @@ async function deleteDeposit(docId) {
   return await deleteFromSubCollection('deposits', docId);
 }
 
+// ========== PAYROLL CONFIG (document unique) ==========
+async function loadPayrollConfig() {
+  try {
+    const snap = await getDoc(doc(db, FS_COLLECTION, 'payroll_config'));
+    if (snap.exists()) return snap.data();
+  } catch (e) {
+    console.warn('[DataStore] Payroll config read failed:', e.message);
+  }
+  // Valeurs par défaut
+  return {
+    report_values: {
+      'Patrouille': 2.0,
+      'Opération': 4.0,
+      'Fouille mineur': 1.0,
+      'Fouille majeur': 2.0,
+      'Point Passage': 1.5,
+      'Protection VIP': 3.0,
+      'Distribution ration': 1.5,
+      'Formation': 3.0,
+      'Conscription': 2.0,
+      'Session de travail': 1.5,
+      'Déblayage': 1.0,
+      'Interrogatoire': 2.5,
+      'Test de loyauté': 2.0,
+      'Autre': 1.0
+    }
+  };
+}
+
+async function savePayrollConfig(config) {
+  _checkRateLimit();
+  _pendingWrites++;
+  _notifySync('syncing');
+  try {
+    await setDoc(doc(db, FS_COLLECTION, 'payroll_config'), {
+      ...config,
+      updated_at: new Date().toISOString()
+    });
+    _pendingWrites--;
+    if (_pendingWrites === 0) _notifySync('synced');
+  } catch (err) {
+    _pendingWrites--;
+    if (_pendingWrites === 0) _notifySync('error');
+    throw err;
+  }
+}
+
+// ========== PAYROLL ARCHIVES (sous-collection) ==========
+async function loadPayrollArchives() {
+  return await readSubCollection('payroll', 'week_end', 'desc');
+}
+
+async function addPayrollArchive(payroll) {
+  return await addToSubCollection('payroll', payroll);
+}
+
+async function updatePayrollArchive(docId, payroll) {
+  return await updateInSubCollection('payroll', docId, payroll);
+}
+
+async function deletePayrollArchive(docId) {
+  return await deleteFromSubCollection('payroll', docId);
+}
+
+// ========== EARNINGS (sous-collection) ==========
+async function loadEarnings() {
+  return await readSubCollection('earnings', 'created_at', 'desc');
+}
+
+async function addEarning(earning) {
+  return await addToSubCollection('earnings', earning);
+}
+
+async function deleteEarning(docId) {
+  return await deleteFromSubCollection('earnings', docId);
+}
+
 // ========== EXPORT ==========
 export {
   readJsonFile, writeJsonFile, onSyncStatus,
@@ -354,5 +431,8 @@ export {
   loadAbsences, saveAbsences, addAbsence, deleteAbsence, updateAbsence,
   loadReports, saveReports, addReport, deleteReport, updateReport,
   loadDeposits, saveDeposits, addDeposit, deleteDeposit,
+  loadPayrollConfig, savePayrollConfig,
+  loadPayrollArchives, addPayrollArchive, updatePayrollArchive, deletePayrollArchive,
+  loadEarnings, addEarning, deleteEarning,
   GITHUB_OWNER, GITHUB_REPO
 };

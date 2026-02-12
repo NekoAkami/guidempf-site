@@ -32,16 +32,28 @@ class GlobalNavigation {
         if (!headerContent) return;
         const indicator = document.createElement('div');
         indicator.id = 'maintenanceIndicator';
-        indicator.style.cssText = 'display:inline-block;margin-left:1.2rem;vertical-align:middle;';
+        indicator.style.cssText = 'display:inline-flex;align-items:center;gap:0.5rem;margin-left:1.2rem;vertical-align:middle;';
         headerContent.appendChild(indicator);
-        async function updateInd() {
-            const enabled = await mod.isMaintenanceMode();
-            indicator.innerHTML = enabled
-                ? '<span style="color:#ffaa00;font-weight:700;font-family:Share Tech Mono,monospace;">MAINTENANCE</span>'
-                : '<span style="color:var(--accent-cyan);font-weight:700;font-family:Share Tech Mono,monospace;">EN LIGNE</span>';
+
+        function updateInd(data) {
+            const enabled = data && data.enabled === true;
+            if (enabled) {
+                indicator.innerHTML = '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ffaa00;animation:maintPulse 1.5s ease-in-out infinite;"></span><span style="color:#ffaa00;font-weight:700;font-family:Share Tech Mono,monospace;font-size:0.8rem;">MAINTENANCE</span>';
+            } else {
+                indicator.innerHTML = '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#00cc55;"></span><span style="color:#00cc55;font-weight:700;font-family:Share Tech Mono,monospace;font-size:0.8rem;">EN LIGNE</span>';
+            }
         }
-        updateInd();
-        setInterval(updateInd, 20000);
+
+        // Écoute temps réel au lieu de polling
+        mod.listenMaintenanceMode(updateInd);
+
+        // Ajouter l'animation de pulsation
+        if (!document.getElementById('maintPulseStyle')) {
+            const style = document.createElement('style');
+            style.id = 'maintPulseStyle';
+            style.textContent = '@keyframes maintPulse{0%,100%{opacity:1;box-shadow:0 0 4px #ffaa00;}50%{opacity:0.4;box-shadow:0 0 8px #ffaa00;}}';
+            document.head.appendChild(style);
+        }
     }
     // Redirection maintenance globale (hors admin/ et maintenance.html)
     async checkMaintenanceRedirect() {
@@ -50,25 +62,62 @@ class GlobalNavigation {
             mod = await import(this.basePath + 'assets/js/maintenance.js');
         } catch { return; }
         const path = window.location.pathname;
-        if (path.includes('/admin/') || path.endsWith('maintenance.html')) return;
-        const enabled = await mod.isMaintenanceMode();
-        if (enabled) {
-            // Vérifier si l'utilisateur est admin/hautgradé
-            try {
-                const { auth, db } = await import(this.basePath + 'assets/js/auth.js');
-                const { getDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-                const { onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
-                onAuthStateChanged(auth, async (user) => {
-                    if (!user) { window.location.href = this.basePath + 'maintenance.html'; return; }
-                    const snap = await getDoc(doc(db, 'users', user.uid));
-                    if (!snap.exists()) { window.location.href = this.basePath + 'maintenance.html'; return; }
-                    const data = snap.data();
-                    const rang = data.rang || '';
-                    if (data.is_admin || rang === 'Ofc' || rang === 'Cmd') return;
-                    window.location.href = this.basePath + 'maintenance.html';
-                });
-            } catch { window.location.href = this.basePath + 'maintenance.html'; }
+        if (path.endsWith('maintenance.html')) return;
+
+        const info = await mod.getMaintenanceInfo();
+        if (!info || !info.enabled) return;
+
+        // Pages admin : ne pas rediriger, mais afficher la bannière si maintenance active
+        if (path.includes('/admin/')) {
+            this.showMaintenanceBanner(info);
+            return;
         }
+
+        // Vérifier si l'utilisateur est admin/hautgradé
+        try {
+            const { auth, db } = await import(this.basePath + 'assets/js/auth.js');
+            const { getDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+            const { onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
+            onAuthStateChanged(auth, async (user) => {
+                if (!user) { window.location.href = this.basePath + 'maintenance.html'; return; }
+                const snap = await getDoc(doc(db, 'users', user.uid));
+                if (!snap.exists()) { window.location.href = this.basePath + 'maintenance.html'; return; }
+                const data = snap.data();
+                const rang = data.rang || '';
+                if (data.is_admin || rang === 'Ofc' || rang === 'Cmd') {
+                    // Admin/HG : laisser naviguer mais montrer la bannière
+                    this.showMaintenanceBanner(info);
+                    return;
+                }
+                window.location.href = this.basePath + 'maintenance.html';
+            });
+        } catch { window.location.href = this.basePath + 'maintenance.html'; }
+    }
+
+    // Bannière d'alerte maintenance pour admins/HG
+    showMaintenanceBanner(info) {
+        if (document.getElementById('maintBanner')) return;
+        const banner = document.createElement('div');
+        banner.id = 'maintBanner';
+        banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:10000;background:rgba(255,170,0,0.95);color:#000;text-align:center;padding:0.4rem 1rem;font-family:"Share Tech Mono",monospace;font-size:0.78rem;font-weight:700;letter-spacing:1px;display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;box-shadow:0 2px 10px rgba(255,170,0,0.3);';
+        let html = '⚠ MODE MAINTENANCE ACTIF — Les utilisateurs sont redirigés';
+        if (info.message) {
+            html += ' — <span style="font-weight:400;font-style:italic;">"' + info.message.substring(0, 80) + '"</span>';
+        }
+        if (info.estimated_return) {
+            try {
+                const ret = new Date(info.estimated_return);
+                if (!isNaN(ret.getTime())) {
+                    html += ' — Retour: ' + ret.toLocaleString('fr-FR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+                }
+            } catch {}
+        }
+        html += ' <a href="' + this.basePath + 'admin/panel.html" style="color:#000;text-decoration:underline;margin-left:0.5rem;">Panel Admin</a>';
+        html += '<button onclick="this.parentElement.remove()" style="background:none;border:1px solid #000;color:#000;cursor:pointer;padding:0.1rem 0.5rem;font-family:inherit;font-size:0.7rem;border-radius:2px;margin-left:0.5rem;">✕</button>';
+        banner.innerHTML = html;
+        document.body.prepend(banner);
+        // Décaler le contenu de la page
+        document.body.style.paddingTop = banner.offsetHeight + 'px';
     }
 
     // Détecte le chemin de base pour les sous-dossiers (ex: admin/)
@@ -200,6 +249,7 @@ class GlobalNavigation {
                 url: 'activite.html',
                 dropdown: [
                     { label: 'Tableaux Milice', url: 'activite-tableaux.html' },
+                    { label: 'Activité Milice', url: 'activite-milice.html' },
                     { label: 'Worker Announcement', url: 'worker-announcement.html' },
                     { label: 'Ration Announcement', url: 'ration-announcement.html' },
                     { label: 'Suspended Rations', url: 'suspended-rations.html' },
@@ -226,6 +276,17 @@ class GlobalNavigation {
                     { label: 'Breches de Protocoles', url: 'guide-breches.html' },
                     { label: 'Formations Complementaires', url: 'guide-formations.html' },
                     { label: 'Sociostatus', url: 'guide-sociostatus.html' }
+                ]
+            },
+            {
+                label: 'DIVISIONS',
+                url: 'divisions.html',
+                dropdown: [
+                    { label: 'UNION', url: 'divisions/union.html' },
+                    { label: 'GRID', url: 'divisions/grid.html' },
+                    { label: 'HELIX', url: 'divisions/helix.html' },
+                    { label: 'SWORD', url: 'divisions/sword.html' },
+                    { label: 'APEX', url: 'divisions/apex.html' }
                 ]
             },
             {
@@ -261,12 +322,20 @@ class GlobalNavigation {
                 url: 'formulaires.html',
                 dropdown: [
                     { label: 'Rapport', url: 'form-rapport.html' },
-                    { label: 'Dépense et Gain', url: 'form-depenses.html' },
-                    { label: 'Rapport Complet', url: 'form-rapport-complet.html' },
+                    { label: 'Dépense et Gain', url: 'form-depot.html' },
                     { label: 'Test', url: 'form-test.html' },
                     { label: 'Formation', url: 'form-formation.html' }
                 ]
             },
+            {
+                label: 'RAPPORTS',
+                url: 'rapports.html',
+                dropdown: [
+                    { label: 'Tous les Rapports', url: 'rapports.html' },
+                    { label: 'Rapports Divisionnaires', url: 'rapports-divisionnaires.html' }
+                ]
+            },
+            { label: 'PAYES', url: 'payes.html' },
             { label: 'SCANNER', url: 'scanner.html' },
             { label: 'VIEWTIME', url: 'viewtime.html' },
             { label: 'ABSENCES', url: 'declaration-absence.html' },

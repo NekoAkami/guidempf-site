@@ -4,34 +4,391 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maintenance - MPF Documentation</title>
-    <link rel="stylesheet" href="assets/css/main-style.css">
-    <link rel="stylesheet" href="assets/css/global-nav.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <style>
-        body { background: #0a0e13; color: #fff; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .maintenance-message {
+        :root {
+            --accent-cyan: #00aaff;
+            --bg-dark: #0a0e13;
+            --bg-card: rgba(0, 170, 255, 0.04);
+            --border-color: rgba(0, 170, 255, 0.15);
+            --text-primary: #e0e0e0;
+            --text-muted: #7a8a9a;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Scanlines */
+        .scanlines {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 1;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 170, 255, 0.015) 0px,
+                rgba(0, 170, 255, 0.015) 1px,
+                transparent 1px,
+                transparent 3px
+            );
+        }
+
+        /* Particules flottantes */
+        .particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+        }
+        .particle {
+            position: absolute;
+            width: 2px; height: 2px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 8s infinite;
+        }
+        @keyframes particleFloat {
+            0% { opacity: 0; transform: translateY(100vh) scale(0); }
+            20% { opacity: 0.4; }
+            80% { opacity: 0.2; }
+            100% { opacity: 0; transform: translateY(-20vh) scale(1.5); }
+        }
+
+        /* Conteneur principal */
+        .maintenance-container {
+            position: relative; z-index: 2;
             text-align: center;
-            background: rgba(0,170,255,0.07);
+            max-width: 560px;
+            width: 90%;
+        }
+
+        /* Icône animée */
+        .maint-icon {
+            width: 80px; height: 80px;
+            margin: 0 auto 1.5rem;
+            position: relative;
+        }
+        .maint-icon .gear {
+            width: 80px; height: 80px;
+            animation: gearSpin 6s linear infinite;
+        }
+        @keyframes gearSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Carte principale */
+        .maint-card {
+            background: rgba(0, 12, 24, 0.85);
             border: 2px solid var(--accent-cyan);
             border-radius: 8px;
-            padding: 3rem 2.5rem;
-            box-shadow: 0 0 24px 0 rgba(0,170,255,0.08);
+            padding: 2.5rem 2rem 2rem;
+            box-shadow:
+                0 0 30px rgba(0, 170, 255, 0.1),
+                0 0 60px rgba(0, 170, 255, 0.05),
+                inset 0 0 30px rgba(0, 170, 255, 0.02);
+            position: relative;
+            overflow: hidden;
         }
-        .maintenance-message h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.5rem;
-            color: var(--accent-cyan);
+        .maint-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+            animation: scanBar 3s ease-in-out infinite;
+        }
+        @keyframes scanBar {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            background: rgba(255, 170, 0, 0.15);
+            border: 1px solid rgba(255, 170, 0, 0.4);
+            color: #ffaa00;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            border-radius: 2px;
             margin-bottom: 1.2rem;
+            animation: statusPulse 2s ease-in-out infinite;
         }
-        .maintenance-message p {
-            font-size: 1.1rem;
+        @keyframes statusPulse {
+            0%, 100% { box-shadow: 0 0 8px rgba(255, 170, 0, 0.2); }
+            50% { box-shadow: 0 0 20px rgba(255, 170, 0, 0.4); }
+        }
+
+        .maint-card h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            color: var(--accent-cyan);
+            margin-bottom: 0.8rem;
+            letter-spacing: 3px;
+            text-shadow: 0 0 20px rgba(0, 170, 255, 0.3);
+        }
+
+        .maint-message {
+            font-size: 1rem;
+            color: var(--text-primary);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            min-height: 1.5em;
+        }
+
+        /* Infos supplémentaires */
+        .maint-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            margin-top: 1.2rem;
+        }
+        .info-block {
+            background: rgba(0, 170, 255, 0.04);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 0.8rem;
+            text-align: center;
+        }
+        .info-block .info-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
             color: var(--text-muted);
+            letter-spacing: 1.5px;
+            margin-bottom: 0.3rem;
+        }
+        .info-block .info-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.95rem;
+            color: var(--accent-cyan);
+            font-weight: 700;
+        }
+        .info-block .info-value.countdown {
+            color: #ffaa00;
+        }
+
+        /* Barre de progression */
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(0, 170, 255, 0.1);
+            border-radius: 2px;
+            margin-top: 1.5rem;
+            overflow: hidden;
+        }
+        .progress-bar .progress-fill {
+            height: 100%;
+            width: 30%;
+            background: linear-gradient(90deg, var(--accent-cyan), #00ddff);
+            border-radius: 2px;
+            animation: progressPulse 2.5s ease-in-out infinite;
+        }
+        @keyframes progressPulse {
+            0% { width: 10%; opacity: 0.5; }
+            50% { width: 70%; opacity: 1; }
+            100% { width: 10%; opacity: 0.5; }
+        }
+
+        /* Footer */
+        .maint-footer {
+            margin-top: 1.5rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+        .maint-footer a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+        }
+        .maint-footer a:hover { text-decoration: underline; }
+
+        /* Admin link */
+        .admin-link {
+            display: none;
+            margin-top: 1rem;
+        }
+        .admin-link a {
+            color: var(--accent-cyan);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            text-decoration: none;
+            border: 1px solid var(--border-color);
+            padding: 0.4rem 1rem;
+            border-radius: 3px;
+            transition: all 0.2s;
+        }
+        .admin-link a:hover {
+            background: rgba(0, 170, 255, 0.1);
+            border-color: var(--accent-cyan);
+        }
+
+        @media (max-width: 500px) {
+            .maint-card { padding: 2rem 1.2rem 1.5rem; }
+            .maint-card h1 { font-size: 1.3rem; }
+            .maint-info { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div class="maintenance-message">
-        <h1>MAINTENANCE EN COURS</h1>
-        <p>Le site est temporairement indisponible.<br>Merci de revenir plus tard.</p>
+    <div class="scanlines"></div>
+    <div class="particles" id="particles"></div>
+
+    <div class="maintenance-container">
+        <!-- Icône engrenage animée -->
+        <div class="maint-icon">
+            <svg class="gear" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 30a20 20 0 1 0 0 40 20 20 0 0 0 0-40zm0 32a12 12 0 1 1 0-24 12 12 0 0 1 0 24z" fill="#00aaff" opacity="0.8"/>
+                <path d="M97 42h-7.1a40.3 40.3 0 0 0-4.7-11.3l5-5-8.5-8.5-5 5A40.3 40.3 0 0 0 65.4 17.5V10h-12v7.5a40.3 40.3 0 0 0-11.3 4.7l-5-5-8.5 8.5 5 5A40.3 40.3 0 0 0 28.9 42H22v12h6.9a40.3 40.3 0 0 0 4.7 11.3l-5 5 8.5 8.5 5-5a40.3 40.3 0 0 0 11.3 4.7V76h12v-7.5a40.3 40.3 0 0 0 11.3-4.7l5 5 8.5-8.5-5-5A40.3 40.3 0 0 0 89.9 44H97V42z" fill="#00aaff" opacity="0.3"/>
+            </svg>
+        </div>
+
+        <div class="maint-card">
+            <div class="status-badge">⚠ HORS LIGNE</div>
+            <h1>MAINTENANCE EN COURS</h1>
+            <p class="maint-message" id="maintMessage">Le site est temporairement indisponible pour maintenance.</p>
+
+            <div class="maint-info">
+                <div class="info-block">
+                    <div class="info-label">DÉBUT MAINTENANCE</div>
+                    <div class="info-value" id="maintStart">--:--</div>
+                </div>
+                <div class="info-block">
+                    <div class="info-label">RETOUR ESTIMÉ</div>
+                    <div class="info-value countdown" id="maintReturn">Non défini</div>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+
+        <div class="admin-link" id="adminLink">
+            <a href="admin/panel.html">[ ACCÈS PANEL ADMIN ]</a>
+        </div>
+
+        <div class="maint-footer">
+            MPF DOCUMENTATION SYSTEM &mdash; <a href="https://github.com/NekoAkami/guidempf-site" target="_blank">GitHub</a>
+        </div>
     </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // Config Firebase (même que auth.js)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDPs4x2EE1pyeQTC_V-Ze5uyZ8Rs2N8qF4",
+            authDomain: "guidempf.firebaseapp.com",
+            projectId: "guidempf",
+            storageBucket: "guidempf.firebasestorage.app",
+            messagingSenderId: "806309770965",
+            appId: "1:806309770965:web:3621f58bfb252446c1945c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Écoute en temps réel les infos de maintenance
+        const maintDoc = doc(db, 'config', 'maintenance');
+        onSnapshot(maintDoc, (snap) => {
+            if (!snap.exists()) return;
+            const data = snap.data();
+
+            // Si maintenance désactivée, rediriger vers l'accueil
+            if (!data.enabled) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Message personnalisé
+            const msgEl = document.getElementById('maintMessage');
+            if (data.message) {
+                msgEl.textContent = data.message;
+            }
+
+            // Heure de début
+            const startEl = document.getElementById('maintStart');
+            if (data.activated_at) {
+                const d = new Date(data.activated_at);
+                startEl.textContent = d.toLocaleString('fr-FR', {
+                    day: '2-digit', month: '2-digit',
+                    hour: '2-digit', minute: '2-digit'
+                });
+            }
+
+            // Retour estimé
+            const returnEl = document.getElementById('maintReturn');
+            if (data.estimated_return) {
+                const ret = new Date(data.estimated_return);
+                if (!isNaN(ret.getTime())) {
+                    returnEl.textContent = ret.toLocaleString('fr-FR', {
+                        day: '2-digit', month: '2-digit',
+                        hour: '2-digit', minute: '2-digit'
+                    });
+                    // Compte à rebours
+                    updateCountdown(ret, returnEl);
+                } else {
+                    returnEl.textContent = data.estimated_return;
+                }
+            }
+        });
+
+        function updateCountdown(target, el) {
+            function tick() {
+                const now = new Date();
+                const diff = target - now;
+                if (diff <= 0) {
+                    el.textContent = 'IMMINENT';
+                    el.style.color = '#00cc55';
+                    return;
+                }
+                const hours = Math.floor(diff / 3600000);
+                const mins = Math.floor((diff % 3600000) / 60000);
+                const secs = Math.floor((diff % 60000) / 1000);
+                el.textContent = `${hours}h ${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
+            }
+            tick();
+            setInterval(tick, 1000);
+        }
+
+        // Si l'utilisateur est admin/HG → montrer le lien admin
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) return;
+            try {
+                const { getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                const snap = await getDoc(doc(db, 'users', user.uid));
+                if (!snap.exists()) return;
+                const data = snap.data();
+                if (data.is_admin || data.rang === 'Ofc' || data.rang === 'Cmd') {
+                    document.getElementById('adminLink').style.display = 'block';
+                }
+            } catch {}
+        });
+
+        // Générer les particules
+        const container = document.getElementById('particles');
+        for (let i = 0; i < 30; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.left = Math.random() * 100 + '%';
+            p.style.animationDelay = Math.random() * 8 + 's';
+            p.style.animationDuration = (6 + Math.random() * 6) + 's';
+            container.appendChild(p);
+        }
+    </script>
 </body>
 </html>

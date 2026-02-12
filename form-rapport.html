@@ -268,6 +268,22 @@
                         <h1 class="logo">MPF</h1>
                         <p class="logo-subtitle">Rapport d'Activité</p>
                     </div>
+
+                              <!-- Choix rapport divisionnaire/unité -->
+                              <div class="form-group" id="grpDivisionnaire">
+                                <label>TYPE DE RAPPORT <span class="req">*</span></label>
+                                <div style="display:flex;gap:1.5rem;align-items:center;">
+                                  <label style="display:flex;align-items:center;gap:0.4rem;">
+                                    <input type="radio" name="typeRapport" id="rapportUnite" value="unite" checked>
+                                    Rapport unité
+                                  </label>
+                                  <label style="display:flex;align-items:center;gap:0.4rem;">
+                                    <input type="radio" name="typeRapport" id="rapportDivisionnaire" value="divisionnaire">
+                                    Rapport divisionnaire
+                                  </label>
+                                </div>
+                                <div class="hint">Un rapport divisionnaire ne sera visible que par la division concernée et les haut-gradés.</div>
+                              </div>
                 </div>
                 <div id="authBtn" class="header-auth"></div>
             </div>
@@ -686,7 +702,9 @@
           unites: document.getElementById('fUnites').value.trim(),
           resume: document.getElementById('fResume').value.trim(),
           notes: document.getElementById('fNotes').value.trim(),
-          created_at: new Date().toISOString().substring(0,10)
+          created_at: new Date().toISOString().substring(0,10),
+          type_rapport: document.querySelector('input[name="typeRapport"]:checked')?.value || 'unite',
+          division: currentUser.division || ''
         };
         // Ajouter nb citoyens si distribution ration
         if (r.type === 'Distribution ration') {
@@ -774,9 +792,9 @@
           if(!s.exists()){document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';return;}
           const ud=s.data();
           if(!ud.approved){document.getElementById('loading').style.display='none';document.getElementById('notApproved').style.display='block';return;}
-          currentUser={matricule:ud.matricule||'???',nom_steam:ud.nom_steam||'',steamid64:ud.steamid64||''};
+          currentUser={matricule:ud.matricule||'???',nom_steam:ud.nom_steam||'',steamid64:ud.steamid64||'',division:''};
           let ui=null;try{const u=await ghLoadUnits();allUnitsData=u||[];populateUnitsDropdown(allUnitsData);ui=u.find(x=>x.matricule===currentUser.matricule)||null;}catch(_){allUnitsData=[];}
-          const rg=ui?(ui.rang||''):'';const isHG=rg==='Ofc'||rg==='Cmd';const dv=ui&&!isHG?(ui.division||''):'';
+          const rg=ui?(ui.rang||''):'';const isHG=rg==='Ofc'||rg==='Cmd';const dv=ui&&!isHG?(ui.division||''):'';currentUser.division=ui?(ui.division||''):'';
           const acc=getAccreditation(rg);
           document.getElementById('userIdentification').textContent='Identification : '+[rg,dv,currentUser.matricule].filter(Boolean).join(' ');
           document.getElementById('userAvatar').textContent=currentUser.matricule.substring(0,3);
