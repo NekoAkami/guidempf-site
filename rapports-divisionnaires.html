@@ -54,11 +54,13 @@
             font-family: 'Share Tech Mono', monospace; font-size: 0.68rem;
             font-weight: 700; letter-spacing: 0.5px;
         }
-        .badge-union { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.3); }
-        .badge-grid { background: rgba(255,165,0,0.15); color: #ffa500; border: 1px solid rgba(255,165,0,0.3); }
         .badge-helix { background: rgba(50,205,50,0.15); color: #32cd32; border: 1px solid rgba(50,205,50,0.3); }
-        .badge-sword { background: rgba(255,68,68,0.15); color: #ff4444; border: 1px solid rgba(255,68,68,0.3); }
-        .badge-apex { background: rgba(255,0,255,0.15); color: #ff00ff; border: 1px solid rgba(255,0,255,0.3); }
+        .badge-razor { background: rgba(255,68,68,0.15); color: #ff4444; border: 1px solid rgba(255,68,68,0.3); }
+        .badge-jury { background: rgba(255,215,0,0.15); color: #ffd700; border: 1px solid rgba(255,215,0,0.3); }
+        .badge-exogen { background: rgba(255,0,255,0.15); color: #ff00ff; border: 1px solid rgba(255,0,255,0.3); }
+        .badge-grid { background: rgba(255,165,0,0.15); color: #ffa500; border: 1px solid rgba(255,165,0,0.3); }
+        .badge-zone { background: rgba(0,204,255,0.15); color: #00ccff; border: 1px solid rgba(0,204,255,0.3); }
+        .badge-spectre { background: rgba(139,0,255,0.15); color: #8b00ff; border: 1px solid rgba(139,0,255,0.3); }
         .badge-type { background: rgba(0,170,255,0.15); color: var(--accent-cyan); border: 1px solid rgba(0,170,255,0.3); }
 
         .pagination {
@@ -160,11 +162,13 @@
                             <!-- Onglets divisions -->
                             <div class="div-tabs" id="divTabs">
                                 <div class="div-tab active" onclick="filterDiv('')">TOUTES</div>
-                                <div class="div-tab" onclick="filterDiv('UNION')" style="border-color:rgba(255,255,255,0.3);color:#fff;">UNION</div>
-                                <div class="div-tab" onclick="filterDiv('GRID')" style="border-color:rgba(255,165,0,0.3);color:#ffa500;">GRID</div>
                                 <div class="div-tab" onclick="filterDiv('HELIX')" style="border-color:rgba(50,205,50,0.3);color:#32cd32;">HELIX</div>
-                                <div class="div-tab" onclick="filterDiv('SWORD')" style="border-color:rgba(255,68,68,0.3);color:#ff4444;">SWORD</div>
-                                <div class="div-tab" onclick="filterDiv('APEX')" style="border-color:rgba(255,0,255,0.3);color:#ff00ff;">APEX</div>
+                                <div class="div-tab" onclick="filterDiv('RAZOR')" style="border-color:rgba(255,68,68,0.3);color:#ff4444;">RAZOR</div>
+                                <div class="div-tab" onclick="filterDiv('JURY')" style="border-color:rgba(255,215,0,0.3);color:#ffd700;">JURY</div>
+                                <div class="div-tab" onclick="filterDiv('EXOGEN')" style="border-color:rgba(255,0,255,0.3);color:#ff00ff;">EXOGEN</div>
+                                <div class="div-tab" onclick="filterDiv('GRID')" style="border-color:rgba(255,165,0,0.3);color:#ffa500;">GRID</div>
+                                <div class="div-tab" onclick="filterDiv('ZONE')" style="border-color:rgba(0,204,255,0.3);color:#00ccff;">ZONE</div>
+                                <div class="div-tab" onclick="filterDiv('SPECTRE')" style="border-color:rgba(139,0,255,0.3);color:#8b00ff;">SPECTRE</div>
                             </div>
 
                             <div class="search-filter-bar">
@@ -235,7 +239,7 @@
         return { start: monday.toISOString().substring(0,10), end: sunday.toISOString().substring(0,10) };
       }
       function getDivBadgeClass(div) {
-        return { UNION:'badge-union', GRID:'badge-grid', HELIX:'badge-helix', SWORD:'badge-sword', APEX:'badge-apex' }[div] || 'badge-type';
+        return { HELIX:'badge-helix', RAZOR:'badge-razor', JURY:'badge-jury', EXOGEN:'badge-exogen', GRID:'badge-grid', ZONE:'badge-zone', SPECTRE:'badge-spectre' }[div] || 'badge-type';
       }
 
       window.filterDiv = function(div) {
