@@ -194,23 +194,33 @@
                             <div class="row-2">
                                 <div class="form-group" id="grpMontant">
                                     <label>MONTANT (TOKENS) <span class="req">*</span></label>
-                                    <input type="number" id="fMontant" min="1" placeholder="Ex: 500">
+                                    <input type="number" id="fMontant" min="1" step="1" pattern="[0-9]*" placeholder="Ex: 500" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+                                    <div class="hint">Nombre entier uniquement</div>
                                     <div class="error-msg" id="errMontant"></div>
                                 </div>
                                 <div class="form-group" id="grpMotif">
-                                    <label>MOTIF <span class="req">*</span></label>
-                                    <select id="fMotif">
+                                    <label>SOURCE <span class="req">*</span></label>
+                                    <select id="fMotif" onchange="onSourceChange()">
                                         <option value="">— Sélectionner —</option>
-                                        <option value="Amende payée">Amende payée</option>
-                                        <option value="Confiscation de biens">Confiscation de biens</option>
-                                        <option value="Vente de rations">Vente de rations</option>
-                                        <option value="Saisie de contrebande">Saisie de contrebande</option>
-                                        <option value="Transfert de fonds">Transfert de fonds</option>
-                                        <option value="Gain opérationnel">Gain opérationnel</option>
-                                        <option value="Autre">Autre</option>
+                                        <option value="Caution">Caution</option>
+                                        <option value="Transfert de fond (donation)">Transfert de fond (donation)</option>
+                                        <option value="Saisie sur corps">Saisie sur corps</option>
+                                        <option value="Sanction Unités">Sanction Unités</option>
+                                        <option value="Remboursement">Remboursement</option>
+                                        <option value="Bénéfice">Bénéfice</option>
                                     </select>
                                     <div class="error-msg" id="errMotif"></div>
                                 </div>
+                            </div>
+
+                            <div class="form-group" id="grpBenefice" style="display:none;">
+                                <label>TYPE DE BÉNÉFICE <span class="req">*</span></label>
+                                <select id="fBeneficeType">
+                                    <option value="">— Sélectionner —</option>
+                                    <option value="Bénéfice Unité">Bénéfice Unité</option>
+                                    <option value="Bénéfice Divisionnaire">Bénéfice Divisionnaire</option>
+                                </select>
+                                <div class="error-msg" id="errBenefice"></div>
                             </div>
 
                             <div class="form-group">
@@ -282,19 +292,29 @@
       function showAlert(t,type='success'){const e=document.getElementById('alertMsg');e.style.display='block';e.className='alert-msg '+type;e.textContent=t;setTimeout(()=>e.style.display='none',6000);}
       function fmtDate(d){if(!d)return'-';const p=d.split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:d;}
 
+      window.onSourceChange = function() {
+        const v = document.getElementById('fMotif').value;
+        document.getElementById('grpBenefice').style.display = (v === 'Bénéfice') ? '' : 'none';
+        if (v !== 'Bénéfice') document.getElementById('fBeneficeType').value = '';
+      };
+
       window.submitDeposit = async function() {
         if(!currentUser){showAlert('Erreur: utilisateur non identifié','error');return;}
         let ok=true;
-        ['grpMontant','grpMotif'].forEach(id=>document.getElementById(id).classList.remove('error'));
+        ['grpMontant','grpMotif','grpBenefice'].forEach(id=>document.getElementById(id).classList.remove('error'));
         const montant=parseInt(document.getElementById('fMontant').value);
         if(!montant||montant<1){document.getElementById('grpMontant').classList.add('error');document.getElementById('errMontant').textContent='Montant invalide';ok=false;}
-        if(!document.getElementById('fMotif').value){document.getElementById('grpMotif').classList.add('error');document.getElementById('errMotif').textContent='Sélectionnez un motif';ok=false;}
+        const source=document.getElementById('fMotif').value;
+        if(!source){document.getElementById('grpMotif').classList.add('error');document.getElementById('errMotif').textContent='Sélectionnez une source';ok=false;}
+        if(source==='Bénéfice'&&!document.getElementById('fBeneficeType').value){document.getElementById('grpBenefice').classList.add('error');document.getElementById('errBenefice').textContent='Sélectionnez le type de bénéfice';ok=false;}
         if(!ok)return;
+
+        const motifFinal = source === 'Bénéfice' ? document.getElementById('fBeneficeType').value : source;
 
         const btn=document.getElementById('btnSubmit');btn.disabled=true;btn.textContent='⏳ ENVOI...';
         const dep={
           matricule:currentUser.matricule, nom_steam:currentUser.nom_steam||'',
-          montant, motif:document.getElementById('fMotif').value,
+          montant, motif:motifFinal,
           notes:document.getElementById('fNotes').value.trim(),
           created_at:new Date().toISOString().substring(0,10)
         };
@@ -311,8 +331,10 @@
       window.resetForm=function(){
         document.getElementById('fMontant').value='';
         document.getElementById('fMotif').value='';
+        document.getElementById('fBeneficeType').value='';
+        document.getElementById('grpBenefice').style.display='none';
         document.getElementById('fNotes').value='';
-        ['grpMontant','grpMotif'].forEach(id=>document.getElementById(id).classList.remove('error'));
+        ['grpMontant','grpMotif','grpBenefice'].forEach(id=>document.getElementById(id).classList.remove('error'));
       };
 
       function renderMyDeposits(){
@@ -323,7 +345,7 @@
         if(!mine.length){tb.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text-muted);">Aucun dépôt déclaré</td></tr>';return;}
         tb.innerHTML=mine.map(d=>`<tr>
           <td style="font-size:0.75rem;">${fmtDate(d.created_at)}</td>
-          <td><span class="montant-value">${d.montant}</span></td>
+          <td><span class="montant-value">${d.montant} T</span></td>
           <td><span class="motif-badge">${d.motif}</span></td>
           <td style="font-size:0.75rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${(d.notes||'').replace(/"/g,'&quot;')}">${d.notes||'-'}</td>
         </tr>`).join('');
