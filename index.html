@@ -94,24 +94,16 @@
                 <div id="search-results" style="display: none; margin-top: 0.3rem; background: var(--bg-card); border: 1px solid var(--border-color); max-height: 300px; overflow-y: auto;"></div>
             </div>
 
-            <!-- Accès Rapide -->
+            <!-- LIGNE 1 : Documentation & Protocoles -->
             <section id="documentation" style="margin: 1.2rem 0;">
                 <div style="margin-bottom: 1rem;">
                     <h2 style="font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 2px;">
-                        Accès Rapide
+                        Documentation & Protocoles
                     </h2>
                     <div style="width: 30px; height: 1px; background: var(--accent-cyan); margin-top: 0.3rem; opacity: 0.4;"></div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.8rem;">
-
-                    <a href="worker-announcement.html" class="doc-card" style="background: var(--bg-card); border: 1px solid rgba(0, 119, 204, 0.15); padding: 1.1rem; text-decoration: none; display: block;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
-                            <h3 style="font-family: 'Rajdhani', sans-serif; font-size: 1rem; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin: 0;">Activité</h3>
-                            <span class="status-dot online"></span>
-                        </div>
-                        <p style="color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5; margin: 0;">Annonces, rations, suspensions et infractions sociales.</p>
-                    </a>
 
                     <a href="cours-rct.html" class="doc-card" style="background: var(--bg-card); border: 1px solid rgba(0, 204, 102, 0.15); padding: 1.1rem; text-decoration: none; display: block;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
@@ -175,6 +167,84 @@
                             <span class="status-dot online"></span>
                         </div>
                         <p style="color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5; margin: 0;">Guides détaillés : conscription, tests, incarcération, dispatch.</p>
+                    </a>
+
+                    <a href="guide.html" class="doc-card" style="background: var(--bg-card); border: 1px solid rgba(0, 170, 255, 0.15); padding: 1.1rem; text-decoration: none; display: block;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                            <h3 style="font-family: 'Rajdhani', sans-serif; font-size: 1rem; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin: 0;">Guides</h3>
+                            <span class="status-dot scanning"></span>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5; margin: 0;">Guides pratiques : vestimentaire, terminologie, dispatch, commandement.</p>
+                    </a>
+
+                </div>
+            </section>
+
+            <!-- LIGNE 2 : Formulaires & Informations Unités -->
+            <section id="formulaires-unites" style="margin: 1.2rem 0;">
+                <div style="margin-bottom: 1rem;">
+                    <h2 style="font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--accent-yellow); text-transform: uppercase; letter-spacing: 2px;">
+                        Formulaires & Unités
+                    </h2>
+                    <div style="width: 30px; height: 1px; background: var(--accent-yellow); margin-top: 0.3rem; opacity: 0.4;"></div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.8rem;">
+
+                    <a href="activite.html" class="doc-card" style="background: var(--bg-card); border: 1px solid rgba(0, 119, 204, 0.15); padding: 1.1rem; text-decoration: none; display: block;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                            <h3 style="font-family: 'Rajdhani', sans-serif; font-size: 1rem; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin: 0;">Activité</h3>
+                            <span class="status-dot online"></span>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5; margin: 0;">Annonces, rations, suspensions et infractions sociales.</p>
+                    </a>
+
+                    <a href="formulaires.html" class="doc-card" style="background: var(--bg-card); border: 1px solid rgba(204, 170, 0, 0.15); padding: 1.1rem; text-decoration: none; display: block;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                            <h3 style="font-family: 'Rajdhani', sans-serif; font-size: 1rem; color: var(--accent-yellow); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin: 0;">Formulaires</h3>
+                            <span class="status-dot warning"></span>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5; margin: 0;">Rapports, dépôts, formations et tests à soumettre.</p>
+                    </a>
+
+                    <a href="declarations.html" class="doc-card" style="background: var(--bg-card); border: 1px solid rgba(204, 102, 0, 0.15); padding: 1.1rem; text-decoration: none; display: block;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                            <h3 style="font-family: 'Rajdhani', sans-serif; font-size: 1rem; color: var(--accent-orange); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin: 0;">Déclarations</h3>
+                            <span class="status-dot warning" style="background: #cc6600; box-shadow: 0 0 6px rgba(204,102,0,0.6);"></span>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5; margin: 0;">Absences, demandes et déclarations officielles.</p>
+                    </a>
+
+                    <a href="divisions.html" class="doc-card" style="background: var(--bg-card); border: 1px solid rgba(102, 68, 170, 0.15); padding: 1.1rem; text-decoration: none; display: block;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                            <h3 style="font-family: 'Rajdhani', sans-serif; font-size: 1rem; color: var(--accent-purple); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin: 0;">Divisions</h3>
+                            <span class="status-dot scanning" style="background: #6644aa; box-shadow: 0 0 6px rgba(102,68,170,0.6);"></span>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5; margin: 0;">Informations sur les divisions : HELIX, GRID, SWORD, APEX, UNION.</p>
+                    </a>
+
+                    <a href="rapports.html" class="doc-card" style="background: var(--bg-card); border: 1px solid rgba(204, 34, 34, 0.15); padding: 1.1rem; text-decoration: none; display: block;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                            <h3 style="font-family: 'Rajdhani', sans-serif; font-size: 1rem; color: var(--accent-red); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin: 0;">Rapports</h3>
+                            <span class="status-dot alert"></span>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5; margin: 0;">Consultation des rapports soumis et rapports divisionnaires.</p>
+                    </a>
+
+                    <a href="payes.html" class="doc-card" style="background: var(--bg-card); border: 1px solid rgba(0, 204, 102, 0.15); padding: 1.1rem; text-decoration: none; display: block;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                            <h3 style="font-family: 'Rajdhani', sans-serif; font-size: 1rem; color: var(--accent-green); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin: 0;">Payes</h3>
+                            <span class="status-dot online"></span>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5; margin: 0;">Informations sur les payes et rémunérations des unités.</p>
+                    </a>
+
+                    <a href="viewtime.html" class="doc-card" style="background: var(--bg-card); border: 1px solid rgba(204, 85, 119, 0.15); padding: 1.1rem; text-decoration: none; display: block;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                            <h3 style="font-family: 'Rajdhani', sans-serif; font-size: 1rem; color: var(--accent-pink); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin: 0;">Heures de service</h3>
+                            <span class="status-dot online" style="background: #cc5577; box-shadow: 0 0 6px rgba(204,85,119,0.6);"></span>
+                        </div>
+                        <p style="color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5; margin: 0;">Suivi du temps de service et historique des heures.</p>
                     </a>
 
                 </div>
