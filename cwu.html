@@ -9,6 +9,124 @@
     <link rel="stylesheet" href="assets/css/global-nav.css">
     <link rel="stylesheet" href="assets/css/interactive-system.css">
     <link rel="stylesheet" href="assets/css/combine-animations.css">
+    <style>
+        .cwu-org-wrapper {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 1rem 0;
+        }
+
+        .cwu-org-box {
+            background: rgba(255, 180, 80, 0.06);
+            border: 2px solid rgba(255, 160, 60, 0.35);
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+        }
+
+        .cwu-org-box::after {
+            content: '';
+            position: absolute;
+            bottom: -1.5rem;
+            left: 50%;
+            width: 2px;
+            height: 1.5rem;
+            background: rgba(255, 160, 60, 0.4);
+            transform: translateX(-50%);
+        }
+
+        .cwu-org-box:last-child { margin-bottom: 0; }
+        .cwu-org-box:last-child::after { display: none; }
+
+        .cwu-org-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 25px rgba(255, 160, 60, 0.3);
+            border-color: #ffaa44;
+        }
+
+        .cwu-rank-name {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            display: block;
+            color: #ffaa44;
+        }
+
+        .cwu-rank-id {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            display: block;
+            margin-top: 0.3rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+
+        /* Superviseur - top rank */
+        .cwu-org-box.cwu-top {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+        }
+        .cwu-org-box.cwu-top .cwu-rank-name {
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            font-size: 1.25rem;
+        }
+        .cwu-org-box.cwu-top::after {
+            background: rgba(255, 215, 0, 0.5);
+        }
+
+        /* Direction (Adjoint, Chef, Sous-Chef) */
+        .cwu-org-box.cwu-dir {
+            border-color: #ffaa44;
+            background: rgba(255, 170, 68, 0.08);
+        }
+        .cwu-org-box.cwu-dir .cwu-rank-name {
+            color: #ffaa44;
+            text-shadow: 0 0 8px rgba(255, 170, 68, 0.3);
+        }
+
+        /* Corps (Confirmé, Intermédiaire) */
+        .cwu-org-box.cwu-mid {
+            border-color: rgba(255, 160, 60, 0.3);
+            background: rgba(255, 160, 60, 0.05);
+        }
+        .cwu-org-box.cwu-mid .cwu-rank-name {
+            color: #e8a050;
+        }
+
+        /* Initiation (Apprenti, Recrue) */
+        .cwu-org-box.cwu-low {
+            border-color: #4a5a6a;
+            background: rgba(100, 120, 140, 0.06);
+            opacity: 0.9;
+        }
+        .cwu-org-box.cwu-low .cwu-rank-name {
+            color: var(--text-secondary);
+        }
+
+        .cwu-group-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #ffaa44;
+            text-align: center;
+            margin: 2rem 0 1rem 0;
+            letter-spacing: 2px;
+            font-weight: 600;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        .cwu-group-label::before,
+        .cwu-group-label::after {
+            content: '━';
+            opacity: 0.4;
+            margin: 0 0.8rem;
+            color: #ffaa44;
+        }
+    </style>
 </head>
 <body>
     <!-- Scanline overlay -->
@@ -45,25 +163,67 @@
 
                 <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
                     <div class="combine-header">
-                        <h2>STRUCTURE CWU</h2>
-                        <span class="header-code">ORGANIGRAMME</span>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding: 0.5rem 0;">
-                        <div>
-                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; color: var(--accent-cyan); margin-bottom: 0.5rem;">DIRECTION</div>
-                            <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-muted);">
-                                <li style="padding: 0.3rem 0; border-bottom: 1px solid rgba(0, 170, 255, 0.05);"><span style="color: var(--text-primary);">Directeur CWU</span> - Nomme par le commandement MPF</li>
-                                <li style="padding: 0.3rem 0; border-bottom: 1px solid rgba(0, 170, 255, 0.05);"><span style="color: var(--text-primary);">Superviseur</span> - Gere les equipes de travail</li>
-                                <li style="padding: 0.3rem 0;"><span style="color: var(--text-primary);">Chef d'equipe</span> - Coordonne les operations terrain</li>
-                            </ul>
+                        <div class="combine-top-bar">
+                            <span>CWU://STRUCTURE.ORGANIGRAMME</span>
+                            <span class="badge badge-cyan">HIÉRARCHIE</span>
                         </div>
-                        <div>
-                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; color: var(--accent-cyan); margin-bottom: 0.5rem;">TRAVAILLEURS</div>
-                            <ul style="list-style: none; padding: 0; font-size: 0.85rem; color: var(--text-muted);">
-                                <li style="padding: 0.3rem 0; border-bottom: 1px solid rgba(0, 170, 255, 0.05);"><span style="color: var(--text-primary);">Ouvrier qualifie</span> - Taches specialisees</li>
-                                <li style="padding: 0.3rem 0; border-bottom: 1px solid rgba(0, 170, 255, 0.05);"><span style="color: var(--text-primary);">Ouvrier standard</span> - Taches generales</li>
-                                <li style="padding: 0.3rem 0;"><span style="color: var(--text-primary);">Apprenti</span> - En formation</li>
-                            </ul>
+                        <h2 class="glitch-text" data-text="HIÉRARCHIE CWU"><span class="status-dot online" style="margin-right: 8px;"></span> HIÉRARCHIE CWU</h2>
+                        <div class="dispatch-line">
+                            <span>> CIVIL WORKERS UNION // MATRICE D'AUTORITÉ</span>
+                            <span class="combine-cursor"></span>
+                        </div>
+                    </div>
+                    <div class="combine-body">
+                        <div class="cwu-org-wrapper">
+
+                            <div class="cwu-group-label">Direction</div>
+
+                            <div class="cwu-org-box cwu-top">
+                                <span class="cwu-rank-name">Superviseur</span>
+                                <span class="cwu-rank-id">Direction générale CWU</span>
+                            </div>
+
+                            <div class="cwu-org-box cwu-dir">
+                                <span class="cwu-rank-name">Adjoint</span>
+                                <span class="cwu-rank-id">Seconde le Superviseur</span>
+                            </div>
+
+                            <div class="cwu-group-label">Encadrement</div>
+
+                            <div class="cwu-org-box cwu-dir">
+                                <span class="cwu-rank-name">Chef</span>
+                                <span class="cwu-rank-id">Gestion des équipes</span>
+                            </div>
+
+                            <div class="cwu-org-box cwu-dir">
+                                <span class="cwu-rank-name">Sous-Chef</span>
+                                <span class="cwu-rank-id">Coordination terrain</span>
+                            </div>
+
+                            <div class="cwu-group-label">Corps de travail</div>
+
+                            <div class="cwu-org-box cwu-mid">
+                                <span class="cwu-rank-name">Confirmé</span>
+                                <span class="cwu-rank-id">Travailleur expérimenté</span>
+                            </div>
+
+                            <div class="cwu-org-box cwu-mid">
+                                <span class="cwu-rank-name">Intermédiaire</span>
+                                <span class="cwu-rank-id">Travailleur autonome</span>
+                            </div>
+
+                            <div class="cwu-group-label">Initiation</div>
+
+                            <div class="cwu-org-box cwu-low">
+                                <span class="cwu-rank-name">Apprenti</span>
+                                <span class="cwu-rank-id">En formation</span>
+                            </div>
+
+                            <div class="cwu-org-box cwu-low">
+                                <span class="cwu-rank-name">Recrue</span>
+                                <span class="cwu-rank-id">Nouveau membre</span>
+                            </div>
+
                         </div>
                     </div>
                 </div>
