@@ -323,6 +323,8 @@
                                         <option value="Distribution ration">Distribution ration</option>
                                         <option value="Formation">Formation</option>
                                         <option value="Conscription">Conscription</option>
+                                        <option value="Session de travail">Session de travail</option>
+                                        <option value="Déblayage">Déblayage</option>
                                         <option value="Interrogatoire">Interrogatoire</option>
                                         <option value="Test de loyauté">Test de loyauté</option>
                                         <option value="Autre">Autre</option>
@@ -348,13 +350,38 @@
 
                             <!-- Sous-catégorie Conscription -->
                             <div class="form-group" id="grpSousConscription">
-                                <label>TYPE DE CONSCRIPTION <span class="req">*</span></label>
-                                <select id="fSousConscription">
-                                    <option value="">— Sélectionner —</option>
-                                    <option value="Volontaire">Volontaire</option>
-                                    <option value="Obligatoire">Obligatoire</option>
-                                </select>
-                                <div class="error-msg" id="errSousConscription"></div>
+                              <label>TYPE DE CONSCRIPTION <span class="req">*</span></label>
+                              <select id="fSousConscription">
+                                <option value="">— Sélectionner —</option>
+                                <option value="Volontaire">Volontaire</option>
+                                <option value="Obligatoire">Obligatoire</option>
+                              </select>
+                              <div class="error-msg" id="errSousConscription"></div>
+                            </div>
+                            <div class="form-group" id="grpGainConscription" style="display:none;">
+                              <label>GAIN CONSCRIPTION <span class="req">*</span></label>
+                              <select id="fGainConscription">
+                                <option value="">— Sélectionner —</option>
+                                <option value="Oui">Oui</option>
+                                <option value="Non">Non</option>
+                              </select>
+                              <div class="error-msg" id="errGainConscription"></div>
+                            </div>
+                            <!-- Sous-catégorie Session de travail -->
+                            <div class="form-group" id="grpSessionTravail" style="display:none;">
+                              <label>TYPE DE SESSION DE TRAVAIL <span class="req">*</span></label>
+                              <select id="fSessionTravail">
+                                <option value="">— Sélectionner —</option>
+                                <option value="Déchèterie">Déchèterie</option>
+                                <option value="Distillerie">Distillerie</option>
+                                <option value="Laverie">Laverie</option>
+                                <option value="Usine à ration">Usine à ration</option>
+                                <option value="Nettoyage">Nettoyage</option>
+                                <option value="Réparation">Réparation</option>
+                                <option value="Déblayage">Déblayage</option>
+                                <option value="Autre">Autre</option>
+                              </select>
+                              <div class="error-msg" id="errSessionTravail"></div>
                             </div>
 
                             <!-- Champ conditionnel : nombre de citoyens (Distribution ration) -->
@@ -464,20 +491,31 @@
         const grpCit = document.getElementById('grpCitoyens');
         const grpFouille = document.getElementById('grpSousFouille');
         const grpConscription = document.getElementById('grpSousConscription');
+        const grpGainConscription = document.getElementById('grpGainConscription');
+        const grpSessionTravail = document.getElementById('grpSessionTravail');
         const secteurInput = document.getElementById('fSecteur');
 
         // Reset tous les sous-groupes
         grpCit.classList.remove('visible');
         grpFouille.classList.remove('visible');
         grpConscription.classList.remove('visible');
+        grpGainConscription.style.display = 'none';
+        grpSessionTravail.style.display = 'none';
         document.getElementById('fCitoyens').value = '';
         document.getElementById('fSousFouille').value = '';
         document.getElementById('fSousConscription').value = '';
+        document.getElementById('fGainConscription').value = '';
+        document.getElementById('fSessionTravail').value = '';
 
         // Afficher le sous-groupe correspondant
         if (v === 'Fouille') grpFouille.classList.add('visible');
-        if (v === 'Conscription') grpConscription.classList.add('visible');
-
+        if (v === 'Conscription') {
+          grpConscription.classList.add('visible');
+          grpGainConscription.style.display = '';
+        }
+        if (v === 'Session de travail') {
+          grpSessionTravail.style.display = '';
+        }
         if (v === 'Distribution ration') {
           grpCit.classList.add('visible');
           secteurInput.disabled = true;
@@ -600,7 +638,7 @@
         parseManualUnits();
 
         let ok=true;
-        ['grpType','grpResume','grpCitoyens','grpSousFouille','grpSousConscription'].forEach(id=>document.getElementById(id).classList.remove('error'));
+        ['grpType','grpResume','grpCitoyens','grpSousFouille','grpSousConscription','grpGainConscription','grpSessionTravail'].forEach(id=>document.getElementById(id).classList.remove('error'));
         const typeVal = document.getElementById('fType').value;
         if (!typeVal) { document.getElementById('grpType').classList.add('error'); document.getElementById('errType').textContent='Sélectionnez un type'; ok=false; }
         if (!document.getElementById('fResume').value.trim()) { document.getElementById('grpResume').classList.add('error'); document.getElementById('errResume').textContent='Le résumé est obligatoire'; ok=false; }
@@ -611,9 +649,22 @@
           ok=false;
         }
         // Validation sous-catégorie Conscription
-        if (typeVal === 'Conscription' && !document.getElementById('fSousConscription').value) {
-          document.getElementById('grpSousConscription').classList.add('error');
-          document.getElementById('errSousConscription').textContent='Sélectionnez le type de conscription';
+        if (typeVal === 'Conscription') {
+          if (!document.getElementById('fSousConscription').value) {
+            document.getElementById('grpSousConscription').classList.add('error');
+            document.getElementById('errSousConscription').textContent='Sélectionnez le type de conscription';
+            ok=false;
+          }
+          if (!document.getElementById('fGainConscription').value) {
+            document.getElementById('grpGainConscription').classList.add('error');
+            document.getElementById('errGainConscription').textContent='Sélectionnez le gain';
+            ok=false;
+          }
+        }
+        // Validation sous-catégorie Session de travail
+        if (typeVal === 'Session de travail' && !document.getElementById('fSessionTravail').value) {
+          document.getElementById('grpSessionTravail').classList.add('error');
+          document.getElementById('errSessionTravail').textContent='Sélectionnez le type de session';
           ok=false;
         }
         // Validation citoyens si Distribution ration
@@ -630,7 +681,7 @@
         const btn=document.getElementById('btnSubmit'); btn.disabled=true; btn.textContent='⏳ ENVOI...';
         const r = {
           matricule: currentUser.matricule, nom_steam: currentUser.nom_steam||'',
-          type: document.getElementById('fType').value === 'Fouille' ? document.getElementById('fSousFouille').value : (document.getElementById('fType').value === 'Conscription' ? document.getElementById('fSousConscription').value + ' (Conscription)' : document.getElementById('fType').value),
+          type: typeVal === 'Fouille' ? document.getElementById('fSousFouille').value : (typeVal === 'Conscription' ? document.getElementById('fSousConscription').value + ' (Conscription)' : (typeVal === 'Session de travail' ? document.getElementById('fSessionTravail').value + ' (Session de travail)' : typeVal)),
           secteur: document.getElementById('fSecteur').value.trim(),
           unites: document.getElementById('fUnites').value.trim(),
           resume: document.getElementById('fResume').value.trim(),
@@ -640,6 +691,10 @@
         // Ajouter nb citoyens si distribution ration
         if (r.type === 'Distribution ration') {
           r.nb_citoyens = parseInt(document.getElementById('fCitoyens').value) || 0;
+        }
+        // Ajouter gain conscription
+        if (typeVal === 'Conscription') {
+          r.gain_conscription = document.getElementById('fGainConscription').value;
         }
         allReports.push(r);
         try {
