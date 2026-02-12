@@ -725,19 +725,51 @@
       document.getElementById('searchInput').addEventListener('input', filterUsers);
       document.getElementById('statusFilter').addEventListener('change', filterUsers);
 
-      // Auth check — admin only (auth.js gère déjà la vérification login/approved)
+      // Auth check — admin + HG (Ofc/Cmd) pour maintenance uniquement
       onAuthStateChanged(auth, async (user) => {
         if (!user) return; // auth.js redirige déjà vers login
         try {
           const snap = await getDoc(doc(db, 'users', user.uid));
-          if (!snap.exists() || !snap.data().is_admin) {
+          if (!snap.exists()) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('access-denied').style.display = 'block';
+            return;
+          }
+          const uData = snap.data();
+          const isAdmin = uData.is_admin === true;
+          // Vérifier HG depuis units.json
+          let isHG = false;
+          const userMatricule = uData.matricule || '';
+          if (userMatricule) {
+            try {
+              const res = await fetch('https://raw.githubusercontent.com/NekoAkami/guidempf-site/main/data/units.json');
+              if (res.ok) {
+                const units = await res.json();
+                const unit = units.find(u => u.matricule === userMatricule);
+                if (unit && (unit.rang === 'Ofc' || unit.rang === 'Cmd')) isHG = true;
+              }
+            } catch (_) {}
+          }
+          if (!isAdmin && !isHG) {
             document.getElementById('loading').style.display = 'none';
             document.getElementById('access-denied').style.display = 'block';
             return;
           }
           document.getElementById('loading').style.display = 'none';
           document.getElementById('adminContent').style.display = 'block';
-          await loadUsers();
+          if (isAdmin) {
+            // Admin : accès complet
+            await loadUsers();
+          } else {
+            // HG : uniquement la section maintenance visible
+            document.querySelectorAll('#adminContent > .combine-terminal-wrapper').forEach(el => {
+              if (el.id !== 'maintenanceSection') el.style.display = 'none';
+            });
+            // Masquer aussi les stats et autres sections non-maintenance
+            document.querySelectorAll('#adminContent > div:not(.combine-terminal-wrapper)').forEach(el => {
+              if (!el.closest('#maintenanceSection')) el.style.display = 'none';
+            });
+          }
         } catch (err) {
           console.error('Admin auth error:', err);
           document.getElementById('loading').innerHTML = '<p style="color:#ff4444;">Erreur: ' + err.message + '</p>';

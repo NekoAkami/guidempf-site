@@ -93,8 +93,9 @@ export async function updateAuthButton() {
           const matricule = userData.matricule || '???';
 
           // Enrichir avec les données d'unité (rang + division + accréditation)
-          let gradeMatDiv = matricule;
+          let gradeMatDiv = 'C17.' + matricule;
           let accredLine = '';
+          let unitRang = '';
           const _accredMap = { 'RCT': 'Recrue', '.05': 'MPF', '.04': 'MPF', '.03': 'MPF', 'STB': 'MPF', '.02': 'MPEF', '.01': 'MPEF', 'DvL': 'MPEF', 'STBE': 'MPEF', 'CABAL': 'MPEF', 'Ofc': 'HautGradé', 'Cmd': 'HautGradé' };
           const _formateurLabel = (acc) => (acc === 'MPF' || acc === 'Recrue') ? 'Unité Formatrice MPF' : (acc === 'MPEF' || acc === 'HautGradé') ? 'Unité Formatrice MPEF' : '';
           try {
@@ -103,10 +104,12 @@ export async function updateAuthButton() {
               const units = await res.json();
               const unit = units.find(u => u.matricule === matricule);
               if (unit) {
-                const isHG = unit.rang === 'Ofc' || unit.rang === 'Cmd';
+                unitRang = unit.rang || '';
+                const isUnitHG = unit.rang === 'Ofc' || unit.rang === 'Cmd';
                 const r = unit.rang && unit.rang !== 'MISSING' ? unit.rang : '';
-                const d = !isHG && unit.division && unit.division !== 'N/A' ? unit.division : '';
-                gradeMatDiv = [r, matricule, d].filter(Boolean).join('-');
+                const d = !isUnitHG && unit.division && unit.division !== 'N/A' ? unit.division : '';
+                // Format : C17.grade.division.matricule (ou C17.grade.matricule pour HG)
+                gradeMatDiv = ['C17', r, d, matricule].filter(Boolean).join('.');
                 const acc = _accredMap[unit.rang] || '';
                 if (acc) {
                   accredLine = 'Accréditation : ' + acc;
@@ -116,12 +119,14 @@ export async function updateAuthButton() {
             }
           } catch (_) {}
 
+          const isHG = unitRang === 'Ofc' || unitRang === 'Cmd';
+          const showPanelBtn = isAdmin || isHG;
           authBtn.innerHTML = `
             <span style="font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--text-muted);margin-right:0.8rem;letter-spacing:0.5px;display:inline-flex;flex-direction:column;line-height:1.4;">
               <span>Unité Connecté au terminal : <span style="color:var(--accent-cyan);font-weight:700;">${gradeMatDiv}</span></span>
               ${accredLine ? `<span style="font-size:0.65rem;opacity:0.7;">${accredLine}</span>` : ''}
             </span>
-            ${isAdmin ? `<a href="${_basePath}admin/panel.html" class="btn" style="margin-right:.5rem">Admin</a>` : ''}
+            ${showPanelBtn ? `<a href="${_basePath}admin/panel.html" class="btn" style="margin-right:.5rem">${isAdmin ? 'Admin' : 'Panel'}</a>` : ''}
             <button onclick="window.logoutUser()" class="btn secondary">Déconnexion</button>
           `;
           // Démarrer la présence en ligne
