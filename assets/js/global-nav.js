@@ -57,65 +57,121 @@ class GlobalNavigation {
     }
     // Redirection maintenance globale (hors admin/ et maintenance.html)
     async checkMaintenanceRedirect() {
-        let mod;
-        try {
-            mod = await import(this.basePath + 'assets/js/maintenance.js');
-        } catch { return; }
         const path = window.location.pathname;
         if (path.endsWith('maintenance.html')) return;
 
-        const info = await mod.getMaintenanceInfo();
-        if (!info || !info.enabled) return;
+        // Importer Firebase directement pour éviter les problèmes de timing
+        let initializeApp, getFirestore, getDoc, doc, getAuth, onAuthStateChanged, signOut;
+        try {
+            const appMod = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
+            const fsMod = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+            const authMod = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
+            initializeApp = appMod.initializeApp;
+            getFirestore = fsMod.getFirestore;
+            getDoc = fsMod.getDoc;
+            doc = fsMod.doc;
+            getAuth = authMod.getAuth;
+            onAuthStateChanged = authMod.onAuthStateChanged;
+            signOut = authMod.signOut;
+        } catch { return; }
 
-        // Pages admin : ne pas rediriger, mais afficher la bannière si maintenance active
+        const firebaseConfig = {
+            apiKey: "AIzaSyDPs4x2EE1pyeQTC_V-Ze5uyZ8Rs2N8qF4",
+            authDomain: "guidempf.firebaseapp.com",
+            projectId: "guidempf",
+            storageBucket: "guidempf.firebasestorage.app",
+            messagingSenderId: "806309770965",
+            appId: "1:806309770965:web:3621f58bfb252446c1945c"
+        };
+
+        let app;
+        try {
+            app = initializeApp(firebaseConfig);
+        } catch {
+            // App déjà initialisée
+            const { getApp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
+            app = getApp();
+        }
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Lire l'état maintenance
+        let maintEnabled = false;
+        let maintInfo = {};
+        try {
+            const snap = await getDoc(doc(db, 'config', 'maintenance'));
+            if (snap.exists() && snap.data().enabled === true) {
+                maintEnabled = true;
+                maintInfo = snap.data();
+            }
+        } catch { return; } // Si on ne peut pas lire, on ne bloque pas
+
+        if (!maintEnabled) return;
+
+        // Pages admin : montrer bannière seulement
         if (path.includes('/admin/')) {
-            this.showMaintenanceBanner(info);
+            this.showMaintenanceBanner(maintInfo);
             return;
         }
 
-        // Vérifier si l'utilisateur est admin/hautgradé
-        try {
-            const { auth, db } = await import(this.basePath + 'assets/js/auth.js');
-            const { getDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-            const { onAuthStateChanged, signOut } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
-            onAuthStateChanged(auth, async (user) => {
-                if (!user) { window.location.href = this.basePath + 'maintenance.html'; return; }
-                const snap = await getDoc(doc(db, 'users', user.uid));
-                if (!snap.exists()) {
-                    await signOut(auth);
-                    window.location.href = this.basePath + 'maintenance.html';
-                    return;
-                }
-                const data = snap.data();
-                if (data.is_admin) {
-                    this.showMaintenanceBanner(info);
-                    return;
-                }
-
-                // Vérifier HG via units.json
-                let isHG = false;
-                const matricule = data.matricule || '';
-                if (matricule) {
-                    try {
-                        const res = await fetch('https://raw.githubusercontent.com/NekoAkami/guidempf-site/main/data/units.json');
-                        if (res.ok) {
-                            const units = await res.json();
-                            const unit = units.find(u => u.matricule === matricule);
-                            if (unit && (unit.rang === 'Ofc' || unit.rang === 'Cmd')) isHG = true;
-                        }
-                    } catch (_) {}
-                }
-
-                if (isHG) {
-                    this.showMaintenanceBanner(info);
-                    return;
-                }
-
-                // Non admin/HG → déconnecter et rediriger
-                await signOut(auth);
-                window.location.href = this.basePath + 'maintenance.html';
+        // Attendre l'état auth avec un timeout
+        const basePath = this.basePath;
+        const self = this;
+        const user = await new Promise((resolve) => {
+            const timeout = setTimeout(() => resolve(null), 3000);
+            onAuthStateChanged(auth, (u) => {
+                clearTimeout(timeout);
+                resolve(u);
             });
-        } catch { window.location.href = this.basePath + 'maintenance.html'; }
+        });
+
+        // Pas connecté → rediriger
+        if (!user) {
+            window.location.href = basePath + 'maintenance.html';
+            return;
+        }
+
+        // Lire le profil utilisateur
+        let userData = null;
+        try {
+            const snap = await getDoc(doc(db, 'users', user.uid));
+            if (snap.exists()) userData = snap.data();
+        } catch {}
+
+        if (!userData) {
+            await signOut(auth);
+            window.location.href = basePath + 'maintenance.html';
+            return;
+        }
+
+        // Admin → laisser passer
+        if (userData.is_admin === true) {
+            self.showMaintenanceBanner(maintInfo);
+            return;
+        }
+
+        // Vérifier HG via units.json
+        let isHG = false;
+        const matricule = userData.matricule || '';
+        if (matricule) {
+            try {
+                const res = await fetch('https://raw.githubusercontent.com/NekoAkami/guidempf-site/main/data/units.json');
+                if (res.ok) {
+                    const units = await res.json();
+                    const unit = units.find(u => u.matricule === matricule);
+                    if (unit && (unit.rang === 'Ofc' || unit.rang === 'Cmd')) isHG = true;
+                }
+            } catch {}
+        }
+
+        if (isHG) {
+            self.showMaintenanceBanner(maintInfo);
+            return;
+        }
+
+        // Non admin/HG → déconnecter et rediriger
+        await signOut(auth);
+        window.location.href = basePath + 'maintenance.html';
     }
 
     // Bannière d'alerte maintenance pour admins/HG
