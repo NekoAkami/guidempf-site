@@ -282,11 +282,13 @@ class GlobalNavigation {
                 label: 'DIVISIONS',
                 url: 'divisions.html',
                 dropdown: [
-                    { label: 'UNION', url: 'divisions/union.html' },
-                    { label: 'GRID', url: 'divisions/grid.html' },
                     { label: 'HELIX', url: 'divisions/helix.html' },
-                    { label: 'SWORD', url: 'divisions/sword.html' },
-                    { label: 'APEX', url: 'divisions/apex.html' }
+                    { label: 'RAZOR', url: 'divisions/razor.html' },
+                    { label: 'JURY', url: 'divisions/jury.html' },
+                    { label: 'EXOGEN', url: 'divisions/exogen.html' },
+                    { label: 'GRID', url: 'divisions/grid.html' },
+                    { label: 'ZONE', url: 'divisions/zone.html' },
+                    { label: 'SPECTRE', url: 'divisions/spectre.html' }
                 ]
             },
             {
