@@ -63,6 +63,7 @@ class GlobalNavigation {
         } catch { return; }
         const path = window.location.pathname;
         if (path.endsWith('maintenance.html')) return;
+        if (path.endsWith('login.html')) return;
 
         const info = await mod.getMaintenanceInfo();
         if (!info || !info.enabled) return;
@@ -77,18 +78,42 @@ class GlobalNavigation {
         try {
             const { auth, db } = await import(this.basePath + 'assets/js/auth.js');
             const { getDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-            const { onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
+            const { onAuthStateChanged, signOut } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
             onAuthStateChanged(auth, async (user) => {
                 if (!user) { window.location.href = this.basePath + 'maintenance.html'; return; }
                 const snap = await getDoc(doc(db, 'users', user.uid));
-                if (!snap.exists()) { window.location.href = this.basePath + 'maintenance.html'; return; }
+                if (!snap.exists()) {
+                    await signOut(auth);
+                    window.location.href = this.basePath + 'maintenance.html';
+                    return;
+                }
                 const data = snap.data();
-                const rang = data.rang || '';
-                if (data.is_admin || rang === 'Ofc' || rang === 'Cmd') {
-                    // Admin/HG : laisser naviguer mais montrer la bannière
+                if (data.is_admin) {
                     this.showMaintenanceBanner(info);
                     return;
                 }
+
+                // Vérifier HG via units.json
+                let isHG = false;
+                const matricule = data.matricule || '';
+                if (matricule) {
+                    try {
+                        const res = await fetch('https://raw.githubusercontent.com/NekoAkami/guidempf-site/main/data/units.json');
+                        if (res.ok) {
+                            const units = await res.json();
+                            const unit = units.find(u => u.matricule === matricule);
+                            if (unit && (unit.rang === 'Ofc' || unit.rang === 'Cmd')) isHG = true;
+                        }
+                    } catch (_) {}
+                }
+
+                if (isHG) {
+                    this.showMaintenanceBanner(info);
+                    return;
+                }
+
+                // Non admin/HG → déconnecter et rediriger
+                await signOut(auth);
                 window.location.href = this.basePath + 'maintenance.html';
             });
         } catch { window.location.href = this.basePath + 'maintenance.html'; }
