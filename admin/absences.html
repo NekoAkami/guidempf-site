@@ -474,7 +474,7 @@
       import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
       import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
       import {
-        loadAbsences as ghLoadAbsences, saveAbsences as ghSaveAbsences,
+        loadAbsences as ghLoadAbsences, addAbsence as ghAddAbsence, deleteAbsence as ghDeleteAbsence, updateAbsence as ghUpdateAbsence,
         loadUnits as ghLoadUnits,
         onSyncStatus
       } from '../assets/js/github-data.js';
@@ -647,7 +647,7 @@
         const search = (document.getElementById('searchInput').value || '').toLowerCase();
         const statusF = document.getElementById('statusFilter').value;
 
-        let filtered = allAbsences.map((abs, idx) => ({ ...abs, _idx: idx, _status: getStatus(abs) }));
+        let filtered = allAbsences.map((abs) => ({ ...abs, _status: getStatus(abs) }));
 
         filtered = filtered.filter(abs => {
           const matchSearch = !search ||
@@ -690,8 +690,8 @@
             <td class="jours-cell ${joursClass}">${dw}j</td>
             <td>${statusBadge(abs._status)}</td>
             <td class="action-cell">
-              <button class="btn-sm" onclick="editAbsence(${abs._idx})">✎</button>
-              <button class="btn-sm danger" onclick="deleteAbsence(${abs._idx})">✗</button>
+              <button class="btn-sm" onclick="editAbsence('${abs._id}')">\u270e</button>
+              <button class="btn-sm danger" onclick="deleteAbsence('${abs._id}')">\u2717</button>
             </td>
           </tr>`;
         }).join('');
@@ -720,11 +720,11 @@
         document.getElementById('absModal').classList.add('visible');
       };
 
-      window.editAbsence = function(idx) {
-        const abs = allAbsences[idx];
+      window.editAbsence = function(docId) {
+        const abs = allAbsences.find(a => a._id === docId);
         if (!abs) return;
-        document.getElementById('modalTitle').textContent = 'MODIFIER ABSENCE — ' + abs.matricule;
-        document.getElementById('editIdx').value = idx;
+        document.getElementById('modalTitle').textContent = 'MODIFIER ABSENCE \u2014 ' + abs.matricule;
+        document.getElementById('editIdx').value = docId;
         document.getElementById('fMatricule').value = abs.matricule || '';
         document.getElementById('fMatricule').disabled = false;
         document.getElementById('fMotif').value = abs.motif || '';
@@ -759,7 +759,8 @@
 
       // ========== SAVE ABSENCE ==========
       window.saveAbsence = async function() {
-        const editIdx = parseInt(document.getElementById('editIdx').value);
+        const editDocId = document.getElementById('editIdx').value;
+        const isEdit = editDocId && editDocId !== '-1';
         const matricule = document.getElementById('fMatricule').value.trim();
         const motif = document.getElementById('fMotif').value.trim();
         const debut = document.getElementById('fDebut').value;
@@ -780,6 +781,7 @@
         const nom_steam = unit ? unit.nom_steam : '';
         const steamid64 = unit ? unit.steamid64 : '';
 
+        const existingAbs = isEdit ? allAbsences.find(a => a._id === editDocId) : null;
         const absData = {
           matricule,
           steamid64,
@@ -787,38 +789,46 @@
           motif,
           debut,
           fin,
-          created_at: editIdx >= 0 ? (allAbsences[editIdx].created_at || new Date().toISOString().substring(0, 10)) : new Date().toISOString().substring(0, 10)
+          created_at: existingAbs ? (existingAbs.created_at || new Date().toISOString().substring(0, 10)) : new Date().toISOString().substring(0, 10)
         };
 
+        closeModal();
+
         // Optimistic update
-        if (editIdx >= 0) {
-          allAbsences[editIdx] = absData;
+        if (isEdit) {
+          const idx = allAbsences.findIndex(a => a._id === editDocId);
+          if (idx >= 0) allAbsences[idx] = { ...absData, _id: editDocId };
         } else {
           allAbsences.push(absData);
         }
-
-        closeModal();
         updateStats();
         renderTable();
-        showAlert(editIdx >= 0 ? '✓ Absence modifiée' : '✓ Absence ajoutée', 'success');
+        showAlert(isEdit ? '✓ Absence modifiée' : '✓ Absence ajoutée', 'success');
 
         // Background save
-        ghSaveAbsences([...allAbsences], editIdx >= 0 ? `Modification absence ${matricule}` : `Ajout absence ${matricule}`)
-          .catch(err => showAlert('⚠ Sync échouée: ' + err.message, 'error'));
+        if (isEdit) {
+          ghUpdateAbsence(editDocId, absData)
+            .catch(err => showAlert('⚠ Sync échouée: ' + err.message, 'error'));
+        } else {
+          ghAddAbsence(absData)
+            .then(saved => { const idx = allAbsences.indexOf(absData); if (idx >= 0) allAbsences[idx] = saved; })
+            .catch(err => showAlert('⚠ Sync échouée: ' + err.message, 'error'));
+        }
       };
 
       // ========== DELETE ABSENCE ==========
-      window.deleteAbsence = async function(idx) {
-        const abs = allAbsences[idx];
+      window.deleteAbsence = async function(docId) {
+        const abs = allAbsences.find(a => a._id === docId);
         if (!abs) return;
-        if (!confirm(`Supprimer l'absence de ${abs.matricule} (${formatDate(abs.debut)} → ${formatDate(abs.fin)}) ?`)) return;
+        if (!confirm(`Supprimer l'absence de ${abs.matricule} (${formatDate(abs.debut)} \u2192 ${formatDate(abs.fin)}) ?`)) return;
 
-        allAbsences.splice(idx, 1);
+        const idx = allAbsences.findIndex(a => a._id === docId);
+        if (idx >= 0) allAbsences.splice(idx, 1);
         updateStats();
         renderTable();
-        showAlert('✓ Absence supprimée', 'success');
+        showAlert('\u2713 Absence supprim\u00e9e', 'success');
 
-        ghSaveAbsences([...allAbsences], `Suppression absence ${abs.matricule}`)
+        ghDeleteAbsence(docId)
           .catch(err => showAlert('⚠ Sync échouée: ' + err.message, 'error'));
       };
 

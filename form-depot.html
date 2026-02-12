@@ -263,7 +263,7 @@
       import { auth, db } from './assets/js/auth.js';
       import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
       import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-      import { loadDeposits as ghLoadDeposits, saveDeposits as ghSaveDeposits, loadUnits as ghLoadUnits, onSyncStatus } from './assets/js/github-data.js';
+      import { loadDeposits as ghLoadDeposits, addDeposit as ghAddDeposit, loadUnits as ghLoadUnits, onSyncStatus } from './assets/js/github-data.js';
 
       function getAccreditation(r) {
         if (r==='RCT') return 'Recrue';
@@ -300,7 +300,8 @@
         };
         allDeposits.push(dep);
         try {
-          await ghSaveDeposits([...allDeposits],`Dépôt ${currentUser.matricule} - ${dep.montant} tokens`);
+          const saved = await ghAddDeposit(dep);
+          allDeposits[allDeposits.length - 1] = saved;
           showAlert('✓ Dépôt déclaré avec succès !','success');
           resetForm(); renderMyDeposits();
         }catch(e){allDeposits.pop();showAlert('✗ Erreur: '+e.message,'error');}

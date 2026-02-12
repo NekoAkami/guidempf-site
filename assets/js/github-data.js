@@ -1,13 +1,15 @@
 /**
- * Data Store — Firestore (rapide ~200ms)
- * Remplace l'approche GitHub API (~2-3s par écriture).
- * Auto-migration : si Firestore vide, charge depuis les JSON GitHub et migre.
- * Fallback : si Firestore inaccessible, lit depuis GitHub raw.
+ * Data Store — Firestore avec sous-collections
+ * Rapports/Absences/Dépôts : un document par item (scalable, pas de limite 1 MiB)
+ * Units/Playtime : document unique (petits datasets)
+ * Auto-migration : ancien format (tableau unique) → sous-collections
+ * Rate limiting : max 5 écritures/minute par session
  */
 
 import { db } from './auth.js';
 import {
-  doc, getDoc, setDoc
+  doc, getDoc, setDoc, deleteDoc,
+  collection, getDocs, addDoc, query, orderBy, where
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const GITHUB_OWNER = 'NekoAkami';
@@ -22,9 +24,22 @@ let _pendingWrites = 0;
 function onSyncStatus(fn) { _syncListeners.push(fn); }
 function _notifySync(status) { _syncListeners.forEach(fn => fn(status)); }
 
-// ========== CORE READ (Firestore → fallback GitHub → auto-migrate) ==========
+// ========== RATE LIMITER ==========
+const _rateLimitWindow = 60000; // 1 minute
+const _rateLimitMax = 10; // max 10 écritures par minute
+let _writeTimestamps = [];
+
+function _checkRateLimit() {
+  const now = Date.now();
+  _writeTimestamps = _writeTimestamps.filter(t => now - t < _rateLimitWindow);
+  if (_writeTimestamps.length >= _rateLimitMax) {
+    throw new Error('Trop de requêtes. Veuillez patienter avant de réessayer.');
+  }
+  _writeTimestamps.push(now);
+}
+
+// ========== CORE READ (single document — Firestore → fallback GitHub) ==========
 async function readData(key) {
-  // 1. Lire depuis Firestore
   try {
     const snap = await getDoc(doc(db, FS_COLLECTION, key));
     if (snap.exists()) {
@@ -34,35 +49,28 @@ async function readData(key) {
     console.warn(`[DataStore] Firestore read '${key}' failed:`, e.message);
   }
 
-  // 2. Fallback : JSON GitHub raw
   try {
     const url = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/data/${key}.json?t=${Date.now()}`;
     const resp = await fetch(url);
     if (resp.ok) {
       const items = await resp.json();
-      // Auto-migration vers Firestore si possible
       if (Array.isArray(items) && items.length > 0) {
         try {
-          await setDoc(doc(db, FS_COLLECTION, key), {
-            items,
-            migrated_at: new Date().toISOString()
-          });
+          await setDoc(doc(db, FS_COLLECTION, key), { items, migrated_at: new Date().toISOString() });
           console.log(`[DataStore] Migré '${key}' → Firestore (${items.length} items)`);
-        } catch (_me) {
-          // Pas authentifié pour écrire → migration échoue, on retourne quand même les data
-        }
+        } catch (_) {}
       }
       return items || [];
     }
   } catch (e) {
     console.warn(`[DataStore] GitHub fallback '${key}' failed:`, e.message);
   }
-
   return [];
 }
 
-// ========== CORE WRITE (Firestore direct) ==========
+// ========== CORE WRITE (single document) ==========
 async function writeData(key, items, message) {
+  _checkRateLimit();
   _pendingWrites++;
   _notifySync('syncing');
   try {
@@ -71,6 +79,147 @@ async function writeData(key, items, message) {
       updated_at: new Date().toISOString(),
       message: message || ''
     });
+    _pendingWrites--;
+    if (_pendingWrites === 0) _notifySync('synced');
+  } catch (err) {
+    _pendingWrites--;
+    if (_pendingWrites === 0) _notifySync('error');
+    throw err;
+  }
+}
+
+// ========== SUB-COLLECTION READ (all items) ==========
+async function readSubCollection(parentKey, sortField, sortDir) {
+  const colRef = collection(db, FS_COLLECTION, parentKey, 'items');
+
+  // 1. Essayer de lire la sous-collection
+  try {
+    const snapshot = await getDocs(colRef);
+    if (!snapshot.empty) {
+      const items = snapshot.docs.map(d => ({ ...d.data(), _id: d.id }));
+      // Tri côté client
+      if (sortField) {
+        items.sort((a, b) => {
+          const va = a[sortField] || '';
+          const vb = b[sortField] || '';
+          return sortDir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+        });
+      }
+      return items;
+    }
+  } catch (e) {
+    console.warn(`[DataStore] Sub-collection read '${parentKey}/items' failed:`, e.message);
+  }
+
+  // 2. Vérifier si les données existent dans l'ancien format (document unique)
+  try {
+    const snap = await getDoc(doc(db, FS_COLLECTION, parentKey));
+    if (snap.exists() && snap.data().items && snap.data().items.length > 0) {
+      const oldItems = snap.data().items;
+      console.log(`[DataStore] Migration '${parentKey}' : ${oldItems.length} items → sous-collection...`);
+      // Migrer vers la sous-collection
+      const migrated = [];
+      for (const item of oldItems) {
+        try {
+          const newDoc = await addDoc(colRef, item);
+          migrated.push({ ...item, _id: newDoc.id });
+        } catch (_) {}
+      }
+      // Marquer l'ancien document comme migré
+      if (migrated.length > 0) {
+        try {
+          await setDoc(doc(db, FS_COLLECTION, parentKey), {
+            migrated_to_subcollection: true,
+            migrated_count: migrated.length,
+            migrated_at: new Date().toISOString(),
+            items: [] // Vider l'ancien tableau
+          });
+          console.log(`[DataStore] Migration '${parentKey}' terminée : ${migrated.length} items`);
+        } catch (_) {}
+      }
+      if (sortField) {
+        migrated.sort((a, b) => {
+          const va = a[sortField] || '';
+          const vb = b[sortField] || '';
+          return sortDir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+        });
+      }
+      return migrated;
+    }
+  } catch (e) {
+    console.warn(`[DataStore] Old format check '${parentKey}' failed:`, e.message);
+  }
+
+  // 3. Fallback GitHub JSON
+  try {
+    const url = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/data/${parentKey}.json?t=${Date.now()}`;
+    const resp = await fetch(url);
+    if (resp.ok) {
+      const items = await resp.json();
+      if (Array.isArray(items) && items.length > 0) {
+        const migrated = [];
+        for (const item of items) {
+          try {
+            const newDoc = await addDoc(colRef, item);
+            migrated.push({ ...item, _id: newDoc.id });
+          } catch (_) {}
+        }
+        console.log(`[DataStore] GitHub → sous-collection '${parentKey}': ${migrated.length} items`);
+        return migrated;
+      }
+    }
+  } catch (e) {
+    console.warn(`[DataStore] GitHub fallback '${parentKey}' failed:`, e.message);
+  }
+
+  return [];
+}
+
+// ========== SUB-COLLECTION ADD ==========
+async function addToSubCollection(parentKey, item) {
+  _checkRateLimit();
+  _pendingWrites++;
+  _notifySync('syncing');
+  try {
+    const colRef = collection(db, FS_COLLECTION, parentKey, 'items');
+    const newDoc = await addDoc(colRef, item);
+    _pendingWrites--;
+    if (_pendingWrites === 0) _notifySync('synced');
+    return { ...item, _id: newDoc.id };
+  } catch (err) {
+    _pendingWrites--;
+    if (_pendingWrites === 0) _notifySync('error');
+    throw err;
+  }
+}
+
+// ========== SUB-COLLECTION UPDATE ==========
+async function updateInSubCollection(parentKey, docId, item) {
+  _checkRateLimit();
+  _pendingWrites++;
+  _notifySync('syncing');
+  try {
+    const docRef = doc(db, FS_COLLECTION, parentKey, 'items', docId);
+    const { _id, ...cleanItem } = item; // Retirer _id avant de sauvegarder
+    await setDoc(docRef, cleanItem);
+    _pendingWrites--;
+    if (_pendingWrites === 0) _notifySync('synced');
+    return { ...cleanItem, _id: docId };
+  } catch (err) {
+    _pendingWrites--;
+    if (_pendingWrites === 0) _notifySync('error');
+    throw err;
+  }
+}
+
+// ========== SUB-COLLECTION DELETE ==========
+async function deleteFromSubCollection(parentKey, docId) {
+  _checkRateLimit();
+  _pendingWrites++;
+  _notifySync('syncing');
+  try {
+    const docRef = doc(db, FS_COLLECTION, parentKey, 'items', docId);
+    await deleteDoc(docRef);
     _pendingWrites--;
     if (_pendingWrites === 0) _notifySync('synced');
   } catch (err) {
@@ -91,7 +240,7 @@ async function writeJsonFile(path, data, message) {
   return writeData(key, data, message);
 }
 
-// ========== UNITS ==========
+// ========== UNITS (document unique — petit dataset) ==========
 async function loadUnits() {
   return await readData('units');
 }
@@ -107,7 +256,7 @@ async function saveUnits(units, message) {
   return units;
 }
 
-// ========== PLAYTIME ==========
+// ========== PLAYTIME (document unique) ==========
 async function loadPlaytime() {
   return await readData('playtime');
 }
@@ -117,7 +266,7 @@ async function savePlaytime(playtime, message) {
   return playtime;
 }
 
-// ========== PLAYTIME HISTORY ==========
+// ========== PLAYTIME HISTORY (document unique) ==========
 async function loadPlaytimeHistory() {
   return await readData('playtime_history');
 }
@@ -128,31 +277,58 @@ async function savePlaytimeHistory(history, message) {
   return history;
 }
 
-// ========== ABSENCES ==========
+// ========== ABSENCES (sous-collection) ==========
 async function loadAbsences() {
-  return await readData('absences');
+  return await readSubCollection('absences', 'debut', 'desc');
 }
 
 async function saveAbsences(absences, message) {
+  // COMPAT : utilisé par l'admin panel pour save all — on écrit chaque item individuellement
+  // Pour les nouveaux usages, préférer addAbsence / deleteAbsence / updateAbsence
   absences.sort((a, b) => (b.debut || '').localeCompare(a.debut || ''));
   await writeData('absences', absences, message || 'Mise à jour absences');
   return absences;
 }
 
-// ========== RAPPORTS ==========
+async function addAbsence(absence) {
+  return await addToSubCollection('absences', absence);
+}
+
+async function deleteAbsence(docId) {
+  return await deleteFromSubCollection('absences', docId);
+}
+
+async function updateAbsence(docId, absence) {
+  return await updateInSubCollection('absences', docId, absence);
+}
+
+// ========== RAPPORTS (sous-collection) ==========
 async function loadReports() {
-  return await readData('reports');
+  return await readSubCollection('reports', 'created_at', 'desc');
 }
 
 async function saveReports(reports, message) {
+  // COMPAT : utilisé par l'admin — écriture document unique
   reports.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
   await writeData('reports', reports, message || 'Mise à jour rapports');
   return reports;
 }
 
-// ========== DEPOTS ==========
+async function addReport(report) {
+  return await addToSubCollection('reports', report);
+}
+
+async function deleteReport(docId) {
+  return await deleteFromSubCollection('reports', docId);
+}
+
+async function updateReport(docId, report) {
+  return await updateInSubCollection('reports', docId, report);
+}
+
+// ========== DEPOTS (sous-collection) ==========
 async function loadDeposits() {
-  return await readData('deposits');
+  return await readSubCollection('deposits', 'created_at', 'desc');
 }
 
 async function saveDeposits(deposits, message) {
@@ -161,14 +337,22 @@ async function saveDeposits(deposits, message) {
   return deposits;
 }
 
+async function addDeposit(deposit) {
+  return await addToSubCollection('deposits', deposit);
+}
+
+async function deleteDeposit(docId) {
+  return await deleteFromSubCollection('deposits', docId);
+}
+
 // ========== EXPORT ==========
 export {
   readJsonFile, writeJsonFile, onSyncStatus,
   loadUnits, saveUnits,
   loadPlaytime, savePlaytime,
   loadPlaytimeHistory, savePlaytimeHistory,
-  loadAbsences, saveAbsences,
-  loadReports, saveReports,
-  loadDeposits, saveDeposits,
+  loadAbsences, saveAbsences, addAbsence, deleteAbsence, updateAbsence,
+  loadReports, saveReports, addReport, deleteReport, updateReport,
+  loadDeposits, saveDeposits, addDeposit, deleteDeposit,
   GITHUB_OWNER, GITHUB_REPO
 };

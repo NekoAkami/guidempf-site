@@ -418,7 +418,7 @@
       import { auth, db } from './assets/js/auth.js';
       import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
       import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-      import { loadReports as ghLoadReports, saveReports as ghSaveReports, loadUnits as ghLoadUnits, onSyncStatus } from './assets/js/github-data.js';
+      import { loadReports as ghLoadReports, addReport as ghAddReport, deleteReport as ghDeleteReport, loadUnits as ghLoadUnits, onSyncStatus } from './assets/js/github-data.js';
 
       function getAccreditation(r) {
         if (r === 'RCT') return 'Recrue';
@@ -597,33 +597,36 @@
         }
         allReports.push(r);
         try {
-          await ghSaveReports([...allReports], `Rapport ${currentUser.matricule} - ${r.type}`);
+          const saved = await ghAddReport(r);
+          // Remplacer le dernier élément par celui avec _id
+          allReports[allReports.length - 1] = saved;
           showAlert('✓ Rapport soumis avec succès !','success');
           resetForm(); renderMyReports();
         } catch(e) { allReports.pop(); showAlert('✗ Erreur: '+e.message,'error'); }
         finally { btn.disabled=false; btn.textContent='⟩ SOUMETTRE LE RAPPORT'; }
       };
 
-      window.confirmDeleteReport = function(idx) {
+      window.confirmDeleteReport = function(docId) {
         const overlay = document.createElement('div');
         overlay.className = 'confirm-delete-overlay';
         overlay.innerHTML = `<div class="confirm-delete-box">
           <p>⚠ Supprimer ce rapport ?<br><span style="font-size:0.75rem;color:var(--text-muted);">Cette action est irréversible.</span></p>
           <div class="confirm-btns">
             <button class="btn-cancel" onclick="this.closest('.confirm-delete-overlay').remove()">ANNULER</button>
-            <button class="btn-confirm-del" onclick="executeDeleteReport(${idx})">SUPPRIMER</button>
+            <button class="btn-confirm-del" onclick="executeDeleteReport('${docId}')">SUPPRIMER</button>
           </div>
         </div>`;
         document.body.appendChild(overlay);
         overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
       };
 
-      window.executeDeleteReport = async function(idx) {
+      window.executeDeleteReport = async function(docId) {
         document.querySelector('.confirm-delete-overlay')?.remove();
-        if (idx < 0 || idx >= allReports.length) { showAlert('Erreur: rapport introuvable','error'); return; }
+        const idx = allReports.findIndex(r => r._id === docId);
+        if (idx < 0) { showAlert('Erreur: rapport introuvable','error'); return; }
         const removed = allReports.splice(idx, 1)[0];
         try {
-          await ghSaveReports([...allReports], `Suppression rapport ${currentUser.matricule}`);
+          await ghDeleteReport(docId);
           showAlert('✓ Rapport supprimé','success');
           renderMyReports();
         } catch(e) {
@@ -651,13 +654,12 @@
         const tb=document.getElementById('myReportsBody');
         if(!mine.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Aucun rapport soumis</td></tr>';return;}
         tb.innerHTML=mine.map((r,i)=>{
-          const globalIdx = allReports.indexOf(r);
           return `<tr>
           <td style="font-size:0.75rem;">${fmtDate(r.created_at)}</td>
           <td><span class="type-badge">${r.type}</span></td>
           <td style="font-size:0.75rem;">${r.secteur||'-'}</td>
           <td style="font-size:0.75rem;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${(r.resume||'').replace(/"/g,'&quot;')}">${r.resume||'-'}</td>
-          <td><button class="btn-delete" onclick="confirmDeleteReport(${globalIdx})" title="Supprimer ce rapport">✕</button></td>
+          <td><button class="btn-delete" onclick="confirmDeleteReport('${r._id}')" title="Supprimer ce rapport">\u2715</button></td>
         </tr>`;
         }).join('');
       }

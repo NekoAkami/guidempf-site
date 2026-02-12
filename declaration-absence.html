@@ -430,7 +430,7 @@
       import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
       import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
       import {
-        loadAbsences as ghLoadAbsences, saveAbsences as ghSaveAbsences,
+        loadAbsences as ghLoadAbsences, addAbsence as ghAddAbsence, deleteAbsence as ghDeleteAbsence,
         loadUnits as ghLoadUnits,
         onSyncStatus
       } from './assets/js/github-data.js';
@@ -648,7 +648,9 @@
         allAbsences.push(absData);
 
         try {
-          await ghSaveAbsences([...allAbsences], `Déclaration absence ${currentUser.matricule} (${debut} → ${fin})`);
+          const saved = await ghAddAbsence(absData);
+          // Remplacer le dernier élément par celui avec _id
+          allAbsences[allAbsences.length - 1] = saved;
           showAlert('✓ Absence déclarée avec succès !', 'success');
           resetForm();
           renderMyAbsences();
@@ -671,26 +673,27 @@
       };
 
       // ========== DELETE ABSENCE ==========
-      window.confirmDeleteAbsence = function(idx) {
+      window.confirmDeleteAbsence = function(docId) {
         const overlay = document.createElement('div');
         overlay.className = 'confirm-delete-overlay';
         overlay.innerHTML = `<div class="confirm-delete-box">
           <p>\u26a0 Supprimer cette absence ?<br><span style="font-size:0.75rem;color:var(--text-muted);">Cette action est irr\u00e9versible.</span></p>
           <div class="confirm-btns">
             <button class="btn-cancel" onclick="this.closest('.confirm-delete-overlay').remove()">ANNULER</button>
-            <button class="btn-confirm-del" onclick="executeDeleteAbsence(${idx})">SUPPRIMER</button>
+            <button class="btn-confirm-del" onclick="executeDeleteAbsence('${docId}')">SUPPRIMER</button>
           </div>
         </div>`;
         document.body.appendChild(overlay);
         overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
       };
 
-      window.executeDeleteAbsence = async function(idx) {
+      window.executeDeleteAbsence = async function(docId) {
         document.querySelector('.confirm-delete-overlay')?.remove();
-        if (idx < 0 || idx >= allAbsences.length) { showAlert('Erreur: absence introuvable','error'); return; }
+        const idx = allAbsences.findIndex(a => a._id === docId);
+        if (idx < 0) { showAlert('Erreur: absence introuvable','error'); return; }
         const removed = allAbsences.splice(idx, 1)[0];
         try {
-          await ghSaveAbsences([...allAbsences], `Suppression absence ${currentUser.matricule}`);
+          await ghDeleteAbsence(docId);
           showAlert('\u2713 Absence supprim\u00e9e','success');
           renderMyAbsences();
         } catch(e) {
@@ -717,14 +720,13 @@
 
         tbody.innerHTML = mine.map(a => {
           const td = totalDays(a.debut, a.fin);
-          const globalIdx = allAbsences.indexOf(a);
           return `<tr>
             <td style="font-size:0.75rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${(a.motif || '').replace(/"/g, '&quot;')}">${a.motif || '-'}</td>
             <td style="font-size:0.75rem;">${formatDate(a.debut)}</td>
             <td style="font-size:0.75rem;">${formatDate(a.fin)}</td>
             <td style="font-family:'Orbitron',sans-serif;font-size:0.78rem;font-weight:700;color:var(--accent-cyan);">${td}j</td>
             <td>${statusBadge(a._status)}</td>
-            <td><button class="btn-delete-abs" onclick="confirmDeleteAbsence(${globalIdx})" title="Supprimer cette absence">✕</button></td>
+            <td><button class="btn-delete-abs" onclick="confirmDeleteAbsence('${a._id}')" title="Supprimer cette absence">✕</button></td>
           </tr>`;
         }).join('');
       }
