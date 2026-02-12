@@ -14,6 +14,7 @@ class GlobalNavigation {
         this.injectMissingAssets();
         this.createNavigationHTML();
         this.injectSearchBar();
+        this.injectBackButton();
         this.markActivePage();
         this.setupMobileMenu();
         this.setupDropdowns();
@@ -117,6 +118,28 @@ class GlobalNavigation {
             el.classList.remove('glitch-text');
             el.removeAttribute('data-text');
         });
+    }
+
+    // Bouton retour en arrière flottant (masqué sur index.html)
+    injectBackButton() {
+        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        if (currentPage === 'index.html' || currentPage === '' || currentPage === 'login.html' || currentPage === 'register.html') return;
+        if (document.getElementById('backBtnFloat')) return;
+
+        const btn = document.createElement('a');
+        btn.id = 'backBtnFloat';
+        btn.className = 'back-btn-float';
+        btn.href = 'javascript:void(0)';
+        btn.innerHTML = '<span class="back-arrow">◄</span> RETOUR';
+        btn.onclick = (e) => {
+            e.preventDefault();
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = this.basePath + 'index.html';
+            }
+        };
+        document.body.appendChild(btn);
     }
 
     getMenuStructure() {
