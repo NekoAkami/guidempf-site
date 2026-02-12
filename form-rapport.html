@@ -73,6 +73,103 @@
         }
         .form-group.error .error-msg { display: block; }
 
+        /* Champ conditionnel rations */
+        #grpCitoyens { display: none; }
+        #grpCitoyens.visible { display: block; }
+
+        /* Sélection multiple unités */
+        .units-selector {
+            position: relative;
+        }
+        .units-input-row {
+            display: flex; align-items: center; gap: 0;
+        }
+        .units-input-row input {
+            flex: 1; border-radius: 2px 0 0 2px !important;
+        }
+        .units-toggle-btn {
+            padding: 0.5rem 0.6rem;
+            background: rgba(0, 170, 255, 0.12);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+            border-left: none;
+            color: var(--accent-cyan);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-family: 'Share Tech Mono', monospace;
+            border-radius: 0 2px 2px 0;
+            transition: background 0.15s, border-color 0.15s;
+            display: flex; align-items: center; justify-content: center;
+            min-width: 32px;
+            height: 100%;
+        }
+        .units-toggle-btn:hover {
+            background: rgba(0, 170, 255, 0.25);
+            border-color: var(--accent-cyan);
+        }
+        .units-toggle-btn.active {
+            background: rgba(0, 170, 255, 0.2);
+            border-color: var(--accent-cyan);
+        }
+        .units-dropdown {
+            display: none;
+            position: absolute; left: 0; right: 0; top: 100%;
+            background: #0a1628;
+            border: 1px solid rgba(0, 170, 255, 0.3);
+            border-top: none;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 50;
+            border-radius: 0 0 4px 4px;
+        }
+        .units-dropdown.open { display: block; }
+        .units-dropdown-search {
+            width: 100%; padding: 0.4rem 0.6rem;
+            background: rgba(0, 170, 255, 0.06);
+            border: none; border-bottom: 1px solid rgba(0, 170, 255, 0.15);
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace; font-size: 0.78rem;
+            outline: none;
+        }
+        .units-dropdown-item {
+            padding: 0.35rem 0.6rem;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.78rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex; align-items: center; gap: 0.5rem;
+            transition: background 0.1s;
+        }
+        .units-dropdown-item:hover { background: rgba(0, 170, 255, 0.1); }
+        .units-dropdown-item.selected { background: rgba(0, 170, 255, 0.15); }
+        .units-dropdown-item .unit-check {
+            width: 14px; height: 14px;
+            border: 1px solid rgba(0, 170, 255, 0.4);
+            border-radius: 2px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.65rem; color: var(--accent-cyan);
+            flex-shrink: 0;
+        }
+        .units-dropdown-item.selected .unit-check {
+            background: rgba(0, 170, 255, 0.2);
+            border-color: var(--accent-cyan);
+        }
+        .units-tags {
+            display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.4rem;
+        }
+        .unit-tag {
+            display: inline-flex; align-items: center; gap: 0.3rem;
+            padding: 0.15rem 0.45rem;
+            background: rgba(0, 170, 255, 0.12);
+            border: 1px solid rgba(0, 170, 255, 0.25);
+            border-radius: 2px;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.72rem;
+            color: var(--accent-cyan);
+        }
+        .unit-tag .remove-tag {
+            cursor: pointer; color: #ff6666; font-size: 0.8rem;
+            margin-left: 0.1rem;
+        }
+        .unit-tag .remove-tag:hover { color: #ff4444; }
+
         .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
         @media (max-width: 500px) { .row-2 { grid-template-columns: 1fr; } }
 
@@ -192,15 +289,19 @@
                             <div class="row-2">
                                 <div class="form-group" id="grpType">
                                     <label>TYPE D'ACTIVITÉ <span class="req">*</span></label>
-                                    <select id="fType">
+                                    <select id="fType" onchange="onTypeChange()">
                                         <option value="">— Sélectionner —</option>
                                         <option value="Patrouille">Patrouille</option>
                                         <option value="Opération">Opération</option>
-                                        <option value="Garde">Garde</option>
-                                        <option value="Escorte">Escorte</option>
-                                        <option value="Jugement">Jugement</option>
+                                        <option value="Fouille mineur">Fouille mineur</option>
+                                        <option value="Fouille majeur">Fouille majeur</option>
+                                        <option value="Point Passage">Point Passage</option>
+                                        <option value="Protection VIP">Protection VIP</option>
+                                        <option value="Distribution ration">Distribution ration</option>
                                         <option value="Formation">Formation</option>
-                                        <option value="Maintenance">Maintenance</option>
+                                        <option value="Conscription">Conscription</option>
+                                        <option value="Interrogatoire">Interrogatoire</option>
+                                        <option value="Test de loyauté">Test de loyauté</option>
                                         <option value="Autre">Autre</option>
                                     </select>
                                     <div class="error-msg" id="errType"></div>
@@ -211,10 +312,29 @@
                                 </div>
                             </div>
 
+                            <!-- Champ conditionnel : nombre de citoyens (Distribution ration) -->
+                            <div class="form-group" id="grpCitoyens">
+                                <label>NOMBRE DE CITOYENS <span class="req">*</span></label>
+                                <input type="number" id="fCitoyens" min="0" placeholder="Nombre de citoyens présents">
+                                <div class="hint">Indiquez combien de citoyens étaient présents lors de la distribution</div>
+                                <div class="error-msg" id="errCitoyens"></div>
+                            </div>
+
+                            <!-- Sélection des unités avec dropdown optionnel -->
                             <div class="form-group" id="grpUnites">
                                 <label>UNITÉS IMPLIQUÉES</label>
-                                <input type="text" id="fUnites" placeholder="Ex: 954, 123, 456">
-                                <div class="hint">Séparer les matricules par des virgules</div>
+                                <div class="units-selector" id="unitsSelectorWrapper">
+                                    <div class="units-input-row">
+                                        <input type="text" id="fUnites" placeholder="Ex: 954, 123, 456" onkeydown="onUnitInputKey(event)">
+                                        <button type="button" class="units-toggle-btn" id="unitsToggleBtn" onclick="toggleUnitsDropdown()" title="Afficher la liste des unités">▼</button>
+                                    </div>
+                                    <div class="units-dropdown" id="unitsDropdown">
+                                        <input type="text" class="units-dropdown-search" id="unitsDropdownSearch" placeholder="Rechercher une unité..." oninput="filterUnitsDropdown()">
+                                        <div id="unitsDropdownList"></div>
+                                    </div>
+                                    <div class="units-tags" id="unitsTags"></div>
+                                </div>
+                                <div class="hint">Saisissez les matricules séparés par des virgules ou utilisez ▼ pour sélectionner depuis la liste</div>
                             </div>
 
                             <div class="form-group" id="grpResume">
@@ -287,17 +407,143 @@
         onSyncStatus(s=>{clearTimeout(t);if(s==='syncing'){i.innerHTML='<span class="sync-spinner">⟳</span> Synchronisation...';i.className='sync-indicator syncing';}else if(s==='synced'){i.innerHTML='✓ Synchronisé';i.className='sync-indicator synced';t=setTimeout(()=>i.className='sync-indicator hidden',2500);}else{i.innerHTML='⚠ Erreur sync';i.className='sync-indicator error';t=setTimeout(()=>i.className='sync-indicator hidden',6000);}});
       }
 
-      let currentUser = null, allReports = [];
+      let currentUser = null, allReports = [], allUnitsData = [], selectedUnits = new Set();
 
       function showAlert(t, type='success') { const e=document.getElementById('alertMsg'); e.style.display='block'; e.className='alert-msg '+type; e.textContent=t; setTimeout(()=>e.style.display='none',6000); }
       function fmtDate(d) { if(!d)return'-'; const p=d.split('-'); return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:d; }
 
+      /* === Gestion type d'activité conditionnel === */
+      window.onTypeChange = function() {
+        const v = document.getElementById('fType').value;
+        const grp = document.getElementById('grpCitoyens');
+        if (v === 'Distribution ration') {
+          grp.classList.add('visible');
+        } else {
+          grp.classList.remove('visible');
+          document.getElementById('fCitoyens').value = '';
+        }
+      };
+
+      /* === Gestion du dropdown des unités === */
+      window.toggleUnitsDropdown = function() {
+        const dd = document.getElementById('unitsDropdown');
+        const btn = document.getElementById('unitsToggleBtn');
+        const isOpen = dd.classList.contains('open');
+        if (isOpen) {
+          dd.classList.remove('open');
+          btn.classList.remove('active');
+          btn.textContent = '▼';
+        } else {
+          dd.classList.add('open');
+          btn.classList.add('active');
+          btn.textContent = '▲';
+          document.getElementById('unitsDropdownSearch').value = '';
+          filterUnitsDropdown();
+          document.getElementById('unitsDropdownSearch').focus();
+        }
+      };
+
+      // Fermer le dropdown en cliquant ailleurs
+      document.addEventListener('click', function(e) {
+        const wrapper = document.getElementById('unitsSelectorWrapper');
+        if (wrapper && !wrapper.contains(e.target)) {
+          const dd = document.getElementById('unitsDropdown');
+          const btn = document.getElementById('unitsToggleBtn');
+          if (dd && dd.classList.contains('open')) {
+            dd.classList.remove('open');
+            btn.classList.remove('active');
+            btn.textContent = '▼';
+          }
+        }
+      });
+
+      window.filterUnitsDropdown = function() {
+        const q = (document.getElementById('unitsDropdownSearch').value || '').toLowerCase();
+        const list = document.getElementById('unitsDropdownList');
+        const filtered = allUnitsData.filter(u => {
+          const txt = `${u.matricule} ${u.nom_steam||''} ${u.division||''}`.toLowerCase();
+          return txt.includes(q);
+        });
+        list.innerHTML = filtered.length ? filtered.map(u => {
+          const sel = selectedUnits.has(u.matricule) ? ' selected' : '';
+          const check = selectedUnits.has(u.matricule) ? '✓' : '';
+          const divLabel = u.division ? ` <span style="color:var(--text-muted);font-size:0.7rem;">[${u.division}]</span>` : '';
+          return `<div class="units-dropdown-item${sel}" data-mat="${u.matricule}" onclick="toggleUnitSelection('${u.matricule}')">
+            <span class="unit-check">${check}</span>
+            <span>${u.matricule} — ${u.nom_steam||'Inconnu'}${divLabel}</span>
+          </div>`;
+        }).join('') : '<div style="padding:0.5rem;color:var(--text-muted);font-size:0.78rem;text-align:center;">Aucune unité trouvée</div>';
+      };
+
+      window.toggleUnitSelection = function(mat) {
+        if (selectedUnits.has(mat)) {
+          selectedUnits.delete(mat);
+        } else {
+          selectedUnits.add(mat);
+        }
+        renderUnitsTags();
+        filterUnitsDropdown();
+        syncUnitsInput();
+      };
+
+      window.removeUnitTag = function(mat) {
+        selectedUnits.delete(mat);
+        renderUnitsTags();
+        filterUnitsDropdown();
+        syncUnitsInput();
+      };
+
+      function renderUnitsTags() {
+        const container = document.getElementById('unitsTags');
+        if (!selectedUnits.size) { container.innerHTML = ''; return; }
+        container.innerHTML = Array.from(selectedUnits).map(mat => {
+          const u = allUnitsData.find(x => x.matricule === mat);
+          const label = u ? `${mat} (${u.nom_steam||'?'})` : mat;
+          return `<span class="unit-tag">${label}<span class="remove-tag" onclick="removeUnitTag('${mat}')">&times;</span></span>`;
+        }).join('');
+      }
+
+      function syncUnitsInput() {
+        document.getElementById('fUnites').value = Array.from(selectedUnits).join(', ');
+      }
+
+      window.onUnitInputKey = function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); parseManualUnits(); }
+      };
+
+      function parseManualUnits() {
+        const raw = document.getElementById('fUnites').value;
+        const mats = raw.split(/[,;\s]+/).map(s => s.trim()).filter(Boolean);
+        mats.forEach(m => { if (m) selectedUnits.add(m); });
+        syncUnitsInput();
+        renderUnitsTags();
+        filterUnitsDropdown();
+      }
+
+      function populateUnitsDropdown(units) {
+        allUnitsData = units || [];
+        filterUnitsDropdown();
+      }
+
       window.submitReport = async function() {
         if (!currentUser) { showAlert('Erreur: utilisateur non identifié','error'); return; }
+        // Parse les unités manuelles avant soumission
+        parseManualUnits();
+
         let ok=true;
         ['grpType','grpResume'].forEach(id=>document.getElementById(id).classList.remove('error'));
+        document.getElementById('grpCitoyens').classList.remove('error');
         if (!document.getElementById('fType').value) { document.getElementById('grpType').classList.add('error'); document.getElementById('errType').textContent='Sélectionnez un type'; ok=false; }
         if (!document.getElementById('fResume').value.trim()) { document.getElementById('grpResume').classList.add('error'); document.getElementById('errResume').textContent='Le résumé est obligatoire'; ok=false; }
+        // Validation citoyens si Distribution ration
+        if (document.getElementById('fType').value === 'Distribution ration') {
+          const nb = document.getElementById('fCitoyens').value;
+          if (!nb || parseInt(nb) < 0) {
+            document.getElementById('grpCitoyens').classList.add('error');
+            document.getElementById('errCitoyens').textContent='Indiquez le nombre de citoyens';
+            ok=false;
+          }
+        }
         if (!ok) return;
 
         const btn=document.getElementById('btnSubmit'); btn.disabled=true; btn.textContent='⏳ ENVOI...';
@@ -310,6 +556,10 @@
           notes: document.getElementById('fNotes').value.trim(),
           created_at: new Date().toISOString().substring(0,10)
         };
+        // Ajouter nb citoyens si distribution ration
+        if (r.type === 'Distribution ration') {
+          r.nb_citoyens = parseInt(document.getElementById('fCitoyens').value) || 0;
+        }
         allReports.push(r);
         try {
           await ghSaveReports([...allReports], `Rapport ${currentUser.matricule} - ${r.type}`);
@@ -320,8 +570,15 @@
       };
 
       window.resetForm = function() {
-        ['fType','fSecteur','fUnites','fResume','fNotes'].forEach(id=>{const e=document.getElementById(id);if(e.tagName==='SELECT')e.value='';else e.value='';});
-        ['grpType','grpResume'].forEach(id=>document.getElementById(id).classList.remove('error'));
+        ['fType','fSecteur','fUnites','fResume','fNotes','fCitoyens'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+        ['grpType','grpResume','grpCitoyens'].forEach(id=>document.getElementById(id).classList.remove('error'));
+        document.getElementById('grpCitoyens').classList.remove('visible');
+        selectedUnits.clear();
+        renderUnitsTags();
+        filterUnitsDropdown();
+        // Fermer le dropdown
+        const dd=document.getElementById('unitsDropdown'), btn=document.getElementById('unitsToggleBtn');
+        if(dd){dd.classList.remove('open');} if(btn){btn.classList.remove('active');btn.textContent='▼';}
       };
 
       function renderMyReports() {
@@ -346,7 +603,7 @@
           const ud=s.data();
           if(!ud.approved){document.getElementById('loading').style.display='none';document.getElementById('notApproved').style.display='block';return;}
           currentUser={matricule:ud.matricule||'???',nom_steam:ud.nom_steam||'',steamid64:ud.steamid64||''};
-          let ui=null;try{const u=await ghLoadUnits();ui=u.find(x=>x.matricule===currentUser.matricule)||null;}catch(_){}
+          let ui=null;try{const u=await ghLoadUnits();allUnitsData=u||[];populateUnitsDropdown(allUnitsData);ui=u.find(x=>x.matricule===currentUser.matricule)||null;}catch(_){allUnitsData=[];}
           const rg=ui?(ui.rang||''):'';const isHG=rg==='Ofc'||rg==='Cmd';const dv=ui&&!isHG?(ui.division||''):'';
           const acc=getAccreditation(rg);
           document.getElementById('userIdentification').textContent='Identification : '+[rg,dv,currentUser.matricule].filter(Boolean).join(' ');
