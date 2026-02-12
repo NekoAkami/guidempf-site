@@ -126,7 +126,7 @@ export async function updateAuthButton() {
               <span>Unité Connecté au terminal : <span style="color:var(--accent-cyan);font-weight:700;">${gradeMatDiv}</span></span>
               ${accredLine ? `<span style="font-size:0.65rem;opacity:0.7;">${accredLine}</span>` : ''}
             </span>
-            ${showPanelBtn ? `<a href="${_basePath}admin/panel.html" class="btn" style="margin-right:.5rem">${isAdmin ? 'Admin' : 'Panel'}</a>` : ''}
+            ${showPanelBtn ? `<a href="${_basePath}admin/${isAdmin ? 'panel' : 'maintenance-admin'}.html" class="btn" style="margin-right:.5rem">${isAdmin ? 'Admin' : 'Maintenance'}</a>` : ''}
             <button onclick="window.logoutUser()" class="btn secondary">Déconnexion</button>
           `;
           // Démarrer la présence en ligne

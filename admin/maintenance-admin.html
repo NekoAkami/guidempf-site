@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintenance - MPF Administration</title>
+    <link rel="stylesheet" href="../assets/css/main-style.css">
+    <link rel="stylesheet" href="../assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="../assets/css/global-nav.css">
+    <link rel="stylesheet" href="../assets/css/interactive-system.css">
+    <link rel="stylesheet" href="../assets/css/combine-animations.css">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <style>
+        .btn-sm {
+            padding: 0.25rem 0.6rem;
+            font-size: 0.72rem;
+            font-family: 'Share Tech Mono', monospace;
+            cursor: pointer;
+            border: 1px solid rgba(0, 170, 255, 0.3);
+            background: rgba(0, 170, 255, 0.08);
+            color: var(--accent-cyan);
+            border-radius: 2px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .btn-sm:hover { background: rgba(0, 170, 255, 0.2); }
+        .btn-sm.danger { border-color: rgba(255, 60, 60, 0.3); background: rgba(255, 60, 60, 0.08); color: #ff4444; }
+        .btn-sm.danger:hover { background: rgba(255, 60, 60, 0.2); }
+        .btn-sm.success { border-color: rgba(0, 200, 80, 0.3); background: rgba(0, 200, 80, 0.08); color: #00cc55; }
+        .btn-sm.success:hover { background: rgba(0, 200, 80, 0.2); }
+        .admin-nav {
+            display: flex;
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+            flex-wrap: wrap;
+        }
+        .admin-nav a {
+            padding: 0.35rem 0.8rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border: 1px solid rgba(0, 170, 255, 0.15);
+            border-radius: 2px;
+            transition: all 0.15s;
+        }
+        .admin-nav a:hover, .admin-nav a.active {
+            color: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            background: rgba(0, 170, 255, 0.08);
+        }
+        .alert-msg {
+            padding: 0.6rem 1rem;
+            border-radius: 3px;
+            margin-bottom: 1rem;
+            font-size: 0.8rem;
+            font-family: 'Share Tech Mono', monospace;
+            display: none;
+        }
+        .alert-msg.success { background: rgba(0, 200, 80, 0.1); border: 1px solid rgba(0, 200, 80, 0.3); color: #00cc55; }
+        .alert-msg.error { background: rgba(255, 60, 60, 0.1); border: 1px solid rgba(255, 60, 60, 0.3); color: #ff4444; }
+        #access-denied { display: none; text-align: center; padding: 3rem; }
+    </style>
+</head>
+<body>
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <div>
+                        <h1 class="logo">MPF</h1>
+                        <p class="logo-subtitle">Maintenance</p>
+                    </div>
+                </div>
+                <div id="authBtn" class="header-auth"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Loading / Access denied -->
+            <div id="loading" style="text-align:center;padding:3rem;">
+                <p style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;">VÉRIFICATION DES ACCÈS...</p>
+            </div>
+            <div id="access-denied">
+                <h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">ACCÈS REFUSÉ</h2>
+                <p style="color:var(--text-muted);">Seuls les administrateurs et haut-gradés peuvent accéder à cette page.</p>
+                <a href="../index.html" style="color:var(--accent-cyan);">Retour au site</a>
+            </div>
+
+            <div id="maintenanceContent" style="display:none;">
+
+                <!-- Admin navigation -->
+                <div class="admin-nav" style="margin-top: 1rem;">
+                    <a href="panel.html">PANEL ADMIN</a>
+                    <a href="unites.html">UNITÉS</a>
+                    <a href="heures.html">HEURES DE JEU</a>
+                    <a href="heures-archives.html">ARCHIVES</a>
+                    <a href="absences.html">ABSENCES</a>
+                    <a href="maintenance-admin.html" class="active">MAINTENANCE</a>
+                </div>
+
+                <!-- Alert message -->
+                <div id="alertMsg" class="alert-msg"></div>
+
+                <!-- Section Maintenance -->
+                <div class="combine-terminal-wrapper" style="margin-bottom: 1.5rem;">
+                    <div class="combine-header">
+                        <h2 id="maintSectionTitle">🔧 GESTION DE LA MAINTENANCE</h2>
+                        <span class="header-code" id="maintStatusBadge">VÉRIFICATION...</span>
+                    </div>
+                    <div class="combine-body" id="maintenanceBody">
+                        <!-- Status actuel -->
+                        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;">
+                            <div id="maintCurrentStatus" style="font-family:'Share Tech Mono',monospace;font-size:0.85rem;padding:0.4rem 1rem;border-radius:3px;"></div>
+                            <div id="maintActivatedInfo" style="font-size:0.75rem;color:var(--text-muted);font-family:'Share Tech Mono',monospace;"></div>
+                        </div>
+
+                        <!-- Formulaire activation -->
+                        <div id="maintActivateForm" style="margin-bottom:1rem;">
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-bottom:0.8rem;">
+                                <div>
+                                    <label style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--text-muted);letter-spacing:1px;">MESSAGE DE MAINTENANCE</label>
+                                    <textarea id="maintMessage" rows="2" style="width:100%;padding:0.5rem;background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.2);color:var(--text-primary);font-family:'Rajdhani',sans-serif;font-size:0.85rem;outline:none;border-radius:3px;resize:vertical;margin-top:0.3rem;" placeholder="Le site est temporairement indisponible pour maintenance."></textarea>
+                                </div>
+                                <div>
+                                    <label style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--text-muted);letter-spacing:1px;">RETOUR ESTIMÉ</label>
+                                    <input type="datetime-local" id="maintReturnTime" style="width:100%;padding:0.5rem;background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.2);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.8rem;outline:none;border-radius:3px;margin-top:0.3rem;">
+                                    <div style="font-size:0.65rem;color:var(--text-muted);margin-top:0.2rem;">Optionnel — affichera un compte à rebours</div>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
+                                <button id="maintEnableBtn" class="btn-sm danger" style="font-weight:700;padding:0.4rem 1.2rem;">⚠ ACTIVER MAINTENANCE</button>
+                                <button id="maintDisableBtn" class="btn-sm success" style="font-weight:700;padding:0.4rem 1.2rem;display:none;">✓ REMETTRE EN LIGNE</button>
+                                <a href="../maintenance.html" target="_blank" class="btn-sm" style="text-decoration:none;display:inline-flex;align-items:center;">APERÇU PAGE ↗</a>
+                            </div>
+                        </div>
+
+                        <!-- Journal maintenance -->
+                        <details style="margin-top:0.8rem;" open>
+                            <summary style="cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--accent-cyan);letter-spacing:1px;user-select:none;">JOURNAL DE MAINTENANCE</summary>
+                            <div id="maintLogs" style="margin-top:0.5rem;max-height:300px;overflow-y:auto;"></div>
+                        </details>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="../assets/js/auth.js"></script>
+    <script src="../assets/js/global-nav.js"></script>
+    <script src="../assets/js/interactive-system.js"></script>
+    <script src="../assets/js/combine-animations.js"></script>
+
+    <script type="module">
+      import { auth, db } from '../assets/js/auth.js';
+      import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+      import { getDoc, doc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+      import { setMaintenanceMode, getMaintenanceLogs, listenMaintenanceMode } from '../assets/js/maintenance.js';
+
+      function showMessage(msg, type) {
+        const el = document.getElementById('alertMsg');
+        el.textContent = msg;
+        el.className = 'alert-msg ' + type;
+        el.style.display = 'block';
+        setTimeout(() => { el.style.display = 'none'; }, 4000);
+      }
+
+      // Auth check — admin + HG (Ofc/Cmd)
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) return;
+        try {
+          const snap = await getDoc(doc(db, 'users', user.uid));
+          if (!snap.exists()) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('access-denied').style.display = 'block';
+            return;
+          }
+          const uData = snap.data();
+          const isAdmin = uData.is_admin === true;
+          const userMatricule = uData.matricule || '';
+
+          // Vérifier HG depuis units.json
+          let isHG = false;
+          if (userMatricule) {
+            try {
+              const res = await fetch('https://raw.githubusercontent.com/NekoAkami/guidempf-site/main/data/units.json');
+              if (res.ok) {
+                const units = await res.json();
+                const unit = units.find(u => u.matricule === userMatricule);
+                if (unit && (unit.rang === 'Ofc' || unit.rang === 'Cmd')) isHG = true;
+              }
+            } catch (_) {}
+          }
+
+          if (!isAdmin && !isHG) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('access-denied').style.display = 'block';
+            return;
+          }
+
+          // Masquer le lien "Panel Admin" dans la nav si non-admin
+          if (!isAdmin) {
+            document.querySelectorAll('.admin-nav a').forEach(a => {
+              if (a.getAttribute('href') !== 'maintenance-admin.html') a.style.display = 'none';
+            });
+          }
+
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('maintenanceContent').style.display = 'block';
+
+          // ====== MAINTENANCE LOGIC ======
+          const enableBtn = document.getElementById('maintEnableBtn');
+          const disableBtn = document.getElementById('maintDisableBtn');
+          const statusEl = document.getElementById('maintCurrentStatus');
+          const statusBadge = document.getElementById('maintStatusBadge');
+          const activatedInfo = document.getElementById('maintActivatedInfo');
+          const logsContainer = document.getElementById('maintLogs');
+          const messageInput = document.getElementById('maintMessage');
+          const returnInput = document.getElementById('maintReturnTime');
+
+          const currentUserMatricule = userMatricule || user.email;
+
+          // Écoute temps réel
+          listenMaintenanceMode((data) => {
+            const enabled = data.enabled === true;
+            if (enabled) {
+              statusEl.innerHTML = '<span style="color:#ffaa00;font-weight:700;">⚠ MODE MAINTENANCE ACTIF</span>';
+              statusEl.style.background = 'rgba(255,170,0,0.1)';
+              statusEl.style.border = '1px solid rgba(255,170,0,0.3)';
+              statusBadge.textContent = '⚠ MAINTENANCE ACTIVE';
+              statusBadge.style.color = '#ffaa00';
+              enableBtn.style.display = 'none';
+              disableBtn.style.display = '';
+              if (data.activated_at) {
+                const d = new Date(data.activated_at);
+                let info = 'Activée le ' + d.toLocaleString('fr-FR');
+                if (data.activated_by) info += ' par ' + data.activated_by;
+                activatedInfo.textContent = info;
+              }
+              if (data.message) messageInput.value = data.message;
+              if (data.estimated_return) {
+                try { returnInput.value = new Date(data.estimated_return).toISOString().slice(0, 16); } catch {}
+              }
+            } else {
+              statusEl.innerHTML = '<span style="color:#00cc55;font-weight:700;">✓ SITE EN LIGNE</span>';
+              statusEl.style.background = 'rgba(0,200,80,0.1)';
+              statusEl.style.border = '1px solid rgba(0,200,80,0.3)';
+              statusBadge.textContent = '✓ EN LIGNE';
+              statusBadge.style.color = '#00cc55';
+              enableBtn.style.display = '';
+              disableBtn.style.display = 'none';
+              activatedInfo.textContent = '';
+            }
+          });
+
+          // Charger les logs
+          async function loadLogs() {
+            const logs = await getMaintenanceLogs(15);
+            if (logs.length === 0) {
+              logsContainer.innerHTML = '<div style="font-size:0.75rem;color:var(--text-muted);padding:0.5rem;">Aucun historique</div>';
+              return;
+            }
+            logsContainer.innerHTML = logs.map(l => {
+              const d = new Date(l.timestamp);
+              const isActivation = l.action === 'ACTIVATION';
+              const color = isActivation ? '#ffaa00' : '#00cc55';
+              return `<div style="display:flex;gap:0.8rem;align-items:baseline;padding:0.3rem 0;border-bottom:1px solid rgba(0,170,255,0.06);font-size:0.72rem;">
+                <span style="color:var(--text-muted);font-family:'Share Tech Mono',monospace;min-width:110px;">${d.toLocaleString('fr-FR', {day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>
+                <span style="color:${color};font-weight:700;min-width:100px;">${l.action}</span>
+                <span style="color:var(--text-muted);">par <strong style="color:var(--text-primary);">${l.by}</strong></span>
+                ${l.message ? `<span style="color:var(--text-muted);font-style:italic;">"${l.message.substring(0, 60)}${l.message.length > 60 ? '...' : ''}"</span>` : ''}
+              </div>`;
+            }).join('');
+          }
+          loadLogs();
+
+          // Activer
+          enableBtn.onclick = async () => {
+            if (!confirm('Activer le mode maintenance ? Les utilisateurs seront redirigés.')) return;
+            const msg = messageInput.value.trim() || 'Le site est temporairement indisponible pour maintenance.';
+            const ret = returnInput.value ? new Date(returnInput.value).toISOString() : '';
+            try {
+              await setMaintenanceMode(true, { message: msg, estimated_return: ret, activated_by: currentUserMatricule });
+              showMessage('✓ Mode maintenance activé', 'success');
+              loadLogs();
+            } catch (err) { showMessage('✗ Erreur: ' + err.message, 'error'); }
+          };
+
+          // Désactiver
+          disableBtn.onclick = async () => {
+            if (!confirm('Remettre le site en ligne ?')) return;
+            try {
+              await setMaintenanceMode(false, { activated_by: currentUserMatricule });
+              messageInput.value = '';
+              returnInput.value = '';
+              showMessage('✓ Site remis en ligne', 'success');
+              loadLogs();
+            } catch (err) { showMessage('✗ Erreur: ' + err.message, 'error'); }
+          };
+
+        } catch (err) {
+          console.error('Auth error:', err);
+          document.getElementById('loading').innerHTML = '<p style="color:#ff4444;">Erreur: ' + err.message + '</p>';
+        }
+      });
+    </script>
+</body>
+</html>

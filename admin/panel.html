@@ -220,47 +220,7 @@
                     <a href="heures.html">HEURES DE JEU</a>
                     <a href="heures-archives.html">ARCHIVES</a>
                     <a href="absences.html">ABSENCES</a>
-                </div>
-
-                <!-- Section Maintenance -->
-                <div id="maintenanceSection" class="combine-terminal-wrapper" style="margin-bottom: 1.5rem;">
-                    <div class="combine-header" style="cursor:pointer;" onclick="document.getElementById('maintenanceBody').style.display = document.getElementById('maintenanceBody').style.display === 'none' ? '' : 'none';">
-                        <h2 id="maintSectionTitle">🔧 MAINTENANCE</h2>
-                        <span class="header-code" id="maintStatusBadge">VÉRIFICATION...</span>
-                    </div>
-                    <div class="combine-body" id="maintenanceBody">
-                        <!-- Status actuel -->
-                        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;">
-                            <div id="maintCurrentStatus" style="font-family:'Share Tech Mono',monospace;font-size:0.85rem;padding:0.4rem 1rem;border-radius:3px;"></div>
-                            <div id="maintActivatedInfo" style="font-size:0.75rem;color:var(--text-muted);font-family:'Share Tech Mono',monospace;"></div>
-                        </div>
-
-                        <!-- Formulaire activation -->
-                        <div id="maintActivateForm" style="margin-bottom:1rem;">
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-bottom:0.8rem;">
-                                <div>
-                                    <label style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--text-muted);letter-spacing:1px;">MESSAGE DE MAINTENANCE</label>
-                                    <textarea id="maintMessage" rows="2" style="width:100%;padding:0.5rem;background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.2);color:var(--text-primary);font-family:'Rajdhani',sans-serif;font-size:0.85rem;outline:none;border-radius:3px;resize:vertical;margin-top:0.3rem;" placeholder="Le site est temporairement indisponible pour maintenance."></textarea>
-                                </div>
-                                <div>
-                                    <label style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--text-muted);letter-spacing:1px;">RETOUR ESTIMÉ</label>
-                                    <input type="datetime-local" id="maintReturnTime" style="width:100%;padding:0.5rem;background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.2);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.8rem;outline:none;border-radius:3px;margin-top:0.3rem;">
-                                    <div style="font-size:0.65rem;color:var(--text-muted);margin-top:0.2rem;">Optionnel — affichera un compte à rebours</div>
-                                </div>
-                            </div>
-                            <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
-                                <button id="maintEnableBtn" class="btn-sm danger" style="font-weight:700;padding:0.4rem 1.2rem;">⚠ ACTIVER MAINTENANCE</button>
-                                <button id="maintDisableBtn" class="btn-sm success" style="font-weight:700;padding:0.4rem 1.2rem;display:none;">✓ REMETTRE EN LIGNE</button>
-                                <a href="../maintenance.html" target="_blank" class="btn-sm" style="text-decoration:none;display:inline-flex;align-items:center;">APERÇU PAGE ↗</a>
-                            </div>
-                        </div>
-
-                        <!-- Journal maintenance -->
-                        <details style="margin-top:0.8rem;">
-                            <summary style="cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--accent-cyan);letter-spacing:1px;user-select:none;">JOURNAL DE MAINTENANCE</summary>
-                            <div id="maintLogs" style="margin-top:0.5rem;max-height:200px;overflow-y:auto;"></div>
-                        </details>
-                    </div>
+                    <a href="maintenance-admin.html">MAINTENANCE</a>
                 </div>
 
                 <!-- Stats -->
@@ -343,121 +303,7 @@
 
     <!-- Script admin-spécifique (importe depuis auth.js, pas de double init Firebase) -->
     <script type="module">
-        // ====== MAINTENANCE SYSTEM ======
-        (async () => {
-          const { setMaintenanceMode, getMaintenanceInfo, getMaintenanceLogs, listenMaintenanceMode } = await import('../assets/js/maintenance.js');
-          const { auth } = await import('../assets/js/auth.js');
-          const { onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
-          const { getDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
 
-          const enableBtn = document.getElementById('maintEnableBtn');
-          const disableBtn = document.getElementById('maintDisableBtn');
-          const statusEl = document.getElementById('maintCurrentStatus');
-          const statusBadge = document.getElementById('maintStatusBadge');
-          const activatedInfo = document.getElementById('maintActivatedInfo');
-          const logsContainer = document.getElementById('maintLogs');
-          const messageInput = document.getElementById('maintMessage');
-          const returnInput = document.getElementById('maintReturnTime');
-
-          let currentUserMatricule = '';
-
-          // Récupérer le matricule de l'admin connecté
-          onAuthStateChanged(auth, async (user) => {
-            if (!user) return;
-            try {
-              const { getFirestore } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-              const db = (await import('../assets/js/auth.js')).db;
-              const snap = await getDoc(doc(db, 'users', user.uid));
-              if (snap.exists()) currentUserMatricule = snap.data().matricule || user.email;
-            } catch {}
-          });
-
-          // Écoute temps réel
-          listenMaintenanceMode((data) => {
-            const enabled = data.enabled === true;
-            if (enabled) {
-              statusEl.innerHTML = '<span style="color:#ffaa00;font-weight:700;">⚠ MODE MAINTENANCE ACTIF</span>';
-              statusEl.style.background = 'rgba(255,170,0,0.1)';
-              statusEl.style.border = '1px solid rgba(255,170,0,0.3)';
-              statusBadge.textContent = '⚠ MAINTENANCE ACTIVE';
-              statusBadge.style.color = '#ffaa00';
-              enableBtn.style.display = 'none';
-              disableBtn.style.display = '';
-              if (data.activated_at) {
-                const d = new Date(data.activated_at);
-                let info = 'Activée le ' + d.toLocaleString('fr-FR');
-                if (data.activated_by) info += ' par ' + data.activated_by;
-                activatedInfo.textContent = info;
-              }
-              if (data.message) messageInput.value = data.message;
-              if (data.estimated_return) {
-                try { returnInput.value = new Date(data.estimated_return).toISOString().slice(0, 16); } catch {}
-              }
-            } else {
-              statusEl.innerHTML = '<span style="color:#00cc55;font-weight:700;">✓ SITE EN LIGNE</span>';
-              statusEl.style.background = 'rgba(0,200,80,0.1)';
-              statusEl.style.border = '1px solid rgba(0,200,80,0.3)';
-              statusBadge.textContent = '✓ EN LIGNE';
-              statusBadge.style.color = '#00cc55';
-              enableBtn.style.display = '';
-              disableBtn.style.display = 'none';
-              activatedInfo.textContent = '';
-            }
-          });
-
-          // Charger les logs
-          async function loadLogs() {
-            const logs = await getMaintenanceLogs(15);
-            if (logs.length === 0) {
-              logsContainer.innerHTML = '<div style="font-size:0.75rem;color:var(--text-muted);padding:0.5rem;">Aucun historique</div>';
-              return;
-            }
-            logsContainer.innerHTML = logs.map(l => {
-              const d = new Date(l.timestamp);
-              const isActivation = l.action === 'ACTIVATION';
-              const color = isActivation ? '#ffaa00' : '#00cc55';
-              return `<div style="display:flex;gap:0.8rem;align-items:baseline;padding:0.3rem 0;border-bottom:1px solid rgba(0,170,255,0.06);font-size:0.72rem;">
-                <span style="color:var(--text-muted);font-family:'Share Tech Mono',monospace;min-width:110px;">${d.toLocaleString('fr-FR', {day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>
-                <span style="color:${color};font-weight:700;min-width:100px;">${l.action}</span>
-                <span style="color:var(--text-muted);">par <strong style="color:var(--text-primary);">${l.by}</strong></span>
-                ${l.message ? `<span style="color:var(--text-muted);font-style:italic;">"${l.message.substring(0, 60)}${l.message.length > 60 ? '...' : ''}"</span>` : ''}
-              </div>`;
-            }).join('');
-          }
-          loadLogs();
-
-          // Activer la maintenance
-          enableBtn.onclick = async () => {
-            if (!confirm('Activer le mode maintenance ? Les utilisateurs seront redirigés.')) return;
-            const msg = messageInput.value.trim() || 'Le site est temporairement indisponible pour maintenance.';
-            const ret = returnInput.value ? new Date(returnInput.value).toISOString() : '';
-            try {
-              await setMaintenanceMode(true, {
-                message: msg,
-                estimated_return: ret,
-                activated_by: currentUserMatricule
-              });
-              showMessage('✓ Mode maintenance activé', 'success');
-              loadLogs();
-            } catch (err) {
-              showMessage('✗ Erreur: ' + err.message, 'error');
-            }
-          };
-
-          // Désactiver la maintenance
-          disableBtn.onclick = async () => {
-            if (!confirm('Remettre le site en ligne ?')) return;
-            try {
-              await setMaintenanceMode(false, { activated_by: currentUserMatricule });
-              messageInput.value = '';
-              returnInput.value = '';
-              showMessage('✓ Site remis en ligne', 'success');
-              loadLogs();
-            } catch (err) {
-              showMessage('✗ Erreur: ' + err.message, 'error');
-            }
-          };
-        })();
       import { auth, db } from '../assets/js/auth.js';
       import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
       import { collection, getDocs, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -725,51 +571,19 @@
       document.getElementById('searchInput').addEventListener('input', filterUsers);
       document.getElementById('statusFilter').addEventListener('change', filterUsers);
 
-      // Auth check — admin + HG (Ofc/Cmd) pour maintenance uniquement
+      // Auth check — admin only
       onAuthStateChanged(auth, async (user) => {
         if (!user) return; // auth.js redirige déjà vers login
         try {
           const snap = await getDoc(doc(db, 'users', user.uid));
-          if (!snap.exists()) {
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('access-denied').style.display = 'block';
-            return;
-          }
-          const uData = snap.data();
-          const isAdmin = uData.is_admin === true;
-          // Vérifier HG depuis units.json
-          let isHG = false;
-          const userMatricule = uData.matricule || '';
-          if (userMatricule) {
-            try {
-              const res = await fetch('https://raw.githubusercontent.com/NekoAkami/guidempf-site/main/data/units.json');
-              if (res.ok) {
-                const units = await res.json();
-                const unit = units.find(u => u.matricule === userMatricule);
-                if (unit && (unit.rang === 'Ofc' || unit.rang === 'Cmd')) isHG = true;
-              }
-            } catch (_) {}
-          }
-          if (!isAdmin && !isHG) {
+          if (!snap.exists() || !snap.data().is_admin) {
             document.getElementById('loading').style.display = 'none';
             document.getElementById('access-denied').style.display = 'block';
             return;
           }
           document.getElementById('loading').style.display = 'none';
           document.getElementById('adminContent').style.display = 'block';
-          if (isAdmin) {
-            // Admin : accès complet
-            await loadUsers();
-          } else {
-            // HG : uniquement la section maintenance visible
-            document.querySelectorAll('#adminContent > .combine-terminal-wrapper').forEach(el => {
-              if (el.id !== 'maintenanceSection') el.style.display = 'none';
-            });
-            // Masquer aussi les stats et autres sections non-maintenance
-            document.querySelectorAll('#adminContent > div:not(.combine-terminal-wrapper)').forEach(el => {
-              if (!el.closest('#maintenanceSection')) el.style.display = 'none';
-            });
-          }
+          await loadUsers();
         } catch (err) {
           console.error('Admin auth error:', err);
           document.getElementById('loading').innerHTML = '<p style="color:#ff4444;">Erreur: ' + err.message + '</p>';
