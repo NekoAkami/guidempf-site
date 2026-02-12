@@ -199,6 +199,31 @@
         }
         .my-absences-table tr:hover { background: rgba(0, 170, 255, 0.03); }
 
+        .btn-delete-abs {
+            padding: 0.2rem 0.5rem; border: 1px solid rgba(255, 68, 68, 0.3);
+            background: rgba(255, 68, 68, 0.08); color: #ff6666;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.68rem;
+            cursor: pointer; border-radius: 2px; transition: all 0.15s;
+        }
+        .btn-delete-abs:hover { background: rgba(255, 68, 68, 0.2); border-color: #ff4444; color: #ff4444; }
+        .btn-delete-abs:disabled { opacity: 0.4; cursor: not-allowed; }
+        .confirm-delete-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7); z-index: 1000;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .confirm-delete-box {
+            background: #0a1628; border: 1px solid rgba(255, 68, 68, 0.4);
+            padding: 1.5rem; border-radius: 6px; max-width: 400px; width: 90%;
+            text-align: center;
+        }
+        .confirm-delete-box p { color: var(--text-primary); font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; margin-bottom: 1rem; }
+        .confirm-delete-box .confirm-btns { display: flex; gap: 0.8rem; justify-content: center; }
+        .confirm-delete-box .btn-cancel { padding: 0.4rem 1rem; border: 1px solid rgba(0, 170, 255, 0.3); background: rgba(0, 170, 255, 0.08); color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; cursor: pointer; border-radius: 3px; }
+        .confirm-delete-box .btn-confirm-del { padding: 0.4rem 1rem; border: 1px solid rgba(255, 68, 68, 0.5); background: rgba(255, 68, 68, 0.15); color: #ff4444; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; cursor: pointer; border-radius: 3px; font-weight: 700; }
+        .confirm-delete-box .btn-cancel:hover { background: rgba(0, 170, 255, 0.15); }
+        .confirm-delete-box .btn-confirm-del:hover { background: rgba(255, 68, 68, 0.3); }
+
         .status-badge {
             display: inline-block;
             padding: 0.1rem 0.4rem;
@@ -378,6 +403,7 @@
                                             <th>FIN</th>
                                             <th>JOURS</th>
                                             <th>STATUT</th>
+                                            <th style="width:50px;"></th>
                                         </tr>
                                     </thead>
                                     <tbody id="myAbsBody">
@@ -644,6 +670,35 @@
         clearErrors();
       };
 
+      // ========== DELETE ABSENCE ==========
+      window.confirmDeleteAbsence = function(idx) {
+        const overlay = document.createElement('div');
+        overlay.className = 'confirm-delete-overlay';
+        overlay.innerHTML = `<div class="confirm-delete-box">
+          <p>\u26a0 Supprimer cette absence ?<br><span style="font-size:0.75rem;color:var(--text-muted);">Cette action est irr\u00e9versible.</span></p>
+          <div class="confirm-btns">
+            <button class="btn-cancel" onclick="this.closest('.confirm-delete-overlay').remove()">ANNULER</button>
+            <button class="btn-confirm-del" onclick="executeDeleteAbsence(${idx})">SUPPRIMER</button>
+          </div>
+        </div>`;
+        document.body.appendChild(overlay);
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+      };
+
+      window.executeDeleteAbsence = async function(idx) {
+        document.querySelector('.confirm-delete-overlay')?.remove();
+        if (idx < 0 || idx >= allAbsences.length) { showAlert('Erreur: absence introuvable','error'); return; }
+        const removed = allAbsences.splice(idx, 1)[0];
+        try {
+          await ghSaveAbsences([...allAbsences], `Suppression absence ${currentUser.matricule}`);
+          showAlert('\u2713 Absence supprim\u00e9e','success');
+          renderMyAbsences();
+        } catch(e) {
+          allAbsences.splice(idx, 0, removed);
+          showAlert('\u2717 Erreur: '+e.message,'error');
+        }
+      };
+
       // ========== MY ABSENCES ==========
       function renderMyAbsences() {
         if (!currentUser) return;
@@ -656,18 +711,20 @@
 
         const tbody = document.getElementById('myAbsBody');
         if (mine.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Aucune absence déclarée</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Aucune absence déclarée</td></tr>';
           return;
         }
 
         tbody.innerHTML = mine.map(a => {
           const td = totalDays(a.debut, a.fin);
+          const globalIdx = allAbsences.indexOf(a);
           return `<tr>
             <td style="font-size:0.75rem;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${(a.motif || '').replace(/"/g, '&quot;')}">${a.motif || '-'}</td>
             <td style="font-size:0.75rem;">${formatDate(a.debut)}</td>
             <td style="font-size:0.75rem;">${formatDate(a.fin)}</td>
             <td style="font-family:'Orbitron',sans-serif;font-size:0.78rem;font-weight:700;color:var(--accent-cyan);">${td}j</td>
             <td>${statusBadge(a._status)}</td>
+            <td><button class="btn-delete-abs" onclick="confirmDeleteAbsence(${globalIdx})" title="Supprimer cette absence">✕</button></td>
           </tr>`;
         }).join('');
       }
