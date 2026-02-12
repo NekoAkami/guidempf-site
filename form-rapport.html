@@ -416,11 +416,21 @@
       window.onTypeChange = function() {
         const v = document.getElementById('fType').value;
         const grp = document.getElementById('grpCitoyens');
+        const secteurInput = document.getElementById('fSecteur');
         if (v === 'Distribution ration') {
           grp.classList.add('visible');
+          secteurInput.disabled = true;
+          secteurInput.value = '';
+          secteurInput.style.opacity = '0.4';
+          secteurInput.style.cursor = 'not-allowed';
+          secteurInput.placeholder = 'Non applicable pour Distribution ration';
         } else {
           grp.classList.remove('visible');
           document.getElementById('fCitoyens').value = '';
+          secteurInput.disabled = false;
+          secteurInput.style.opacity = '1';
+          secteurInput.style.cursor = '';
+          secteurInput.placeholder = 'Ex: Secteur 3, Nexus, Slums...';
         }
       };
 
