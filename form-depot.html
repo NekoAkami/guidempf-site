@@ -208,6 +208,7 @@
                                         <option value="Sanction Unités">Sanction Unités</option>
                                         <option value="Remboursement">Remboursement</option>
                                         <option value="Bénéfice">Bénéfice</option>
+                                        <option value="Conscription">Conscription</option>
                                     </select>
                                     <div class="error-msg" id="errMotif"></div>
                                 </div>
@@ -345,7 +346,7 @@
         if(!mine.length){tb.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text-muted);">Aucun dépôt déclaré</td></tr>';return;}
         tb.innerHTML=mine.map(d=>`<tr>
           <td style="font-size:0.75rem;">${fmtDate(d.created_at)}</td>
-          <td><span class="montant-value">${d.montant} T</span></td>
+          <td><span class="montant-value">${d.montant} tks</span></td>
           <td><span class="motif-badge">${d.motif}</span></td>
           <td style="font-size:0.75rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${(d.notes||'').replace(/"/g,'&quot;')}">${d.notes||'-'}</td>
         </tr>`).join('');

@@ -73,9 +73,9 @@
         }
         .form-group.error .error-msg { display: block; }
 
-        /* Champ conditionnel rations */
-        #grpCitoyens { display: none; }
-        #grpCitoyens.visible { display: block; }
+        /* Champs conditionnels */
+        #grpCitoyens, #grpSousFouille, #grpSousConscription { display: none; }
+        #grpCitoyens.visible, #grpSousFouille.visible, #grpSousConscription.visible { display: block; }
 
         /* Sélection multiple unités */
         .units-selector {
@@ -317,8 +317,7 @@
                                         <option value="">— Sélectionner —</option>
                                         <option value="Patrouille">Patrouille</option>
                                         <option value="Opération">Opération</option>
-                                        <option value="Fouille mineur">Fouille mineur</option>
-                                        <option value="Fouille majeur">Fouille majeur</option>
+                                        <option value="Fouille">Fouille</option>
                                         <option value="Point Passage">Point Passage</option>
                                         <option value="Protection VIP">Protection VIP</option>
                                         <option value="Distribution ration">Distribution ration</option>
@@ -334,6 +333,28 @@
                                     <label>SECTEUR / ZONE</label>
                                     <input type="text" id="fSecteur" placeholder="Ex: Secteur 3, Nexus, Slums...">
                                 </div>
+                            </div>
+
+                            <!-- Sous-catégorie Fouille -->
+                            <div class="form-group" id="grpSousFouille">
+                                <label>TYPE DE FOUILLE <span class="req">*</span></label>
+                                <select id="fSousFouille">
+                                    <option value="">— Sélectionner —</option>
+                                    <option value="Fouille mineur">Fouille mineur</option>
+                                    <option value="Fouille majeur">Fouille majeur</option>
+                                </select>
+                                <div class="error-msg" id="errSousFouille"></div>
+                            </div>
+
+                            <!-- Sous-catégorie Conscription -->
+                            <div class="form-group" id="grpSousConscription">
+                                <label>TYPE DE CONSCRIPTION <span class="req">*</span></label>
+                                <select id="fSousConscription">
+                                    <option value="">— Sélectionner —</option>
+                                    <option value="Volontaire">Volontaire</option>
+                                    <option value="Obligatoire">Obligatoire</option>
+                                </select>
+                                <div class="error-msg" id="errSousConscription"></div>
                             </div>
 
                             <!-- Champ conditionnel : nombre de citoyens (Distribution ration) -->
@@ -440,18 +461,31 @@
       /* === Gestion type d'activité conditionnel === */
       window.onTypeChange = function() {
         const v = document.getElementById('fType').value;
-        const grp = document.getElementById('grpCitoyens');
+        const grpCit = document.getElementById('grpCitoyens');
+        const grpFouille = document.getElementById('grpSousFouille');
+        const grpConscription = document.getElementById('grpSousConscription');
         const secteurInput = document.getElementById('fSecteur');
+
+        // Reset tous les sous-groupes
+        grpCit.classList.remove('visible');
+        grpFouille.classList.remove('visible');
+        grpConscription.classList.remove('visible');
+        document.getElementById('fCitoyens').value = '';
+        document.getElementById('fSousFouille').value = '';
+        document.getElementById('fSousConscription').value = '';
+
+        // Afficher le sous-groupe correspondant
+        if (v === 'Fouille') grpFouille.classList.add('visible');
+        if (v === 'Conscription') grpConscription.classList.add('visible');
+
         if (v === 'Distribution ration') {
-          grp.classList.add('visible');
+          grpCit.classList.add('visible');
           secteurInput.disabled = true;
           secteurInput.value = '';
           secteurInput.style.opacity = '0.4';
           secteurInput.style.cursor = 'not-allowed';
           secteurInput.placeholder = 'Non applicable pour Distribution ration';
         } else {
-          grp.classList.remove('visible');
-          document.getElementById('fCitoyens').value = '';
           secteurInput.disabled = false;
           secteurInput.style.opacity = '1';
           secteurInput.style.cursor = '';
@@ -566,12 +600,24 @@
         parseManualUnits();
 
         let ok=true;
-        ['grpType','grpResume'].forEach(id=>document.getElementById(id).classList.remove('error'));
-        document.getElementById('grpCitoyens').classList.remove('error');
-        if (!document.getElementById('fType').value) { document.getElementById('grpType').classList.add('error'); document.getElementById('errType').textContent='Sélectionnez un type'; ok=false; }
+        ['grpType','grpResume','grpCitoyens','grpSousFouille','grpSousConscription'].forEach(id=>document.getElementById(id).classList.remove('error'));
+        const typeVal = document.getElementById('fType').value;
+        if (!typeVal) { document.getElementById('grpType').classList.add('error'); document.getElementById('errType').textContent='Sélectionnez un type'; ok=false; }
         if (!document.getElementById('fResume').value.trim()) { document.getElementById('grpResume').classList.add('error'); document.getElementById('errResume').textContent='Le résumé est obligatoire'; ok=false; }
+        // Validation sous-catégorie Fouille
+        if (typeVal === 'Fouille' && !document.getElementById('fSousFouille').value) {
+          document.getElementById('grpSousFouille').classList.add('error');
+          document.getElementById('errSousFouille').textContent='Sélectionnez le type de fouille';
+          ok=false;
+        }
+        // Validation sous-catégorie Conscription
+        if (typeVal === 'Conscription' && !document.getElementById('fSousConscription').value) {
+          document.getElementById('grpSousConscription').classList.add('error');
+          document.getElementById('errSousConscription').textContent='Sélectionnez le type de conscription';
+          ok=false;
+        }
         // Validation citoyens si Distribution ration
-        if (document.getElementById('fType').value === 'Distribution ration') {
+        if (typeVal === 'Distribution ration') {
           const nb = document.getElementById('fCitoyens').value;
           if (!nb || parseInt(nb) < 0) {
             document.getElementById('grpCitoyens').classList.add('error');
@@ -584,7 +630,7 @@
         const btn=document.getElementById('btnSubmit'); btn.disabled=true; btn.textContent='⏳ ENVOI...';
         const r = {
           matricule: currentUser.matricule, nom_steam: currentUser.nom_steam||'',
-          type: document.getElementById('fType').value,
+          type: document.getElementById('fType').value === 'Fouille' ? document.getElementById('fSousFouille').value : (document.getElementById('fType').value === 'Conscription' ? document.getElementById('fSousConscription').value + ' (Conscription)' : document.getElementById('fType').value),
           secteur: document.getElementById('fSecteur').value.trim(),
           unites: document.getElementById('fUnites').value.trim(),
           resume: document.getElementById('fResume').value.trim(),
@@ -636,9 +682,11 @@
       };
 
       window.resetForm = function() {
-        ['fType','fSecteur','fUnites','fResume','fNotes','fCitoyens'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-        ['grpType','grpResume','grpCitoyens'].forEach(id=>document.getElementById(id).classList.remove('error'));
+        ['fType','fSecteur','fUnites','fResume','fNotes','fCitoyens','fSousFouille','fSousConscription'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+        ['grpType','grpResume','grpCitoyens','grpSousFouille','grpSousConscription'].forEach(id=>document.getElementById(id).classList.remove('error'));
         document.getElementById('grpCitoyens').classList.remove('visible');
+        document.getElementById('grpSousFouille').classList.remove('visible');
+        document.getElementById('grpSousConscription').classList.remove('visible');
         selectedUnits.clear();
         renderUnitsTags();
         filterUnitsDropdown();
