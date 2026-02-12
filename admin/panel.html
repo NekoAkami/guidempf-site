@@ -304,29 +304,29 @@
 
     <!-- Script admin-spécifique (importe depuis auth.js, pas de double init Firebase) -->
     <script type="module">
-        import '../assets/js/maintenance.js';
-        import { setMaintenanceMode, isMaintenanceMode } from '../assets/js/maintenance.js';
-            // Gestion du bouton maintenance
-            const maintenanceBtn = document.getElementById('maintenanceBtn');
-            const onlineBtn = document.getElementById('onlineBtn');
-            async function refreshMaintenanceState() {
-              const enabled = await isMaintenanceMode();
-              maintenanceBtn.style.display = enabled ? 'none' : '';
-              onlineBtn.style.display = enabled ? '' : 'none';
-            }
+        (async () => {
+          const { setMaintenanceMode, isMaintenanceMode } = await import('../assets/js/maintenance.js');
+          const maintenanceBtn = document.getElementById('maintenanceBtn');
+          const onlineBtn = document.getElementById('onlineBtn');
+          async function refreshMaintenanceState() {
+            const enabled = await isMaintenanceMode();
+            maintenanceBtn.style.display = enabled ? 'none' : '';
+            onlineBtn.style.display = enabled ? '' : 'none';
+          }
+          refreshMaintenanceState();
+          maintenanceBtn.onclick = async () => {
+            const pass = prompt('Entrer le mot de passe maintenance :');
+            if (pass !== 'CmdForever') { alert('Mot de passe incorrect.'); return; }
+            await setMaintenanceMode(true);
+            alert('Mode maintenance activé.');
             refreshMaintenanceState();
-            maintenanceBtn.onclick = async () => {
-              const pass = prompt('Entrer le mot de passe maintenance :');
-              if (pass !== 'CmdForever') { alert('Mot de passe incorrect.'); return; }
-              await setMaintenanceMode(true);
-              alert('Mode maintenance activé.');
-              refreshMaintenanceState();
-            };
-            onlineBtn.onclick = async () => {
-              await setMaintenanceMode(false);
-              alert('Site remis en ligne.');
-              refreshMaintenanceState();
-            };
+          };
+          onlineBtn.onclick = async () => {
+            await setMaintenanceMode(false);
+            alert('Site remis en ligne.');
+            refreshMaintenanceState();
+          };
+        })();
       import { auth, db } from '../assets/js/auth.js';
       import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
       import { collection, getDocs, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
