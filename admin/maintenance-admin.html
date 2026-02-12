@@ -283,7 +283,6 @@
 
           // Activer
           enableBtn.onclick = async () => {
-            if (!confirm('Activer le mode maintenance ? Les utilisateurs seront redirigés.')) return;
             const msg = messageInput.value.trim() || 'Le site est temporairement indisponible pour maintenance.';
             const ret = returnInput.value ? new Date(returnInput.value).toISOString() : '';
             try {
@@ -295,7 +294,6 @@
 
           // Désactiver
           disableBtn.onclick = async () => {
-            if (!confirm('Remettre le site en ligne ?')) return;
             try {
               await setMaintenanceMode(false, { activated_by: currentUserMatricule });
               messageInput.value = '';
