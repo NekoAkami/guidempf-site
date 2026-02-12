@@ -63,7 +63,6 @@ class GlobalNavigation {
         } catch { return; }
         const path = window.location.pathname;
         if (path.endsWith('maintenance.html')) return;
-        if (path.endsWith('login.html')) return;
 
         const info = await mod.getMaintenanceInfo();
         if (!info || !info.enabled) return;

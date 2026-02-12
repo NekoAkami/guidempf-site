@@ -168,6 +168,13 @@
         const email = data.get('email');
         const password = data.get('password');
         try {
+          // Vérifier si maintenance active AVANT de connecter
+          let maintActive = false;
+          try {
+            const maintSnap = await getDoc(doc(db, 'config', 'maintenance'));
+            if (maintSnap.exists() && maintSnap.data().enabled === true) maintActive = true;
+          } catch (_) {}
+
           const cred = await signInWithEmailAndPassword(auth, email, password);
           const snap = await getDoc(doc(db, 'users', cred.user.uid));
           const userData = snap.exists() ? snap.data() : null;
@@ -176,6 +183,31 @@
             location.href = 'pending.html';
             return;
           }
+
+          // Si maintenance active, vérifier si admin/HG
+          if (maintActive) {
+            const isAdmin = userData.is_admin === true;
+            let isHG = false;
+            const matricule = userData.matricule || '';
+            if (matricule) {
+              try {
+                const res = await fetch('https://raw.githubusercontent.com/NekoAkami/guidempf-site/main/data/units.json');
+                if (res.ok) {
+                  const units = await res.json();
+                  const unit = units.find(u => u.matricule === matricule);
+                  if (unit && (unit.rang === 'Ofc' || unit.rang === 'Cmd')) isHG = true;
+                }
+              } catch (_) {}
+            }
+            if (!isAdmin && !isHG) {
+              // Déconnecter et rediriger vers maintenance
+              const { signOut: so } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
+              await so(auth);
+              location.href = 'maintenance.html';
+              return;
+            }
+          }
+
           const isAdmin = userData.is_admin === true;
           if (isAdmin) location.href = 'admin/panel.html';
           else location.href = 'index.html';
