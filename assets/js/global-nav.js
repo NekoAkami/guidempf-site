@@ -7,7 +7,7 @@ class GlobalNavigation {
         this.init();
     }
 
-    init() {
+    async init() {
         this.basePath = this.getBasePath();
         this.injectFavicon();
         this.injectServerLogo();
@@ -15,10 +15,60 @@ class GlobalNavigation {
         this.createNavigationHTML();
         this.injectSearchBar();
         this.injectBackButton();
+        await this.injectMaintenanceIndicator();
         this.markActivePage();
         this.setupMobileMenu();
         this.setupDropdowns();
         this.cleanGlitchText();
+    }
+    async injectMaintenanceIndicator() {
+        // Ajoute l'indicateur maintenance/en ligne à côté du compteur en ligne
+        if (document.getElementById('maintenanceIndicator')) return;
+        let mod;
+        try {
+            mod = await import(this.basePath + 'assets/js/maintenance.js');
+        } catch { return; }
+        const headerContent = document.querySelector('.header-content');
+        if (!headerContent) return;
+        const indicator = document.createElement('div');
+        indicator.id = 'maintenanceIndicator';
+        indicator.style.cssText = 'display:inline-block;margin-left:1.2rem;vertical-align:middle;';
+        headerContent.appendChild(indicator);
+        async function updateInd() {
+            const enabled = await mod.isMaintenanceMode();
+            indicator.innerHTML = enabled
+                ? '<span style="color:#ffaa00;font-weight:700;font-family:Share Tech Mono,monospace;">MAINTENANCE</span>'
+                : '<span style="color:var(--accent-cyan);font-weight:700;font-family:Share Tech Mono,monospace;">EN LIGNE</span>';
+        }
+        updateInd();
+        setInterval(updateInd, 20000);
+    }
+    // Redirection maintenance globale (hors admin/ et maintenance.html)
+    async checkMaintenanceRedirect() {
+        let mod;
+        try {
+            mod = await import(this.basePath + 'assets/js/maintenance.js');
+        } catch { return; }
+        const path = window.location.pathname;
+        if (path.includes('/admin/') || path.endsWith('maintenance.html')) return;
+        const enabled = await mod.isMaintenanceMode();
+        if (enabled) {
+            // Vérifier si l'utilisateur est admin/hautgradé
+            try {
+                const { auth, db } = await import(this.basePath + 'assets/js/auth.js');
+                const { getDoc, doc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+                const { onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
+                onAuthStateChanged(auth, async (user) => {
+                    if (!user) { window.location.href = this.basePath + 'maintenance.html'; return; }
+                    const snap = await getDoc(doc(db, 'users', user.uid));
+                    if (!snap.exists()) { window.location.href = this.basePath + 'maintenance.html'; return; }
+                    const data = snap.data();
+                    const rang = data.rang || '';
+                    if (data.is_admin || rang === 'Ofc' || rang === 'Cmd') return;
+                    window.location.href = this.basePath + 'maintenance.html';
+                });
+            } catch { window.location.href = this.basePath + 'maintenance.html'; }
+        }
     }
 
     // Détecte le chemin de base pour les sous-dossiers (ex: admin/)
@@ -352,6 +402,7 @@ function createSubTabs(tabs, currentPage) {
 }
 
 let globalNav;
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     globalNav = new GlobalNavigation();
+    await globalNav.checkMaintenanceRedirect();
 });
