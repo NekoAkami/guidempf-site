@@ -2,6 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, getDocs, deleteDoc, serverTimestamp, query, where, Timestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app-check.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDPs4x2EE1pyeQTC_V-Ze5uyZ8Rs2N8qF4",
@@ -15,6 +16,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+
+// App Check — reCAPTCHA v3 (protection anti-bot)
+const appCheck = initializeAppCheck(app, {
+  provider: new ReCaptchaV3Provider('6LevHWksAAAAAGe27JsdRTpIJ6NCT1T0Ekiyuqah'),
+  isTokenAutoRefreshEnabled: true
+});
 
 // Export pour utilisation dans d'autres scripts
 export { app, auth, db };
