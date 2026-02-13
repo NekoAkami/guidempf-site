@@ -156,96 +156,226 @@
                     </div>
 
                     <!-- Annonces Dispatch -->
-                    <div style="margin-top: 2rem;">
+                    <div style="margin-top: 2.5rem;">
                         <div style="text-align: center; margin-bottom: 1.5rem;">
                             <h3 style="font-family: 'Orbitron', sans-serif; color: var(--accent-cyan); font-size: 1rem; letter-spacing: 2px; text-transform: uppercase;">📢 ANNONCES DISPATCH</h3>
-                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.3rem;">Formulaires d'annonces et de gestion civile</p>
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.3rem;">Boutons dispatch — Protocoles d'annonces civiles</p>
                         </div>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                            <a href="worker-announcement.html" class="dispatch-announce-btn">
-                                <span class="announce-icon">👷</span>
-                                <span class="announce-label">Worker Announcement</span>
+
+                        <!-- Badges de rang -->
+                        <div class="announce-rank-row">
+                            <div class="announce-rank-badge">03+</div>
+                            <div class="announce-rank-badge">03+</div>
+                            <div class="announce-rank-badge" style="background: rgba(255,68,68,0.15); border-color: #ff4444; color: #ff4444;">03-</div>
+                            <div class="announce-rank-badge">03+</div>
+                            <div class="announce-rank-badge" style="background: rgba(255,170,0,0.15); border-color: #ffaa00; color: #ffaa00;">01+</div>
+                        </div>
+
+                        <!-- 5 colonnes annonces -->
+                        <div class="announce-columns">
+
+                            <!-- WORKER ANNOUNCEMENT -->
+                            <a href="worker-announcement.html" class="announce-card">
+                                <div class="announce-card-header">WORKER ANNOUNCEMENT :</div>
+                                <div class="announce-card-body">
+                                    <p>Ce bouton est réservé aux <strong>sessions de travail obligatoires</strong> organisées par le QG CWU.</p>
+                                    <p>Vous devez l'activer <strong>uniquement</strong> lorsqu'un CWU de grade suffisant ou un supérieur vous en fait la demande. Cependant, vous n'êtes pas tenus d'accepter systématiquement chaque requête — les sessions doivent rester <strong>exceptionnelles</strong>.</p>
+                                    <p>L'interrupteur est de nature <strong>automatique</strong>. Étant donné que ce type de session est rare, vous pouvez les accepter sans problème lorsqu'elles se présentent.</p>
+                                </div>
                             </a>
-                            <a href="ration-announcement.html" class="dispatch-announce-btn">
-                                <span class="announce-icon">🍞</span>
-                                <span class="announce-label">Ration Announcement</span>
+
+                            <!-- RATION ANNOUNCEMENT -->
+                            <a href="ration-announcement.html" class="announce-card">
+                                <div class="announce-card-header">RATION ANNOUNCEMENT :</div>
+                                <div class="announce-card-body">
+                                    <p>Ce bouton est réservé aux annonces de <strong>distribution de rations</strong>. Une fois actif, vous devez appliquer les <strong>procédures en vigueur</strong> comme suit :</p>
+                                    <ul>
+                                        <li>Attendre le rassemblement des participants en Plaza</li>
+                                        <li>Appliquer et fouiller les participants, CWU exemptés sauf exigence</li>
+                                        <li>Effectuer un comptage précis des participants</li>
+                                        <li>Si certains absents se présentent plus tard, un parallèle de fouille de la Cité avec : <em>/health statin</em></li>
+                                        <li>Faire entrer les participants dans le Nexus selon leur niveau de Loyauté</li>
+                                        <li>Distribuer les rations selon le <strong>niveau de loyauté</strong> : les CWU reçoivent une ration adaptée à leurs <strong>points de loyauté</strong></li>
+                                        <li>Vérifier l'état des lieux avant de conclure et passer à une nouvelle mission</li>
+                                    </ul>
+                                    <p class="announce-important">⚠ Important :</p>
+                                    <p>Ne fermez <strong>JAMAIS</strong> les distributeurs de rations.</p>
+                                </div>
                             </a>
-                            <a href="suspended-rations.html" class="dispatch-announce-btn">
-                                <span class="announce-icon">🚫</span>
-                                <span class="announce-label">Suspended Rations</span>
+
+                            <!-- SUSPENDED RATIONS -->
+                            <a href="suspended-rations.html" class="announce-card">
+                                <div class="announce-card-header">SUSPENDED RATIONS :</div>
+                                <div class="announce-card-body">
+                                    <p>Ce bouton est réservé à l'annonce de <strong>suspension des distributions de rations</strong>.</p>
+                                    <p>Cette mesure, interdit, lorsqu'une activité anti-citoyenne devant trop importante en cité, le but est d'envoyer un <strong>message clair</strong> à la population et de <strong>sanctionner collectivement</strong> les comportements perturbateurs — sans pour autant les affamer.</p>
+                                    <p class="announce-important">⚠ Important :</p>
+                                    <p>Ne fermez <strong>JAMAIS</strong> les distributeurs de rations.</p>
+                                    <p>L'annonce seul uniquement à informer qu'<strong>aucune distribution officielle</strong> ne sera organisée pendant un certain temps.</p>
+                                    <p>Cette décision vise à faire réfléchir les citoyens et à <strong>ramener le calme</strong> dans la Cité.</p>
+                                    <p>En résumé : une mesure <strong>symbolique et dissuasive</strong> pour rappeler à tous que la coopération assure la stabilité et la survie.</p>
+                                </div>
                             </a>
-                            <a href="social-infraction.html" class="dispatch-announce-btn">
-                                <span class="announce-icon">⚠️</span>
-                                <span class="announce-label">Social Infraction</span>
+
+                            <!-- SOCIAL INFRACTION -->
+                            <a href="social-infraction.html" class="announce-card">
+                                <div class="announce-card-header">SOCIAL INFRACTION :</div>
+                                <div class="announce-card-body">
+                                    <p>Ce bouton est réservé à l'annonce d'une <strong>brèche majeure</strong>, qu'elle soit d'origine exogène ou décortiquée.</p>
+                                    <p>Son objectif est de <strong>prévenir immédiatement la population</strong> qu'elle se mette à l'abri, et de <strong>mobiliser l'ensemble des unités</strong> de la Protection Civile pour contenir et <strong>neutraliser la menace</strong> dans les plus brèves délais.</p>
+                                    <p class="announce-important">⚠ Procédure :</p>
+                                    <p>Déployez-vous rapidement dans tous les secteurs de la Cité pour sécuriser la zone.</p>
+                                    <p>Identifiez le <strong>type et le point de départ</strong> de la brèche.</p>
+                                    <p>Référez-vous au <strong>plus haut gradé</strong> présent sur le terrain ou au chef d'opération pour recevoir les <strong>directives prioritaires</strong>.</p>
+                                    <p>À ce stade, un <strong>code surchargé</strong> est automatiquement appliqué à l'ensemble des unités.</p>
+                                </div>
                             </a>
-                            <a href="judgement-waiver.html" class="dispatch-announce-btn">
-                                <span class="announce-icon">⚖️</span>
-                                <span class="announce-label">Judgement Waiver</span>
+
+                            <!-- JUDGEMENT WAIVER -->
+                            <a href="judgement-waiver.html" class="announce-card">
+                                <div class="announce-card-header">JUDGEMENT WAIVER :</div>
+                                <div class="announce-card-body">
+                                    <p>Ce bouton est réservé <strong>exclusivement aux grades 01+</strong>.</p>
+                                    <p>Il peut être activé <strong>uniquement depuis le poste d'administration</strong> et doit être déclenché par l'<strong>administrateur</strong> concerné ou par un grade <strong>OFC ou plus</strong>.</p>
+                                    <p>Lors de l'activation de ce dispositif de dispatch, l'objectif est de protéger immédiatement l'ensemble des unités afin qu'elles réagissent le plus <strong>rapidement possible</strong> se mettent en place pour tout faire afin de sauver les hauts gradés.</p>
+                                    <p class="announce-important">⚠ Prioritaire.</p>
+                                </div>
                             </a>
+
                         </div>
                     </div>
 
                     <style>
-                        .dispatch-announce-btn {
-                            display: flex;
-                            flex-direction: column;
-                            align-items: center;
-                            gap: 0.6rem;
-                            padding: 1.2rem 0.8rem;
-                            background: linear-gradient(180deg, rgba(0, 170, 255, 0.08) 0%, rgba(0, 170, 255, 0.02) 100%);
-                            border: 1px solid rgba(0, 170, 255, 0.2);
-                            border-radius: 8px;
+                        .announce-rank-row {
+                            display: grid;
+                            grid-template-columns: repeat(5, 1fr);
+                            gap: 0.8rem;
+                            margin-bottom: 0.8rem;
+                        }
+
+                        .announce-rank-badge {
+                            text-align: center;
+                            font-family: 'Orbitron', sans-serif;
+                            font-size: 1.1rem;
+                            font-weight: 700;
+                            padding: 0.5rem;
+                            background: rgba(0, 170, 255, 0.1);
+                            border: 1px solid rgba(0, 170, 255, 0.3);
+                            border-radius: 6px;
+                            color: var(--accent-cyan);
+                            letter-spacing: 1px;
+                        }
+
+                        .announce-columns {
+                            display: grid;
+                            grid-template-columns: repeat(5, 1fr);
+                            gap: 0.8rem;
+                        }
+
+                        .announce-card {
+                            display: block;
                             text-decoration: none;
-                            cursor: pointer;
+                            border: 2px solid rgba(255, 50, 50, 0.5);
+                            border-radius: 6px;
+                            background: linear-gradient(180deg, rgba(255, 30, 30, 0.06) 0%, rgba(0, 0, 0, 0.3) 100%);
+                            overflow: hidden;
                             transition: all 0.3s ease;
                             position: relative;
-                            overflow: hidden;
-                            animation: announceFloat 3s ease-in-out infinite;
+                            animation: announceFloat 4s ease-in-out infinite;
                         }
 
-                        .dispatch-announce-btn:nth-child(2) { animation-delay: 0.4s; }
-                        .dispatch-announce-btn:nth-child(3) { animation-delay: 0.8s; }
-                        .dispatch-announce-btn:nth-child(4) { animation-delay: 1.2s; }
-                        .dispatch-announce-btn:nth-child(5) { animation-delay: 1.6s; }
+                        .announce-card:nth-child(2) { animation-delay: 0.5s; }
+                        .announce-card:nth-child(3) { animation-delay: 1s; }
+                        .announce-card:nth-child(4) { animation-delay: 1.5s; }
+                        .announce-card:nth-child(5) { animation-delay: 2s; }
 
                         @keyframes announceFloat {
-                            0%, 100% { transform: translateY(0); box-shadow: 0 2px 10px rgba(0, 170, 255, 0.1); }
-                            50% { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0, 170, 255, 0.2); }
+                            0%, 100% { transform: translateY(0); box-shadow: 0 2px 8px rgba(255, 50, 50, 0.1); }
+                            50% { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(255, 50, 50, 0.2); }
                         }
 
-                        .dispatch-announce-btn::before {
+                        .announce-card::before {
                             content: '';
                             position: absolute;
                             top: 0; left: -100%;
                             width: 100%; height: 100%;
-                            background: linear-gradient(90deg, transparent, rgba(0, 170, 255, 0.1), transparent);
-                            transition: left 0.5s ease;
+                            background: linear-gradient(90deg, transparent, rgba(255, 50, 50, 0.08), transparent);
+                            transition: left 0.6s ease;
+                            pointer-events: none;
                         }
 
-                        .dispatch-announce-btn:hover::before {
+                        .announce-card:hover::before {
                             left: 100%;
                         }
 
-                        .dispatch-announce-btn:hover {
-                            border-color: var(--accent-cyan);
-                            background: linear-gradient(180deg, rgba(0, 170, 255, 0.15) 0%, rgba(0, 170, 255, 0.05) 100%);
-                            transform: translateY(-6px) !important;
-                            box-shadow: 0 10px 30px rgba(0, 170, 255, 0.3), 0 0 15px rgba(0, 170, 255, 0.1) !important;
+                        .announce-card:hover {
+                            border-color: #ff4444;
+                            transform: translateY(-4px) !important;
+                            box-shadow: 0 8px 25px rgba(255, 50, 50, 0.3), 0 0 12px rgba(255, 50, 50, 0.1) !important;
                             animation: none;
                         }
 
-                        .announce-icon {
-                            font-size: 1.8rem;
+                        .announce-card-header {
+                            font-family: 'Orbitron', sans-serif;
+                            font-size: 0.7rem;
+                            font-weight: 700;
+                            color: #ff4444;
+                            padding: 0.7rem 0.6rem;
+                            border-bottom: 1px solid rgba(255, 50, 50, 0.25);
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                            background: rgba(255, 30, 30, 0.08);
                         }
 
-                        .announce-label {
-                            font-family: 'Share Tech Mono', monospace;
-                            font-size: 0.75rem;
-                            color: var(--accent-cyan);
-                            text-align: center;
-                            font-weight: 600;
-                            letter-spacing: 0.5px;
-                            text-transform: uppercase;
+                        .announce-card-body {
+                            padding: 0.6rem;
+                            font-size: 0.68rem;
+                            line-height: 1.5;
+                            color: var(--text-secondary);
+                        }
+
+                        .announce-card-body p {
+                            margin: 0 0 0.5rem 0;
+                        }
+
+                        .announce-card-body strong {
+                            color: var(--text-primary);
+                        }
+
+                        .announce-card-body ul {
+                            padding-left: 1rem;
+                            margin: 0.4rem 0;
+                        }
+
+                        .announce-card-body ul li {
+                            margin-bottom: 0.25rem;
+                        }
+
+                        .announce-important {
+                            color: #ff4444 !important;
+                            font-weight: 700;
+                            margin-top: 0.6rem !important;
+                        }
+
+                        @media (max-width: 1100px) {
+                            .announce-columns,
+                            .announce-rank-row {
+                                grid-template-columns: repeat(3, 1fr);
+                            }
+                        }
+
+                        @media (max-width: 700px) {
+                            .announce-columns,
+                            .announce-rank-row {
+                                grid-template-columns: repeat(2, 1fr);
+                            }
+                        }
+
+                        @media (max-width: 450px) {
+                            .announce-columns,
+                            .announce-rank-row {
+                                grid-template-columns: 1fr;
+                            }
                         }
                     </style>
 
