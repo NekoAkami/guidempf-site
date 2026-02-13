@@ -155,6 +155,31 @@
         .table-scroll { overflow-x: auto; }
         #access-denied { display: none; text-align: center; padding: 3rem; }
 
+        /* LED de connexion */
+        .online-led {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #333;
+            margin-right: 6px;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+        .online-led.active {
+            background: #00cc66;
+            box-shadow: 0 0 6px rgba(0, 204, 102, 0.7);
+            animation: ledPulse 2s ease infinite;
+        }
+        @keyframes ledPulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(0, 204, 102, 0.7); }
+            50% { opacity: 0.7; box-shadow: 0 0 12px rgba(0, 204, 102, 0.9); }
+        }
+        .nom-cell-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
         /* Admin nav */
         .admin-nav {
             display: flex;
@@ -331,6 +356,23 @@
 
       let allUsers = [];
       let allUnitsCache = [];
+      let onlineMatricules = new Set();
+
+      async function fetchOnlineMatricules() {
+        try {
+          const { Timestamp, collection: col2, getDocs: gDocs2, query: q, where: w } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+          const cutoff = Timestamp.fromDate(new Date(Date.now() - 2 * 60 * 1000));
+          const snap = await gDocs2(q(col2(db, 'presence'), w('last_seen', '>', cutoff)));
+          const mats = new Set();
+          for (const s of snap.docs) {
+            try {
+              const uDoc = await getDoc(doc(db, 'users', s.id));
+              if (uDoc.exists() && uDoc.data().matricule) mats.add(uDoc.data().matricule);
+            } catch (_) {}
+          }
+          return mats;
+        } catch (_) { return new Set(); }
+      }
 
       function showMessage(text, type = 'success') {
         const msg = document.getElementById('actionMessage');
@@ -452,7 +494,7 @@
           return `<tr>
             <td><strong style="color:var(--accent-cyan);">${u.matricule || '-'}</strong></td>
             <td>${u.email || '-'}</td>
-            <td>${u.nom_steam || '<span style="color:var(--text-muted);">-</span>'}</td>
+            <td><div class="nom-cell-wrapper"><span class="${onlineMatricules.has(u.matricule) ? 'online-led active' : 'online-led'}" title="${onlineMatricules.has(u.matricule) ? 'En ligne' : 'Hors ligne'}"></span>${u.nom_steam || '<span style="color:var(--text-muted);">-</span>'}</div></td>
             <td>${u.discord || '<span style="color:var(--text-muted);">-</span>'}</td>
             <td style="font-size:0.72rem;">${u.steamid64 || '<span style="color:var(--text-muted);">-</span>'}</td>
             <td>${adminBadge}</td>
@@ -615,9 +657,13 @@
           }
           document.getElementById('loading').style.display = 'none';
           document.getElementById('adminContent').style.display = 'block';
+          onlineMatricules = await fetchOnlineMatricules();
           await loadUsers();
           // Auto-refresh toutes les 30 secondes
-          setInterval(() => loadUsers(), 30000);
+          setInterval(async () => {
+            try { onlineMatricules = await fetchOnlineMatricules(); } catch (_) {}
+            await loadUsers();
+          }, 30000);
         } catch (err) {
           console.error('Admin auth error:', err);
           document.getElementById('loading').innerHTML = '<p style="color:#ff4444;">Erreur: ' + err.message + '</p>';

@@ -35,10 +35,6 @@
         .rang-cmd{color:#fff;border:1px solid rgba(255,255,255,0.5);background:rgba(255,255,255,0.05);}
         .div-badge{display:inline-block;padding:0.1rem 0.4rem;border-radius:2px;font-size:0.68rem;background:rgba(0,170,255,0.08);border:1px solid rgba(0,170,255,0.15);color:var(--text-muted);}
         .formateur-badge{display:inline-block;padding:0.1rem 0.3rem;border-radius:2px;font-size:0.62rem;background:rgba(0,200,80,0.1);border:1px solid rgba(0,200,80,0.3);color:#00cc55;}
-        .online-led{display:inline-block;width:8px;height:8px;border-radius:50%;background:#333;margin-right:6px;vertical-align:middle;flex-shrink:0;}
-        .online-led.active{background:#00cc66;box-shadow:0 0 6px rgba(0,204,102,0.7);animation:ledPulse 2s ease infinite;}
-        @keyframes ledPulse{0%,100%{opacity:1;box-shadow:0 0 6px rgba(0,204,102,0.7);}50%{opacity:0.7;box-shadow:0 0 12px rgba(0,204,102,0.9);}}
-        .nom-cell-wrapper{display:flex;align-items:center;}
         .detail-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.75);z-index:1000;display:flex;align-items:center;justify-content:center;}
         .detail-box{background:#0a1628;border:1px solid rgba(0,170,255,0.2);padding:1.5rem;border-radius:6px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;}
         .detail-box h3{color:var(--accent-cyan);font-family:'Orbitron',sans-serif;font-size:0.9rem;margin-bottom:1rem;}
@@ -113,23 +109,6 @@
       import { loadUnits } from './assets/js/github-data.js';
 
       let allUnits=[], sortField='matricule', sortDir='asc';
-      let onlineMatricules = new Set();
-
-      async function fetchOnlineMatricules() {
-        try {
-          const { Timestamp, collection: col, getDocs: gDocs, query: q, where: w, doc: d, getDoc: gDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-          const cutoff = Timestamp.fromDate(new Date(Date.now() - 2 * 60 * 1000));
-          const snap = await gDocs(q(col(db, 'presence'), w('last_seen', '>', cutoff)));
-          const mats = new Set();
-          for (const uid of snap.docs.map(s => s.id)) {
-            try {
-              const uDoc = await gDoc(d(db, 'users', uid));
-              if (uDoc.exists() && uDoc.data().matricule) mats.add(uDoc.data().matricule);
-            } catch (_) {}
-          }
-          return mats;
-        } catch (_) { return new Set(); }
-      }
       const RANK_ORDER=['RCT','.05','.04','.03','STB','.02','.01','DvL','STBE','CABAL','Ofc','Cmd'];
 
       function getRangClass(r){
@@ -183,9 +162,7 @@
         tb.innerHTML=list.map(u=>{
           const infos=[];
           if(u.formateur)infos.push('<span class="formateur-badge">FORMATEUR</span>');
-          const isOnline = onlineMatricules.has(u.matricule);
-          const ledClass = isOnline ? 'online-led active' : 'online-led';
-          return`<tr style="cursor:pointer;" onclick="showUnitDetail('${u.matricule}')"><td style="font-weight:700;">${u.matricule||'-'}</td><td><div class="nom-cell-wrapper"><span class="${ledClass}" title="${isOnline?'En ligne':'Hors ligne'}"></span>${u.nom_steam||'-'}</div></td><td><span class="rang-badge ${getRangClass(u.rang)}">${u.rang||'-'}</span></td><td>${u.division?`<span class="div-badge">${u.division}</span>`:'-'}</td><td>${infos.join(' ')||'-'}</td></tr>`;
+          return`<tr style="cursor:pointer;" onclick="showUnitDetail('${u.matricule}')"><td style="font-weight:700;">${u.matricule||'-'}</td><td>${u.nom_steam||'-'}</td><td><span class="rang-badge ${getRangClass(u.rang)}">${u.rang||'-'}</span></td><td>${u.division?`<span class="div-badge">${u.division}</span>`:'-'}</td><td>${infos.join(' ')||'-'}</td></tr>`;
         }).join('');
       };
 
@@ -208,9 +185,7 @@
         try{const s=await getDoc(doc(db,'users',user.uid));if(!s.exists()||!s.data().approved){document.getElementById('loading').style.display='none';if(!s.exists())document.getElementById('access-denied').style.display='block';else document.getElementById('notApproved').style.display='block';return;}
         document.getElementById('loading').style.display='none';document.getElementById('mainContent').style.display='block';
         try{allUnits=await loadUnits();}catch(_){allUnits=[];}
-        try{onlineMatricules=await fetchOnlineMatricules();}catch(_){}
         populateFilters();updateStats();renderUnits();
-        setInterval(async()=>{try{onlineMatricules=await fetchOnlineMatricules();renderUnits();}catch(_){}},30000);
         }catch(e){console.error(e);document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';}
       });
     </script>
