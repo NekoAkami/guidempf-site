@@ -261,74 +261,79 @@
                 </div>
             </div>
 
-            <!-- Paliers des verdicts par grade -->
-            <div class="combine-terminal-wrapper animate-fadeInUp holo-container" style="margin-bottom: 2rem;">
-                <div class="combine-header">
-                    <div class="combine-top-bar">
-                        <span>UNION://JUSTICE.AUTHORIZATION_SYSTEM</span>
-                        <span class="badge badge-red"><span class="status-dot alert" style="margin-right: 4px;"></span>AUTH: JUDICIAIRE</span>
-                    </div>
-                    <h2 class="glitch-text" data-text="PALIERS DES VERDICTS PAR GRADE">PALIERS DES VERDICTS PAR GRADE</h2>
-                    <div class="dispatch-line">
-                        <span>> REF: J-GRID-04</span>
-                        <span class="combine-cursor"></span>
-                    </div>
-                    <div class="combine-symbol">⚖</div>
-                </div>
-
-                <div class="combine-body" style="padding: 0;">
-                    <div style="display: grid; grid-template-columns: 80px 1fr; border-bottom: 1px solid rgba(0, 212, 255, 0.2);">
-                        <div style="background: rgba(0, 0, 0, 0.4); padding: 0.7rem; display: flex; align-items: center; justify-content: center; border-right: 1px solid rgba(0, 212, 255, 0.2);">
-                            <span style="font-family: 'Orbitron'; font-size: 1.1rem; font-weight: 700; color: var(--accent-cyan); text-shadow: 0 0 8px rgba(0, 212, 255, 0.4);">RCT</span>
-                        </div>
-                        <div style="padding: 0.7rem 1rem; display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
-                            <span style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">/// ACCRÉDITATION NULLE ///</span>
-                            <span style="font-size: 0.8rem; color: var(--text-secondary);">— Aucun droit de verdict.</span>
-                        </div>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: 80px 1fr; border-bottom: 1px solid rgba(0, 212, 255, 0.2);">
-                        <div style="background: rgba(0, 0, 0, 0.4); padding: 0.7rem; display: flex; align-items: center; justify-content: center; border-right: 1px solid rgba(0, 212, 255, 0.2);">
-                            <span style="font-family: 'Orbitron'; font-size: 1.1rem; font-weight: 700; color: var(--accent-cyan); text-shadow: 0 0 8px rgba(0, 212, 255, 0.4);">05</span>
-                        </div>
-                        <div style="padding: 0.7rem 1rem; display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
-                            <span style="font-size: 0.9rem; color: var(--text-primary); font-weight: 600;">V1, V2, V3</span>
-                            <span style="font-size: 0.8rem; color: var(--text-secondary);">— Délits mineurs et civils uniquement.</span>
-                        </div>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: 80px 1fr; border-bottom: 1px solid rgba(0, 212, 255, 0.2);">
-                        <div style="background: rgba(0, 0, 0, 0.4); padding: 0.7rem; display: flex; align-items: center; justify-content: center; border-right: 1px solid rgba(0, 212, 255, 0.2);">
-                            <span style="font-family: 'Orbitron'; font-size: 1.1rem; font-weight: 700; color: var(--accent-cyan); text-shadow: 0 0 8px rgba(0, 212, 255, 0.4);">04</span>
-                        </div>
-                        <div style="padding: 0.7rem 1rem;">
-                            <div style="display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
-                                <span style="font-size: 0.9rem; color: var(--text-primary); font-weight: 600;">V1, V2, V3, V4, V5</span>
-                            </div>
-                            <div style="padding: 0.4rem 0.8rem; background: rgba(255, 43, 43, 0.1); border-left: 3px solid var(--accent-red); margin-top: 0.4rem; font-size: 0.75rem; color: #ff9999;">
-                                ⚠ DROIT DE RELOCALISATION (GARE) SI -31 POINTS
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: 80px 1fr;">
-                        <div style="background: rgba(0, 0, 0, 0.4); padding: 0.7rem; display: flex; align-items: center; justify-content: center; border-right: 1px solid rgba(0, 212, 255, 0.2);">
-                            <span style="font-family: 'Orbitron'; font-size: 1.1rem; font-weight: 700; color: #00ff88; text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);">03+</span>
-                        </div>
-                        <div style="padding: 0.7rem 1rem; display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
-                            <span style="font-size: 0.9rem; color: #00ff88; font-weight: 700;">/// TOUS LES VERDICTS ///</span>
-                            <span style="font-size: 0.8rem; color: var(--text-secondary);">— Autorité totale (V1 à V7 + amputation).</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="combine-footer">
-                    AUTHORIZATION_MATRIX_LOADED // JUDICIAL_CLEARANCE_VERIFIED
-                </div>
-            </div>
             </div>
         </div>
     </main>
+
+    <!-- Bouton flottant pour ouvrir le panneau Paliers -->
+    <button id="paliersToggle" onclick="document.getElementById('paliersPanel').classList.toggle('open'); this.classList.toggle('active');" style="
+        position: fixed; left: 0; top: 50%; transform: translateY(-50%); z-index: 1100;
+        writing-mode: vertical-rl; text-orientation: mixed;
+        background: rgba(4, 12, 22, 0.95); color: #00aaff; border: 1px solid rgba(0, 170, 255, 0.3); border-left: none;
+        padding: 0.8rem 0.4rem; font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; font-weight: 700;
+        letter-spacing: 0.1em; cursor: pointer; border-radius: 0 4px 4px 0;
+        transition: all 0.2s; backdrop-filter: blur(8px);
+    ">⚖ PALIERS</button>
+
+    <!-- Panneau latéral Paliers des Verdicts -->
+    <div id="paliersPanel" style="
+        position: fixed; left: 0; top: 0; bottom: 0; width: 280px; z-index: 1099;
+        background: rgba(4, 12, 22, 0.98); border-right: 1px solid rgba(0, 170, 255, 0.2);
+        backdrop-filter: blur(12px); box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
+        transform: translateX(-100%); transition: transform 0.25s ease;
+        overflow-y: auto; padding: 0;
+    ">
+        <div style="padding: 0.8rem; border-bottom: 1px solid rgba(0, 170, 255, 0.15); display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-family: 'Orbitron', sans-serif; font-size: 0.7rem; font-weight: 700; color: #00aaff; letter-spacing: 0.05em;">PALIERS DES VERDICTS</span>
+            <button onclick="document.getElementById('paliersPanel').classList.remove('open'); document.getElementById('paliersToggle').classList.remove('active');" style="background: none; border: 1px solid rgba(0, 170, 255, 0.3); color: #00aaff; cursor: pointer; font-size: 0.7rem; padding: 0.2rem 0.5rem; font-family: 'Share Tech Mono', monospace;">✕</button>
+        </div>
+
+        <div style="padding: 0;">
+            <div style="display: grid; grid-template-columns: 50px 1fr; border-bottom: 1px solid rgba(0, 212, 255, 0.1);">
+                <div style="background: rgba(0, 0, 0, 0.4); padding: 0.5rem; display: flex; align-items: center; justify-content: center; border-right: 1px solid rgba(0, 212, 255, 0.1);">
+                    <span style="font-family: 'Orbitron'; font-size: 0.75rem; font-weight: 700; color: var(--accent-cyan);">RCT</span>
+                </div>
+                <div style="padding: 0.5rem 0.6rem;">
+                    <span style="font-size: 0.7rem; color: var(--text-muted); font-style: italic;">AUCUN VERDICT</span>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 50px 1fr; border-bottom: 1px solid rgba(0, 212, 255, 0.1);">
+                <div style="background: rgba(0, 0, 0, 0.4); padding: 0.5rem; display: flex; align-items: center; justify-content: center; border-right: 1px solid rgba(0, 212, 255, 0.1);">
+                    <span style="font-family: 'Orbitron'; font-size: 0.75rem; font-weight: 700; color: var(--accent-cyan);">05</span>
+                </div>
+                <div style="padding: 0.5rem 0.6rem;">
+                    <span style="font-size: 0.75rem; color: var(--text-primary); font-weight: 600;">V1, V2, V3</span>
+                    <div style="font-size: 0.65rem; color: var(--text-muted);">Délits mineurs</div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 50px 1fr; border-bottom: 1px solid rgba(0, 212, 255, 0.1);">
+                <div style="background: rgba(0, 0, 0, 0.4); padding: 0.5rem; display: flex; align-items: center; justify-content: center; border-right: 1px solid rgba(0, 212, 255, 0.1);">
+                    <span style="font-family: 'Orbitron'; font-size: 0.75rem; font-weight: 700; color: var(--accent-cyan);">04</span>
+                </div>
+                <div style="padding: 0.5rem 0.6rem;">
+                    <span style="font-size: 0.75rem; color: var(--text-primary); font-weight: 600;">V1 à V5</span>
+                    <div style="font-size: 0.6rem; color: #ff9999; margin-top: 0.2rem;">⚠ Relocalisation si -31 PL</div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 50px 1fr;">
+                <div style="background: rgba(0, 0, 0, 0.4); padding: 0.5rem; display: flex; align-items: center; justify-content: center; border-right: 1px solid rgba(0, 212, 255, 0.1);">
+                    <span style="font-family: 'Orbitron'; font-size: 0.75rem; font-weight: 700; color: #00ff88;">03+</span>
+                </div>
+                <div style="padding: 0.5rem 0.6rem;">
+                    <span style="font-size: 0.75rem; color: #00ff88; font-weight: 700;">TOUS (V1-V7)</span>
+                    <div style="font-size: 0.65rem; color: var(--text-muted);">+ amputation</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        #paliersPanel.open { transform: translateX(0); }
+        #paliersToggle.active { left: 280px; }
+    </style>
 
     <script src="assets/js/global-nav.js"></script>
     <script src="assets/js/interactive-system.js"></script>
