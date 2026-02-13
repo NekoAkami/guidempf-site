@@ -34,6 +34,233 @@
 
     <main>
         <div class="container">
+            <!-- Code Pénal avec filtres interactifs -->
+            <div class="combine-terminal-wrapper animate-fadeInUp">
+                <div class="combine-header">
+                    <div class="combine-top-bar">
+                        <span>UNION://PENAL_CODE.DATABASE_V7</span>
+                        <span class="badge badge-red">CODE PÉNAL v7.2</span>
+                    </div>
+                    <h2>CODE PÉNAL - VERDICTS INTERACTIFS</h2>
+                    <div class="dispatch-line">
+                        <span>> SYSTÈME JUDICIAIRE // SANCTIONS COMBINE</span>
+                        <span class="combine-cursor"></span>
+                    </div>
+                    <div class="combine-symbol">⚖</div>
+                </div>
+
+                <div class="combine-body">
+                    <!-- Recherche de verdicts -->
+                    <div style="margin-bottom: 1rem;">
+                        <div style="position: relative;">
+                            <input type="text" id="verdict-search" placeholder="Rechercher un verdict ou infraction... ex: vol, arme, meurtre..."
+                                   style="width:100%;padding:0.6rem 1rem 0.6rem 2.4rem;background:rgba(0,170,255,0.05);border:1px solid rgba(0,170,255,0.3);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.85rem;outline:none;border-radius:4px;transition:border-color 0.3s;"
+                                   autocomplete="off">
+                            <span style="position:absolute;left:0.8rem;top:50%;transform:translateY(-50%);color:var(--accent-cyan);font-size:0.9rem;">&#128269;</span>
+                        </div>
+                        <div id="verdict-count" style="margin-top:0.4rem;font-size:0.75rem;color:var(--text-muted);font-family:'Share Tech Mono',monospace;"></div>
+                    </div>
+
+                    <!-- Boutons de Filtrage -->
+                    <div style="display: flex; gap: 1rem; justify-content: center; margin: 1.5rem 0 2rem; flex-wrap: wrap;">
+                        <button class="verdict-filter-btn active" data-filter="all" style="padding: 0.8rem 2rem; background: var(--accent-cyan); color: #000; border: 2px solid var(--accent-cyan); border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-family: 'Share Tech Mono', monospace;">
+                            🔍 TOUS
+                        </button>
+                        <button class="verdict-filter-btn" data-filter="minor" style="padding: 0.8rem 2rem; background: rgba(46, 204, 113, 0.2); color: #2ecc71; border: 2px solid #2ecc71; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-family: 'Share Tech Mono', monospace;">
+                            ✅ MINEURS (V1-3)
+                        </button>
+                        <button class="verdict-filter-btn" data-filter="serious" style="padding: 0.8rem 2rem; background: rgba(243, 156, 18, 0.2); color: #f39c12; border: 2px solid #f39c12; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-family: 'Share Tech Mono', monospace;">
+                            ⚠️ SÉRIEUX (V4-5)
+                        </button>
+                        <button class="verdict-filter-btn" data-filter="critical" style="padding: 0.8rem 2rem; background: rgba(231, 76, 60, 0.2); color: #e74c3c; border: 2px solid #e74c3c; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-family: 'Share Tech Mono', monospace;">
+                            💥 CRITIQUES (V6-7)
+                        </button>
+                    </div>
+
+                    <!-- Grille des Verdicts -->
+                    <div id="verdicts-grid" class="interactive-grid">
+                        
+                        <!-- VERDICT 1 -->
+                        <div class="info-card" data-category="minor" style="border-color: #2ecc71;">
+                            <div class="card-header">
+                                <div class="card-title" style="color: #2ecc71;">
+                                    <span class="card-icon">1️⃣</span>
+                                    VERDICT 1
+                                </div>
+</div>
+                            <div class="card-content">
+                                <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(46, 204, 113, 0.1); border-left: 3px solid #2ecc71;">
+                                    <strong style="color: #2ecc71;">📋 TYPE:</strong> Infraction Civile
+                                </div>
+                                <ul>
+                                    <li>Trouble à l'ordre public</li>
+                                    <li>Désobéissance mineure</li>
+                                    <li>Manque de respect verbal</li>
+                                    <li>Non-conformité documentaire</li>
+                                </ul>
+                                <div style="margin-top: 1rem; padding: 0.6rem; background: rgba(0, 0, 0, 0.3); border-radius: 4px; text-align: center;">
+                                    <strong style="color: var(--accent-cyan);">AUTORISÉ:</strong> 05+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- VERDICT 2 -->
+                        <div class="info-card" data-category="minor" style="border-color: #27ae60;">
+                            <div class="card-header">
+                                <div class="card-title" style="color: #27ae60;">
+                                    <span class="card-icon">2️⃣</span>
+                                    VERDICT 2
+                                </div>
+</div>
+                            <div class="card-content">
+                                <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(39, 174, 96, 0.1); border-left: 3px solid #27ae60;">
+                                    <strong style="color: #27ae60;">📋 TYPE:</strong> Délit Mineur
+                                </div>
+                                <ul>
+                                    <li>Refus d'inspection</li>
+                                    <li>Contrebande légère</li>
+                                    <li>Altercation physique mineure</li>
+                                    <li>Résistance passive</li>
+                                </ul>
+                                <div style="margin-top: 1rem; padding: 0.6rem; background: rgba(0, 0, 0, 0.3); border-radius: 4px; text-align: center;">
+                                    <strong style="color: var(--accent-cyan);">AUTORISÉ:</strong> 05+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- VERDICT 3 -->
+                        <div class="info-card" data-category="minor" style="border-color: #16a085;">
+                            <div class="card-header">
+                                <div class="card-title" style="color: #16a085;">
+                                    <span class="card-icon">3️⃣</span>
+                                    VERDICT 3
+                                </div>
+</div>
+                            <div class="card-content">
+                                <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(22, 160, 133, 0.1); border-left: 3px solid #16a085;">
+                                    <strong style="color: #16a085;">📋 TYPE:</strong> Délit Sérieux
+                                </div>
+                                <ul>
+                                    <li>Vol de propriété citoyenne</li>
+                                    <li>Fuite lors d'un contrôle</li>
+                                    <li>Intrusion zone restreinte</li>
+                                    <li>Propagande anti-UU</li>
+                                </ul>
+                                <div style="margin-top: 1rem; padding: 0.6rem; background: rgba(0, 0, 0, 0.3); border-radius: 4px; text-align: center;">
+                                    <strong style="color: var(--accent-cyan);">AUTORISÉ:</strong> 05+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- VERDICT 4 -->
+                        <div class="info-card" data-category="serious" style="border-color: #f39c12;">
+                            <div class="card-header">
+                                <div class="card-title" style="color: #f39c12;">
+                                    <span class="card-icon">4️⃣</span>
+                                    VERDICT 4
+                                </div>
+</div>
+                            <div class="card-content">
+                                <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(243, 156, 18, 0.1); border-left: 3px solid #f39c12;">
+                                    <strong style="color: #f39c12;">📋 TYPE:</strong> Crime Moyen
+                                </div>
+                                <ul>
+                                    <li>Agression physique grave</li>
+                                    <li>Vol d'équipement UU</li>
+                                    <li>Sabotage d'infrastructures</li>
+                                    <li>Résistance armée</li>
+                                    <li>Affiliation groupe rebelle</li>
+                                </ul>
+                                <div style="margin-top: 1rem; padding: 0.6rem; background: rgba(0, 0, 0, 0.3); border-radius: 4px; text-align: center;">
+                                    <strong style="color: var(--accent-cyan);">AUTORISÉ:</strong> 04+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- VERDICT 5 -->
+                        <div class="info-card" data-category="serious" style="border-color: #e67e22;">
+                            <div class="card-header">
+                                <div class="card-title" style="color: #e67e22;">
+                                    <span class="card-icon">5️⃣</span>
+                                    VERDICT 5
+                                </div>
+</div>
+                            <div class="card-content">
+                                <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(230, 126, 34, 0.1); border-left: 3px solid #e67e22;">
+                                    <strong style="color: #e67e22;">📋 TYPE:</strong> Crime Grave
+                                </div>
+                                <ul>
+                                    <li>Possession arme lourde</li>
+                                    <li>Homicide d'un citoyen</li>
+                                    <li>Espionnage pro-rebelle</li>
+                                    <li>Incitation à la rébellion</li>
+                                    <li><span class="card-highlight" style="border-color: #e67e22; color: #e67e22;">Amputation possible</span></li>
+                                </ul>
+                                <div style="margin-top: 1rem; padding: 0.6rem; background: rgba(0, 0, 0, 0.3); border-radius: 4px; text-align: center;">
+                                    <strong style="color: var(--accent-cyan);">AUTORISÉ:</strong> 04+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- VERDICT 6 -->
+                        <div class="info-card" data-category="critical" style="border-color: #e74c3c;">
+                            <div class="card-header">
+                                <div class="card-title" style="color: #e74c3c;">
+                                    <span class="card-icon">6️⃣</span>
+                                    VERDICT 6
+                                </div>
+</div>
+                            <div class="card-content">
+                                <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(231, 76, 60, 0.1); border-left: 3px solid #e74c3c;">
+                                    <strong style="color: #e74c3c;">📋 TYPE:</strong> Crime Capital
+                                </div>
+                                <ul>
+                                    <li>Meurtre d'unité MPF</li>
+                                    <li>Trahison envers l'UU</li>
+                                    <li>Terrorisme organisé</li>
+                                    <li>Leadership rebelle actif</li>
+                                    <li><span class="card-highlight" style="border-color: #ff5555; color: #ff5555; background: rgba(255, 85, 85, 0.2);">⚠️ BANNISSEMENT PERMANENT</span></li>
+                                </ul>
+                                <div style="margin-top: 1rem; padding: 0.6rem; background: rgba(231, 76, 60, 0.2); border: 2px solid #e74c3c; border-radius: 4px; text-align: center;">
+                                    <strong style="color: #ff5555;">AUTORISÉ:</strong> 03+ UNIQUEMENT
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- VERDICT 7 -->
+                        <div class="info-card" data-category="critical" style="border-color: #c0392b;">
+                            <div class="card-header">
+                                <div class="card-title" style="color: #c0392b;">
+                                    <span class="card-icon">💀</span>
+                                    VERDICT 7
+                                </div>
+</div>
+                            <div class="card-content">
+                                <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(192, 57, 43, 0.1); border-left: 3px solid #c0392b;">
+                                    <strong style="color: #c0392b;">💥 TYPE:</strong> Sentence Capitale
+                                </div>
+                                <ul>
+                                    <li>Attentat terroriste majeur</li>
+                                    <li>Meurtre de masse</li>
+                                    <li>Commandement rebelle</li>
+                                    <li>Haute trahison UU</li>
+                                    <li>Destruction infrastructures</li>
+                                    <li><span class="card-highlight" style="border-color: #c0392b; color: #c0392b;">Exécution immédiate</span></li>
+                                </ul>
+                                <div style="margin-top: 1rem; padding: 0.6rem; background: rgba(192, 57, 43, 0.2); border: 2px solid #c0392b; border-radius: 4px; text-align: center;">
+                                    <strong style="color: #ff5555;">AUTORISÉ:</strong> 03+ UNIQUEMENT
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="combine-footer">
+                    [CODE_PÉNAL_v7.2 - SYSTÈME INTERACTIF ACTIF // JUSTICE_COMBINE]
+                </div>
+            </div>
+
             <!-- Paliers des verdicts par grade -->
             <div class="combine-terminal-wrapper animate-fadeInUp holo-container" style="margin-bottom: 2rem;">
                 <div class="combine-header">
@@ -99,253 +326,6 @@
                     AUTHORIZATION_MATRIX_LOADED // JUDICIAL_CLEARANCE_VERIFIED
                 </div>
             </div>
-
-            <!-- Code Pénal avec filtres interactifs -->
-            <div class="combine-terminal-wrapper animate-fadeInUp">
-                <div class="combine-header">
-                    <div class="combine-top-bar">
-                        <span>UNION://PENAL_CODE.DATABASE_V7</span>
-                        <span class="badge badge-red">CODE PÉNAL v7.2</span>
-                    </div>
-                    <h2>CODE PÉNAL - VERDICTS INTERACTIFS</h2>
-                    <div class="dispatch-line">
-                        <span>> SYSTÈME JUDICIAIRE // SANCTIONS COMBINE</span>
-                        <span class="combine-cursor"></span>
-                    </div>
-                    <div class="combine-symbol">⚖</div>
-                </div>
-
-                <div class="combine-body">
-                    <!-- Recherche de verdicts -->
-                    <div style="margin-bottom: 1rem;">
-                        <div style="position: relative;">
-                            <input type="text" id="verdict-search" placeholder="Rechercher un verdict ou infraction... ex: vol, arme, meurtre..."
-                                   style="width:100%;padding:0.6rem 1rem 0.6rem 2.4rem;background:rgba(0,170,255,0.05);border:1px solid rgba(0,170,255,0.3);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.85rem;outline:none;border-radius:4px;transition:border-color 0.3s;"
-                                   autocomplete="off">
-                            <span style="position:absolute;left:0.8rem;top:50%;transform:translateY(-50%);color:var(--accent-cyan);font-size:0.9rem;">&#128269;</span>
-                        </div>
-                        <div id="verdict-count" style="margin-top:0.4rem;font-size:0.75rem;color:var(--text-muted);font-family:'Share Tech Mono',monospace;"></div>
-                    </div>
-
-                    <!-- Boutons de Filtrage -->
-                    <div style="display: flex; gap: 1rem; justify-content: center; margin: 1.5rem 0 2rem; flex-wrap: wrap;">
-                        <button class="verdict-filter-btn active" data-filter="all" style="padding: 0.8rem 2rem; background: var(--accent-cyan); color: #000; border: 2px solid var(--accent-cyan); border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-family: 'Share Tech Mono', monospace;">
-                            🔍 TOUS
-                        </button>
-                        <button class="verdict-filter-btn" data-filter="minor" style="padding: 0.8rem 2rem; background: rgba(46, 204, 113, 0.2); color: #2ecc71; border: 2px solid #2ecc71; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-family: 'Share Tech Mono', monospace;">
-                            ✅ MINEURS (V1-3)
-                        </button>
-                        <button class="verdict-filter-btn" data-filter="serious" style="padding: 0.8rem 2rem; background: rgba(243, 156, 18, 0.2); color: #f39c12; border: 2px solid #f39c12; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-family: 'Share Tech Mono', monospace;">
-                            ⚠️ SÉRIEUX (V4-5)
-                        </button>
-                        <button class="verdict-filter-btn" data-filter="critical" style="padding: 0.8rem 2rem; background: rgba(231, 76, 60, 0.2); color: #e74c3c; border: 2px solid #e74c3c; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-family: 'Share Tech Mono', monospace;">
-                            💥 CRITIQUES (V6-7)
-                        </button>
-                    </div>
-
-                    <!-- Grille des Verdicts -->
-                    <div id="verdicts-grid" class="interactive-grid">
-                        
-                        <!-- VERDICT 1 -->
-                        <div class="info-card" data-category="minor" style="border-color: #2ecc71;">
-                            <div class="card-header">
-                                <div class="card-title" style="color: #2ecc71;">
-                                    <span class="card-icon">1️⃣</span>
-                                    VERDICT 1
-                                </div>
-                                <div class="card-badge" style="color: #2ecc71; border-color: #2ecc71;">
-                                    -0 à -10 PL
-                                </div>
-                            </div>
-                            <div class="card-content">
-                                <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(46, 204, 113, 0.1); border-left: 3px solid #2ecc71;">
-                                    <strong style="color: #2ecc71;">📋 TYPE:</strong> Infraction Civile
-                                </div>
-                                <ul>
-                                    <li>Trouble à l'ordre public</li>
-                                    <li>Désobéissance mineure</li>
-                                    <li>Manque de respect verbal</li>
-                                    <li>Non-conformité documentaire</li>
-                                </ul>
-                                <div style="margin-top: 1rem; padding: 0.6rem; background: rgba(0, 0, 0, 0.3); border-radius: 4px; text-align: center;">
-                                    <strong style="color: var(--accent-cyan);">AUTORISÉ:</strong> 05+
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- VERDICT 2 -->
-                        <div class="info-card" data-category="minor" style="border-color: #27ae60;">
-                            <div class="card-header">
-                                <div class="card-title" style="color: #27ae60;">
-                                    <span class="card-icon">2️⃣</span>
-                                    VERDICT 2
-                                </div>
-                                <div class="card-badge" style="color: #27ae60; border-color: #27ae60;">
-                                    -11 à -15 PL
-                                </div>
-                            </div>
-                            <div class="card-content">
-                                <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(39, 174, 96, 0.1); border-left: 3px solid #27ae60;">
-                                    <strong style="color: #27ae60;">📋 TYPE:</strong> Délit Mineur
-                                </div>
-                                <ul>
-                                    <li>Refus d'inspection</li>
-                                    <li>Contrebande légère</li>
-                                    <li>Altercation physique mineure</li>
-                                    <li>Résistance passive</li>
-                                </ul>
-                                <div style="margin-top: 1rem; padding: 0.6rem; background: rgba(0, 0, 0, 0.3); border-radius: 4px; text-align: center;">
-                                    <strong style="color: var(--accent-cyan);">AUTORISÉ:</strong> 05+
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- VERDICT 3 -->
-                        <div class="info-card" data-category="minor" style="border-color: #16a085;">
-                            <div class="card-header">
-                                <div class="card-title" style="color: #16a085;">
-                                    <span class="card-icon">3️⃣</span>
-                                    VERDICT 3
-                                </div>
-                                <div class="card-badge" style="color: #16a085; border-color: #16a085;">
-                                    -16 à -20 PL
-                                </div>
-                            </div>
-                            <div class="card-content">
-                                <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(22, 160, 133, 0.1); border-left: 3px solid #16a085;">
-                                    <strong style="color: #16a085;">📋 TYPE:</strong> Délit Sérieux
-                                </div>
-                                <ul>
-                                    <li>Vol de propriété citoyenne</li>
-                                    <li>Fuite lors d'un contrôle</li>
-                                    <li>Intrusion zone restreinte</li>
-                                    <li>Propagande anti-UU</li>
-                                </ul>
-                                <div style="margin-top: 1rem; padding: 0.6rem; background: rgba(0, 0, 0, 0.3); border-radius: 4px; text-align: center;">
-                                    <strong style="color: var(--accent-cyan);">AUTORISÉ:</strong> 05+
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- VERDICT 4 -->
-                        <div class="info-card" data-category="serious" style="border-color: #f39c12;">
-                            <div class="card-header">
-                                <div class="card-title" style="color: #f39c12;">
-                                    <span class="card-icon">4️⃣</span>
-                                    VERDICT 4
-                                </div>
-                                <div class="card-badge" style="color: #f39c12; border-color: #f39c12;">
-                                    -21 à -25 PL
-                                </div>
-                            </div>
-                            <div class="card-content">
-                                <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(243, 156, 18, 0.1); border-left: 3px solid #f39c12;">
-                                    <strong style="color: #f39c12;">📋 TYPE:</strong> Crime Moyen
-                                </div>
-                                <ul>
-                                    <li>Agression physique grave</li>
-                                    <li>Vol d'équipement UU</li>
-                                    <li>Sabotage d'infrastructures</li>
-                                    <li>Résistance armée</li>
-                                    <li>Affiliation groupe rebelle</li>
-                                </ul>
-                                <div style="margin-top: 1rem; padding: 0.6rem; background: rgba(0, 0, 0, 0.3); border-radius: 4px; text-align: center;">
-                                    <strong style="color: var(--accent-cyan);">AUTORISÉ:</strong> 04+
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- VERDICT 5 -->
-                        <div class="info-card" data-category="serious" style="border-color: #e67e22;">
-                            <div class="card-header">
-                                <div class="card-title" style="color: #e67e22;">
-                                    <span class="card-icon">5️⃣</span>
-                                    VERDICT 5
-                                </div>
-                                <div class="card-badge" style="color: #e67e22; border-color: #e67e22;">
-                                    -26 à -30 PL
-                                </div>
-                            </div>
-                            <div class="card-content">
-                                <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(230, 126, 34, 0.1); border-left: 3px solid #e67e22;">
-                                    <strong style="color: #e67e22;">📋 TYPE:</strong> Crime Grave
-                                </div>
-                                <ul>
-                                    <li>Possession arme lourde</li>
-                                    <li>Homicide d'un citoyen</li>
-                                    <li>Espionnage pro-rebelle</li>
-                                    <li>Incitation à la rébellion</li>
-                                    <li><span class="card-highlight" style="border-color: #e67e22; color: #e67e22;">Amputation possible</span></li>
-                                </ul>
-                                <div style="margin-top: 1rem; padding: 0.6rem; background: rgba(0, 0, 0, 0.3); border-radius: 4px; text-align: center;">
-                                    <strong style="color: var(--accent-cyan);">AUTORISÉ:</strong> 04+
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- VERDICT 6 -->
-                        <div class="info-card" data-category="critical" style="border-color: #e74c3c;">
-                            <div class="card-header">
-                                <div class="card-title" style="color: #e74c3c;">
-                                    <span class="card-icon">6️⃣</span>
-                                    VERDICT 6
-                                </div>
-                                <div class="card-badge" style="color: #e74c3c; border-color: #e74c3c;">
-                                    -31+ PL
-                                </div>
-                            </div>
-                            <div class="card-content">
-                                <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(231, 76, 60, 0.1); border-left: 3px solid #e74c3c;">
-                                    <strong style="color: #e74c3c;">📋 TYPE:</strong> Crime Capital
-                                </div>
-                                <ul>
-                                    <li>Meurtre d'unité MPF</li>
-                                    <li>Trahison envers l'UU</li>
-                                    <li>Terrorisme organisé</li>
-                                    <li>Leadership rebelle actif</li>
-                                    <li><span class="card-highlight" style="border-color: #ff5555; color: #ff5555; background: rgba(255, 85, 85, 0.2);">⚠️ BANNISSEMENT PERMANENT</span></li>
-                                </ul>
-                                <div style="margin-top: 1rem; padding: 0.6rem; background: rgba(231, 76, 60, 0.2); border: 2px solid #e74c3c; border-radius: 4px; text-align: center;">
-                                    <strong style="color: #ff5555;">AUTORISÉ:</strong> 03+ UNIQUEMENT
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- VERDICT 7 -->
-                        <div class="info-card" data-category="critical" style="border-color: #c0392b;">
-                            <div class="card-header">
-                                <div class="card-title" style="color: #c0392b;">
-                                    <span class="card-icon">💀</span>
-                                    VERDICT 7
-                                </div>
-                                <div class="card-badge" style="color: #c0392b; border-color: #c0392b;">
-                                    EXÉCUTION
-                                </div>
-                            </div>
-                            <div class="card-content">
-                                <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(192, 57, 43, 0.1); border-left: 3px solid #c0392b;">
-                                    <strong style="color: #c0392b;">💥 TYPE:</strong> Sentence Capitale
-                                </div>
-                                <ul>
-                                    <li>Attentat terroriste majeur</li>
-                                    <li>Meurtre de masse</li>
-                                    <li>Commandement rebelle</li>
-                                    <li>Haute trahison UU</li>
-                                    <li>Destruction infrastructures</li>
-                                    <li><span class="card-highlight" style="border-color: #c0392b; color: #c0392b;">Exécution immédiate</span></li>
-                                </ul>
-                                <div style="margin-top: 1rem; padding: 0.6rem; background: rgba(192, 57, 43, 0.2); border: 2px solid #c0392b; border-radius: 4px; text-align: center;">
-                                    <strong style="color: #ff5555;">AUTORISÉ:</strong> 03+ UNIQUEMENT
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <div class="combine-footer">
-                    [CODE_PÉNAL_v7.2 - SYSTÈME INTERACTIF ACTIF // JUSTICE_COMBINE]
-                </div>
             </div>
         </div>
     </main>
