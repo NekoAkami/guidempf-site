@@ -73,6 +73,8 @@
         .badge-pending { background: rgba(255, 170, 0, 0.15); color: #ffaa00; border: 1px solid rgba(255, 170, 0, 0.3); }
         .badge-revoked { background: rgba(255, 60, 60, 0.15); color: #ff4444; border: 1px solid rgba(255, 60, 60, 0.3); }
         .badge-admin { background: rgba(0, 170, 255, 0.15); color: var(--accent-cyan); border: 1px solid rgba(0, 170, 255, 0.3); }
+        .badge-linked { background: rgba(0, 200, 80, 0.12); color: #00cc55; border: 1px solid rgba(0, 200, 80, 0.25); }
+        .badge-unlinked { background: rgba(255, 60, 60, 0.08); color: #ff6666; border: 1px solid rgba(255, 60, 60, 0.2); }
         .btn-sm {
             padding: 0.25rem 0.6rem;
             font-size: 0.72rem;
@@ -242,6 +244,14 @@
                         <div class="number" id="adminCount">0</div>
                         <div class="label">ADMINS</div>
                     </div>
+                    <div class="stat-box">
+                        <div class="number" id="linkedCount" style="color:#00cc55;">0</div>
+                        <div class="label">LIÉS À UNE UNITÉ</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="number" id="unlinkedCount" style="color:#ff6666;">0</div>
+                        <div class="label">SANS UNITÉ</div>
+                    </div>
                 </div>
 
                 <!-- Pending requests -->
@@ -268,6 +278,11 @@
                                 <option value="APPROVED">Approuvés</option>
                                 <option value="REVOKED">Révoqués</option>
                             </select>
+                            <select id="unitFilter">
+                                <option value="">Unité: Tous</option>
+                                <option value="LINKED">Liés à une unité</option>
+                                <option value="UNLINKED">Sans unité</option>
+                            </select>
                         </div>
                         <div class="table-scroll">
                             <table class="admin-table">
@@ -280,13 +295,14 @@
                                         <th>STEAMID64</th>
                                         <th>ADMIN</th>
                                         <th>FORMATEUR</th>
+                                        <th>UNITÉ</th>
                                         <th>STATUT</th>
                                         <th>DATE</th>
                                         <th>ACTIONS</th>
                                     </tr>
                                 </thead>
                                 <tbody id="usersList">
-                                    <tr><td colspan="10" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr>
+                                    <tr><td colspan="11" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -353,10 +369,14 @@
         const approved = allUsers.filter(u => u.approved === true).length;
         const pending = allUsers.filter(u => u.approved !== true && u.status !== 'REVOKED').length;
         const admins = allUsers.filter(u => u.is_admin === true).length;
+        const linked = allUsers.filter(u => u.matricule && allUnitsCache.some(unit => unit.matricule === u.matricule)).length;
+        const unlinked = allUsers.filter(u => u.approved === true && u.status !== 'REVOKED' && (!u.matricule || !allUnitsCache.some(unit => unit.matricule === u.matricule))).length;
         document.getElementById('totalCount').textContent = total;
         document.getElementById('approvedCount').textContent = approved;
         document.getElementById('pendingCount').textContent = pending;
         document.getElementById('adminCount').textContent = admins;
+        document.getElementById('linkedCount').textContent = linked;
+        document.getElementById('unlinkedCount').textContent = unlinked;
       }
 
       function renderPending() {
@@ -390,7 +410,7 @@
       function renderUsers(users) {
         const tbody = document.getElementById('usersList');
         if (users.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--text-muted);">Aucun utilisateur</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:var(--text-muted);">Aucun utilisateur</td></tr>';
           return;
         }
         tbody.innerHTML = users.map(u => {
@@ -404,6 +424,9 @@
             : '<span style="color:var(--text-muted);">-</span>';
 
           const unitEntry = allUnitsCache.find(unit => unit.matricule === u.matricule);
+          const unitLinkedBadge = unitEntry
+            ? '<span class="badge badge-linked">LIÉE</span>'
+            : '<span class="badge badge-unlinked">NON LIÉE</span>';
           const isFormateur = unitEntry && unitEntry.formateur;
           const formateurBadge = isFormateur
             ? '<span class="badge badge-admin" style="background:rgba(0,229,255,0.12);border-color:rgba(0,229,255,0.3);color:#00e5ff;">FORMATEUR</span>'
@@ -432,6 +455,7 @@
             <td style="font-size:0.72rem;">${u.steamid64 || '<span style="color:var(--text-muted);">-</span>'}</td>
             <td>${adminBadge}</td>
             <td>${formateurBadge}</td>
+            <td>${unitLinkedBadge}</td>
             <td>${statusBadge}</td>
             <td style="font-size:0.72rem;color:var(--text-muted);">${u.created_at ? u.created_at.substring(0, 10) : '-'}</td>
             <td class="action-cell">${formateurToggle} ${actions}</td>
@@ -451,7 +475,10 @@
             (u.discord || '').toLowerCase().includes(search) ||
             (u.steamid64 || '').includes(search);
           const matchStatus = !status || (u.status === status);
-          return matchSearch && matchStatus;
+          const unitLink = document.getElementById('unitFilter').value;
+          const hasUnit = u.matricule && allUnitsCache.some(unit => unit.matricule === u.matricule);
+          const matchUnit = !unitLink || (unitLink === 'LINKED' && hasUnit) || (unitLink === 'UNLINKED' && !hasUnit);
+          return matchSearch && matchStatus && matchUnit;
         });
         renderUsers(filtered);
       }
@@ -571,6 +598,7 @@
 
       document.getElementById('searchInput').addEventListener('input', filterUsers);
       document.getElementById('statusFilter').addEventListener('change', filterUsers);
+      document.getElementById('unitFilter').addEventListener('change', filterUsers);
 
       // Auth check — admin only
       onAuthStateChanged(auth, async (user) => {
