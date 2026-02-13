@@ -9,7 +9,7 @@
 import { db } from './auth.js';
 import {
   doc, getDoc, setDoc, deleteDoc,
-  collection, getDocs, addDoc, query, orderBy, where
+  collection, getDocs, addDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const GITHUB_OWNER = 'NekoAkami';
