@@ -137,11 +137,12 @@
       {const i=document.createElement('div');i.id='syncIndicator';i.className='sync-indicator hidden';document.body.appendChild(i);let t=null;onSyncStatus(s=>{clearTimeout(t);if(s==='syncing'){i.innerHTML='<span style="display:inline-block;animation:spin 1s linear infinite;">⟳</span> Sync...';i.className='sync-indicator syncing';}else if(s==='synced'){i.innerHTML='✓ Sync';i.className='sync-indicator synced';t=setTimeout(()=>i.className='sync-indicator hidden',2500);}else{i.innerHTML='⚠ Erreur';i.className='sync-indicator error';t=setTimeout(()=>i.className='sync-indicator hidden',6000);}});}
 
       // ===== WEEK HELPERS =====
+      function localDateStr(d){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0');return`${y}-${m}-${dd}`;}
       function getWeekDates(offset=0){
         const now=new Date();now.setDate(now.getDate()+offset*7);
         const day=now.getDay();const diff=now.getDate()-day+(day===0?-6:1);
         const mon=new Date(now);mon.setDate(diff);mon.setHours(0,0,0,0);
-        const dates=[];for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);dates.push(d.toISOString().substring(0,10));}
+        const dates=[];for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);dates.push(localDateStr(d));}
         return dates;
       }
 
@@ -169,7 +170,7 @@
       // ===== RENDER PLANNING GRID =====
       function renderPlanning(){
         const dates=getWeekDates(weekOffset);
-        const today=new Date().toISOString().substring(0,10);
+        const today=localDateStr(new Date());
         document.getElementById('weekLabel').textContent=fmtDate(dates[0])+' — '+fmtDate(dates[6]);
 
         const weekEntries=allEntries.filter(e=>dates.includes(e.date));
