@@ -421,7 +421,7 @@ class GlobalNavigation {
                 <div class="gp-float-inner">
                     <div class="gp-float-header" id="gpNotepadHeader">
                         <h3>📝 BLOC-NOTES</h3>
-                        <span class="gp-float-toggle" id="gpNotepadToggle">►</span>
+                        <span class="gp-float-toggle" id="gpNotepadToggle">◄</span>
                     </div>
                     <div class="gp-float-body">
                         <textarea class="gp-notepad-textarea" id="gpNotepadText" placeholder="Notes personnelles...&#10;Sauvegardé automatiquement."></textarea>
@@ -440,7 +440,7 @@ class GlobalNavigation {
                 <div class="gp-float-inner">
                     <div class="gp-float-header" id="gpTodayHeader">
                         <h3>📋 PLANNING DU JOUR</h3>
-                        <span class="gp-float-toggle" id="gpTodayToggle">◄</span>
+                        <span class="gp-float-toggle" id="gpTodayToggle">►</span>
                     </div>
                     <div class="gp-float-body" id="gpTodayBody">
                         <div id="gpTodayEvents"><div class="gp-no-events">Chargement…</div></div>
@@ -449,11 +449,39 @@ class GlobalNavigation {
                 </div>
             </div>`;
 
-        document.body.insertAdjacentHTML('beforeend', notepadHTML + todayHTML);
+        // ---- Collapsed tabs (vertical text labels) ----
+        const tabNotepadHTML = `<div class="gp-collapsed-tab gp-tab-left" id="gpNotepadTab"><span class="gp-tab-icon">📝</span><span class="gp-tab-label">BLOC-NOTES</span></div>`;
+        const tabTodayHTML = `<div class="gp-collapsed-tab gp-tab-right" id="gpTodayTab"><span class="gp-tab-icon">📋</span><span class="gp-tab-label">PLANNING</span></div>`;
+
+        document.body.insertAdjacentHTML('beforeend', notepadHTML + todayHTML + tabNotepadHTML + tabTodayHTML);
+
+        // ---- Dynamic top position based on nav height ----
+        const adjustTopPosition = () => {
+            const nav = document.querySelector('.main-nav');
+            const header = document.querySelector('.site-header');
+            let topOffset = 10; // margin below nav
+            if (nav) topOffset += nav.getBoundingClientRect().bottom;
+            else if (header) topOffset += header.getBoundingClientRect().bottom;
+            else topOffset = 120;
+            // Apply to panels and tabs
+            ['gpNotepadPanel','gpTodayPanel'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) { el.style.top = topOffset + 'px'; el.style.maxHeight = `calc(100vh - ${topOffset + 20}px)`; }
+            });
+            ['gpNotepadTab','gpTodayTab'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.top = topOffset + 'px';
+            });
+        };
+        // Run after layout settles
+        requestAnimationFrame(() => { requestAnimationFrame(adjustTopPosition); });
+        window.addEventListener('resize', adjustTopPosition);
 
         // ---- Restore saved widths ----
         const notepadPanel = document.getElementById('gpNotepadPanel');
         const todayPanel = document.getElementById('gpTodayPanel');
+        const notepadTab = document.getElementById('gpNotepadTab');
+        const todayTab = document.getElementById('gpTodayTab');
         const savedNotepadW = parseInt(localStorage.getItem('mpf_notepad_width'));
         const savedTodayW = parseInt(localStorage.getItem('mpf_today_width'));
         if (savedNotepadW && savedNotepadW >= MIN_W && savedNotepadW <= MAX_W) {
@@ -468,6 +496,14 @@ class GlobalNavigation {
             const ta = document.getElementById('gpNotepadText');
             if (ta) { ta.style.minHeight = savedTAh + 'px'; ta.style.height = savedTAh + 'px'; }
         }
+
+        // ---- Tab visibility sync ----
+        const syncTabVisibility = () => {
+            const npCollapsed = notepadPanel.classList.contains('gp-collapsed');
+            const tdCollapsed = todayPanel.classList.contains('gp-collapsed');
+            notepadTab.classList.toggle('gp-tab-hidden', !npCollapsed);
+            todayTab.classList.toggle('gp-tab-hidden', !tdCollapsed);
+        };
 
         // ---- Toggle logic ----
         const togglePanel = (panelId, storageKey) => {
@@ -484,10 +520,14 @@ class GlobalNavigation {
                     toggle.textContent = collapsed ? '◄' : '►';
                 }
             }
+            syncTabVisibility();
         };
 
         document.getElementById('gpNotepadHeader').addEventListener('click', () => togglePanel('gpNotepadPanel', 'mpf_notepad_collapsed'));
         document.getElementById('gpTodayHeader').addEventListener('click', () => togglePanel('gpTodayPanel', 'mpf_today_collapsed'));
+        // Click on collapsed tab to open
+        notepadTab.addEventListener('click', () => togglePanel('gpNotepadPanel', 'mpf_notepad_collapsed'));
+        todayTab.addEventListener('click', () => togglePanel('gpTodayPanel', 'mpf_today_collapsed'));
 
         // ---- Restore panel states from localStorage ----
         if (localStorage.getItem('mpf_notepad_collapsed') !== '1') {
@@ -498,6 +538,7 @@ class GlobalNavigation {
             todayPanel.classList.remove('gp-collapsed');
             document.getElementById('gpTodayToggle').textContent = '►';
         }
+        syncTabVisibility();
 
         // ---- Resize handles ----
         const setupResize = (handleId, panelId, storageKey, isLeft) => {
@@ -625,6 +666,8 @@ class GlobalNavigation {
                     panel.classList.remove('gp-collapsed');
                     const toggle = document.getElementById('gpTodayToggle');
                     if (toggle) toggle.textContent = '►';
+                    const tab = document.getElementById('gpTodayTab');
+                    if (tab) tab.classList.add('gp-tab-hidden');
                 }
             }
         } catch (err) {
