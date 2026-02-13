@@ -486,6 +486,7 @@ class GlobalNavigation {
         `;
 
         if (hasDropdown) {
+            html += `<button class="dropdown-toggle" aria-label="Ouvrir sous-menu">&#9660;</button>`;
             html += `
                 <ul class="dropdown-menu">
                     ${item.dropdown.map(subItem => `
@@ -525,15 +526,32 @@ class GlobalNavigation {
     }
 
     setupDropdowns() {
-        if (window.innerWidth <= 768) {
-            document.querySelectorAll('.nav-link.has-dropdown').forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const parentItem = link.closest('.nav-item');
-                    parentItem.classList.toggle('mobile-open');
+        // Boutons flèche dropdown — fonctionnent sur desktop ET mobile
+        document.querySelectorAll('.dropdown-toggle').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const parentItem = btn.closest('.nav-item');
+                const isOpen = parentItem.classList.contains('dropdown-open');
+
+                // Fermer tous les autres dropdowns
+                document.querySelectorAll('.nav-item.dropdown-open').forEach(item => {
+                    if (item !== parentItem) item.classList.remove('dropdown-open', 'mobile-open');
                 });
+
+                parentItem.classList.toggle('dropdown-open', !isOpen);
+                parentItem.classList.toggle('mobile-open', !isOpen);
             });
-        }
+        });
+
+        // Fermer les dropdowns quand on clique ailleurs
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.nav-item')) {
+                document.querySelectorAll('.nav-item.dropdown-open').forEach(item => {
+                    item.classList.remove('dropdown-open', 'mobile-open');
+                });
+            }
+        });
     }
 
     setupMobileMenu() {
