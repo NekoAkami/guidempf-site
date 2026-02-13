@@ -124,6 +124,25 @@
                     </div>
                 </div>
 
+                <!-- Code CWU 11-78 -->
+                <div style="background: rgba(255, 170, 68, 0.05); border: 2px solid rgba(255, 170, 68, 0.3); border-radius: 10px; padding: 2rem; margin: 2rem 0; position: relative;">
+                    <div style="position: absolute; top: -15px; left: 2rem; font-size: 2.5rem;">🔑</div>
+                    <div style="margin-top: 1rem;">
+                        <h3 style="font-family: 'Orbitron', sans-serif; color: #ffaa44; font-size: 1.3rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem;">Code CWU (11-78)</h3>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.8rem;">Fourchette d'identification CWU — Utilisé pour vérifier un 10-115</div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 2.2rem; color: #ffaa44; font-weight: 700; font-family: 'Share Tech Mono', monospace; text-shadow: 0 0 15px rgba(255, 170, 68, 0.4);">
+                                <span id="val-cwucode" class="editable-value">K | 143 – 162</span>
+                            </div>
+                            <button class="edit-btn" data-field="cwucode">✏️ Modifier</button>
+                            <div class="save-indicator" id="save-cwucode"></div>
+                        </div>
+                        <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0, 0, 0, 0.3); border-radius: 6px; font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6;">
+                            Adressez ce code au CWU <strong style="color: var(--text-primary);">devant lui</strong>. Il doit répondre par un <strong style="color: #ffaa44;">code à 3 chiffres</strong> dans la fourchette indiquée.
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Boîte aux Lettres -->
                 <div style="background: rgba(245, 158, 11, 0.05); border: 2px solid rgba(245, 158, 11, 0.3); border-radius: 10px; padding: 2rem; margin: 2rem 0; position: relative;">
                     <div style="position: absolute; top: -15px; left: 2rem; font-size: 2.5rem;">📫</div>
@@ -199,8 +218,8 @@
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const DEFAULTS = { frequence: '119.8', stockage: 'Milice.954', boite: 'Lettrempf2' };
-        const FIELDS = ['frequence', 'stockage', 'boite'];
+        const DEFAULTS = { frequence: '119.8', stockage: 'Milice.954', boite: 'Lettrempf2', cwucode: 'K | 143 – 162' };
+        const FIELDS = ['frequence', 'stockage', 'boite', 'cwucode'];
         let isHG = false;
 
         // Charger les valeurs depuis Firestore
@@ -209,7 +228,7 @@
                 const snap = await getDoc(doc(db, 'settings', 'radio'));
                 if (snap.exists()) {
                     const data = snap.data();
-                    FIELDS.forEach(f => {
+                    ['frequence', 'stockage', 'boite'].forEach(f => {
                         if (data[f]) {
                             const el = document.getElementById('val-' + f);
                             if (el) el.textContent = data[f];
@@ -230,12 +249,22 @@
                     }
                 }
             } catch (e) { console.warn('Impossible de charger les valeurs radio:', e); }
+
+            // Charger le code CWU depuis settings/cwu
+            try {
+                const cwuSnap = await getDoc(doc(db, 'settings', 'cwu'));
+                if (cwuSnap.exists() && cwuSnap.data().cwucode) {
+                    const el = document.getElementById('val-cwucode');
+                    if (el) el.textContent = cwuSnap.data().cwucode;
+                }
+            } catch (e) { console.warn('Impossible de charger le code CWU:', e); }
         }
 
         // Sauvegarder une valeur
         async function saveField(field, value) {
+            const docName = field === 'cwucode' ? 'cwu' : 'radio';
             try {
-                await setDoc(doc(db, 'settings', 'radio'), {
+                await setDoc(doc(db, 'settings', docName), {
                     [field]: value,
                     lastModified: serverTimestamp()
                 }, { merge: true });

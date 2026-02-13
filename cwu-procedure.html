@@ -3,12 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Procedures CWU - MPF Documentation</title>
+    <title>Procédure CWU/MPF - MPF Documentation</title>
     <link rel="stylesheet" href="assets/css/main-style.css">
     <link rel="stylesheet" href="assets/css/combine-terminals.css">
     <link rel="stylesheet" href="assets/css/global-nav.css">
     <link rel="stylesheet" href="assets/css/interactive-system.css">
     <link rel="stylesheet" href="assets/css/combine-animations.css">
+    <style>
+        .edit-btn {
+            display: none;
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            color: #ffd700;
+            padding: 0.35rem 0.8rem;
+            border-radius: 4px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-left: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .edit-btn:hover { background: rgba(255, 215, 0, 0.3); }
+        .edit-btn.visible { display: inline-block; }
+        .editable-value { transition: all 0.3s ease; }
+        .editable-value.editing {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 4px;
+            padding: 0.3rem 0.6rem;
+            outline: none;
+            color: inherit;
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: inherit;
+            text-align: center;
+            min-width: 200px;
+        }
+        .save-indicator {
+            display: none;
+            font-size: 0.75rem;
+            color: var(--accent-green);
+            margin-top: 0.3rem;
+            font-family: 'Share Tech Mono', monospace;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .cwu-table { width: 100%; border-collapse: collapse; }
+        .cwu-table th {
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            border-bottom: 2px solid rgba(255, 170, 68, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .cwu-table td {
+            padding: 0.6rem 0.8rem;
+            font-size: 0.85rem;
+            border-bottom: 1px solid rgba(255, 170, 68, 0.08);
+        }
+        .cwu-table tr:hover { background: rgba(255, 170, 68, 0.04); }
+
+        .cwu-num {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .cwu-rank-cell {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+        }
+
+        .cwu-color-badge {
+            display: inline-block;
+            padding: 0.15rem 0.8rem;
+            border-radius: 3px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .cwu-lp {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .cycle-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .cycle-step {
+            padding: 1rem;
+            border: 1px solid rgba(255, 50, 50, 0.25);
+            border-radius: 8px;
+            background: rgba(255, 50, 50, 0.03);
+            position: relative;
+        }
+
+        .cycle-step-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .cycle-step p {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        @media (max-width: 700px) {
+            .cycle-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
     <!-- Scanline overlay -->
@@ -31,123 +157,283 @@
 
     <main>
         <div class="container">
-            <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;">
-                <div class="combine-header">
-                    <h2>PROCEDURES DE GESTION CWU</h2>
-                    <span class="header-code">CWU-SOP // SUPERVISION MPF</span>
-                </div>
 
-                <div style="text-align: center; margin: 1.5rem 0; padding: 1rem; background: rgba(0, 170, 255, 0.02); border: 1px solid rgba(0, 170, 255, 0.08);">
-                    <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7;">
-                        La MPF supervise les operations de la <strong style="color: var(--accent-cyan);">Civil Workers Union</strong>. Ces procedures definissent les interactions standard entre unités MPF et personnel CWU.
-                    </p>
-                </div>
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- PROCÉDURE D'IDENTIFICATION DES CWU — 11-78 -->
+            <!-- ═══════════════════════════════════════════ -->
+            <div style="margin-top: 1.5rem; margin-bottom: 1.5rem; padding: 1.5rem; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 170, 255, 0.15); border-radius: 8px;">
+                <h3 style="color: var(--accent-cyan); font-family: 'Orbitron', sans-serif; font-size: 0.9rem; letter-spacing: 2px; margin-top: 0;">• PROCÉDURE D'IDENTIFICATION DES CWU — 11-78</h3>
+                <ul style="list-style: none; padding: 0; margin: 0.8rem 0; font-size: 0.85rem; line-height: 1.8;">
+                    <li style="color: var(--text-secondary);">• Utilisée pour <strong style="color: var(--accent-cyan);">identifier un 10-115</strong>.</li>
+                    <li style="color: var(--text-secondary);">• Vous lui adressez ce code <strong style="color: var(--text-primary);">devant lui</strong>, il doit répondre par <strong style="color: var(--text-primary);">un code à 3 chiffres</strong> dans une fourchette de nombres (qui changera régulièrement).</li>
+                </ul>
 
-                <!-- Activation du travail -->
-                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
-                    <div class="combine-header">
-                        <h2>ACTIVATION WORK SHIFT</h2>
-                        <span class="header-code">DEMARRAGE SESSION TRAVAIL</span>
-                    </div>
-                    <div style="padding: 0.5rem 0;">
-                        <ol style="list-style: none; padding: 0;">
-                            <li style="padding: 0.6rem; border-bottom: 1px solid rgba(0, 170, 255, 0.06); display: flex; gap: 0.8rem;">
-                                <span style="font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan); min-width: 2rem;">01.</span>
-                                <div>
-                                    <div style="color: var(--text-primary); font-weight: 600;">Annonce d'ouverture</div>
-                                    <div style="color: var(--text-muted); font-size: 0.85rem;">L'officier 04+ annonce via haut-parleur : "Attention citoyens. Session travail CWU activee. Travailleurs designes, presentez-vous au point de rassemblement."</div>
-                                </div>
-                            </li>
-                            <li style="padding: 0.6rem; border-bottom: 1px solid rgba(0, 170, 255, 0.06); display: flex; gap: 0.8rem;">
-                                <span style="font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan); min-width: 2rem;">02.</span>
-                                <div>
-                                    <div style="color: var(--text-primary); font-weight: 600;">Verification des travailleurs</div>
-                                    <div style="color: var(--text-muted); font-size: 0.85rem;">Scanner chaque travailleur CWU present. Verifier le statut et le badge de fonction.</div>
-                                </div>
-                            </li>
-                            <li style="padding: 0.6rem; border-bottom: 1px solid rgba(0, 170, 255, 0.06); display: flex; gap: 0.8rem;">
-                                <span style="font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan); min-width: 2rem;">03.</span>
-                                <div>
-                                    <div style="color: var(--text-primary); font-weight: 600;">Attribution des tâches</div>
-                                    <div style="color: var(--text-muted); font-size: 0.85rem;">Le superviseur CWU distribue les taches. La MPF approuve l'affectation.</div>
-                                </div>
-                            </li>
-                            <li style="padding: 0.6rem; display: flex; gap: 0.8rem;">
-                                <span style="font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan); min-width: 2rem;">04.</span>
-                                <div>
-                                    <div style="color: var(--text-primary); font-weight: 600;">Surveillance</div>
-                                    <div style="color: var(--text-muted); font-size: 0.85rem;">Une unité MPF doit rester sur site pendant toute la duree de la session de travail pour superviser.</div>
-                                </div>
-                            </li>
-                        </ol>
-                    </div>
+                <div style="text-align: center; margin-top: 1.2rem; padding: 1rem 1.5rem; background: rgba(0, 170, 255, 0.06); border: 1px solid rgba(0, 170, 255, 0.2); border-radius: 6px;">
+                    <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; color: var(--text-muted);">Fourchette actuelle :</span>
+                    <span style="font-family: 'Orbitron', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--accent-cyan); margin-left: 0.8rem; text-shadow: 0 0 15px rgba(0, 212, 255, 0.4);">
+                        <span id="val-cwucode" class="editable-value">K | 143 – 162</span>
+                    </span>
+                    <button class="edit-btn" data-field="cwucode">✏️ Modifier</button>
+                    <div class="save-indicator" id="save-cwucode"></div>
                 </div>
+            </div>
 
-                <!-- Infractions CWU -->
-                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
-                    <div class="combine-header">
-                        <h2>INFRACTIONS CWU</h2>
-                        <span class="header-code">VIOLATIONS ET SANCTIONS</span>
-                    </div>
-                    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
-                        <thead>
-                            <tr style="border-bottom: 2px solid rgba(0, 170, 255, 0.15);">
-                                <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">INFRACTION</th>
-                                <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">SANCTION</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
-                                <td style="padding: 0.5rem; color: var(--text-primary);">Absence sans justificatif</td>
-                                <td style="padding: 0.5rem; color: #ffcc00;">Avertissement + perte rations 24h</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
-                                <td style="padding: 0.5rem; color: var(--text-primary);">Refus de travailler</td>
-                                <td style="padding: 0.5rem; color: #ff8800;">V2 + suspension rations 48h</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
-                                <td style="padding: 0.5rem; color: var(--text-primary);">Vol de materiel/rations</td>
-                                <td style="padding: 0.5rem; color: #ff4444;">V3 + exclusion CWU + incarceration</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 0.5rem; color: var(--text-primary);">Sabotage d'equipement</td>
-                                <td style="padding: 0.5rem; color: #ff4444;">V5 + statut anti-citoyen</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- LAYOUT 2 COLONNES: TABLE + GESTION HUMAINE -->
+            <!-- ═══════════════════════════════════════════ -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
 
-                <!-- Rations CWU -->
-                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
-                    <div class="combine-header">
-                        <h2>SYSTÈME DE COMPENSATION</h2>
-                        <span class="header-code">RATIONS DE TRAVAIL</span>
-                    </div>
-                    <div style="padding: 0.5rem 0;">
-                        <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.6; margin-bottom: 0.8rem;">Les travailleurs CWU recoivent des rations supplementaires en fonction de leur performance :</p>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.8rem;">
-                            <div style="padding: 0.6rem; border-left: 2px solid var(--accent-green);">
-                                <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-green);">PERFORMANCE A</div>
-                                <div style="color: var(--text-muted); font-size: 0.85rem;">+2 rations supplementaires</div>
-                            </div>
-                            <div style="padding: 0.6rem; border-left: 2px solid var(--accent-cyan);">
-                                <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan);">PERFORMANCE B</div>
-                                <div style="color: var(--text-muted); font-size: 0.85rem;">+1 ration supplementaire</div>
-                            </div>
-                            <div style="padding: 0.6rem; border-left: 2px solid #ffcc00;">
-                                <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: #ffcc00;">PERFORMANCE C</div>
-                                <div style="color: var(--text-muted); font-size: 0.85rem;">Ration standard uniquement</div>
-                            </div>
+                <!-- COLONNE GAUCHE: Tableau hiérarchique CWU -->
+                <div class="combine-terminal-wrapper" style="margin: 0;">
+                    <div class="combine-header" style="border-bottom-color: rgba(255, 170, 68, 0.2);">
+                        <div class="combine-top-bar">
+                            <span>⭐ CIVIL WORKERS UNION</span>
+                            <span style="font-size: 0.65rem; color: var(--text-muted);">AGRÉMENT D'IDENTIFICATION<br>SECTEUR 17 // LIMITATION</span>
                         </div>
                     </div>
+
+                    <div class="combine-body" style="padding: 0;">
+                        <table class="cwu-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>GRADE CWU</th>
+                                    <th>COULEUR BRASSARD</th>
+                                    <th>NIV. FACTION</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="cwu-num">01</span></td>
+                                    <td>
+                                        <span class="cwu-rank-cell" style="color: #aaaaaa;">RECRUE</span><br>
+                                        <span style="font-size: 0.68rem; color: var(--text-muted);">Loyaliste Rang 1</span>
+                                    </td>
+                                    <td><span class="cwu-color-badge" style="background: #e0e0e0; color: #333;">BLANC</span></td>
+                                    <td><span class="cwu-lp">LP<strong>1</strong></span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="cwu-num">02</span></td>
+                                    <td>
+                                        <span class="cwu-rank-cell" style="color: #ffd700;">APPRENTI</span><br>
+                                        <span style="font-size: 0.68rem; color: var(--text-muted);">Loyaliste Rang 2</span>
+                                    </td>
+                                    <td><span class="cwu-color-badge" style="background: #ffd700; color: #333;">JAUNE</span></td>
+                                    <td><span class="cwu-lp">LP<strong>2</strong></span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="cwu-num">03</span></td>
+                                    <td>
+                                        <span class="cwu-rank-cell" style="color: #4287f5;">CONFIRMÉ</span><br>
+                                        <span style="font-size: 0.68rem; color: var(--text-muted);">Loyaliste Rang 3</span>
+                                    </td>
+                                    <td><span class="cwu-color-badge" style="background: #4287f5; color: #fff;">BLEU</span></td>
+                                    <td><span class="cwu-lp">LP<strong>3</strong></span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="cwu-num">04</span></td>
+                                    <td>
+                                        <span class="cwu-rank-cell" style="color: #ff4444;">SOUS-CHEF</span><br>
+                                        <span style="font-size: 0.68rem; color: var(--text-muted);">Loyaliste Rang 4</span>
+                                    </td>
+                                    <td><span class="cwu-color-badge" style="background: #ff4444; color: #fff;">ROUGE</span></td>
+                                    <td><span class="cwu-lp">LP<strong>4</strong></span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="cwu-num">05</span></td>
+                                    <td>
+                                        <span class="cwu-rank-cell" style="color: #32CD32;">CHEF</span><br>
+                                        <span style="font-size: 0.68rem; color: var(--text-muted);">Loyaliste Rang 5</span>
+                                    </td>
+                                    <td><span class="cwu-color-badge" style="background: #32CD32; color: #333;">VERT</span></td>
+                                    <td><span class="cwu-lp">LP<strong>5</strong></span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="cwu-num">06</span></td>
+                                    <td>
+                                        <span class="cwu-rank-cell" style="color: #ff69b4;">ADJOINT</span><br>
+                                        <span style="font-size: 0.68rem; color: var(--text-muted);">Loyaliste Rang 6</span>
+                                    </td>
+                                    <td><span class="cwu-color-badge" style="background: #ff69b4; color: #333;">ROSE</span></td>
+                                    <td><span class="cwu-lp">LP<strong>6</strong></span></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="cwu-num">07</span></td>
+                                    <td>
+                                        <span class="cwu-rank-cell" style="color: #00e5ff;">SUPERVISEUR</span><br>
+                                        <span style="font-size: 0.68rem; color: var(--text-muted);">Loyaliste Rang 7</span>
+                                    </td>
+                                    <td><span class="cwu-color-badge" style="background: #00e5ff; color: #333;">CYAN</span></td>
+                                    <td><span class="cwu-lp">LP<strong>7</strong></span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Protocole de Priorité -->
+                        <div style="margin: 1rem 0.8rem; padding: 1rem; background: rgba(255, 50, 50, 0.06); border: 1px solid rgba(255, 50, 50, 0.25); border-radius: 6px;">
+                            <h4 style="color: #ff4444; font-family: 'Orbitron', sans-serif; font-size: 0.72rem; letter-spacing: 1px; margin-top: 0;">⚠ PROTOCOLE DE PRIORITÉ</h4>
+                            <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 0.8rem;">
+                                Les points de loyauté prévalent sur le grade structurel de l'Union des Travailleurs Civils (CWU).
+                            </p>
+                            <ol style="list-style: none; padding: 0; margin: 0; font-size: 0.75rem; font-family: 'Share Tech Mono', monospace;">
+                                <li style="padding: 0.2rem 0; color: var(--accent-cyan);"><span style="color: #ff4444;">1.</span> SIMULATION : <strong>SOCIO HEAD</strong></li>
+                                <li style="padding: 0.2rem 0; color: var(--accent-cyan);"><span style="color: #ff4444;">2.</span> ORDER CWU SUPÉRIEUR (<strong>CHEF 05</strong>)</li>
+                                <li style="padding: 0.2rem 0; color: var(--accent-cyan);"><span style="color: #ff4444;">3.</span> STATUS LOYALISTE : ?</li>
+                                <li style="padding: 0.2rem 0; color: var(--accent-cyan);"><span style="color: #ff4444;">4.</span> DEFAULT ACTION : <strong style="color: #ff4444;">REVIEW & ADDRESS</strong></li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div class="combine-footer" style="font-size: 0.65rem;">
+                        [GRADE_V_CIVIL_IDENTITÉ // IDENTIFICATION_ID // UNQUEST]
+                    </div>
                 </div>
 
+                <!-- COLONNE DROITE: Gestion Humaine - Le C.W.U. -->
+                <div style="padding: 1.5rem; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 50, 50, 0.2); border-radius: 8px;">
+                    <div style="text-align: center; margin-bottom: 1.5rem; padding: 1rem; background: rgba(255, 50, 50, 0.06); border: 1px solid rgba(255, 50, 50, 0.2); border-radius: 8px;">
+                        <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.3rem;">GESTION HUMAINE :</div>
+                        <div style="font-family: 'Orbitron', sans-serif; font-size: 1.4rem; font-weight: 700; color: #ff4444; letter-spacing: 3px;">LE C.W.U.</div>
+                    </div>
+
+                    <div class="cycle-grid">
+                        <div class="cycle-step">
+                            <div class="cycle-step-title" style="color: #4287f5;">🔍 DÉTECTION D'INFRACTION</div>
+                            <p>Vous apercevez un CWU commettre une infraction.</p>
+                        </div>
+
+                        <div class="cycle-step">
+                            <div class="cycle-step-title" style="color: #ff4444;">🛑 INTERPELLATION</div>
+                            <p>Vous allez voir le CWU et lui demandez d'arrêter immédiatement ce qu'il fait. Par exemple le fouiller d'abord si nécessaire.</p>
+                        </div>
+
+                        <div class="cycle-step">
+                            <div class="cycle-step-title" style="color: #ffaa44;">💬 COMMUNICATION</div>
+                            <p>Une fois la source confirmée, relatez, vous commencez par relâcher le CWU en liberté et rédigez un rapport en mémos/rapports.</p>
+                        </div>
+
+                        <div class="cycle-step">
+                            <div class="cycle-step-title" style="color: #32CD32;">⚖️ SANCTION</div>
+                            <p>Vous appliquez votre rapport de sécurité au bon endroit et vous chargez de retirer des points de CWU si nécessaire. Créer un système conforme à un simple contact.</p>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 1.2rem; padding: 0.8rem 1rem; background: rgba(255, 50, 50, 0.08); border: 1px solid rgba(255, 50, 50, 0.3); border-radius: 6px; text-align: center;">
+                        <p style="font-size: 0.78rem; color: #ff4444; margin: 0; font-style: italic;">
+                            🔴 Le superviseur a pleine autorité sur ses CWU ; cette autorité peut être contestée par <strong>l'administrateur uniquement</strong> !
+                        </p>
+                    </div>
+                </div>
             </div>
+
         </div>
     </main>
 
+    <script type="module" src="assets/js/auth.js"></script>
     <script src="assets/js/global-nav.js"></script>
     <script src="assets/js/interactive-system.js"></script>
     <script src="assets/js/combine-animations.js"></script>
+
+    <!-- Système d'édition du code CWU -->
+    <script type="module">
+        import { app, auth, db } from './assets/js/auth.js';
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const DEFAULTS = { cwucode: 'K | 143 – 162' };
+        let isHG = false;
+
+        async function loadValues() {
+            try {
+                const snap = await getDoc(doc(db, 'settings', 'cwu'));
+                if (snap.exists()) {
+                    const data = snap.data();
+                    if (data.cwucode) {
+                        const el = document.getElementById('val-cwucode');
+                        if (el) el.textContent = data.cwucode;
+                    }
+                }
+            } catch (e) { console.warn('Impossible de charger le code CWU:', e); }
+        }
+
+        async function saveField(field, value) {
+            try {
+                await setDoc(doc(db, 'settings', 'cwu'), {
+                    [field]: value,
+                    lastModified: serverTimestamp()
+                }, { merge: true });
+                const indicator = document.getElementById('save-' + field);
+                if (indicator) {
+                    indicator.textContent = '✓ Sauvegardé';
+                    indicator.style.display = 'block';
+                    setTimeout(() => { indicator.style.display = 'none'; }, 2500);
+                }
+            } catch (e) {
+                console.error('Erreur sauvegarde:', e);
+                alert('Erreur lors de la sauvegarde. Vérifiez vos permissions.');
+            }
+        }
+
+        function enableEdit(field) {
+            const el = document.getElementById('val-' + field);
+            if (!el || el.contentEditable === 'true') return;
+            const original = el.textContent;
+            el.contentEditable = 'true';
+            el.classList.add('editing');
+            el.focus();
+            const range = document.createRange();
+            range.selectNodeContents(el);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+
+            function finish() {
+                el.contentEditable = 'false';
+                el.classList.remove('editing');
+                const newVal = el.textContent.trim();
+                if (newVal && newVal !== original) {
+                    saveField(field, newVal);
+                } else {
+                    el.textContent = original;
+                }
+                el.removeEventListener('blur', finish);
+                el.removeEventListener('keydown', onKey);
+            }
+            function onKey(e) {
+                if (e.key === 'Enter') { e.preventDefault(); finish(); }
+                if (e.key === 'Escape') { el.textContent = original; finish(); }
+            }
+            el.addEventListener('blur', finish);
+            el.addEventListener('keydown', onKey);
+        }
+
+        async function checkHGStatus() {
+            onAuthStateChanged(auth, async (user) => {
+                if (!user) return;
+                try {
+                    const userDoc = await getDoc(doc(db, 'users', user.uid));
+                    if (!userDoc.exists()) return;
+                    const userData = userDoc.data();
+                    if (!userData.approved) return;
+                    const matricule = userData.matricule;
+                    const res = await fetch('https://raw.githubusercontent.com/NekoAkami/guidempf-site/main/data/units.json');
+                    if (!res.ok) return;
+                    const units = await res.json();
+                    const unit = units.find(u => u.matricule === matricule);
+                    if (unit && (unit.rang === 'Ofc' || unit.rang === 'Cmd' || userData.is_admin)) {
+                        isHG = true;
+                        document.querySelectorAll('.edit-btn').forEach(btn => btn.classList.add('visible'));
+                    }
+                } catch (_) {}
+            });
+        }
+
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', () => enableEdit(btn.dataset.field));
+        });
+
+        loadValues();
+        checkHGStatus();
+    </script>
 </body>
 </html>

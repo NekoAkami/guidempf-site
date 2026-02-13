@@ -10,121 +10,83 @@
     <link rel="stylesheet" href="assets/css/interactive-system.css">
     <link rel="stylesheet" href="assets/css/combine-animations.css">
     <style>
-        .cwu-org-wrapper {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 1rem 0;
+        /* Hiérarchie CWU - Grid layout */
+        .cwu-hier-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.8rem;
+            margin-bottom: 0.8rem;
         }
 
-        .cwu-org-box {
-            background: rgba(255, 180, 80, 0.06);
-            border: 2px solid rgba(255, 160, 60, 0.35);
-            padding: 1rem 1.5rem;
-            margin-bottom: 1.5rem;
+        .cwu-hier-box {
             text-align: center;
-            position: relative;
+            padding: 0.8rem 0.5rem;
+            border-radius: 6px;
+            border: 1px solid;
             transition: all 0.3s ease;
-            border-radius: 12px;
         }
 
-        .cwu-org-box::after {
-            content: '';
-            position: absolute;
-            bottom: -1.5rem;
-            left: 50%;
-            width: 2px;
-            height: 1.5rem;
-            background: rgba(255, 160, 60, 0.4);
-            transform: translateX(-50%);
+        .cwu-hier-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        .cwu-org-box:last-child { margin-bottom: 0; }
-        .cwu-org-box:last-child::after { display: none; }
-
-        .cwu-org-box:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 25px rgba(255, 160, 60, 0.3);
-            border-color: #ffaa44;
-        }
-
-        .cwu-rank-name {
+        .cwu-hier-title {
+            display: block;
             font-family: 'Orbitron', sans-serif;
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 0.72rem;
             text-transform: uppercase;
-            display: block;
-            color: #ffaa44;
+            letter-spacing: 0.5px;
         }
 
-        .cwu-rank-id {
+        .cwu-hier-sub {
+            display: block;
             font-family: 'Share Tech Mono', monospace;
-            font-size: 0.8rem;
-            display: block;
-            margin-top: 0.3rem;
+            font-size: 0.65rem;
+            margin-top: 0.2rem;
             color: var(--text-muted);
-            letter-spacing: 1px;
         }
 
-        /* Superviseur - top rank */
-        .cwu-org-box.cwu-top {
-            border-color: #ffd700;
-            background: rgba(255, 215, 0, 0.1);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
-        }
-        .cwu-org-box.cwu-top .cwu-rank-name {
-            color: #ffd700;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-            font-size: 1.25rem;
-        }
-        .cwu-org-box.cwu-top::after {
-            background: rgba(255, 215, 0, 0.5);
-        }
-
-        /* Direction (Adjoint, Chef, Sous-Chef) */
-        .cwu-org-box.cwu-dir {
-            border-color: #ffaa44;
+        /* Couleurs */
+        .cwu-gold {
+            border-color: rgba(255, 170, 68, 0.5);
             background: rgba(255, 170, 68, 0.08);
         }
-        .cwu-org-box.cwu-dir .cwu-rank-name {
-            color: #ffaa44;
-            text-shadow: 0 0 8px rgba(255, 170, 68, 0.3);
+        .cwu-gold .cwu-hier-title { color: #ffaa44; }
+
+        .cwu-blue {
+            border-color: rgba(66, 135, 245, 0.5);
+            background: rgba(66, 135, 245, 0.08);
+        }
+        .cwu-blue .cwu-hier-title { color: #4287f5; }
+
+        .cwu-green {
+            border-color: rgba(50, 205, 50, 0.5);
+            background: rgba(50, 205, 50, 0.08);
+        }
+        .cwu-green .cwu-hier-title { color: #32CD32; }
+
+        /* Département cards */
+        .cwu-dept-card {
+            padding: 1.2rem;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(0, 170, 255, 0.12);
+            border-radius: 8px;
         }
 
-        /* Corps (Confirmé, Intermédiaire) */
-        .cwu-org-box.cwu-mid {
-            border-color: rgba(255, 160, 60, 0.3);
-            background: rgba(255, 160, 60, 0.05);
-        }
-        .cwu-org-box.cwu-mid .cwu-rank-name {
-            color: #e8a050;
+        .cwu-dept-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            margin-bottom: 0.8rem;
         }
 
-        /* Initiation (Apprenti, Recrue) */
-        .cwu-org-box.cwu-low {
-            border-color: #4a5a6a;
-            background: rgba(100, 120, 140, 0.06);
-            opacity: 0.9;
-        }
-        .cwu-org-box.cwu-low .cwu-rank-name {
-            color: var(--text-secondary);
-        }
-
-        .cwu-group-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: #ffaa44;
-            text-align: center;
-            margin: 2rem 0 1rem 0;
-            letter-spacing: 2px;
-            font-weight: 600;
-            font-family: 'Share Tech Mono', monospace;
-        }
-        .cwu-group-label::before,
-        .cwu-group-label::after {
-            content: '━';
-            opacity: 0.4;
-            margin: 0 0.8rem;
-            color: #ffaa44;
+        @media (max-width: 900px) {
+            .cwu-hier-row { grid-template-columns: repeat(2, 1fr); }
+            div[style*="grid-template-columns: repeat(3, 1fr)"] {
+                grid-template-columns: 1fr !important;
+            }
         }
     </style>
 </head>
@@ -151,116 +113,243 @@
         <div class="container">
             <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;">
                 <div class="combine-header">
+                    <div class="combine-top-bar">
+                        <span>COLLABORATION //CWU_PRESENTATION_V2</span>
+                        <span class="badge badge-cyan">ACCES: UNITES_PC</span>
+                    </div>
                     <h2>CIVIL WORKERS UNION</h2>
-                    <span class="header-code">CWU // GESTION MAIN-D'OEUVRE CIVILE</span>
-                </div>
-
-                <div style="text-align: center; margin: 1.5rem 0; padding: 1rem; background: rgba(0, 170, 255, 0.02); border: 1px solid rgba(0, 170, 255, 0.08);">
-                    <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7;">
-                        La <strong style="color: var(--accent-cyan);">Civil Workers Union</strong> (CWU) est l'organe civil autorise par l'Union Universelle pour gerer les activités de travail des citoyens. La MPF supervise et controle les operations CWU.
-                    </p>
-                </div>
-
-                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
-                    <div class="combine-header">
-                        <div class="combine-top-bar">
-                            <span>CWU://STRUCTURE.ORGANIGRAMME</span>
-                            <span class="badge badge-cyan">HIÉRARCHIE</span>
-                        </div>
-                        <h2 class="glitch-text" data-text="HIÉRARCHIE CWU"><span class="status-dot online" style="margin-right: 8px;"></span> HIÉRARCHIE CWU</h2>
-                        <div class="dispatch-line">
-                            <span>> CIVIL WORKERS UNION // MATRICE D'AUTORITÉ</span>
-                            <span class="combine-cursor"></span>
-                        </div>
-                    </div>
-                    <div class="combine-body">
-                        <div class="cwu-org-wrapper">
-
-                            <div class="cwu-group-label">Direction</div>
-
-                            <div class="cwu-org-box cwu-top">
-                                <span class="cwu-rank-name">Superviseur</span>
-                                <span class="cwu-rank-id">Direction générale CWU</span>
-                            </div>
-
-                            <div class="cwu-org-box cwu-dir">
-                                <span class="cwu-rank-name">Adjoint</span>
-                                <span class="cwu-rank-id">Seconde le Superviseur</span>
-                            </div>
-
-                            <div class="cwu-group-label">Encadrement</div>
-
-                            <div class="cwu-org-box cwu-dir">
-                                <span class="cwu-rank-name">Chef</span>
-                                <span class="cwu-rank-id">Gestion des équipes</span>
-                            </div>
-
-                            <div class="cwu-org-box cwu-dir">
-                                <span class="cwu-rank-name">Sous-Chef</span>
-                                <span class="cwu-rank-id">Coordination terrain</span>
-                            </div>
-
-                            <div class="cwu-group-label">Corps de travail</div>
-
-                            <div class="cwu-org-box cwu-mid">
-                                <span class="cwu-rank-name">Confirmé</span>
-                                <span class="cwu-rank-id">Travailleur expérimenté</span>
-                            </div>
-
-                            <div class="cwu-org-box cwu-mid">
-                                <span class="cwu-rank-name">Intermédiaire</span>
-                                <span class="cwu-rank-id">Travailleur autonome</span>
-                            </div>
-
-                            <div class="cwu-group-label">Initiation</div>
-
-                            <div class="cwu-org-box cwu-low">
-                                <span class="cwu-rank-name">Apprenti</span>
-                                <span class="cwu-rank-id">En formation</span>
-                            </div>
-
-                            <div class="cwu-org-box cwu-low">
-                                <span class="cwu-rank-name">Recrue</span>
-                                <span class="cwu-rank-id">Nouveau membre</span>
-                            </div>
-
-                        </div>
+                    <div class="dispatch-line">
+                        <span>> ENGAGEMENT : STRUCTURE_CIVILE</span>
+                        <span class="combine-cursor"></span>
                     </div>
                 </div>
 
-                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
-                    <div class="combine-header">
-                        <h2>SECTEURS D'ACTIVITE</h2>
-                        <span class="header-code">ZONES AUTORISEES</span>
+                <div class="combine-body">
+
+                    <!-- ═══════════════════════════════════════════ -->
+                    <!-- PRÉSENTATION DE LA CWU -->
+                    <!-- ═══════════════════════════════════════════ -->
+                    <div style="margin-bottom: 2rem; padding: 1.5rem; background: rgba(255, 170, 68, 0.04); border: 1px solid rgba(255, 170, 68, 0.15); border-radius: 8px;">
+                        <h3 style="color: #ffaa44; font-family: 'Orbitron', sans-serif; font-size: 1rem; letter-spacing: 2px; margin-top: 0; margin-bottom: 1.2rem;">📋 PRÉSENTATION DE LA CWU</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                            <div>
+                                <p style="color: var(--text-secondary); font-size: 0.85rem; line-height: 1.7;">
+                                    La Civil Workers Union (CWU) est présente à Cité 17 pour organiser le travail des citoyens et assurer la productivité de notre secteur. Elle joue un rôle crucial dans l'identification des individus arrivant en cité, fournissant une traçabilité essentielle et des informations précieuses pour notre travail d'unité.
+                                </p>
+                                <p style="color: var(--text-secondary); font-size: 0.85rem; line-height: 1.7; margin-top: 0.8rem;">
+                                    La CWU maintient l'activité économique et sociale de Cité 17 en gérant les commerces, les logements, l'entretien des infrastructures, les soins médicaux et la circulation contrôlée de la nourriture. Elle est propriétaire de l'ensemble des bâtiments civils de la cité, à l'exception des zones Combine réservées.
+                                </p>
+                            </div>
+                            <div>
+                                <p style="color: var(--text-secondary); font-size: 0.85rem; line-height: 1.7;">
+                                    La CWU approvisionne la milice en matériel essentiel : brassards anti-citoyens, médicaments, meubles, solutions de stockage et divers équipements nécessaires au fonctionnement de la Protection Civile.
+                                </p>
+                                <div style="margin-top: 1rem; padding: 1rem; background: rgba(0, 170, 255, 0.05); border-left: 3px solid var(--accent-cyan); border-radius: 4px;">
+                                    <h4 style="color: var(--accent-cyan); font-family: 'Orbitron', sans-serif; font-size: 0.8rem; margin-top: 0; letter-spacing: 1px;">RELATION SYMBIOTIQUE</h4>
+                                    <p style="color: var(--text-secondary); font-size: 0.82rem; line-height: 1.6; margin-bottom: 0;">
+                                        La CWU représente le cœur de l'activité civile, tandis que la Métrocpolice Force en coordonne sa gestion immédiate. Cette relation symbiotique nécessite une collaboration étroite et une communication constante pour garantir une gestion et une activité optimales de notre cité.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.8rem; padding: 0.5rem 0;">
-                        <div style="padding: 0.8rem; border: 1px solid rgba(0, 170, 255, 0.1); background: rgba(0, 170, 255, 0.02);">
-                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan);">SEC-A</div>
-                            <div style="color: var(--text-primary); font-size: 0.9rem; margin-top: 0.3rem;">Maintenance urbaine</div>
-                            <div style="color: var(--text-muted); font-size: 0.8rem;">Reparation, nettoyage, infrastructure</div>
+
+                    <!-- ═══════════════════════════════════════════ -->
+                    <!-- HIÉRARCHIE INTERNE DE LA CWU -->
+                    <!-- ═══════════════════════════════════════════ -->
+                    <div style="margin-bottom: 2rem; padding: 1.5rem; background: rgba(255, 170, 68, 0.04); border: 1px solid rgba(255, 170, 68, 0.15); border-radius: 8px;">
+                        <h3 style="color: #ffaa44; font-family: 'Orbitron', sans-serif; font-size: 1rem; letter-spacing: 2px; margin-top: 0; margin-bottom: 1.2rem;">🏛️ HIÉRARCHIE INTERNE DE LA CWU</h3>
+
+                        <!-- Row 1: Direction -->
+                        <div class="cwu-hier-row">
+                            <div class="cwu-hier-box cwu-gold">
+                                <span class="cwu-hier-title">SUPERVISEUR</span>
+                                <span class="cwu-hier-sub">CWU</span>
+                            </div>
+                            <div class="cwu-hier-box cwu-gold">
+                                <span class="cwu-hier-title">ADJOINT</span>
+                                <span class="cwu-hier-sub">CWU</span>
+                            </div>
+                            <div class="cwu-hier-box cwu-gold">
+                                <span class="cwu-hier-title">CHEF</span>
+                                <span class="cwu-hier-sub">CWU</span>
+                            </div>
+                            <div class="cwu-hier-box cwu-gold">
+                                <span class="cwu-hier-title">SOUS-CHEF</span>
+                                <span class="cwu-hier-sub">CWU</span>
+                            </div>
                         </div>
-                        <div style="padding: 0.8rem; border: 1px solid rgba(0, 170, 255, 0.1); background: rgba(0, 170, 255, 0.02);">
-                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan);">SEC-B</div>
-                            <div style="color: var(--text-primary); font-size: 0.9rem; margin-top: 0.3rem;">Distribution</div>
-                            <div style="color: var(--text-muted); font-size: 0.8rem;">Rations, fournitures, equipements</div>
+
+                        <!-- Row 2: Corps -->
+                        <div class="cwu-hier-row">
+                            <div class="cwu-hier-box cwu-blue">
+                                <span class="cwu-hier-title">CONFIRMÉ</span>
+                                <span class="cwu-hier-sub">CWU</span>
+                            </div>
+                            <div class="cwu-hier-box cwu-blue">
+                                <span class="cwu-hier-title">INTERMÉDIAIRE</span>
+                                <span class="cwu-hier-sub">CWU</span>
+                            </div>
+                            <div class="cwu-hier-box cwu-blue">
+                                <span class="cwu-hier-title">APPRENTI</span>
+                                <span class="cwu-hier-sub">CWU</span>
+                            </div>
+                            <div class="cwu-hier-box cwu-blue">
+                                <span class="cwu-hier-title">RECRUE</span>
+                                <span class="cwu-hier-sub">CWU et tout</span>
+                            </div>
                         </div>
-                        <div style="padding: 0.8rem; border: 1px solid rgba(0, 170, 255, 0.1); background: rgba(0, 170, 255, 0.02);">
-                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan);">SEC-C</div>
-                            <div style="color: var(--text-primary); font-size: 0.9rem; margin-top: 0.3rem;">Services medicaux</div>
-                            <div style="color: var(--text-muted); font-size: 0.8rem;">Premiers soins, assistance sanitaire</div>
+
+                        <!-- Row 3: Divisions -->
+                        <div class="cwu-hier-row" style="margin-top: 0.8rem;">
+                            <div class="cwu-hier-box cwu-green">
+                                <span class="cwu-hier-title">DTL</span>
+                                <span class="cwu-hier-sub">DIVISION DE LA CWU</span>
+                            </div>
+                            <div class="cwu-hier-box cwu-green">
+                                <span class="cwu-hier-title">DRS</span>
+                                <span class="cwu-hier-sub">DIVISION DE LA CWU</span>
+                            </div>
+                            <div class="cwu-hier-box cwu-green">
+                                <span class="cwu-hier-title">DRT</span>
+                                <span class="cwu-hier-sub">DIVISION DE LA CWU</span>
+                            </div>
                         </div>
-                        <div style="padding: 0.8rem; border: 1px solid rgba(0, 170, 255, 0.1); background: rgba(0, 170, 255, 0.02);">
-                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan);">SEC-D</div>
-                            <div style="color: var(--text-primary); font-size: 0.9rem; margin-top: 0.3rem;">Administration</div>
-                            <div style="color: var(--text-muted); font-size: 0.8rem;">Registres, paperasse, archives</div>
+
+                        <div style="margin-top: 1rem; padding: 0.7rem 1rem; background: rgba(50, 205, 50, 0.08); border: 1px solid rgba(50, 205, 50, 0.2); border-radius: 6px; text-align: center;">
+                            <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0; font-style: italic;">
+                                Structure hiérarchique et modulaire de la CWU, permettant une chaîne de commandement claire et une efficacité opérationnelle optimale dans tous ses départements.
+                            </p>
                         </div>
+                    </div>
+
+                    <!-- ═══════════════════════════════════════════ -->
+                    <!-- BRANCHES DÉPARTEMENTALES -->
+                    <!-- ═══════════════════════════════════════════ -->
+                    <div style="text-align: center; margin: 2rem 0 1.5rem 0;">
+                        <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">➕</div>
+                        <h3 style="font-family: 'Orbitron', sans-serif; color: var(--accent-cyan); font-size: 1rem; letter-spacing: 2px; text-transform: uppercase;">BRANCHES DÉPARTEMENTALES</h3>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-bottom: 2rem;">
+
+                        <!-- DMS -->
+                        <div class="cwu-dept-card" style="border-top: 3px solid #4287f5;">
+                            <div class="cwu-dept-header">
+                                <span style="font-size: 1.4rem;">🔬</span>
+                                <div>
+                                    <h4 style="color: #4287f5; font-size: 0.8rem; margin: 0; font-family: 'Orbitron', sans-serif; letter-spacing: 1px;">DÉPARTEMENT MÉDICAL ET SCIENTIFIQUE</h4>
+                                    <span style="color: var(--text-muted); font-size: 0.7rem; font-family: 'Share Tech Mono', monospace;">DMS</span>
+                                </div>
+                            </div>
+                            <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6;">
+                                La DMS constitue la branche des soins de la Cité 17. Ses membres se forment à la médecine et aux sciences pour soigner les citoyens et loyalistes, tout en faisant progresser la recherche scientifique au service de l'Union.
+                            </p>
+                            <div style="margin-top: 0.8rem;">
+                                <h5 style="color: #4287f5; font-size: 0.72rem; font-family: 'Orbitron', sans-serif; letter-spacing: 1px; margin-bottom: 0.5rem;">📋 RESPONSABILITÉS</h5>
+                                <ul style="padding-left: 1rem; margin: 0; font-size: 0.75rem; color: var(--text-muted); line-height: 1.6;">
+                                    <li style="color: var(--accent-cyan);">Soins médicaux aux citoyens et loyalistes</li>
+                                    <li style="color: var(--accent-cyan);">Recherche scientifique avancée</li>
+                                    <li style="color: var(--accent-cyan);">Formation médicale continue</li>
+                                    <li style="color: var(--accent-cyan);">Gestion des ressources pharmaceutiques</li>
+                                    <li style="color: var(--accent-cyan);">Contrôle des maladies et épidémies</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- DRT -->
+                        <div class="cwu-dept-card" style="border-top: 3px solid #ffaa44;">
+                            <div class="cwu-dept-header">
+                                <span style="font-size: 1.4rem;">🚚</span>
+                                <div>
+                                    <h4 style="color: #ffaa44; font-size: 0.8rem; margin: 0; font-family: 'Orbitron', sans-serif; letter-spacing: 1px;">DÉPARTEMENT DU RATIONNEMENT ET DU TRANSPORT</h4>
+                                    <span style="color: var(--text-muted); font-size: 0.7rem; font-family: 'Share Tech Mono', monospace;">DRT</span>
+                                </div>
+                            </div>
+                            <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6;">
+                                La DRT représente la branche essentielle pour l'approvisionnement alimentaire de Cité 17. Ses membres assurent la logistique des denrées alimentaires, l'attribution des commerces, ainsi que l'entretien et les réparations nécessaires.
+                            </p>
+                            <div style="margin-top: 0.8rem;">
+                                <h5 style="color: #ffaa44; font-size: 0.72rem; font-family: 'Orbitron', sans-serif; letter-spacing: 1px; margin-bottom: 0.5rem;">📋 RESPONSABILITÉS</h5>
+                                <ul style="padding-left: 1rem; margin: 0; font-size: 0.75rem; color: var(--text-muted); line-height: 1.6;">
+                                    <li style="color: #ffaa44;">Livraison de nourriture aux commerces</li>
+                                    <li style="color: #ffaa44;">Gestion du rationnement citoyen</li>
+                                    <li style="color: #ffaa44;">Entretien des infrastructures commerciales</li>
+                                    <li style="color: #ffaa44;">Transport des ressources essentielles</li>
+                                    <li style="color: #ffaa44;">Contrôle des stocks alimentaires</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- DTL -->
+                        <div class="cwu-dept-card" style="border-top: 3px solid #ff4444;">
+                            <div class="cwu-dept-header">
+                                <span style="font-size: 1.4rem;">🏗️</span>
+                                <div>
+                                    <h4 style="color: #ff4444; font-size: 0.8rem; margin: 0; font-family: 'Orbitron', sans-serif; letter-spacing: 1px;">DÉPARTEMENT DU TRAVAIL ET DU LOGEMENT</h4>
+                                    <span style="color: var(--text-muted); font-size: 0.7rem; font-family: 'Share Tech Mono', monospace;">DTL</span>
+                                </div>
+                            </div>
+                            <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6;">
+                                La DTL se concentre sur l'organisation du travail et l'attribution des logements à Cité 17. Ses membres supervisent des sessions de travail complètes adaptées aux besoins de la cité et assurent l'attribution des appartements aux citoyens et loyalistes.
+                            </p>
+                            <div style="margin-top: 0.8rem;">
+                                <h5 style="color: #ff4444; font-size: 0.72rem; font-family: 'Orbitron', sans-serif; letter-spacing: 1px; margin-bottom: 0.5rem;">📋 RESPONSABILITÉS</h5>
+                                <ul style="padding-left: 1rem; margin: 0; font-size: 0.75rem; color: var(--text-muted); line-height: 1.6;">
+                                    <li style="color: #ff4444;">Organisation des sessions de travail</li>
+                                    <li style="color: #ff4444;">Attribution des logements citoyens</li>
+                                    <li style="color: #ff4444;">Gestion de la main-d'œuvre civile</li>
+                                    <li style="color: #ff4444;">Supervision des projets d'infrastructure</li>
+                                    <li style="color: #ff4444;">Coordination avec les besoins de la MPF</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ═══════════════════════════════════════════ -->
+                    <!-- COLLABORATION CWU - MPF -->
+                    <!-- ═══════════════════════════════════════════ -->
+                    <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(0, 170, 255, 0.03); border: 1px solid rgba(0, 170, 255, 0.15); border-radius: 8px;">
+                        <h3 style="color: var(--accent-cyan); font-family: 'Orbitron', sans-serif; font-size: 1rem; letter-spacing: 2px; margin-top: 0; margin-bottom: 1.2rem;">⚙️ COLLABORATION CWU — MPF</h3>
+
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                            <div style="padding: 1rem; border: 1px solid rgba(255, 170, 68, 0.3); border-radius: 6px; background: rgba(255, 170, 68, 0.05);">
+                                <h4 style="color: #ffaa44; font-family: 'Orbitron', sans-serif; font-size: 0.72rem; letter-spacing: 1px; margin-top: 0;">APPROVISIONNEMENT</h4>
+                                <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 0;">
+                                    La CWU fournit à la MPF les équipements essentiels : brassards anti-citoyens, médicaments, matériel de bureau et solutions de stockage. Cette chaîne d'approvisionnement garantit notre opérationnalité constante.
+                                </p>
+                            </div>
+                            <div style="padding: 1rem; border: 1px solid rgba(0, 170, 255, 0.3); border-radius: 6px; background: rgba(0, 170, 255, 0.05);">
+                                <h4 style="color: var(--accent-cyan); font-family: 'Orbitron', sans-serif; font-size: 0.72rem; letter-spacing: 1px; margin-top: 0;">IDENTIFICATION</h4>
+                                <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 0;">
+                                    Les registres civils de la CWU permettent une identification précise des citoyens, facilitant nos opérations de vérification, de patrouille et d'application des verdicts.
+                                </p>
+                            </div>
+                            <div style="padding: 1rem; border: 1px solid rgba(50, 205, 50, 0.3); border-radius: 6px; background: rgba(50, 205, 50, 0.05);">
+                                <h4 style="color: #32CD32; font-family: 'Orbitron', sans-serif; font-size: 0.72rem; letter-spacing: 1px; margin-top: 0;">COORDINATION OPÉRATIONNELLE</h4>
+                                <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 0;">
+                                    Une communication transparente entre la CWU et la MPF permet une réponse coordonnée aux incidents, une gestion efficace des ressources et une stabilité socio-économique optimale.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div style="padding: 0.8rem 1rem; background: rgba(0, 170, 255, 0.06); border: 1px solid rgba(0, 170, 255, 0.2); border-radius: 6px; text-align: center;">
+                            <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0; font-style: italic;">
+                                <strong style="color: var(--accent-cyan);">DOCTRINE OPÉRATIONNELLE :</strong> La CWU et la MPF constituent les deux piliers complémentaires de Cité 17. Leur collaboration harmonieuse est essentielle au maintien de l'Ordre, de la productivité et de la stabilité sociale.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Lien procédures -->
+                    <div style="margin-top: 1.5rem; text-align: center;">
+                        <a href="cwu-procedure.html" style="display: inline-block; padding: 0.8rem 2rem; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); text-decoration: none; font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; letter-spacing: 1px; transition: all 0.2s ease; border-radius: 4px;">
+                            VOIR PROCÉDURE CWU/MPF DÉTAILLÉE →
+                        </a>
                     </div>
                 </div>
 
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <a href="cwu-procedure.html" style="display: inline-block; padding: 0.8rem 2rem; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); text-decoration: none; font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; letter-spacing: 1px; transition: all 0.1s ease;">
-                        VOIR PROCEDURES CWU DETAILLEES
-                    </a>
+                <div class="combine-footer">
+                    [CWU_COLLABORATION_ACTIVE // SYMBIOSIS_OPÉRATIONNELLE // CITE_STABLE]
                 </div>
             </div>
         </div>

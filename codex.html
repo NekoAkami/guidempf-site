@@ -280,7 +280,7 @@
                             <div class="code-item"><div class="code-num">11-51</div><div class="code-desc">Demande d'escorte</div></div>
                             <div class="code-item"><div class="code-num">11-58</div><div class="code-desc">Fréquence radio corrompue</div></div>
                             <div class="code-item"><div class="code-num">11-59</div><div class="code-desc">Zone de danger, restez en alerte</div></div>
-                            <div class="code-item"><div class="code-num">11-78</div><div class="code-desc">Vérification d'identité CWU</div></div>
+                            <div class="code-item"><div class="code-num">11-78</div><div class="code-desc">Vérification d'identité CWU — Fourchette : <strong id="cwu-code-codex" style="color: #32CD32;">K | 143 – 162</strong></div></div>
                             <div class="code-item"><div class="code-num">11-99</div><div class="code-desc">Demande renfort (assistance)</div></div>
                         </div>
                     </div>
@@ -377,6 +377,18 @@
     <script src="assets/js/global-nav.js"></script>
     <script src="assets/js/interactive-system.js"></script>
     <script src="assets/js/combine-animations.js"></script>
+    <script type="module">
+        // Charger le code CWU depuis Firestore pour l'afficher dynamiquement
+        import { db } from './assets/js/auth.js';
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        try {
+            const snap = await getDoc(doc(db, 'settings', 'cwu'));
+            if (snap.exists() && snap.data().cwucode) {
+                const el = document.getElementById('cwu-code-codex');
+                if (el) el.textContent = snap.data().cwucode;
+            }
+        } catch (e) { console.warn('Code CWU non chargé:', e); }
+    </script>
     <script>
     // Codex-specific code filter
     (function() {
