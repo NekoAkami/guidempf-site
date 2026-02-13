@@ -39,62 +39,73 @@ class GlobalNavigation {
         this.injectFavicon();
         this.injectServerLogo();
         this.injectMissingAssets();
-        await this.loadNavConfig();
+
+        // 1. Load nav from localStorage cache (synchronous, instant)
+        this.loadNavConfigFromCache();
+
+        // 2. Render immediately with cache or hardcoded defaults
         this.createNavigationHTML();
         this.injectSearchBar();
         this.injectBackButton();
-        await this.injectMaintenanceIndicator();
         this.markActivePage();
         this.setupMobileMenu();
         this.setupDropdowns();
         this.cleanGlitchText();
+
+        // 3. Background: refresh nav from Firestore + maintenance indicator (non-blocking)
+        this.loadNavConfigFromFirestore();
+        this.injectMaintenanceIndicator();
     }
 
-    // Load navigation config from Firestore (with localStorage cache)
-    async loadNavConfig() {
-        // 1. Try localStorage cache first (instant)
+    // Synchronous cache read — never blocks rendering
+    loadNavConfigFromCache() {
         try {
             const cached = localStorage.getItem('mpf_nav_config');
             const ts = parseInt(localStorage.getItem('mpf_nav_config_ts') || '0');
-            if (cached && Date.now() - ts < 5 * 60 * 1000) { // 5 min cache
+            if (cached && Date.now() - ts < 10 * 60 * 1000) { // 10 min cache
                 const parsed = JSON.parse(cached);
                 if (parsed.row1 && parsed.row2) {
                     this.navOverride = parsed;
-                    return;
                 }
             }
         } catch {}
+    }
 
-        // 2. Load from Firestore
+    // Async Firestore refresh — runs in background, updates cache for next page load
+    async loadNavConfigFromFirestore() {
         try {
-            const { initializeApp, getApp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
-            const { getFirestore, doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+            // Wait for auth.js to init Firebase (it's always loaded as a module)
+            const authModule = await import(this.basePath + 'assets/js/auth.js');
+            const db = authModule.db;
+            if (!db) return;
 
-            const firebaseConfig = {
-                apiKey: "AIzaSyDPs4x2EE1pyeQTC_V-Ze5uyZ8Rs2N8qF4",
-                authDomain: "guidempf.firebaseapp.com",
-                projectId: "guidempf",
-                storageBucket: "guidempf.firebasestorage.app",
-                messagingSenderId: "806309770965",
-                appId: "1:806309770965:web:3621f58bfb252446c1945c"
-            };
-
-            let app;
-            try { app = getApp(); } catch { app = initializeApp(firebaseConfig); }
-            const db = getFirestore(app);
-
+            const { doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
             const snap = await getDoc(doc(db, 'config', 'navigation'));
             if (snap.exists()) {
                 const data = snap.data();
                 if (data.row1 && data.row2) {
+                    const changed = JSON.stringify(this.navOverride?.row1) !== JSON.stringify(data.row1)
+                                 || JSON.stringify(this.navOverride?.row2) !== JSON.stringify(data.row2);
                     this.navOverride = data;
                     localStorage.setItem('mpf_nav_config', JSON.stringify(data));
                     localStorage.setItem('mpf_nav_config_ts', Date.now().toString());
+                    // If nav config changed since cache, hot-reload the navigation
+                    if (changed) this.refreshNavigation();
                 }
             }
         } catch (err) {
-            console.warn('Nav config load failed, using defaults:', err.message);
+            console.warn('Nav config refresh failed:', err.message);
         }
+    }
+
+    // Hot-reload navigation without full page refresh
+    refreshNavigation() {
+        const oldNav = document.querySelector('.main-nav');
+        if (oldNav) oldNav.remove();
+        this.createNavigationHTML();
+        this.markActivePage();
+        this.setupMobileMenu();
+        this.setupDropdowns();
     }
     async injectMaintenanceIndicator() {
         // Ajoute l'indicateur maintenance/en ligne à côté du compteur en ligne
@@ -135,13 +146,16 @@ class GlobalNavigation {
         const path = window.location.pathname;
         if (path.endsWith('maintenance.html')) return;
 
-        // Importer Firebase directement pour éviter les problèmes de timing
-        let initializeApp, getFirestore, getDoc, doc, getAuth, onAuthStateChanged, signOut;
+        // Import Firebase modules en parallèle (au lieu de séquentiel)
+        let initializeApp, getApp, getFirestore, getDoc, doc, getAuth, onAuthStateChanged, signOut;
         try {
-            const appMod = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
-            const fsMod = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-            const authMod = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
+            const [appMod, fsMod, authMod] = await Promise.all([
+                import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js'),
+                import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js'),
+                import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js')
+            ]);
             initializeApp = appMod.initializeApp;
+            getApp = appMod.getApp;
             getFirestore = fsMod.getFirestore;
             getDoc = fsMod.getDoc;
             doc = fsMod.doc;
@@ -150,22 +164,17 @@ class GlobalNavigation {
             signOut = authMod.signOut;
         } catch { return; }
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDPs4x2EE1pyeQTC_V-Ze5uyZ8Rs2N8qF4",
-            authDomain: "guidempf.firebaseapp.com",
-            projectId: "guidempf",
-            storageBucket: "guidempf.firebasestorage.app",
-            messagingSenderId: "806309770965",
-            appId: "1:806309770965:web:3621f58bfb252446c1945c"
-        };
-
         let app;
-        try {
+        try { app = getApp(); } catch {
+            const firebaseConfig = {
+                apiKey: "AIzaSyDPs4x2EE1pyeQTC_V-Ze5uyZ8Rs2N8qF4",
+                authDomain: "guidempf.firebaseapp.com",
+                projectId: "guidempf",
+                storageBucket: "guidempf.firebasestorage.app",
+                messagingSenderId: "806309770965",
+                appId: "1:806309770965:web:3621f58bfb252446c1945c"
+            };
             app = initializeApp(firebaseConfig);
-        } catch {
-            // App déjà initialisée
-            const { getApp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
-            app = getApp();
         }
         const db = getFirestore(app);
         const auth = getAuth(app);
@@ -298,20 +307,18 @@ class GlobalNavigation {
 
     // Injecte CSS et JS manquants sur les pages qui ne les ont pas
     injectMissingAssets() {
-        // Preconnect Google Fonts pour accélérer le chargement
-        if (!document.querySelector('link[href*="fonts.googleapis.com"][rel="preconnect"]')) {
-            const pc1 = document.createElement('link');
-            pc1.rel = 'preconnect';
-            pc1.href = 'https://fonts.googleapis.com';
-            document.head.prepend(pc1);
-            const pc2 = document.createElement('link');
-            pc2.rel = 'preconnect';
-            pc2.href = 'https://fonts.gstatic.com';
-            pc2.crossOrigin = 'anonymous';
-            document.head.prepend(pc2);
+        // Preconnect — skip if already in HTML (now added statically)
+        if (!document.querySelector('link[rel="preconnect"]')) {
+            ['https://fonts.googleapis.com', 'https://fonts.gstatic.com', 'https://www.gstatic.com', 'https://firestore.googleapis.com'].forEach(href => {
+                const pc = document.createElement('link');
+                pc.rel = 'preconnect';
+                pc.href = href;
+                if (href !== 'https://fonts.googleapis.com') pc.crossOrigin = 'anonymous';
+                document.head.prepend(pc);
+            });
         }
-        // components.css
-        if (!document.querySelector('link[href*="components.css"]')) {
+        // components.css — skip if bundle.css already loaded (contains components.css)
+        if (!document.querySelector('link[href*="components.css"]') && !document.querySelector('link[href*="bundle.css"]')) {
             const css = document.createElement('link');
             css.rel = 'stylesheet';
             css.href = this.basePath + 'assets/css/components.css';
