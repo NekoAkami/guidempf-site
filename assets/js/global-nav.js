@@ -390,8 +390,8 @@ class GlobalNavigation {
                         { label: 'Test de Loyauté', url: 'test-loyaute.html' },
                         { label: 'Conscription', url: 'procedure-conscription.html' },
                         { label: 'Incarcération', url: 'procedure-incarceration.html' },
-                        { label: 'Dispatch Administrateur', url: 'procedure-dispatch-admin.html' },
-                        { label: 'Code 7 & Escouade', url: 'procedure-code7.html' }
+                        { label: 'Code 7 & Escouade', url: 'procedure-code7.html' },
+                        { label: 'Procédures Générales', url: 'procedures-generales.html' }
                     ]
                 },
                 {
@@ -503,12 +503,15 @@ class GlobalNavigation {
     }
 
     markActivePage() {
-        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        const path = window.location.pathname;
+        const currentPage = path.split('/').pop() || 'index.html';
+        const pathParts = path.split('/');
+        const currentFull = pathParts.length > 2 ? pathParts.slice(-2).join('/') : currentPage;
         const navLinks = document.querySelectorAll('.nav-link, .dropdown-link');
 
         navLinks.forEach(link => {
-            const href = link.getAttribute('href');
-            if (href === currentPage) {
+            const href = (link.getAttribute('href') || '').replace(this.basePath, '');
+            if (href === currentPage || href === currentFull) {
                 link.classList.add('active');
                 const parentItem = link.closest('.nav-item');
                 if (parentItem) {

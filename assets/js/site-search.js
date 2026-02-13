@@ -52,7 +52,7 @@
     { url: 'procedure-conscription.html', title: 'Conscription', category: 'Procédures', keywords: 'conscription recrutement nouveau civil enrôlement rejoindre candidature postuler' },
     { url: 'test-loyaute.html', title: 'Test de Loyauté', category: 'Procédures', keywords: 'test loyauté interrogatoire vérification fidélité questioning' },
     { url: 'procedure-incarceration.html', title: 'Incarcération', category: 'Procédures', keywords: 'incarcération prison cellule détention prisonnier enfermement detention' },
-    { url: 'procedure-dispatch-admin.html', title: 'Dispatch Administrateur', category: 'Procédures', keywords: 'dispatch administrateur gestion admin haut-parleur' },
+
     { url: 'procedure-code7.html', title: 'Code 7 / Escouade', category: 'Procédures', keywords: 'code 7 escouade raid opération militaire rassemblement squad' },
     { url: 'judgement-waiver.html', title: 'Dérogation Jugement', category: 'Procédures', keywords: 'dérogation jugement waiver exception exonération' },
     // CWU
