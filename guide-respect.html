@@ -39,33 +39,6 @@
                 </div>
 
                 <div class="combine-body">
-                    <!-- Rangs -->
-                    <div style="background: rgba(66, 135, 245, 0.05); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; border-left: 4px solid #ffd700;">
-                        <h3 style="color: #ffd700; margin-top: 0; font-size: 1.1rem;">📊 RANGS PAR ORDRE CROISSANT</h3>
-                        <div style="display: grid; grid-template-columns: auto 1fr; gap: 0.8rem 1.5rem; align-items: center; font-size: 0.9rem; margin-top: 1rem;">
-                            <div style="background: rgba(255, 255, 255, 0.1); padding: 0.3rem 0.8rem; border-radius: 3px; font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan); font-weight: 700;">RCT</div>
-                            <div style="color: var(--text-secondary);">Recrue (Recruit)</div>
-                            
-                            <div style="background: rgba(255, 255, 255, 0.1); padding: 0.3rem 0.8rem; border-radius: 3px; font-family: 'Share Tech Mono', monospace; color: var(--accent-cyan); font-weight: 700;">05-01</div>
-                            <div style="color: var(--text-secondary);">Grades Numériques</div>
-                            
-                            <div style="background: rgba(255, 255, 255, 0.1); padding: 0.3rem 0.8rem; border-radius: 3px; font-family: 'Share Tech Mono', monospace; color: #32CD32; font-weight: 700;">OfC</div>
-                            <div style="color: var(--text-secondary);">Officier Commandant (Officer Commander)</div>
-                            
-                            <div style="background: rgba(255, 255, 255, 0.1); padding: 0.3rem 0.8rem; border-radius: 3px; font-family: 'Share Tech Mono', monospace; color: #ffd700; font-weight: 700;">DvL</div>
-                            <div style="color: var(--text-secondary);">Chef de Division (Division Leader)</div>
-                            
-                            <div style="background: rgba(255, 255, 255, 0.1); padding: 0.3rem 0.8rem; border-radius: 3px; font-family: 'Share Tech Mono', monospace; color: #ff4500; font-weight: 700;">CmD</div>
-                            <div style="color: var(--text-secondary);">Commandant (Commander)</div>
-                            
-                            <div style="background: rgba(255, 255, 255, 0.1); padding: 0.3rem 0.8rem; border-radius: 3px; font-family: 'Share Tech Mono', monospace; color: #ff1493; font-weight: 700;">SeC</div>
-                            <div style="color: var(--text-secondary);">Commandant Sectoriel (Sectorial Commander)</div>
-                            
-                            <div style="background: rgba(255, 255, 255, 0.1); padding: 0.3rem 0.8rem; border-radius: 3px; font-family: 'Share Tech Mono', monospace; color: #fff; font-weight: 700; text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);">OTA</div>
-                            <div style="color: var(--text-secondary);">Arme Transhumaine de la Milice (Overwatch Transhuman Arm)</div>
-                        </div>
-                    </div>
-
                     <!-- Grille Salutations -->
                     <div class="interactive-grid">
                         
@@ -268,6 +241,83 @@
             </div>
         </div>
     </main>
+
+    <!-- Bouton toggle rangs -->
+    <button id="rangsToggle" onclick="document.getElementById('rangsPanel').classList.toggle('open'); this.classList.toggle('active');" style="
+        position: fixed; left: 0; top: 50%; transform: translateY(-50%); z-index: 1100;
+        background: linear-gradient(180deg, #0a1a2e 0%, #061222 100%);
+        border: 2px solid rgba(0, 170, 255, 0.5); border-left: none;
+        border-radius: 0 10px 10px 0;
+        padding: 1rem 0.6rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 3px 0 15px rgba(0, 170, 255, 0.3), 0 0 20px rgba(0, 170, 255, 0.1);
+        animation: rangsGlow 2s ease-in-out infinite;
+    ">
+        <span style="display: block; font-size: 1.4rem; margin-bottom: 0.5rem;">📊</span>
+        <span style="writing-mode: vertical-rl; text-orientation: mixed; font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; font-weight: 700; color: #00aaff; letter-spacing: 0.15em; text-transform: uppercase;">RANGS</span>
+    </button>
+
+    <!-- Panneau latéral Rangs -->
+    <div id="rangsPanel" style="
+        position: fixed; left: 0; top: 0; bottom: 0; width: 260px; z-index: 1099;
+        background: linear-gradient(180deg, rgba(4, 12, 22, 0.99) 0%, rgba(2, 8, 16, 0.99) 100%);
+        border-right: 2px solid rgba(0, 170, 255, 0.3);
+        backdrop-filter: blur(15px); box-shadow: 5px 0 25px rgba(0, 0, 0, 0.6);
+        transform: translateX(-100%); transition: transform 0.3s ease;
+        overflow-y: auto; padding: 0;
+    ">
+        <div style="padding: 1rem; border-bottom: 1px solid rgba(0, 170, 255, 0.2); display: flex; align-items: center; justify-content: space-between; background: rgba(0, 170, 255, 0.05);">
+            <span style="font-family: 'Orbitron', sans-serif; font-size: 0.65rem; font-weight: 700; color: #00aaff; letter-spacing: 1.5px; text-transform: uppercase;">📊 Rangs par ordre croissant</span>
+            <button onclick="document.getElementById('rangsPanel').classList.remove('open'); document.getElementById('rangsToggle').classList.remove('active');" style="background: none; border: 1px solid rgba(0, 170, 255, 0.3); color: #00aaff; cursor: pointer; font-size: 0.75rem; padding: 0.2rem 0.5rem; font-family: 'Share Tech Mono', monospace; border-radius: 3px;">✕</button>
+        </div>
+        <div style="padding: 0.3rem 0;">
+            <div style="display: flex; align-items: center; gap: 0.7rem; padding: 0.65rem 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; font-weight: 700; padding: 0.3rem 0.5rem; border-radius: 4px; min-width: 50px; text-align: center; background: #1a6b1a; color: #5dff5d;">RCT</span>
+                <span style="font-family: 'Rajdhani', sans-serif; font-size: 0.78rem; color: var(--text-secondary);">Recrue (Recruit)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.7rem; padding: 0.65rem 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; font-weight: 700; padding: 0.3rem 0.5rem; border-radius: 4px; min-width: 50px; text-align: center; background: #1a4d6b; color: #5dc8ff;">05-01</span>
+                <span style="font-family: 'Rajdhani', sans-serif; font-size: 0.78rem; color: var(--text-secondary);">Grades Numériques</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.7rem; padding: 0.65rem 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; font-weight: 700; padding: 0.3rem 0.5rem; border-radius: 4px; min-width: 50px; text-align: center; background: #6b1a1a; color: #ff5d5d;">DvL</span>
+                <span style="font-family: 'Rajdhani', sans-serif; font-size: 0.78rem; color: var(--text-secondary);">Chef de Division (Division Leader)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.7rem; padding: 0.65rem 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; font-weight: 700; padding: 0.3rem 0.5rem; border-radius: 4px; min-width: 50px; text-align: center; background: #4d6b1a; color: #b8ff5d;">OfC</span>
+                <span style="font-family: 'Rajdhani', sans-serif; font-size: 0.78rem; color: var(--text-secondary);">Officier Commandant (Officer Commander)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.7rem; padding: 0.65rem 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; font-weight: 700; padding: 0.3rem 0.5rem; border-radius: 4px; min-width: 50px; text-align: center; background: #6b4d1a; color: #ffc85d;">CmD</span>
+                <span style="font-family: 'Rajdhani', sans-serif; font-size: 0.78rem; color: var(--text-secondary);">Commandant (Commander)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.7rem; padding: 0.65rem 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; font-weight: 700; padding: 0.3rem 0.5rem; border-radius: 4px; min-width: 50px; text-align: center; background: #4d1a6b; color: #c85dff;">SeC</span>
+                <span style="font-family: 'Rajdhani', sans-serif; font-size: 0.78rem; color: var(--text-secondary);">Commandant Sectoriel (Sectorial Commander)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.7rem; padding: 0.65rem 0.8rem;">
+                <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; font-weight: 700; padding: 0.3rem 0.5rem; border-radius: 4px; min-width: 50px; text-align: center; background: #1a3a4d; color: #e0e0e0;">OTA</span>
+                <span style="font-family: 'Rajdhani', sans-serif; font-size: 0.78rem; color: var(--text-secondary);">Arme Transhumaine de la Milice (Overwatch Transhuman Arm)</span>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        #rangsPanel.open { transform: translateX(0); }
+        #rangsToggle.active { left: 260px; border-color: #00aaff; animation: none; }
+        #rangsToggle:hover {
+            background: linear-gradient(180deg, #0d2240 0%, #091830 100%) !important;
+            border-color: #00aaff !important;
+            box-shadow: 5px 0 25px rgba(0, 170, 255, 0.5), 0 0 30px rgba(0, 170, 255, 0.2) !important;
+            transform: translateY(-50%) translateX(3px);
+        }
+        #rangsToggle.active:hover { transform: translateY(-50%); }
+        @keyframes rangsGlow {
+            0%, 100% { box-shadow: 3px 0 15px rgba(0, 170, 255, 0.3), 0 0 20px rgba(0, 170, 255, 0.1); }
+            50% { box-shadow: 3px 0 20px rgba(0, 170, 255, 0.5), 0 0 30px rgba(0, 170, 255, 0.2); }
+        }
+    </style>
 
     <script src="assets/js/global-nav.js"></script>
     <script src="assets/js/interactive-system.js"></script>
