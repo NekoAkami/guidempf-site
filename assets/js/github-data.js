@@ -435,6 +435,74 @@ async function deleteLoyaltyTest(docId) {
   return await deleteFromSubCollection('loyalty_tests', docId);
 }
 
+// ========== PLAINTES (sous-collection) ==========
+async function loadComplaints() {
+  return await readSubCollection('complaints', 'created_at', 'desc');
+}
+
+async function addComplaint(complaint) {
+  return await addToSubCollection('complaints', complaint);
+}
+
+async function deleteComplaint(docId) {
+  return await deleteFromSubCollection('complaints', docId);
+}
+
+async function updateComplaint(docId, complaint) {
+  return await updateInSubCollection('complaints', docId, complaint);
+}
+
+// ========== TESTS D'UNITÉ (sous-collection) ==========
+async function loadUnitTests() {
+  return await readSubCollection('unit_tests', 'created_at', 'desc');
+}
+
+async function addUnitTest(test) {
+  return await addToSubCollection('unit_tests', test);
+}
+
+async function deleteUnitTest(docId) {
+  return await deleteFromSubCollection('unit_tests', docId);
+}
+
+async function updateUnitTest(docId, test) {
+  return await updateInSubCollection('unit_tests', docId, test);
+}
+
+// ========== FORMATIONS (sous-collection) ==========
+async function loadFormations() {
+  return await readSubCollection('formations', 'created_at', 'desc');
+}
+
+async function addFormation(formation) {
+  return await addToSubCollection('formations', formation);
+}
+
+async function deleteFormation(docId) {
+  return await deleteFromSubCollection('formations', docId);
+}
+
+async function updateFormation(docId, formation) {
+  return await updateInSubCollection('formations', docId, formation);
+}
+
+// ========== PLANNING ==========
+async function loadPlanning() {
+  return await readSubCollection('planning', 'date', 'asc');
+}
+
+async function addPlanningEntry(entry) {
+  return await addToSubCollection('planning', entry);
+}
+
+async function deletePlanningEntry(docId) {
+  return await deleteFromSubCollection('planning', docId);
+}
+
+async function updatePlanningEntry(docId, entry) {
+  return await updateInSubCollection('planning', docId, entry);
+}
+
 // ========== EXPORT ==========
 export {
   readJsonFile, writeJsonFile, onSyncStatus,
@@ -448,5 +516,9 @@ export {
   loadPayrollArchives, addPayrollArchive, updatePayrollArchive, deletePayrollArchive,
   loadEarnings, addEarning, deleteEarning,
   loadLoyaltyTests, addLoyaltyTest, deleteLoyaltyTest,
+  loadComplaints, addComplaint, deleteComplaint, updateComplaint,
+  loadUnitTests, addUnitTest, deleteUnitTest, updateUnitTest,
+  loadFormations, addFormation, deleteFormation, updateFormation,
+  loadPlanning, addPlanningEntry, deletePlanningEntry, updatePlanningEntry,
   GITHUB_OWNER, GITHUB_REPO
 };

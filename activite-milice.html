@@ -217,6 +217,7 @@
 
       let allReports = [], allUnits = [], currentPeriod = 'week';
       let unitSortField = 'total', unitSortDir = 'desc';
+      let isHG = false;
 
       function getWeekBounds() {
         const now = new Date(); const day = now.getDay();
@@ -286,7 +287,7 @@
             <span class="type-name">${type}</span>
             <span class="type-count">${count}</span>
             <div class="bar-container"><div class="bar-fill" style="width:${barW}%"></div></div>
-            <span style="color:var(--text-muted);font-size:0.72rem;min-width:45px;text-align:right;">${pct}%</span>
+            ${isHG ? `<span style="color:var(--text-muted);font-size:0.72rem;min-width:45px;text-align:right;">${pct}%</span>` : ''}
           </div>`;
         }).join('');
       }
@@ -360,10 +361,15 @@
           if(!s.exists()){document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';return;}
           const ud = s.data();
           if(!ud.approved){document.getElementById('loading').style.display='none';document.getElementById('notApproved').style.display='block';return;}
+          // Vérifier si HG
+          let units = []; try { units = await loadUnits(); } catch(_){}
+          allUnits = units;
+          const ui = units.find(x => x.matricule === ud.matricule);
+          const rg = ui ? (ui.rang || '') : '';
+          isHG = rg === 'Ofc' || rg === 'Cmd';
           document.getElementById('loading').style.display='none';
           document.getElementById('mainContent').style.display='block';
           try { allReports = await loadReports(); } catch(_) { allReports = []; }
-          try { allUnits = await loadUnits(); } catch(_) { allUnits = []; }
           updateAll();
         } catch(e) { console.error(e); document.getElementById('loading').style.display='none'; document.getElementById('access-denied').style.display='block'; }
       });

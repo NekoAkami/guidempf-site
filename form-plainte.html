@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dépôt de Plainte - MPF Documentation</title>
+    <link rel="stylesheet" href="assets/css/main-style.css">
+    <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/global-nav.css">
+    <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        .plainte-wrapper { max-width: 700px; margin: 0 auto; }
+
+        .user-info-bar {
+            display: flex; align-items: center; gap: 1rem;
+            padding: 0.8rem 1rem;
+            background: rgba(231, 76, 60, 0.04);
+            border: 1px solid rgba(231, 76, 60, 0.15);
+            border-radius: 4px; margin-bottom: 1.5rem;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;
+        }
+        .user-info-bar .user-avatar {
+            width: 42px; height: 42px;
+            background: rgba(231, 76, 60, 0.15);
+            border: 1px solid #e74c3c; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Orbitron', sans-serif; font-size: 0.85rem;
+            color: #e74c3c; font-weight: 700; flex-shrink: 0;
+        }
+        .user-info-bar .user-details { flex: 1; }
+        .user-info-bar .user-matricule {
+            font-family: 'Orbitron', sans-serif; font-size: 0.82rem;
+            color: #e74c3c; font-weight: 700;
+        }
+        .user-info-bar .user-status {
+            font-size: 0.68rem; padding: 0.15rem 0.5rem; border-radius: 2px;
+            background: rgba(0, 200, 80, 0.1); border: 1px solid rgba(0, 200, 80, 0.3); color: #00cc55;
+        }
+
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label {
+            display: block; font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem; color: var(--text-muted);
+            letter-spacing: 1px; margin-bottom: 0.3rem;
+        }
+        .form-group label .req { color: #ff4444; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%; padding: 0.5rem 0.7rem;
+            background: rgba(231, 76, 60, 0.04);
+            border: 1px solid rgba(231, 76, 60, 0.2);
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace; font-size: 0.82rem;
+            outline: none; border-radius: 2px;
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            border-color: #e74c3c;
+        }
+        .form-group select { cursor: pointer; }
+        .form-group select option { background: #0a1628; color: var(--text-primary); }
+        .form-group textarea { resize: vertical; min-height: 100px; }
+        .form-group .hint {
+            font-size: 0.68rem; color: var(--text-muted); margin-top: 0.2rem;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        .form-group.error input, .form-group.error textarea, .form-group.error select {
+            border-color: #ff4444;
+        }
+        .form-group .error-msg {
+            font-size: 0.7rem; color: #ff4444; margin-top: 0.2rem;
+            font-family: 'Share Tech Mono', monospace; display: none;
+        }
+        .form-group.error .error-msg { display: block; }
+
+        .form-actions {
+            display: flex; gap: 0.8rem; margin-top: 1.5rem; justify-content: flex-end;
+        }
+        .btn-action {
+            padding: 0.5rem 1.2rem; font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem; cursor: pointer;
+            border: 1px solid rgba(231, 76, 60, 0.4);
+            background: rgba(231, 76, 60, 0.1); color: #e74c3c;
+            border-radius: 3px; transition: all 0.15s; letter-spacing: 0.5px;
+        }
+        .btn-action:hover { background: rgba(231, 76, 60, 0.2); border-color: #e74c3c; }
+        .btn-action.primary { background: rgba(231, 76, 60, 0.2); border-color: #e74c3c; font-weight: 700; }
+        .btn-action.primary:hover { background: rgba(231, 76, 60, 0.35); }
+        .btn-action:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .alert-msg {
+            padding: 0.6rem 1rem; border-radius: 3px; margin-bottom: 1rem;
+            font-size: 0.8rem; font-family: 'Share Tech Mono', monospace; display: none;
+        }
+        .alert-msg.success { display: block; background: rgba(0, 200, 80, 0.08); border: 1px solid rgba(0, 200, 80, 0.3); color: #00cc55; }
+        .alert-msg.error { display: block; background: rgba(255, 60, 60, 0.1); border: 1px solid rgba(255, 60, 60, 0.3); color: #ff4444; }
+
+        .my-plaintes-table { width: 100%; border-collapse: collapse; font-family: 'Share Tech Mono', monospace; }
+        .my-plaintes-table th {
+            text-align: left; padding: 0.5rem 0.4rem; color: #e74c3c;
+            font-size: 0.68rem; letter-spacing: 1px;
+            border-bottom: 2px solid rgba(231, 76, 60, 0.2);
+        }
+        .my-plaintes-table td {
+            padding: 0.4rem; color: var(--text-primary);
+            border-bottom: 1px solid rgba(231, 76, 60, 0.06); vertical-align: middle;
+            font-size: 0.78rem;
+        }
+        .my-plaintes-table tr:hover { background: rgba(231, 76, 60, 0.03); }
+        .status-badge {
+            display: inline-block; padding: 0.1rem 0.4rem; border-radius: 2px;
+            font-size: 0.68rem; font-weight: 700; letter-spacing: 0.5px;
+        }
+        .status-badge.en-attente { background: rgba(255, 200, 0, 0.15); color: #ffc800; border: 1px solid rgba(255, 200, 0, 0.3); }
+        .status-badge.traite { background: rgba(0, 200, 80, 0.15); color: #00cc55; border: 1px solid rgba(0, 200, 80, 0.3); }
+        .status-badge.archive { background: rgba(150, 150, 150, 0.15); color: #999; border: 1px solid rgba(150, 150, 150, 0.3); }
+
+        .sync-indicator {
+            position: fixed; bottom: 1rem; right: 1rem;
+            padding: 0.4rem 0.8rem; border-radius: 3px;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.72rem;
+            z-index: 999; transition: all 0.3s; pointer-events: none; opacity: 0;
+        }
+        .sync-indicator.syncing { opacity: 1; background: rgba(255, 200, 0, 0.15); border: 1px solid rgba(255, 200, 0, 0.4); color: #ffc800; }
+        .sync-indicator.synced { opacity: 1; background: rgba(0, 200, 80, 0.15); border: 1px solid rgba(0, 200, 80, 0.4); color: #00cc55; }
+        .sync-indicator.error { opacity: 1; background: rgba(255, 60, 60, 0.15); border: 1px solid rgba(255, 60, 60, 0.4); color: #ff4444; }
+        .sync-indicator.hidden { opacity: 0; }
+        @keyframes spin-sync { to { transform: rotate(360deg); } }
+        .sync-spinner { display: inline-block; animation: spin-sync 1s linear infinite; }
+
+        #access-denied, #notApproved { display: none; text-align: center; padding: 3rem; }
+    </style>
+</head>
+<body>
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <div>
+                        <h1 class="logo">MPF</h1>
+                        <p class="logo-subtitle">Dépôt de Plainte</p>
+                    </div>
+                </div>
+                <div id="authBtn" class="header-auth"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div id="loading" style="text-align:center;padding:3rem;">
+                <p style="color:#e74c3c;font-family:'Share Tech Mono',monospace;">CHARGEMENT...</p>
+            </div>
+            <div id="access-denied">
+                <h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">CONNEXION REQUISE</h2>
+                <p style="color:var(--text-muted);font-family:'Share Tech Mono',monospace;margin-top:0.5rem;">Vous devez être connecté pour déposer une plainte.</p>
+                <a href="login.html" style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;display:inline-block;margin-top:1rem;">→ SE CONNECTER</a>
+            </div>
+            <div id="notApproved">
+                <h2 style="color:#ffaa00;font-family:'Orbitron',sans-serif;">EN ATTENTE D'APPROBATION</h2>
+                <p style="color:var(--text-muted);font-family:'Share Tech Mono',monospace;margin-top:0.5rem;">Votre compte n'a pas encore été approuvé.</p>
+            </div>
+
+            <div id="mainContent" style="display:none;">
+                <div class="plainte-wrapper">
+
+                    <div class="user-info-bar">
+                        <div class="user-avatar" id="userAvatar">?</div>
+                        <div class="user-details">
+                            <div class="user-matricule" id="userIdentification">---</div>
+                            <div id="userAccreditation" style="font-size:0.7rem;color:var(--text-muted);font-family:'Share Tech Mono',monospace;margin-top:0.15rem;"></div>
+                        </div>
+                        <div class="user-status">CONNECTÉ</div>
+                    </div>
+
+                    <div id="alertMsg" class="alert-msg"></div>
+
+                    <div class="combine-terminal-wrapper" style="border-color:rgba(231,76,60,0.15);">
+                        <div class="combine-header" style="border-color:rgba(231,76,60,0.1);">
+                            <h2 style="color:#e74c3c;">⚖️ DÉPÔT DE PLAINTE</h2>
+                            <span class="header-code">FORM-06</span>
+                        </div>
+                        <div class="combine-body">
+                            <div style="padding:0.6rem;margin-bottom:1rem;background:rgba(231,76,60,0.04);border:1px solid rgba(231,76,60,0.1);border-radius:3px;">
+                                <p style="font-size:0.78rem;color:var(--text-secondary);font-family:'Share Tech Mono',monospace;line-height:1.6;">
+                                    ▸ Toute plainte sera transmise à la <span style="color:#e74c3c;font-weight:700;">Division JURY</span> pour examen. Soyez précis et objectif dans votre déposition.
+                                </p>
+                            </div>
+
+                            <div class="form-group" id="grpCible">
+                                <label>MATRICULE DE L'UNITÉ VISÉE <span class="req">*</span></label>
+                                <input type="text" id="fCible" placeholder="Ex: 123" maxlength="3">
+                                <div class="hint">Le matricule (3 chiffres) de l'unité faisant l'objet de la plainte</div>
+                                <div class="error-msg" id="errCible"></div>
+                            </div>
+
+                            <div class="form-group" id="grpCategorie">
+                                <label>CATÉGORIE <span class="req">*</span></label>
+                                <select id="fCategorie">
+                                    <option value="">— Sélectionner —</option>
+                                    <option value="Abus de pouvoir">Abus de pouvoir</option>
+                                    <option value="Insubordination">Insubordination</option>
+                                    <option value="Manquement au protocole">Manquement au protocole</option>
+                                    <option value="Violence injustifiée">Violence injustifiée</option>
+                                    <option value="Corruption">Corruption</option>
+                                    <option value="Négligence">Négligence</option>
+                                    <option value="Comportement anti-citoyen">Comportement anti-citoyen</option>
+                                    <option value="Autre">Autre</option>
+                                </select>
+                                <div class="error-msg" id="errCategorie"></div>
+                            </div>
+
+                            <div class="form-group" id="grpDate">
+                                <label>DATE DE L'INCIDENT <span class="req">*</span></label>
+                                <input type="date" id="fDateIncident">
+                                <div class="error-msg" id="errDate"></div>
+                            </div>
+
+                            <div class="form-group" id="grpLieu">
+                                <label>LIEU DE L'INCIDENT</label>
+                                <input type="text" id="fLieu" placeholder="Ex: Nexus, Bloc D3, Slums...">
+                            </div>
+
+                            <div class="form-group" id="grpDescription">
+                                <label>DESCRIPTION DES FAITS <span class="req">*</span></label>
+                                <textarea id="fDescription" rows="6" placeholder="Décrivez les faits de manière précise et chronologique..."></textarea>
+                                <div class="error-msg" id="errDescription"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>TÉMOINS (MATRICULES)</label>
+                                <input type="text" id="fTemoins" placeholder="Ex: 456, 789">
+                                <div class="hint">Matricules des témoins séparés par des virgules (optionnel)</div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>PREUVES / ÉLÉMENTS COMPLÉMENTAIRES</label>
+                                <textarea id="fPreuves" rows="3" placeholder="Liens screenshots, éléments supplémentaires... (optionnel)"></textarea>
+                            </div>
+
+                            <div class="form-actions">
+                                <button class="btn-action" onclick="resetForm()">RÉINITIALISER</button>
+                                <button class="btn-action primary" id="btnSubmit" onclick="submitPlainte()">⟩ DÉPOSER LA PLAINTE</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mes plaintes -->
+                    <div class="combine-terminal-wrapper" style="margin-top:1.5rem;border-color:rgba(231,76,60,0.15);">
+                        <div class="combine-header" style="border-color:rgba(231,76,60,0.1);">
+                            <h2 style="color:#e74c3c;">MES PLAINTES</h2>
+                            <span class="header-code" id="myPlainteCount">0</span>
+                        </div>
+                        <div class="combine-body">
+                            <div style="overflow-x:auto;">
+                                <table class="my-plaintes-table">
+                                    <thead>
+                                        <tr>
+                                            <th>DATE</th>
+                                            <th>CIBLE</th>
+                                            <th>CATÉGORIE</th>
+                                            <th>STATUT</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="myPlaintesBody">
+                                        <tr><td colspan="4" style="text-align:center;color:var(--text-muted);">Aucune plainte déposée</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="assets/js/auth.js"></script>
+    <script src="assets/js/global-nav.js"></script>
+    <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
+
+    <script type="module">
+      import { auth, db } from './assets/js/auth.js';
+      import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+      import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+      import { loadComplaints as ghLoadComplaints, addComplaint as ghAddComplaint, loadUnits as ghLoadUnits, onSyncStatus } from './assets/js/github-data.js';
+
+      let currentUser = null, allComplaints = [];
+
+      function showAlert(t, type='success') { const e=document.getElementById('alertMsg'); e.style.display='block'; e.className='alert-msg '+type; e.textContent=t; setTimeout(()=>e.style.display='none',6000); }
+      function fmtDate(d) { if(!d)return'-'; const p=d.split('-'); return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:d; }
+
+      { const i=document.createElement('div');i.id='syncIndicator';i.className='sync-indicator hidden';document.body.appendChild(i);let t=null;
+        onSyncStatus(s=>{clearTimeout(t);if(s==='syncing'){i.innerHTML='<span class="sync-spinner">⟳</span> Synchronisation...';i.className='sync-indicator syncing';}else if(s==='synced'){i.innerHTML='✓ Synchronisé';i.className='sync-indicator synced';t=setTimeout(()=>i.className='sync-indicator hidden',2500);}else{i.innerHTML='⚠ Erreur sync';i.className='sync-indicator error';t=setTimeout(()=>i.className='sync-indicator hidden',6000);}});
+      }
+
+      window.submitPlainte = async function() {
+        if (!currentUser) { showAlert('Erreur: utilisateur non identifié','error'); return; }
+        let ok=true;
+        ['grpCible','grpCategorie','grpDate','grpDescription'].forEach(id=>document.getElementById(id).classList.remove('error'));
+
+        const cible = document.getElementById('fCible').value.trim();
+        if (!cible) { document.getElementById('grpCible').classList.add('error'); document.getElementById('errCible').textContent='Matricule requis'; ok=false; }
+        const categorie = document.getElementById('fCategorie').value;
+        if (!categorie) { document.getElementById('grpCategorie').classList.add('error'); document.getElementById('errCategorie').textContent='Catégorie requise'; ok=false; }
+        const dateIncident = document.getElementById('fDateIncident').value;
+        if (!dateIncident) { document.getElementById('grpDate').classList.add('error'); document.getElementById('errDate').textContent='Date requise'; ok=false; }
+        const description = document.getElementById('fDescription').value.trim();
+        if (!description) { document.getElementById('grpDescription').classList.add('error'); document.getElementById('errDescription').textContent='Description requise'; ok=false; }
+        if (!ok) return;
+
+        const btn=document.getElementById('btnSubmit'); btn.disabled=true; btn.textContent='⏳ ENVOI...';
+        const plainte = {
+          plaignant_matricule: currentUser.matricule,
+          plaignant_nom: currentUser.nom_steam || '',
+          cible_matricule: cible,
+          categorie: categorie,
+          date_incident: dateIncident,
+          lieu: document.getElementById('fLieu').value.trim(),
+          description: description,
+          temoins: document.getElementById('fTemoins').value.trim(),
+          preuves: document.getElementById('fPreuves').value.trim(),
+          statut: 'en_attente',
+          created_at: new Date().toISOString().substring(0,10)
+        };
+
+        try {
+          const saved = await ghAddComplaint(plainte);
+          allComplaints.push(saved);
+          showAlert('✓ Plainte déposée avec succès. La Division JURY en sera informée.','success');
+          resetForm();
+          renderMyPlaintes();
+        } catch(e) {
+          showAlert('✗ Erreur: '+e.message,'error');
+        } finally {
+          btn.disabled=false; btn.textContent='⟩ DÉPOSER LA PLAINTE';
+        }
+      };
+
+      window.resetForm = function() {
+        ['fCible','fCategorie','fDateIncident','fLieu','fDescription','fTemoins','fPreuves'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+        ['grpCible','grpCategorie','grpDate','grpDescription'].forEach(id=>document.getElementById(id).classList.remove('error'));
+      };
+
+      function renderMyPlaintes() {
+        if(!currentUser)return;
+        const mine = allComplaints.filter(c => c.plaignant_matricule === currentUser.matricule).sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||''));
+        document.getElementById('myPlainteCount').textContent = `${mine.length} PLAINTE${mine.length>1?'S':''}`;
+        const tb = document.getElementById('myPlaintesBody');
+        if(!mine.length){tb.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text-muted);">Aucune plainte déposée</td></tr>';return;}
+        tb.innerHTML = mine.map(c => {
+          const statusClass = c.statut === 'traite' ? 'traite' : (c.statut === 'archive' ? 'archive' : 'en-attente');
+          const statusLabel = c.statut === 'traite' ? 'TRAITÉ' : (c.statut === 'archive' ? 'ARCHIVÉ' : 'EN ATTENTE');
+          return `<tr>
+            <td>${fmtDate(c.created_at)}</td>
+            <td>${c.cible_matricule||'-'}</td>
+            <td>${c.categorie||'-'}</td>
+            <td><span class="status-badge ${statusClass}">${statusLabel}</span></td>
+          </tr>`;
+        }).join('');
+      }
+
+      onAuthStateChanged(auth, async(user) => {
+        if(!user){document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';return;}
+        try {
+          const s=await getDoc(doc(db,'users',user.uid));
+          if(!s.exists()){document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';return;}
+          const ud=s.data();
+          if(!ud.approved){document.getElementById('loading').style.display='none';document.getElementById('notApproved').style.display='block';return;}
+          currentUser={matricule:ud.matricule||'???',nom_steam:ud.nom_steam||''};
+          let ui=null;try{const u=await ghLoadUnits();ui=u.find(x=>x.matricule===currentUser.matricule)||null;}catch(_){}
+          const rg=ui?(ui.rang||''):'';
+          const dv=ui?(ui.division||''):'';
+          document.getElementById('userIdentification').textContent='Identification : '+[rg,dv,currentUser.matricule].filter(Boolean).join(' ');
+          document.getElementById('userAvatar').textContent=currentUser.matricule.substring(0,3);
+          document.getElementById('loading').style.display='none';
+          document.getElementById('mainContent').style.display='block';
+          try{allComplaints=await ghLoadComplaints();}catch(_){allComplaints=[];}
+          renderMyPlaintes();
+        }catch(e){console.error(e);document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';}
+      });
+    </script>
+</body>
+</html>

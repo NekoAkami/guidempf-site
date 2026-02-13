@@ -3,15 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unites et Grades - MPF Documentation</title>
+    <title>Unités - MPF Documentation</title>
     <link rel="stylesheet" href="assets/css/main-style.css">
     <link rel="stylesheet" href="assets/css/combine-terminals.css">
     <link rel="stylesheet" href="assets/css/global-nav.css">
     <link rel="stylesheet" href="assets/css/interactive-system.css">
     <link rel="stylesheet" href="assets/css/combine-animations.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        .units-wrapper{max-width:1100px;margin:0 auto;}
+        .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0.8rem;margin-bottom:1.5rem;}
+        .stat-box{padding:0.8rem;text-align:center;background:rgba(0,170,255,0.03);border:1px solid rgba(0,170,255,0.1);border-radius:4px;}
+        .stat-box .stat-number{font-family:'Orbitron',sans-serif;font-size:1.3rem;color:var(--accent-cyan);font-weight:700;}
+        .stat-box .stat-label{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--text-muted);letter-spacing:1px;margin-top:0.2rem;}
+        .filter-bar{display:flex;gap:0.8rem;flex-wrap:wrap;margin-bottom:1rem;align-items:center;}
+        .filter-bar input{flex:1;min-width:200px;padding:0.45rem 0.7rem;background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.2);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.8rem;outline:none;border-radius:2px;}
+        .filter-bar input:focus{border-color:var(--accent-cyan);}
+        .filter-bar select{padding:0.45rem 0.7rem;background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.2);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.8rem;outline:none;border-radius:2px;cursor:pointer;}
+        .filter-bar select option{background:#0a1628;}
+        .unit-table{width:100%;border-collapse:collapse;font-size:0.8rem;}
+        .unit-table th{text-align:left;padding:0.5rem 0.4rem;color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;font-size:0.68rem;letter-spacing:1px;border-bottom:2px solid rgba(0,170,255,0.2);cursor:pointer;user-select:none;}
+        .unit-table th:hover{color:#fff;}
+        .unit-table td{padding:0.4rem;color:var(--text-primary);border-bottom:1px solid rgba(0,170,255,0.06);font-family:'Share Tech Mono',monospace;vertical-align:middle;}
+        .unit-table tr:hover{background:rgba(0,170,255,0.03);}
+        .rang-badge{display:inline-block;padding:0.1rem 0.4rem;border-radius:2px;font-size:0.72rem;font-weight:700;}
+        .rang-rct{color:#888;border:1px solid rgba(136,136,136,0.3);}
+        .rang-bas{color:var(--text-primary);border:1px solid rgba(0,170,255,0.2);}
+        .rang-mid{color:var(--accent-cyan);border:1px solid rgba(0,170,255,0.4);}
+        .rang-05{color:#ff8800;border:1px solid rgba(255,136,0,0.4);}
+        .rang-hg{color:#ff4444;border:1px solid rgba(255,68,68,0.4);}
+        .rang-cmd{color:#fff;border:1px solid rgba(255,255,255,0.5);background:rgba(255,255,255,0.05);}
+        .div-badge{display:inline-block;padding:0.1rem 0.4rem;border-radius:2px;font-size:0.68rem;background:rgba(0,170,255,0.08);border:1px solid rgba(0,170,255,0.15);color:var(--text-muted);}
+        .formateur-badge{display:inline-block;padding:0.1rem 0.3rem;border-radius:2px;font-size:0.62rem;background:rgba(0,200,80,0.1);border:1px solid rgba(0,200,80,0.3);color:#00cc55;}
+        .detail-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.75);z-index:1000;display:flex;align-items:center;justify-content:center;}
+        .detail-box{background:#0a1628;border:1px solid rgba(0,170,255,0.2);padding:1.5rem;border-radius:6px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;}
+        .detail-box h3{color:var(--accent-cyan);font-family:'Orbitron',sans-serif;font-size:0.9rem;margin-bottom:1rem;}
+        .detail-box .detail-row{display:flex;gap:0.5rem;margin-bottom:0.5rem;font-family:'Share Tech Mono',monospace;font-size:0.82rem;}
+        .detail-box .detail-label{color:var(--text-muted);min-width:130px;}
+        .detail-box .detail-value{color:var(--text-primary);flex:1;}
+        .detail-box .close-btn{margin-top:1rem;padding:0.4rem 1rem;border:1px solid rgba(0,170,255,0.2);background:rgba(0,170,255,0.05);color:#fff;font-family:'Share Tech Mono',monospace;font-size:0.8rem;cursor:pointer;border-radius:3px;display:block;margin-left:auto;}
+        #access-denied,#notApproved{display:none;text-align:center;padding:3rem;}
+    </style>
 </head>
 <body>
-    <!-- Scanline overlay -->
     <div class="scanline-overlay"></div>
     <div class="particles-bg"></div>
     <header class="site-header">
@@ -19,132 +53,141 @@
             <div class="header-content">
                 <div class="logo-section">
                     <div class="logo-icon">M</div>
-                    <div>
-                        <h1 class="logo">MPF</h1>
-                        <p class="logo-subtitle">Metropolice Force Documentation</p>
-                    </div>
+                    <div><h1 class="logo">MPF</h1><p class="logo-subtitle">Répertoire des Unités</p></div>
                 </div>
-                <div id="authBtn"></div>
+                <div id="authBtn" class="header-auth"></div>
             </div>
         </div>
     </header>
-
     <main>
         <div class="container">
-            <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;">
-                <div class="combine-header">
-                    <h2>UNITES ET GRADES</h2>
-                    <span class="header-code">UNT // STRUCTURE DU PERSONNEL</span>
-                </div>
-
-                <div style="text-align: center; margin: 1.5rem 0; padding: 1rem; background: rgba(0, 170, 255, 0.02); border: 1px solid rgba(0, 170, 255, 0.08);">
-                    <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7;">
-                        Nomenclature officielle des grades et designations d'unités au sein de la <strong style="color: var(--accent-cyan);">Metropolice Force</strong>. Chaque grade confere des autorisations et responsabilites specifiques.
-                    </p>
-                </div>
-
-                <!-- Grades principaux -->
-                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
-                    <div class="combine-header">
-                        <h2>GRADES PRINCIPAUX</h2>
-                        <span class="header-code">HIERARCHIE ASCENDANTE</span>
+            <div id="loading" style="text-align:center;padding:3rem;"><p style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;">CHARGEMENT...</p></div>
+            <div id="access-denied"><h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">CONNEXION REQUISE</h2><a href="login.html" style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;display:inline-block;margin-top:1rem;">→ SE CONNECTER</a></div>
+            <div id="notApproved"><h2 style="color:#ffaa00;font-family:'Orbitron',sans-serif;">EN ATTENTE D'APPROBATION</h2></div>
+            <div id="mainContent" style="display:none;">
+                <div class="units-wrapper">
+                    <div class="stats-row" id="statsRow">
+                        <div class="stat-box"><div class="stat-number" id="statTotal">0</div><div class="stat-label">UNITÉS TOTAL</div></div>
+                        <div class="stat-box"><div class="stat-number" id="statDivisions">0</div><div class="stat-label">DIVISIONS</div></div>
+                        <div class="stat-box"><div class="stat-number" id="statFormateurs">0</div><div class="stat-label">FORMATEURS</div></div>
+                        <div class="stat-box"><div class="stat-number" id="statHG">0</div><div class="stat-label">HAUTGRADÉS</div></div>
                     </div>
-                    <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
-                        <thead>
-                            <tr style="border-bottom: 2px solid rgba(0, 170, 255, 0.15);">
-                                <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">GRADE</th>
-                                <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">DESIGNATION</th>
-                                <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">ROLE</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
-                                <td style="padding: 0.5rem; color: var(--text-muted);">RCT</td>
-                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Recrue</td>
-                                <td style="padding: 0.5rem; color: var(--text-muted);">En formation. Toujours accompagnee d'un 03+.</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
-                                <td style="padding: 0.5rem; color: var(--text-muted);">01</td>
-                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Garde</td>
-                                <td style="padding: 0.5rem; color: var(--text-muted);">Patrouille accompagnee. Exécution d'ordres.</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
-                                <td style="padding: 0.5rem; color: var(--text-muted);">02</td>
-                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Soldat</td>
-                                <td style="padding: 0.5rem; color: var(--text-muted);">Patrouille sous supervision. Verdicts V1.</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
-                                <td style="padding: 0.5rem; color: var(--accent-cyan);">03</td>
-                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Officier</td>
-                                <td style="padding: 0.5rem; color: var(--text-muted);">Patrouille autonome. Verdicts V1-V2. Formation RCT.</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
-                                <td style="padding: 0.5rem; color: var(--accent-cyan);">04</td>
-                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Caporal</td>
-                                <td style="padding: 0.5rem; color: var(--text-muted);">Dispatch. Verdicts V1-V3. Conscription. Test loyaute.</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
-                                <td style="padding: 0.5rem; color: #ff8800;">05</td>
-                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Sergent</td>
-                                <td style="padding: 0.5rem; color: var(--text-muted);">Commandement d'escouade. Verdicts V1-V4. Divisions.</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
-                                <td style="padding: 0.5rem; color: #ff4444;">OfC</td>
-                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Officier en Chef</td>
-                                <td style="padding: 0.5rem; color: var(--text-muted);">Supervision terrain. Verdicts V1-V5. Formations.</td>
-                            </tr>
-                            <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
-                                <td style="padding: 0.5rem; color: #ff4444;">DvL</td>
-                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Division Leader</td>
-                                <td style="padding: 0.5rem; color: var(--text-muted);">Direction de division. Promotions. V7 autorise.</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 0.5rem; color: #fff;">CMD</td>
-                                <td style="padding: 0.5rem; color: var(--text-primary); font-weight: 600;">Commandant</td>
-                                <td style="padding: 0.5rem; color: var(--text-muted);">Autorite totale. Decisions strategiques. Contact Overwatch.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Désignation d'unité -->
-                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
-                    <div class="combine-header">
-                        <h2>FORMAT DE DESIGNATION</h2>
-                        <span class="header-code">NOMENCLATURE</span>
-                    </div>
-                    <div style="padding: 0.5rem 0;">
-                        <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.6; margin-bottom: 0.8rem;">Chaque unité est identifiee par un format standardise :</p>
-                        <div style="text-align: center; padding: 1rem; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 170, 255, 0.15); margin-bottom: 0.8rem;">
-                            <span style="font-family: 'Share Tech Mono', monospace; font-size: 1.2rem; color: var(--accent-cyan); letter-spacing: 3px;">MPF-[DIVISION].[GRADE]-[NUMERO]</span>
-                        </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
-                            <div style="padding: 0.5rem; border-left: 2px solid var(--accent-cyan);">
-                                <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan);">EXEMPLE 1</div>
-                                <div style="color: var(--text-primary); font-size: 0.9rem;">MPF-RAZOR.03-472</div>
-                                <div style="color: var(--text-muted); font-size: 0.8rem;">Officier 03 de la division RAZOR, matricule 472</div>
+                    <div class="combine-terminal-wrapper animate-fadeInUp">
+                        <div class="combine-header"><h2>👤 RÉPERTOIRE DES UNITÉS</h2><span class="header-code" id="unitCountLabel">0 UNITÉS</span></div>
+                        <div class="combine-body">
+                            <div class="filter-bar">
+                                <input type="text" id="searchInput" placeholder="Rechercher (matricule, nom, division...)" oninput="renderUnits()">
+                                <select id="filterDivision" onchange="renderUnits()"><option value="">Toutes divisions</option></select>
+                                <select id="filterRang" onchange="renderUnits()"><option value="">Tous grades</option></select>
                             </div>
-                            <div style="padding: 0.5rem; border-left: 2px solid var(--accent-cyan);">
-                                <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan);">EXEMPLE 2</div>
-                                <div style="color: var(--text-primary); font-size: 0.9rem;">MPF-HELIX.05-118</div>
-                                <div style="color: var(--text-muted); font-size: 0.8rem;">Sergent 05 de la division HELIX, matricule 118</div>
+                            <div style="overflow-x:auto;">
+                                <table class="unit-table">
+                                    <thead><tr>
+                                        <th onclick="sortBy('matricule')">MATRICULE</th>
+                                        <th onclick="sortBy('nom_steam')">NOM STEAM</th>
+                                        <th onclick="sortBy('rang')">GRADE</th>
+                                        <th onclick="sortBy('division')">DIVISION</th>
+                                        <th>INFOS</th>
+                                    </tr></thead>
+                                    <tbody id="unitsBody"><tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr></tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Lien vers hierarchie -->
-                <div style="margin-top: 1.5rem; text-align: center;">
-                    <a href="hierarchie.html" style="display: inline-block; padding: 0.8rem 2rem; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); text-decoration: none; font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; letter-spacing: 1px; transition: all 0.1s ease;">
-                        VOIR ORGANIGRAMME COMPLET
-                    </a>
                 </div>
             </div>
         </div>
     </main>
-
+    <script type="module" src="assets/js/auth.js"></script>
     <script src="assets/js/global-nav.js"></script>
     <script src="assets/js/interactive-system.js"></script>
     <script src="assets/js/combine-animations.js"></script>
+    <script type="module">
+      import { auth, db } from './assets/js/auth.js';
+      import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+      import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+      import { loadUnits } from './assets/js/github-data.js';
+
+      let allUnits=[], sortField='matricule', sortDir='asc';
+      const RANK_ORDER=['RCT','.05','.04','.03','STB','.02','.01','DvL','STBE','CABAL','Ofc','Cmd'];
+
+      function getRangClass(r){
+        if(r==='RCT')return'rang-rct';
+        if(r==='.05'||r==='.04')return'rang-bas';
+        if(r==='.03'||r==='STB'||r==='.02'||r==='.01')return'rang-mid';
+        if(r==='DvL'||r==='STBE'||r==='CABAL')return'rang-05';
+        if(r==='Ofc')return'rang-hg';
+        if(r==='Cmd')return'rang-cmd';
+        return'rang-bas';
+      }
+
+      function populateFilters(){
+        const divs=new Set();const rangs=new Set();
+        allUnits.forEach(u=>{if(u.division)divs.add(u.division);if(u.rang)rangs.add(u.rang);});
+        const dSel=document.getElementById('filterDivision');
+        [...divs].sort().forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;dSel.appendChild(o);});
+        const rSel=document.getElementById('filterRang');
+        RANK_ORDER.filter(r=>rangs.has(r)).forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;rSel.appendChild(o);});
+      }
+
+      function updateStats(filtered){
+        document.getElementById('statTotal').textContent=allUnits.length;
+        const divs=new Set(allUnits.map(u=>u.division).filter(Boolean));
+        document.getElementById('statDivisions').textContent=divs.size;
+        document.getElementById('statFormateurs').textContent=allUnits.filter(u=>u.formateur).length;
+        document.getElementById('statHG').textContent=allUnits.filter(u=>u.rang==='Ofc'||u.rang==='Cmd').length;
+      }
+
+      window.renderUnits=function(){
+        const q=(document.getElementById('searchInput')?.value||'').toLowerCase();
+        const fDiv=document.getElementById('filterDivision').value;
+        const fRang=document.getElementById('filterRang').value;
+        let list=allUnits.filter(u=>{
+          if(fDiv&&u.division!==fDiv)return false;
+          if(fRang&&u.rang!==fRang)return false;
+          if(q){const txt=`${u.matricule||''} ${u.nom_steam||''} ${u.division||''} ${u.rang||''}`.toLowerCase();if(!txt.includes(q))return false;}
+          return true;
+        });
+        list.sort((a,b)=>{
+          if(sortField==='rang'){
+            const ia=RANK_ORDER.indexOf(a.rang||'');const ib=RANK_ORDER.indexOf(b.rang||'');
+            return sortDir==='asc'?ia-ib:ib-ia;
+          }
+          const va=(a[sortField]||'').toString().toLowerCase();const vb=(b[sortField]||'').toString().toLowerCase();
+          return sortDir==='asc'?va.localeCompare(vb):vb.localeCompare(va);
+        });
+        document.getElementById('unitCountLabel').textContent=list.length+' UNITÉ'+(list.length>1?'S':'');
+        const tb=document.getElementById('unitsBody');
+        if(!list.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Aucune unité trouvée</td></tr>';return;}
+        tb.innerHTML=list.map(u=>{
+          const infos=[];
+          if(u.formateur)infos.push('<span class="formateur-badge">FORMATEUR</span>');
+          return`<tr style="cursor:pointer;" onclick="showUnitDetail('${u.matricule}')"><td style="font-weight:700;">${u.matricule||'-'}</td><td>${u.nom_steam||'-'}</td><td><span class="rang-badge ${getRangClass(u.rang)}">${u.rang||'-'}</span></td><td>${u.division?`<span class="div-badge">${u.division}</span>`:'-'}</td><td>${infos.join(' ')||'-'}</td></tr>`;
+        }).join('');
+      };
+
+      window.sortBy=function(f){
+        if(sortField===f)sortDir=sortDir==='asc'?'desc':'asc';
+        else{sortField=f;sortDir=f==='rang'?'desc':'asc';}
+        renderUnits();
+      };
+
+      window.showUnitDetail=function(mat){
+        const u=allUnits.find(x=>x.matricule===mat);if(!u)return;
+        const o=document.createElement('div');o.className='detail-overlay';
+        const designation=`MPF-${u.division||'??'}.${u.rang||'??'}-${u.matricule||'???'}`;
+        o.innerHTML=`<div class="detail-box"><h3>${designation}</h3><div class="detail-row"><span class="detail-label">MATRICULE</span><span class="detail-value" style="font-weight:700;color:var(--accent-cyan);">${u.matricule||'-'}</span></div><div class="detail-row"><span class="detail-label">NOM STEAM</span><span class="detail-value">${u.nom_steam||'-'}</span></div><div class="detail-row"><span class="detail-label">GRADE</span><span class="detail-value"><span class="rang-badge ${getRangClass(u.rang)}">${u.rang||'-'}</span></span></div><div class="detail-row"><span class="detail-label">DIVISION</span><span class="detail-value">${u.division||'-'}</span></div><div class="detail-row"><span class="detail-label">STEAMID64</span><span class="detail-value" style="font-size:0.72rem;">${u.steamid64||'-'}</span></div><div class="detail-row"><span class="detail-label">FORMATEUR</span><span class="detail-value">${u.formateur?'<span class="formateur-badge">OUI</span>':'Non'}</span></div><button class="close-btn" onclick="this.closest('.detail-overlay').remove()">FERMER</button></div>`;
+        document.body.appendChild(o);o.addEventListener('click',ev=>{if(ev.target===o)o.remove();});
+      };
+
+      onAuthStateChanged(auth, async(user)=>{
+        if(!user){document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';return;}
+        try{const s=await getDoc(doc(db,'users',user.uid));if(!s.exists()||!s.data().approved){document.getElementById('loading').style.display='none';if(!s.exists())document.getElementById('access-denied').style.display='block';else document.getElementById('notApproved').style.display='block';return;}
+        document.getElementById('loading').style.display='none';document.getElementById('mainContent').style.display='block';
+        try{allUnits=await loadUnits();}catch(_){allUnits=[];}
+        populateFilters();updateStats();renderUnits();
+        }catch(e){console.error(e);document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';}
+      });
+    </script>
 </body>
 </html>

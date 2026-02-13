@@ -3,15 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tableaux d'Activite - MPF Documentation</title>
+    <title>Planning Semaine - MPF Documentation</title>
     <link rel="stylesheet" href="assets/css/main-style.css">
     <link rel="stylesheet" href="assets/css/combine-terminals.css">
     <link rel="stylesheet" href="assets/css/global-nav.css">
     <link rel="stylesheet" href="assets/css/interactive-system.css">
     <link rel="stylesheet" href="assets/css/combine-animations.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        .planning-wrapper{max-width:1200px;margin:0 auto;}
+        .week-nav{display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:1.2rem;font-family:'Orbitron',sans-serif;}
+        .week-nav button{padding:0.4rem 0.8rem;background:rgba(0,170,255,0.08);border:1px solid rgba(0,170,255,0.3);color:var(--accent-cyan);cursor:pointer;border-radius:3px;font-family:'Share Tech Mono',monospace;font-size:0.8rem;transition:all 0.15s;}
+        .week-nav button:hover{background:rgba(0,170,255,0.2);}
+        .week-nav .week-label{font-size:0.9rem;color:var(--accent-cyan);min-width:280px;text-align:center;}
+        .planning-grid{display:grid;grid-template-columns:80px repeat(7,1fr);border:1px solid rgba(0,170,255,0.15);border-radius:4px;overflow:hidden;font-family:'Share Tech Mono',monospace;font-size:0.75rem;}
+        .planning-grid .day-header{padding:0.5rem 0.3rem;text-align:center;background:rgba(0,170,255,0.08);border-bottom:2px solid rgba(0,170,255,0.2);color:var(--accent-cyan);font-family:'Orbitron',sans-serif;font-size:0.65rem;letter-spacing:1px;font-weight:700;}
+        .planning-grid .day-header.today{background:rgba(0,170,255,0.15);color:#fff;}
+        .planning-grid .time-header{padding:0.5rem 0.3rem;text-align:center;background:rgba(0,170,255,0.08);border-bottom:2px solid rgba(0,170,255,0.2);color:var(--accent-cyan);font-family:'Orbitron',sans-serif;font-size:0.65rem;letter-spacing:1px;font-weight:700;}
+        .planning-grid .time-cell{padding:0.3rem;text-align:center;background:rgba(0,170,255,0.02);border-right:1px solid rgba(0,170,255,0.06);border-bottom:1px solid rgba(0,170,255,0.06);color:var(--text-muted);font-size:0.7rem;display:flex;align-items:center;justify-content:center;}
+        .planning-grid .slot-cell{padding:0.2rem;border-right:1px solid rgba(0,170,255,0.06);border-bottom:1px solid rgba(0,170,255,0.06);min-height:38px;cursor:pointer;transition:background 0.1s;position:relative;}
+        .slot-cell:hover{background:rgba(0,170,255,0.06);}
+        .slot-entry{padding:0.15rem 0.3rem;border-radius:2px;font-size:0.62rem;margin-bottom:1px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.4;}
+        .slot-entry.type-formation{background:rgba(0,170,255,0.15);border-left:2px solid var(--accent-cyan);color:var(--accent-cyan);}
+        .slot-entry.type-test{background:rgba(255,200,0,0.15);border-left:2px solid #ffc800;color:#ffc800;}
+        .slot-entry.type-recrutement{background:rgba(0,200,80,0.15);border-left:2px solid #00cc55;color:#00cc55;}
+        .slot-entry.type-autre{background:rgba(200,100,255,0.15);border-left:2px solid #c864ff;color:#c864ff;}
+        .slot-entry.type-operation{background:rgba(255,100,60,0.15);border-left:2px solid #ff6644;color:#ff6644;}
+        .slot-entry.type-patrouille{background:rgba(100,200,255,0.15);border-left:2px solid #64c8ff;color:#64c8ff;}
+        .slot-add{position:absolute;top:0;right:0;width:14px;height:14px;background:rgba(0,170,255,0.15);border:1px solid rgba(0,170,255,0.3);border-radius:2px;color:var(--accent-cyan);display:none;align-items:center;justify-content:center;font-size:0.6rem;cursor:pointer;z-index:2;}
+        .slot-cell:hover .slot-add{display:flex;}
+        .legend{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;font-family:'Share Tech Mono',monospace;font-size:0.7rem;}
+        .legend-item{display:flex;align-items:center;gap:0.3rem;}
+        .legend-dot{width:10px;height:10px;border-radius:2px;}
+        .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.75);z-index:1000;display:flex;align-items:center;justify-content:center;}
+        .modal-box{background:#0a1628;border:1px solid rgba(0,170,255,0.3);padding:1.5rem;border-radius:6px;max-width:450px;width:90%;}
+        .modal-box h3{color:var(--accent-cyan);font-family:'Orbitron',sans-serif;font-size:0.85rem;margin-bottom:1rem;}
+        .modal-box .form-group{margin-bottom:0.8rem;}
+        .modal-box .form-group label{display:block;font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--text-muted);letter-spacing:1px;margin-bottom:0.2rem;}
+        .modal-box .form-group input,.modal-box .form-group select,.modal-box .form-group textarea{width:100%;padding:0.4rem 0.6rem;background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.2);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.8rem;outline:none;border-radius:2px;}
+        .modal-box .form-group select option{background:#0a1628;}
+        .modal-box .modal-actions{display:flex;gap:0.5rem;justify-content:flex-end;margin-top:1rem;}
+        .modal-box .modal-actions button{padding:0.4rem 1rem;font-family:'Share Tech Mono',monospace;font-size:0.78rem;cursor:pointer;border-radius:3px;transition:all 0.15s;}
+        .btn-cancel{border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:#fff;}
+        .btn-save{border:1px solid rgba(0,170,255,0.4);background:rgba(0,170,255,0.15);color:var(--accent-cyan);font-weight:700;}
+        .btn-save:hover{background:rgba(0,170,255,0.3);}
+        .btn-delete{border:1px solid rgba(255,68,68,0.4);background:rgba(255,68,68,0.08);color:#ff6666;}
+        .btn-delete:hover{background:rgba(255,68,68,0.15);}
+        .alert-msg{padding:0.6rem 1rem;border-radius:3px;margin-bottom:1rem;font-size:0.8rem;font-family:'Share Tech Mono',monospace;display:none;}
+        .alert-msg.success{display:block;background:rgba(0,200,80,0.08);border:1px solid rgba(0,200,80,0.3);color:#00cc55;}
+        .alert-msg.error{display:block;background:rgba(255,60,60,0.1);border:1px solid rgba(255,60,60,0.3);color:#ff4444;}
+        .sync-indicator{position:fixed;bottom:1rem;right:1rem;padding:0.4rem 0.8rem;border-radius:3px;font-family:'Share Tech Mono',monospace;font-size:0.72rem;z-index:999;transition:all 0.3s;pointer-events:none;opacity:0;}
+        .sync-indicator.syncing{opacity:1;background:rgba(255,200,0,0.15);border:1px solid rgba(255,200,0,0.4);color:#ffc800;}
+        .sync-indicator.synced{opacity:1;background:rgba(0,200,80,0.15);border:1px solid rgba(0,200,80,0.4);color:#00cc55;}
+        .sync-indicator.error{opacity:1;background:rgba(255,60,60,0.15);border:1px solid rgba(255,60,60,0.4);color:#ff4444;}
+        .sync-indicator.hidden{opacity:0;}
+        #access-denied,#notApproved{display:none;text-align:center;padding:3rem;}
+        @media(max-width:900px){.planning-grid{font-size:0.6rem;}.planning-grid .day-header,.planning-grid .time-header{font-size:0.55rem;}.slot-entry{font-size:0.55rem;}}
+    </style>
 </head>
 <body>
-    <!-- Scanline overlay -->
     <div class="scanline-overlay"></div>
     <div class="particles-bg"></div>
     <header class="site-header">
@@ -19,172 +69,155 @@
             <div class="header-content">
                 <div class="logo-section">
                     <div class="logo-icon">M</div>
-                    <div>
-                        <h1 class="logo">MPF</h1>
-                        <p class="logo-subtitle">Metropolice Force Documentation</p>
-                    </div>
+                    <div><h1 class="logo">MPF</h1><p class="logo-subtitle">Planning Hebdomadaire</p></div>
                 </div>
-                <div id="authBtn"></div>
+                <div id="authBtn" class="header-auth"></div>
             </div>
         </div>
     </header>
-
     <main>
         <div class="container">
-            <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;">
-                <div class="combine-header">
-                    <h2>TABLEAUX D'ACTIVITE</h2>
-                    <span class="header-code">ACT-01 // REGISTRE OPÉRATIONNEL</span>
-                </div>
-
-                <div style="text-align: center; margin: 1.5rem 0; padding: 1rem; background: rgba(0, 170, 255, 0.02); border: 1px solid rgba(0, 170, 255, 0.08);">
-                    <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7;">
-                        Les tableaux d'activité centralisent le suivi opérationnel de chaque unite. Mis a jour par le commandement et les dispatchers (04+).
-                    </p>
-                </div>
-
-                <!-- Tableau des presences -->
-                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
-                    <div class="combine-header">
-                        <h2>REGISTRE DE PRESENCE</h2>
-                        <span class="header-code">MODELE STANDARD</span>
+            <div id="loading" style="text-align:center;padding:3rem;"><p style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;">CHARGEMENT...</p></div>
+            <div id="access-denied"><h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">CONNEXION REQUISE</h2><a href="login.html" style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;display:inline-block;margin-top:1rem;">→ SE CONNECTER</a></div>
+            <div id="notApproved"><h2 style="color:#ffaa00;font-family:'Orbitron',sans-serif;">EN ATTENTE D'APPROBATION</h2></div>
+            <div id="mainContent" style="display:none;">
+                <div class="planning-wrapper">
+                    <div id="alertMsg" class="alert-msg"></div>
+                    <div class="week-nav">
+                        <button onclick="changeWeek(-1)">◄ SEMAINE PRÉC.</button>
+                        <span class="week-label" id="weekLabel">---</span>
+                        <button onclick="changeWeek(1)">SEMAINE SUIV. ►</button>
                     </div>
-                    <div style="overflow-x: auto;">
-                        <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 600px;">
-                            <thead>
-                                <tr style="border-bottom: 2px solid rgba(0, 170, 255, 0.15);">
-                                    <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">DESIGNATION</th>
-                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">LUN</th>
-                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">MAR</th>
-                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">MER</th>
-                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">JEU</th>
-                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">VEN</th>
-                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">SAM</th>
-                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">DIM</th>
-                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">TOTAL</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
-                                    <td style="padding: 0.5rem; color: var(--text-primary);">MPF-05.XXX</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green);">P</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green);">P</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">-</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green);">P</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green);">P</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green);">P</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">-</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green); font-weight: 700;">5/7</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
-                                    <td style="padding: 0.5rem; color: var(--text-primary);">MPF-03.XXX</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green);">P</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">-</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green);">P</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">-</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green);">P</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">-</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">-</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green); font-weight: 700;">3/7</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 0.5rem; color: var(--text-primary);">MPF-RCT.XXX</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green);">P</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">-</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">-</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">-</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">-</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">-</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">-</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: #ff4444; font-weight: 700;">1/7</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="legend">
+                        <div class="legend-item"><div class="legend-dot" style="background:rgba(0,170,255,0.4);"></div><span>Formation</span></div>
+                        <div class="legend-item"><div class="legend-dot" style="background:rgba(255,200,0,0.4);"></div><span>Test</span></div>
+                        <div class="legend-item"><div class="legend-dot" style="background:rgba(0,200,80,0.4);"></div><span>Recrutement</span></div>
+                        <div class="legend-item"><div class="legend-dot" style="background:rgba(255,100,60,0.4);"></div><span>Opération</span></div>
+                        <div class="legend-item"><div class="legend-dot" style="background:rgba(100,200,255,0.4);"></div><span>Patrouille</span></div>
+                        <div class="legend-item"><div class="legend-dot" style="background:rgba(200,100,255,0.4);"></div><span>Autre</span></div>
                     </div>
-                    <div style="margin-top: 0.8rem; font-size: 0.8rem; color: var(--text-muted);">
-                        <span style="color: var(--accent-green); font-weight: 600;">P</span> = Present | <span style="color: var(--text-muted); font-weight: 600;">-</span> = Absent | <span style="color: #ffcc00; font-weight: 600;">A</span> = Absence declaree | <span style="color: #ff4444; font-weight: 600;">S</span> = Suspendu
-                    </div>
-                </div>
-
-                <!-- Tableau verdicts -->
-                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
-                    <div class="combine-header">
-                        <h2>REGISTRE DES VERDICTS</h2>
-                        <span class="header-code">SUIVI HEBDOMADAIRE</span>
-                    </div>
-                    <div style="overflow-x: auto;">
-                        <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 600px;">
-                            <thead>
-                                <tr style="border-bottom: 2px solid rgba(0, 170, 255, 0.15);">
-                                    <th style="text-align: left; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">UNITE</th>
-                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">V1</th>
-                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">V2</th>
-                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">V3</th>
-                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">V4</th>
-                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">V5+</th>
-                                    <th style="text-align: center; padding: 0.6rem; color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;">TOTAL</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
-                                    <td style="padding: 0.5rem; color: var(--text-primary);">MPF-05.XXX</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">3</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">1</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">2</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">0</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">0</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green); font-weight: 700;">6</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid rgba(0, 170, 255, 0.06);">
-                                    <td style="padding: 0.5rem; color: var(--text-primary);">MPF-03.XXX</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">5</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">2</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">0</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">0</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--text-muted);">0</td>
-                                    <td style="padding: 0.5rem; text-align: center; color: var(--accent-green); font-weight: 700;">7</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Classement -->
-                <div class="combine-terminal-wrapper" style="margin-top: 1rem; background: rgba(0, 170, 255, 0.02);">
-                    <div class="combine-header">
-                        <h2>BAREME D'EVALUATION</h2>
-                        <span class="header-code">CRITERES DE PERFORMANCE</span>
-                    </div>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.8rem; padding: 0.5rem 0;">
-                        <div style="padding: 0.8rem; border: 1px solid rgba(0, 255, 100, 0.1); background: rgba(0, 255, 100, 0.02);">
-                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-green);">EXCELLENT</div>
-                            <div style="color: var(--text-primary); font-size: 0.9rem; margin: 0.3rem 0;">5+ presences / semaine</div>
-                            <div style="color: var(--text-muted); font-size: 0.8rem;">Eligible a promotion</div>
-                        </div>
-                        <div style="padding: 0.8rem; border: 1px solid rgba(0, 170, 255, 0.1); background: rgba(0, 170, 255, 0.02);">
-                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan);">SATISFAISANT</div>
-                            <div style="color: var(--text-primary); font-size: 0.9rem; margin: 0.3rem 0;">3-4 presences / semaine</div>
-                            <div style="color: var(--text-muted); font-size: 0.8rem;">Standard accepte</div>
-                        </div>
-                        <div style="padding: 0.8rem; border: 1px solid rgba(255, 200, 0, 0.1); background: rgba(255, 200, 0, 0.02);">
-                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: #ffcc00;">INSUFFISANT</div>
-                            <div style="color: var(--text-primary); font-size: 0.9rem; margin: 0.3rem 0;">1-2 presences / semaine</div>
-                            <div style="color: var(--text-muted); font-size: 0.8rem;">Avertissement</div>
-                        </div>
-                        <div style="padding: 0.8rem; border: 1px solid rgba(255, 68, 68, 0.1); background: rgba(255, 68, 68, 0.02);">
-                            <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: #ff4444;">CRITIQUE</div>
-                            <div style="color: var(--text-primary); font-size: 0.9rem; margin: 0.3rem 0;">0 presences / semaine</div>
-                            <div style="color: var(--text-muted); font-size: 0.8rem;">Retrogradation / Amputation</div>
+                    <div class="combine-terminal-wrapper animate-fadeInUp">
+                        <div class="combine-header"><h2>📅 PLANNING DE LA SEMAINE</h2><span class="header-code" id="entryCount">0 ENTRÉES</span></div>
+                        <div class="combine-body" style="padding:0;overflow-x:auto;">
+                            <div class="planning-grid" id="planningGrid"></div>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </main>
-
+    <script type="module" src="assets/js/auth.js"></script>
     <script src="assets/js/global-nav.js"></script>
     <script src="assets/js/interactive-system.js"></script>
     <script src="assets/js/combine-animations.js"></script>
+    <script type="module">
+      import { auth, db } from './assets/js/auth.js';
+      import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+      import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+      import { loadUnits, loadPlanning, addPlanningEntry, updatePlanningEntry, deletePlanningEntry, onSyncStatus } from './assets/js/github-data.js';
+
+      let currentUser=null, isHG=false, canEdit=false, userMatricule='';
+      let allEntries=[], weekOffset=0;
+      const DAYS=['LUN','MAR','MER','JEU','VEN','SAM','DIM'];
+      const SLOTS=['00:00','00:30','01:00','01:30','02:00','02:30','03:00','03:30','04:00','04:30','05:00','05:30','06:00','06:30','07:00','07:30','08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30','21:00','21:30','22:00','22:30','23:00','23:30'];
+      const TYPES=['Formation','Test','Recrutement','Opération','Patrouille','Autre'];
+
+      function showAlert(t,type='success'){const e=document.getElementById('alertMsg');e.style.display='block';e.className='alert-msg '+type;e.textContent=t;setTimeout(()=>e.style.display='none',5000);}
+      function fmtDate(d){if(!d)return'-';const p=d.split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:d;}
+      {const i=document.createElement('div');i.id='syncIndicator';i.className='sync-indicator hidden';document.body.appendChild(i);let t=null;onSyncStatus(s=>{clearTimeout(t);if(s==='syncing'){i.innerHTML='<span style="display:inline-block;animation:spin 1s linear infinite;">⟳</span> Sync...';i.className='sync-indicator syncing';}else if(s==='synced'){i.innerHTML='✓ Sync';i.className='sync-indicator synced';t=setTimeout(()=>i.className='sync-indicator hidden',2500);}else{i.innerHTML='⚠ Erreur';i.className='sync-indicator error';t=setTimeout(()=>i.className='sync-indicator hidden',6000);}});}
+
+      function getWeekDates(offset=0){
+        const now=new Date();now.setDate(now.getDate()+offset*7);
+        const day=now.getDay();const diff=now.getDate()-day+(day===0?-6:1);
+        const mon=new Date(now);mon.setDate(diff);mon.setHours(0,0,0,0);
+        const dates=[];for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);dates.push(d.toISOString().substring(0,10));}
+        return dates;
+      }
+
+      function getTypeClass(type){
+        const t=(type||'').toLowerCase();
+        if(t.includes('formation'))return'type-formation';
+        if(t.includes('test'))return'type-test';
+        if(t.includes('recrutement'))return'type-recrutement';
+        if(t.includes('opération')||t.includes('operation'))return'type-operation';
+        if(t.includes('patrouille'))return'type-patrouille';
+        return'type-autre';
+      }
+
+      function renderPlanning(){
+        const dates=getWeekDates(weekOffset);
+        const today=new Date().toISOString().substring(0,10);
+        document.getElementById('weekLabel').textContent=fmtDate(dates[0])+' — '+fmtDate(dates[6]);
+
+        // Filter entries for this week
+        const weekEntries=allEntries.filter(e=>dates.includes(e.date));
+        document.getElementById('entryCount').textContent=weekEntries.length+' ENTRÉE'+(weekEntries.length>1?'S':'');
+
+        // Build grid
+        const grid=document.getElementById('planningGrid');
+        let html='<div class="time-header">HEURE</div>';
+        DAYS.forEach((d,i)=>{html+=`<div class="day-header${dates[i]===today?' today':''}">${d}<br><span style="font-size:0.55rem;opacity:0.7;">${dates[i].substring(8)}</span></div>`;});
+
+        SLOTS.forEach(slot=>{
+          html+=`<div class="time-cell">${slot}</div>`;
+          dates.forEach((date,di)=>{
+            const cellEntries=weekEntries.filter(e=>e.date===date&&e.slot===slot);
+            const entriesHtml=cellEntries.map(e=>`<div class="slot-entry ${getTypeClass(e.type)}" onclick="event.stopPropagation();showEntryDetail('${e._id}')" title="${e.type} — ${e.description||''} (${e.matricule})">${e.type.substring(0,4)} ${e.matricule||''}</div>`).join('');
+            const addBtn=canEdit?`<div class="slot-add" onclick="event.stopPropagation();openAddModal('${date}','${slot}')">+</div>`:'';
+            html+=`<div class="slot-cell" onclick="openAddModal('${date}','${slot}')">${entriesHtml}${addBtn}</div>`;
+          });
+        });
+        grid.innerHTML=html;
+      }
+
+      window.changeWeek=function(dir){weekOffset+=dir;renderPlanning();};
+
+      window.openAddModal=function(date,slot){
+        if(!canEdit){return;}
+        const o=document.createElement('div');o.className='modal-overlay';
+        o.innerHTML=`<div class="modal-box"><h3>AJOUTER UNE ENTRÉE</h3><div class="form-group"><label>DATE</label><input type="date" id="mDate" value="${date}"></div><div class="form-group"><label>CRÉNEAU</label><select id="mSlot">${SLOTS.map(s=>`<option value="${s}"${s===slot?' selected':''}>${s}</option>`).join('')}</select></div><div class="form-group"><label>TYPE</label><select id="mType">${TYPES.map(t=>`<option value="${t}">${t}</option>`).join('')}</select></div><div class="form-group"><label>DESCRIPTION</label><input type="text" id="mDesc" placeholder="Détails (optionnel)"></div><div class="modal-actions"><button class="btn-cancel" onclick="this.closest('.modal-overlay').remove()">ANNULER</button><button class="btn-save" onclick="saveEntry()">AJOUTER</button></div></div>`;
+        document.body.appendChild(o);o.addEventListener('click',e=>{if(e.target===o)o.remove();});
+      };
+
+      window.saveEntry=async function(){
+        const date=document.getElementById('mDate').value;
+        const slot=document.getElementById('mSlot').value;
+        const type=document.getElementById('mType').value;
+        const desc=document.getElementById('mDesc').value.trim();
+        if(!date||!slot||!type){showAlert('Champs requis','error');return;}
+        const entry={date,slot,type,description:desc,matricule:userMatricule,created_at:new Date().toISOString().substring(0,10)};
+        try{const saved=await addPlanningEntry(entry);allEntries.push(saved);document.querySelector('.modal-overlay')?.remove();showAlert('✓ Entrée ajoutée');renderPlanning();}catch(e){showAlert('✗ '+e.message,'error');}
+      };
+
+      window.showEntryDetail=function(id){
+        const e=allEntries.find(x=>x._id===id);if(!e)return;
+        const canModify=isHG||(canEdit&&e.matricule===userMatricule);
+        const o=document.createElement('div');o.className='modal-overlay';
+        o.innerHTML=`<div class="modal-box"><h3>${e.type}</h3><div class="form-group"><label>DATE</label><input type="text" value="${fmtDate(e.date)}" readonly style="opacity:0.6;"></div><div class="form-group"><label>CRÉNEAU</label><input type="text" value="${e.slot}" readonly style="opacity:0.6;"></div><div class="form-group"><label>MATRICULE</label><input type="text" value="${e.matricule||'-'}" readonly style="opacity:0.6;"></div><div class="form-group"><label>DESCRIPTION</label><input type="text" value="${e.description||'-'}" readonly style="opacity:0.6;"></div><div class="modal-actions">${canModify?`<button class="btn-delete" onclick="deleteEntry('${e._id}')">SUPPRIMER</button>`:''}<button class="btn-cancel" onclick="this.closest('.modal-overlay').remove()">FERMER</button></div></div>`;
+        document.body.appendChild(o);o.addEventListener('click',ev=>{if(ev.target===o)o.remove();});
+      };
+
+      window.deleteEntry=async function(id){
+        try{await deletePlanningEntry(id);allEntries=allEntries.filter(e=>e._id!==id);document.querySelector('.modal-overlay')?.remove();showAlert('✓ Entrée supprimée');renderPlanning();}catch(e){showAlert('✗ '+e.message,'error');}
+      };
+
+      onAuthStateChanged(auth, async(user)=>{
+        if(!user){document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';return;}
+        try{const s=await getDoc(doc(db,'users',user.uid));if(!s.exists()||!s.data().approved){document.getElementById('loading').style.display='none';if(!s.exists())document.getElementById('access-denied').style.display='block';else document.getElementById('notApproved').style.display='block';return;}
+        const ud=s.data();userMatricule=ud.matricule||'???';currentUser=ud;
+        let units=[];try{units=await loadUnits();}catch(_){}
+        const ui=units.find(x=>x.matricule===userMatricule);
+        const rang=ui?(ui.rang||''):'';
+        isHG=rang==='Ofc'||rang==='Cmd';
+        // .04+ can add/edit own entries, HG full control
+        const rankOrder=['RCT','.05','.04','.03','STB','.02','.01','DvL','STBE','CABAL','Ofc','Cmd'];
+        const ri=rankOrder.indexOf(rang);
+        canEdit=isHG||ri>=2; // .04 is index 2
+        document.getElementById('loading').style.display='none';document.getElementById('mainContent').style.display='block';
+        try{allEntries=await loadPlanning();}catch(_){allEntries=[];}
+        renderPlanning();
+        }catch(e){console.error(e);document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';}
+      });
+    </script>
 </body>
 </html>

@@ -74,8 +74,8 @@
         .form-group.error .error-msg { display: block; }
 
         /* Champs conditionnels */
-        #grpCitoyens, #grpSousFouille, #grpSousConscription { display: none; }
-        #grpCitoyens.visible, #grpSousFouille.visible, #grpSousConscription.visible { display: block; }
+        #grpCitoyens, #grpSousFouille, #grpSousConscription, #grpSousIncident { display: none; }
+        #grpCitoyens.visible, #grpSousFouille.visible, #grpSousConscription.visible, #grpSousIncident.visible { display: block; }
 
         /* Sélection multiple unités */
         .units-selector {
@@ -343,6 +343,7 @@
                                         <option value="Déblayage">Déblayage</option>
                                         <option value="Interrogatoire">Interrogatoire</option>
                                         <option value="Test de loyauté">Test de loyauté</option>
+                                        <option value="Incident">Incident</option>
                                         <option value="Autre">Autre</option>
                                     </select>
                                     <div class="error-msg" id="errType"></div>
@@ -398,6 +399,36 @@
                                 <option value="Autre">Autre</option>
                               </select>
                               <div class="error-msg" id="errSessionTravail"></div>
+                            </div>
+
+                            <!-- Sous-catégorie Incident -->
+                            <div class="form-group" id="grpSousIncident">
+                              <label>TYPE D'INCIDENT <span class="req">*</span></label>
+                              <select id="fSousIncident">
+                                <option value="">— Sélectionner —</option>
+                                <option value="Unités">Unités</option>
+                                <option value="CWU">CWU</option>
+                                <option value="Loyaliste">Loyaliste</option>
+                              </select>
+                              <div class="error-msg" id="errSousIncident"></div>
+                            </div>
+
+                            <!-- Gain activité -->
+                            <div class="row-2">
+                              <div class="form-group" id="grpGain">
+                                <label>GAIN</label>
+                                <select id="fGain" onchange="onGainChange()">
+                                  <option value="">— Aucun —</option>
+                                  <option value="Oui">Oui</option>
+                                  <option value="Non">Non</option>
+                                </select>
+                                <div class="hint">Y a-t-il eu un gain lors de cette activité ?</div>
+                              </div>
+                              <div class="form-group" id="grpGainMontant" style="display:none;">
+                                <label>MONTANT DU GAIN</label>
+                                <input type="number" id="fGainMontant" min="0" placeholder="Ex: 500">
+                                <div class="hint">Montant en tokens</div>
+                              </div>
                             </div>
 
                             <!-- Champ conditionnel : nombre de citoyens (Distribution ration) -->
@@ -509,12 +540,14 @@
         const grpConscription = document.getElementById('grpSousConscription');
         const grpGainConscription = document.getElementById('grpGainConscription');
         const grpSessionTravail = document.getElementById('grpSessionTravail');
+        const grpIncident = document.getElementById('grpSousIncident');
         const secteurInput = document.getElementById('fSecteur');
 
         // Reset tous les sous-groupes
         grpCit.classList.remove('visible');
         grpFouille.classList.remove('visible');
         grpConscription.classList.remove('visible');
+        grpIncident.classList.remove('visible');
         grpGainConscription.style.display = 'none';
         grpSessionTravail.style.display = 'none';
         document.getElementById('fCitoyens').value = '';
@@ -522,6 +555,7 @@
         document.getElementById('fSousConscription').value = '';
         document.getElementById('fGainConscription').value = '';
         document.getElementById('fSessionTravail').value = '';
+        document.getElementById('fSousIncident').value = '';
 
         // Afficher le sous-groupe correspondant
         if (v === 'Fouille') grpFouille.classList.add('visible');
@@ -531,6 +565,9 @@
         }
         if (v === 'Session de travail') {
           grpSessionTravail.style.display = '';
+        }
+        if (v === 'Incident') {
+          grpIncident.classList.add('visible');
         }
         if (v === 'Distribution ration') {
           grpCit.classList.add('visible');
@@ -545,6 +582,13 @@
           secteurInput.style.cursor = '';
           secteurInput.placeholder = 'Ex: Secteur 3, Nexus, Slums...';
         }
+      };
+
+      /* === Gestion du champ gain === */
+      window.onGainChange = function() {
+        const v = document.getElementById('fGain').value;
+        document.getElementById('grpGainMontant').style.display = v === 'Oui' ? '' : 'none';
+        if (v !== 'Oui') document.getElementById('fGainMontant').value = '';
       };
 
       /* === Gestion du dropdown des unités === */
@@ -654,7 +698,7 @@
         parseManualUnits();
 
         let ok=true;
-        ['grpType','grpResume','grpCitoyens','grpSousFouille','grpSousConscription','grpGainConscription','grpSessionTravail'].forEach(id=>document.getElementById(id).classList.remove('error'));
+        ['grpType','grpResume','grpCitoyens','grpSousFouille','grpSousConscription','grpGainConscription','grpSessionTravail','grpSousIncident'].forEach(id=>document.getElementById(id).classList.remove('error'));
         const typeVal = document.getElementById('fType').value;
         if (!typeVal) { document.getElementById('grpType').classList.add('error'); document.getElementById('errType').textContent='Sélectionnez un type'; ok=false; }
         if (!document.getElementById('fResume').value.trim()) { document.getElementById('grpResume').classList.add('error'); document.getElementById('errResume').textContent='Le résumé est obligatoire'; ok=false; }
@@ -683,6 +727,12 @@
           document.getElementById('errSessionTravail').textContent='Sélectionnez le type de session';
           ok=false;
         }
+        // Validation sous-catégorie Incident
+        if (typeVal === 'Incident' && !document.getElementById('fSousIncident').value) {
+          document.getElementById('grpSousIncident').classList.add('error');
+          document.getElementById('errSousIncident').textContent='Sélectionnez le type d\'incident';
+          ok=false;
+        }
         // Validation citoyens si Distribution ration
         if (typeVal === 'Distribution ration') {
           const nb = document.getElementById('fCitoyens').value;
@@ -697,7 +747,7 @@
         const btn=document.getElementById('btnSubmit'); btn.disabled=true; btn.textContent='⏳ ENVOI...';
         const r = {
           matricule: currentUser.matricule, nom_steam: currentUser.nom_steam||'',
-          type: typeVal === 'Fouille' ? document.getElementById('fSousFouille').value : (typeVal === 'Conscription' ? document.getElementById('fSousConscription').value + ' (Conscription)' : (typeVal === 'Session de travail' ? document.getElementById('fSessionTravail').value + ' (Session de travail)' : typeVal)),
+          type: typeVal === 'Fouille' ? document.getElementById('fSousFouille').value : (typeVal === 'Conscription' ? document.getElementById('fSousConscription').value + ' (Conscription)' : (typeVal === 'Session de travail' ? document.getElementById('fSessionTravail').value + ' (Session de travail)' : (typeVal === 'Incident' ? document.getElementById('fSousIncident').value + ' (Incident)' : typeVal))),
           secteur: document.getElementById('fSecteur').value.trim(),
           unités: document.getElementById('fUnites').value.trim(),
           resume: document.getElementById('fResume').value.trim(),
@@ -713,6 +763,14 @@
         // Ajouter gain conscription
         if (typeVal === 'Conscription') {
           r.gain_conscription = document.getElementById('fGainConscription').value;
+        }
+        // Ajouter gain activité
+        const gainVal = document.getElementById('fGain').value;
+        if (gainVal) {
+          r.gain = gainVal;
+          if (gainVal === 'Oui') {
+            r.gain_montant = parseInt(document.getElementById('fGainMontant').value) || 0;
+          }
         }
         allReports.push(r);
         try {
@@ -755,11 +813,13 @@
       };
 
       window.resetForm = function() {
-        ['fType','fSecteur','fUnites','fResume','fNotes','fCitoyens','fSousFouille','fSousConscription'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-        ['grpType','grpResume','grpCitoyens','grpSousFouille','grpSousConscription'].forEach(id=>document.getElementById(id).classList.remove('error'));
+        ['fType','fSecteur','fUnites','fResume','fNotes','fCitoyens','fSousFouille','fSousConscription','fSousIncident','fGain','fGainMontant'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+        ['grpType','grpResume','grpCitoyens','grpSousFouille','grpSousConscription','grpSousIncident'].forEach(id=>document.getElementById(id).classList.remove('error'));
         document.getElementById('grpCitoyens').classList.remove('visible');
         document.getElementById('grpSousFouille').classList.remove('visible');
         document.getElementById('grpSousConscription').classList.remove('visible');
+        document.getElementById('grpSousIncident').classList.remove('visible');
+        document.getElementById('grpGainMontant').style.display='none';
         selectedUnits.clear();
         renderUnitsTags();
         filterUnitsDropdown();

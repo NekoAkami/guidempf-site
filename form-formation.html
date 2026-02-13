@@ -9,55 +9,188 @@
     <link rel="stylesheet" href="assets/css/global-nav.css">
     <link rel="stylesheet" href="assets/css/interactive-system.css">
     <link rel="stylesheet" href="assets/css/combine-animations.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        .form-wrapper{max-width:700px;margin:0 auto;}
+        .user-info-bar{display:flex;align-items:center;gap:1rem;padding:0.8rem 1rem;background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.15);border-radius:4px;margin-bottom:1.5rem;font-family:'Share Tech Mono',monospace;font-size:0.8rem;}
+        .user-info-bar .user-avatar{width:42px;height:42px;background:rgba(0,170,255,0.15);border:1px solid var(--accent-cyan);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:0.85rem;color:var(--accent-cyan);font-weight:700;flex-shrink:0;}
+        .user-info-bar .user-matricule{font-family:'Orbitron',sans-serif;font-size:0.82rem;color:var(--accent-cyan);font-weight:700;}
+        .user-info-bar .user-status{font-size:0.68rem;padding:0.15rem 0.5rem;border-radius:2px;background:rgba(0,200,80,0.1);border:1px solid rgba(0,200,80,0.3);color:#00cc55;}
+        .form-group{margin-bottom:1.2rem;}
+        .form-group label{display:block;font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--text-muted);letter-spacing:1px;margin-bottom:0.3rem;}
+        .form-group label .req{color:#ff4444;}
+        .form-group input,.form-group textarea,.form-group select{width:100%;padding:0.5rem 0.7rem;background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.2);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.82rem;outline:none;border-radius:2px;}
+        .form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--accent-cyan);}
+        .form-group select option{background:#0a1628;color:var(--text-primary);}
+        .form-group textarea{resize:vertical;min-height:80px;}
+        .form-group .hint{font-size:0.68rem;color:var(--text-muted);margin-top:0.2rem;font-family:'Share Tech Mono',monospace;}
+        .form-group.error input,.form-group.error textarea,.form-group.error select{border-color:#ff4444;}
+        .form-group .error-msg{font-size:0.7rem;color:#ff4444;margin-top:0.2rem;font-family:'Share Tech Mono',monospace;display:none;}
+        .form-group.error .error-msg{display:block;}
+        .row-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+        .form-actions{display:flex;gap:0.8rem;margin-top:1.5rem;justify-content:flex-end;}
+        .btn-action{padding:0.5rem 1.2rem;font-family:'Share Tech Mono',monospace;font-size:0.8rem;cursor:pointer;border:1px solid rgba(0,170,255,0.4);background:rgba(0,170,255,0.1);color:var(--accent-cyan);border-radius:3px;transition:all 0.15s;letter-spacing:0.5px;}
+        .btn-action:hover{background:rgba(0,170,255,0.2);border-color:var(--accent-cyan);}
+        .btn-action.primary{background:rgba(0,170,255,0.2);border-color:var(--accent-cyan);font-weight:700;}
+        .btn-action.primary:hover{background:rgba(0,170,255,0.35);}
+        .btn-action:disabled{opacity:0.4;cursor:not-allowed;}
+        .alert-msg{padding:0.6rem 1rem;border-radius:3px;margin-bottom:1rem;font-size:0.8rem;font-family:'Share Tech Mono',monospace;display:none;}
+        .alert-msg.success{display:block;background:rgba(0,200,80,0.08);border:1px solid rgba(0,200,80,0.3);color:#00cc55;}
+        .alert-msg.error{display:block;background:rgba(255,60,60,0.1);border:1px solid rgba(255,60,60,0.3);color:#ff4444;}
+        .tab-bar{display:flex;gap:0;margin-bottom:1.5rem;border-bottom:2px solid rgba(0,170,255,0.15);}
+        .tab-btn{padding:0.5rem 1.2rem;font-family:'Orbitron',sans-serif;font-size:0.72rem;color:var(--text-muted);background:transparent;border:none;cursor:pointer;letter-spacing:1px;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.2s;}
+        .tab-btn:hover{color:var(--accent-cyan);}
+        .tab-btn.active{color:var(--accent-cyan);border-bottom-color:var(--accent-cyan);font-weight:700;}
+        .tab-content{display:none;}
+        .tab-content.active{display:block;}
+        .archives-table{width:100%;border-collapse:collapse;font-family:'Share Tech Mono',monospace;}
+        .archives-table th{text-align:left;padding:0.5rem 0.4rem;color:var(--accent-cyan);font-size:0.68rem;letter-spacing:1px;border-bottom:2px solid rgba(0,170,255,0.2);}
+        .archives-table td{padding:0.4rem;color:var(--text-primary);border-bottom:1px solid rgba(0,170,255,0.06);vertical-align:middle;font-size:0.78rem;}
+        .archives-table tr:hover{background:rgba(0,170,255,0.03);cursor:pointer;}
+        .detail-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.75);z-index:1000;display:flex;align-items:center;justify-content:center;}
+        .detail-box{background:#0a1628;border:1px solid rgba(0,170,255,0.2);padding:1.5rem;border-radius:6px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;}
+        .detail-box h3{color:#fff;font-family:'Orbitron',sans-serif;font-size:0.9rem;margin-bottom:1rem;}
+        .detail-box .detail-row{display:flex;gap:0.5rem;margin-bottom:0.5rem;font-family:'Share Tech Mono',monospace;font-size:0.82rem;}
+        .detail-box .detail-label{color:var(--text-muted);min-width:150px;}
+        .detail-box .detail-value{color:var(--text-primary);flex:1;}
+        .detail-box .close-btn{margin-top:1rem;padding:0.4rem 1rem;border:1px solid rgba(0,170,255,0.2);background:rgba(0,170,255,0.05);color:#fff;font-family:'Share Tech Mono',monospace;font-size:0.8rem;cursor:pointer;border-radius:3px;display:block;margin-left:auto;}
+        .sync-indicator{position:fixed;bottom:1rem;right:1rem;padding:0.4rem 0.8rem;border-radius:3px;font-family:'Share Tech Mono',monospace;font-size:0.72rem;z-index:999;transition:all 0.3s;pointer-events:none;opacity:0;}
+        .sync-indicator.syncing{opacity:1;background:rgba(255,200,0,0.15);border:1px solid rgba(255,200,0,0.4);color:#ffc800;}
+        .sync-indicator.synced{opacity:1;background:rgba(0,200,80,0.15);border:1px solid rgba(0,200,80,0.4);color:#00cc55;}
+        .sync-indicator.error{opacity:1;background:rgba(255,60,60,0.15);border:1px solid rgba(255,60,60,0.4);color:#ff4444;}
+        .sync-indicator.hidden{opacity:0;}
+        #access-denied,#notApproved,#noAccess{display:none;text-align:center;padding:3rem;}
+    </style>
 </head>
 <body>
     <div class="scanline-overlay"></div>
     <div class="particles-bg"></div>
-
     <header class="site-header">
         <div class="container">
             <div class="header-content">
                 <div class="logo-section">
                     <div class="logo-icon">M</div>
-                    <div>
-                        <h1 class="logo">MPF</h1>
-                        <p class="logo-subtitle">Metropolice Force Documentation</p>
-                    </div>
+                    <div><h1 class="logo">MPF</h1><p class="logo-subtitle">Formulaire de Formation</p></div>
                 </div>
-                <div id="authBtn"></div>
+                <div id="authBtn" class="header-auth"></div>
             </div>
         </div>
     </header>
-
     <main>
         <div class="container">
-            <div class="combine-terminal-wrapper animate-fadeInUp" style="margin-top: 1.5rem;">
-                <div class="combine-header">
-                    <h2>🎓 FORMATION</h2>
-                    <span class="header-code">FORMULAIRE // SUIVI DE FORMATION</span>
-                </div>
-                <div class="combine-body" style="padding: 0;">
-                    <div style="padding: 0.8rem 1rem 0.5rem; border-bottom: 1px solid rgba(0,170,255,0.1);">
-                        <p style="color: var(--text-muted); font-size: 0.82rem; font-family: 'Share Tech Mono', monospace;">
-                            ▸ Formulaire de déclaration et suivi de formation.
-                        </p>
+            <div id="loading" style="text-align:center;padding:3rem;"><p style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;">CHARGEMENT...</p></div>
+            <div id="access-denied"><h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">CONNEXION REQUISE</h2><a href="login.html" style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;display:inline-block;margin-top:1rem;">→ SE CONNECTER</a></div>
+            <div id="notApproved"><h2 style="color:#ffaa00;font-family:'Orbitron',sans-serif;">EN ATTENTE D'APPROBATION</h2></div>
+            <div id="noAccess"><h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">ACCÈS RESTREINT</h2><p style="color:var(--text-muted);font-family:'Share Tech Mono',monospace;margin-top:0.5rem;">Ce formulaire est réservé aux <span style="color:var(--accent-cyan);font-weight:700;">Formateurs</span> et <span style="color:var(--accent-cyan);font-weight:700;">HautGradés</span>.</p><a href="formulaires.html" style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;display:inline-block;margin-top:1rem;">← RETOUR AUX FORMULAIRES</a></div>
+            <div id="mainContent" style="display:none;">
+                <div class="form-wrapper">
+                    <div class="user-info-bar">
+                        <div class="user-avatar" id="userAvatar">?</div>
+                        <div style="flex:1;"><div class="user-matricule" id="userIdentification">---</div></div>
+                        <div class="user-status">CONNECTÉ</div>
                     </div>
-                    <iframe 
-                        src="https://docs.google.com/forms/d/e/1FAIpQLSfmBPAKa0__gtR2ESbITPA2a1nzkwN8_tbVPEcWc5-CaHAc1A/viewform?embedded=true"
-                        style="width: 100%; height: 800px; border: none;"
-                        loading="lazy"
-                        title="Formulaire Formation">
-                    </iframe>
-                </div>
-                <div class="combine-footer">
-                    <a href="formulaires.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.75rem;">← RETOUR AUX FORMULAIRES</a>
+                    <div class="tab-bar">
+                        <button class="tab-btn active" onclick="switchTab('form')">FORMULAIRE</button>
+                        <button class="tab-btn" onclick="switchTab('archives')">ARCHIVES</button>
+                    </div>
+                    <div id="alertMsg" class="alert-msg"></div>
+                    <!-- TAB: Formulaire -->
+                    <div id="tabForm" class="tab-content active">
+                        <div class="combine-terminal-wrapper">
+                            <div class="combine-header"><h2>🎓 DÉCLARATION DE FORMATION</h2><span class="header-code">FORM-05</span></div>
+                            <div class="combine-body">
+                                <div class="row-2">
+                                    <div class="form-group" id="grpType"><label>TYPE DE FORMATION <span class="req">*</span></label><select id="fType"><option value="">— Sélectionner —</option><option value="Formation initiale">Formation initiale</option><option value="Formation armement">Formation armement</option><option value="Formation avancée">Formation avancée</option><option value="Formation spécialisée">Formation spécialisée</option><option value="Recyclage">Recyclage</option><option value="Autre">Autre</option></select><div class="error-msg" id="errType"></div></div>
+                                    <div class="form-group" id="grpDate"><label>DATE <span class="req">*</span></label><input type="date" id="fDate"><div class="error-msg" id="errDate"></div></div>
+                                </div>
+                                <div class="form-group" id="grpParticipants"><label>PARTICIPANTS (MATRICULES) <span class="req">*</span></label><input type="text" id="fParticipants" placeholder="Ex: 123, 456, 789"><div class="hint">Séparez les matricules par des virgules</div><div class="error-msg" id="errParticipants"></div></div>
+                                <div class="form-group" id="grpContenu"><label>CONTENU DE LA FORMATION <span class="req">*</span></label><textarea id="fContenu" rows="4" placeholder="Décrivez le contenu abordé, les exercices réalisés..."></textarea><div class="error-msg" id="errContenu"></div></div>
+                                <div class="row-2">
+                                    <div class="form-group" id="grpDuree"><label>DURÉE (MINUTES) <span class="req">*</span></label><input type="number" id="fDuree" min="1" placeholder="Ex: 30"><div class="error-msg" id="errDuree"></div></div>
+                                    <div class="form-group" id="grpResultat"><label>RÉSULTAT GLOBAL <span class="req">*</span></label><select id="fResultat"><option value="">— Sélectionner —</option><option value="Réussi">Réussi</option><option value="À revoir">À revoir</option><option value="Échoué">Échoué</option></select><div class="error-msg" id="errResultat"></div></div>
+                                </div>
+                                <div class="form-group"><label>REMARQUES</label><textarea id="fRemarques" rows="3" placeholder="Observations, points d'amélioration... (optionnel)"></textarea></div>
+                                <div class="form-actions"><button class="btn-action" onclick="resetForm()">RÉINITIALISER</button><button class="btn-action primary" id="btnSubmit" onclick="submitFormation()">⟩ SOUMETTRE</button></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- TAB: Archives -->
+                    <div id="tabArchives" class="tab-content">
+                        <div class="combine-terminal-wrapper">
+                            <div class="combine-header"><h2>📋 ARCHIVES DES FORMATIONS</h2><span class="header-code" id="archiveCount">0</span></div>
+                            <div class="combine-body">
+                                <div style="overflow-x:auto;">
+                                    <table class="archives-table"><thead><tr><th>DATE</th><th>TYPE</th><th>PARTICIPANTS</th><th>DURÉE</th><th>RÉSULTAT</th><th>FORMATEUR</th></tr></thead><tbody id="archivesBody"><tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Aucune formation</td></tr></tbody></table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
-
+    <script type="module" src="assets/js/auth.js"></script>
     <script src="assets/js/global-nav.js"></script>
     <script src="assets/js/interactive-system.js"></script>
     <script src="assets/js/combine-animations.js"></script>
+    <script type="module">
+      import { auth, db } from './assets/js/auth.js';
+      import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+      import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+      import { loadUnits as ghLoadUnits, loadFormations as ghLoadFormations, addFormation as ghAddFormation, addReport as ghAddReport, onSyncStatus } from './assets/js/github-data.js';
+
+      let currentUser = null, allFormations = [];
+      function showAlert(t,type='success'){const e=document.getElementById('alertMsg');e.style.display='block';e.className='alert-msg '+type;e.textContent=t;setTimeout(()=>e.style.display='none',6000);}
+      function fmtDate(d){if(!d)return'-';const p=d.split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:d;}
+      {const i=document.createElement('div');i.id='syncIndicator';i.className='sync-indicator hidden';document.body.appendChild(i);let t=null;onSyncStatus(s=>{clearTimeout(t);if(s==='syncing'){i.innerHTML='<span style="display:inline-block;animation:spin 1s linear infinite;">⟳</span> Synchronisation...';i.className='sync-indicator syncing';}else if(s==='synced'){i.innerHTML='✓ Synchronisé';i.className='sync-indicator synced';t=setTimeout(()=>i.className='sync-indicator hidden',2500);}else{i.innerHTML='⚠ Erreur sync';i.className='sync-indicator error';t=setTimeout(()=>i.className='sync-indicator hidden',6000);}});}
+
+      window.switchTab=function(tab){
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+        if(tab==='form'){document.querySelectorAll('.tab-btn')[0].classList.add('active');document.getElementById('tabForm').classList.add('active');}
+        else{document.querySelectorAll('.tab-btn')[1].classList.add('active');document.getElementById('tabArchives').classList.add('active');renderArchives();}
+      };
+      window.submitFormation=async function(){
+        if(!currentUser){showAlert('Erreur: utilisateur non identifié','error');return;}
+        let ok=true;const fields=['grpType','grpDate','grpParticipants','grpContenu','grpDuree','grpResultat'];
+        fields.forEach(id=>document.getElementById(id).classList.remove('error'));
+        const type=document.getElementById('fType').value;if(!type){document.getElementById('grpType').classList.add('error');document.getElementById('errType').textContent='Type requis';ok=false;}
+        const date=document.getElementById('fDate').value;if(!date){document.getElementById('grpDate').classList.add('error');document.getElementById('errDate').textContent='Date requise';ok=false;}
+        const participants=document.getElementById('fParticipants').value.trim();if(!participants){document.getElementById('grpParticipants').classList.add('error');document.getElementById('errParticipants').textContent='Requis';ok=false;}
+        const contenu=document.getElementById('fContenu').value.trim();if(!contenu){document.getElementById('grpContenu').classList.add('error');document.getElementById('errContenu').textContent='Contenu requis';ok=false;}
+        const duree=parseInt(document.getElementById('fDuree').value);if(!duree||duree<1){document.getElementById('grpDuree').classList.add('error');document.getElementById('errDuree').textContent='Durée invalide';ok=false;}
+        const resultat=document.getElementById('fResultat').value;if(!resultat){document.getElementById('grpResultat').classList.add('error');document.getElementById('errResultat').textContent='Requis';ok=false;}
+        if(!ok)return;
+        const btn=document.getElementById('btnSubmit');btn.disabled=true;btn.textContent='⏳ ENVOI...';
+        const partList=participants.split(',').map(p=>p.trim()).filter(Boolean);
+        const formation={type,date_formation:date,participants:partList,participants_str:partList.join(', '),contenu,duree,resultat,remarques:document.getElementById('fRemarques').value.trim(),formateur_matricule:currentUser.matricule,formateur_nom:currentUser.nom_steam||'',created_at:date};
+        try{const saved=await ghAddFormation(formation);allFormations.push(saved);await ghAddReport({matricule:currentUser.matricule,nom_steam:currentUser.nom_steam||'',type:'Formation',secteur:'',unités:partList.join(', '),resume:`${type} — ${partList.length} participant(s) — ${duree} min — ${resultat}`,notes:formation.remarques,created_at:date,type_rapport:'unité',division:currentUser.division||''});showAlert('✓ Formation enregistrée.','success');resetForm();renderArchives();}catch(e){showAlert('✗ Erreur: '+e.message,'error');}finally{btn.disabled=false;btn.textContent='⟩ SOUMETTRE';}
+      };
+      window.resetForm=function(){['fType','fDate','fParticipants','fContenu','fDuree','fResultat','fRemarques'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});['grpType','grpDate','grpParticipants','grpContenu','grpDuree','grpResultat'].forEach(id=>document.getElementById(id).classList.remove('error'));};
+      function renderArchives(){
+        const tb=document.getElementById('archivesBody');const list=allFormations.sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||''));
+        document.getElementById('archiveCount').textContent=list.length+' FORMATION'+(list.length>1?'S':'');
+        if(!list.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Aucune formation</td></tr>';return;}
+        tb.innerHTML=list.map(f=>{const rc=f.resultat==='Réussi'?'#00cc55':(f.resultat==='Échoué'?'#ff4444':'#ffc800');return`<tr onclick="showFormationDetail('${f._id}')"><td>${fmtDate(f.date_formation||f.created_at)}</td><td>${f.type||'-'}</td><td>${(f.participants_str||f.participants?.join(', ')||'-')}</td><td>${f.duree||'-'} min</td><td style="color:${rc};font-weight:700;">${f.resultat||'-'}</td><td>${f.formateur_matricule||'-'}</td></tr>`;}).join('');
+      }
+      window.showFormationDetail=function(id){
+        const f=allFormations.find(x=>x._id===id);if(!f)return;
+        const o=document.createElement('div');o.className='detail-overlay';const rc=f.resultat==='Réussi'?'#00cc55':(f.resultat==='Échoué'?'#ff4444':'#ffc800');
+        o.innerHTML=`<div class="detail-box"><h3>FORMATION — ${f.type}</h3><div class="detail-row"><span class="detail-label">DATE</span><span class="detail-value">${fmtDate(f.date_formation||f.created_at)}</span></div><div class="detail-row"><span class="detail-label">FORMATEUR</span><span class="detail-value">${f.formateur_matricule} (${f.formateur_nom||'-'})</span></div><div class="detail-row"><span class="detail-label">PARTICIPANTS</span><span class="detail-value">${f.participants_str||f.participants?.join(', ')||'-'}</span></div><div class="detail-row"><span class="detail-label">DURÉE</span><span class="detail-value">${f.duree} min</span></div><div class="detail-row"><span class="detail-label">RÉSULTAT</span><span class="detail-value" style="color:${rc};font-weight:700;">${f.resultat}</span></div><div class="detail-row"><span class="detail-label">CONTENU</span><span class="detail-value">${f.contenu||'-'}</span></div>${f.remarques?`<div class="detail-row"><span class="detail-label">REMARQUES</span><span class="detail-value">${f.remarques}</span></div>`:''}<button class="close-btn" onclick="this.closest('.detail-overlay').remove()">FERMER</button></div>`;
+        document.body.appendChild(o);o.addEventListener('click',e=>{if(e.target===o)o.remove();});
+      };
+      onAuthStateChanged(auth, async(user)=>{
+        if(!user){document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';return;}
+        try{const s=await getDoc(doc(db,'users',user.uid));if(!s.exists()){document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';return;}const ud=s.data();if(!ud.approved){document.getElementById('loading').style.display='none';document.getElementById('notApproved').style.display='block';return;}
+        currentUser={matricule:ud.matricule||'???',nom_steam:ud.nom_steam||'',division:''};let ui=null;try{const u=await ghLoadUnits();ui=u.find(x=>x.matricule===currentUser.matricule)||null;}catch(_){}
+        const rang=ui?(ui.rang||''):'';const isHG=rang==='Ofc'||rang==='Cmd';const isFormateur=ui?(ui.formateur||false):false;currentUser.division=ui?(ui.division||''):'';
+        if(!isFormateur&&!isHG){document.getElementById('loading').style.display='none';document.getElementById('noAccess').style.display='block';return;}
+        document.getElementById('userIdentification').textContent='Identification : '+[rang,currentUser.division,currentUser.matricule].filter(Boolean).join(' ');document.getElementById('userAvatar').textContent=currentUser.matricule.substring(0,3);
+        document.getElementById('fDate').value=new Date().toISOString().substring(0,10);
+        document.getElementById('loading').style.display='none';document.getElementById('mainContent').style.display='block';
+        try{allFormations=await ghLoadFormations();}catch(_){allFormations=[];}
+        }catch(e){console.error(e);document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';}
+      });
+    </script>
 </body>
 </html>

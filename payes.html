@@ -36,6 +36,15 @@
         .stat-card.green { border-color: rgba(0,204,102,0.15); }
         .stat-card.yellow .stat-number { color: var(--accent-yellow); }
         .stat-card.yellow { border-color: rgba(204,170,0,0.15); }
+        .stat-card.red .stat-number { color: #ff6666; }
+        .stat-card.red { border-color: rgba(255,68,68,0.15); }
+
+        .bilan-section { margin-bottom: 1.5rem; padding: 1rem; background: rgba(0,170,255,0.02); border: 1px solid rgba(0,170,255,0.1); border-radius: 4px; }
+        .bilan-title { font-family: 'Orbitron', sans-serif; font-size: 0.8rem; color: var(--accent-cyan); margin-bottom: 0.8rem; letter-spacing: 1px; }
+        .bilan-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8rem; }
+        .bilan-item { text-align: center; padding: 0.6rem; background: rgba(0,170,255,0.03); border: 1px solid rgba(0,170,255,0.08); border-radius: 3px; }
+        .bilan-item .bilan-number { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 700; }
+        .bilan-item .bilan-label { font-family: 'Share Tech Mono', monospace; font-size: 0.62rem; color: var(--text-muted); letter-spacing: 1px; margin-top: 0.2rem; }
 
         .form-group { margin-bottom: 1rem; }
         .form-group label { display: block; font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 0.3rem; }
@@ -156,6 +165,16 @@
                             <div class="stat-card green"><div class="stat-number" id="payTotalGains">0</div><div class="stat-label">GAINS SEMAINE (TOKENS)</div></div>
                             <div class="stat-card"><div class="stat-number" id="payTotalDistrib">0</div><div class="stat-label">TOTAL DISTRIBUÉ (%)</div></div>
                             <div class="stat-card yellow"><div class="stat-number" id="payUnitCount">0</div><div class="stat-label">UNITÉS PAYÉES</div></div>
+                        </div>
+
+                        <!-- Bilan global -->
+                        <div class="bilan-section">
+                            <div class="bilan-title">📊 BILAN GLOBAL DE LA MILICE</div>
+                            <div class="bilan-grid">
+                                <div class="bilan-item"><div class="bilan-number" style="color:var(--accent-green);" id="bilanTotalGains">0</div><div class="bilan-label">GAINS TOTAUX (TOKENS)</div></div>
+                                <div class="bilan-item"><div class="bilan-number" style="color:#ff6666;" id="bilanTotalDepenses">0</div><div class="bilan-label">DÉPENSES (PAYES)</div></div>
+                                <div class="bilan-item"><div class="bilan-number" id="bilanSolde">0</div><div class="bilan-label">SOLDE</div></div>
+                            </div>
                         </div>
 
                         <!-- Bouton finaliser (HG seulement) -->
@@ -410,6 +429,7 @@
           showAlert('✓ Gain ajouté', 'success');
           renderEarnings();
           calculatePayroll();
+          calculateGlobalBilan();
         } catch(e) { showAlert('✗ Erreur: ' + e.message, 'error'); }
       };
 
@@ -420,6 +440,7 @@
           showAlert('✓ Gain supprimé', 'success');
           renderEarnings();
           calculatePayroll();
+          calculateGlobalBilan();
         } catch(e) { showAlert('✗ Erreur: ' + e.message, 'error'); }
       };
 
@@ -556,10 +577,26 @@
           allArchives.unshift(saved);
           showAlert('✓ Payes finalisées et archivées !', 'success');
           renderArchives();
+          calculateGlobalBilan();
         } catch(e) { showAlert('✗ Erreur: ' + e.message, 'error'); }
       };
 
       // ===== ARCHIVES =====
+      function calculateGlobalBilan() {
+        // Total gains: all earnings ever
+        const totalGains = allEarnings.reduce((s, e) => s + (parseFloat(e.amount) || 0), 0);
+        // Total dépenses: sum of pay from all finalized archives
+        const totalDepenses = allArchives.reduce((s, arch) => {
+          return s + (arch.payroll || []).reduce((ps, u) => ps + (u.pay || 0), 0);
+        }, 0);
+        const solde = totalGains - totalDepenses;
+        document.getElementById('bilanTotalGains').textContent = totalGains.toLocaleString('fr-FR') + ' T';
+        document.getElementById('bilanTotalDepenses').textContent = totalDepenses.toLocaleString('fr-FR') + ' T';
+        const soldeEl = document.getElementById('bilanSolde');
+        soldeEl.textContent = (solde >= 0 ? '+' : '') + solde.toLocaleString('fr-FR') + ' T';
+        soldeEl.style.color = solde >= 0 ? 'var(--accent-cyan)' : '#ff6666';
+      }
+
       function renderArchives() {
         const container = document.getElementById('archivesContainer');
         document.getElementById('archiveCountLabel').textContent = allArchives.length + ' SEMAINE' + (allArchives.length > 1 ? 'S' : '');
@@ -662,6 +699,7 @@
           renderEarnings();
           calculatePayroll();
           renderArchives();
+          calculateGlobalBilan();
         } catch(e) { console.error(e); document.getElementById('loading').style.display='none'; document.getElementById('access-denied').style.display='block'; }
       });
     </script>

@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Éditeur de Navigation - MPF Administration</title>
+    <link rel="stylesheet" href="../assets/css/main-style.css">
+    <link rel="stylesheet" href="../assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="../assets/css/global-nav.css">
+    <link rel="stylesheet" href="../assets/css/interactive-system.css">
+    <link rel="stylesheet" href="../assets/css/combine-animations.css">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <style>
+        .admin-nav {
+            display: flex;
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+            flex-wrap: wrap;
+        }
+        .admin-nav a {
+            padding: 0.35rem 0.8rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border: 1px solid rgba(0, 170, 255, 0.15);
+            border-radius: 2px;
+            transition: all 0.15s;
+        }
+        .admin-nav a:hover, .admin-nav a.active {
+            color: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            background: rgba(0, 170, 255, 0.08);
+        }
+        .alert-msg {
+            padding: 0.6rem 1rem;
+            border-radius: 3px;
+            margin-bottom: 1rem;
+            font-size: 0.8rem;
+            font-family: 'Share Tech Mono', monospace;
+            display: none;
+        }
+        .alert-msg.success { background: rgba(0, 200, 80, 0.1); border: 1px solid rgba(0, 200, 80, 0.3); color: #00cc55; }
+        .alert-msg.error { background: rgba(255, 60, 60, 0.1); border: 1px solid rgba(255, 60, 60, 0.3); color: #ff4444; }
+
+        .btn-sm {
+            padding: 0.25rem 0.6rem;
+            font-size: 0.72rem;
+            font-family: 'Share Tech Mono', monospace;
+            cursor: pointer;
+            border: 1px solid rgba(0, 170, 255, 0.3);
+            background: rgba(0, 170, 255, 0.08);
+            color: var(--accent-cyan);
+            border-radius: 2px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .btn-sm:hover { background: rgba(0, 170, 255, 0.2); }
+        .btn-sm.danger { border-color: rgba(255, 60, 60, 0.3); background: rgba(255, 60, 60, 0.08); color: #ff4444; }
+        .btn-sm.danger:hover { background: rgba(255, 60, 60, 0.2); }
+        .btn-sm.success { border-color: rgba(0, 200, 80, 0.3); background: rgba(0, 200, 80, 0.08); color: #00cc55; }
+        .btn-sm.success:hover { background: rgba(0, 200, 80, 0.2); }
+
+        .nav-editor-section {
+            margin-bottom: 2rem;
+        }
+        .nav-editor-section h3 {
+            color: var(--accent-cyan);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid rgba(0, 170, 255, 0.2);
+        }
+
+        .nav-item-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.6rem;
+            background: rgba(0, 170, 255, 0.03);
+            border: 1px solid rgba(0, 170, 255, 0.1);
+            border-radius: 3px;
+            margin-bottom: 0.3rem;
+            transition: all 0.15s;
+        }
+        .nav-item-row:hover {
+            border-color: rgba(0, 170, 255, 0.25);
+            background: rgba(0, 170, 255, 0.06);
+        }
+        .nav-item-row.hidden-item {
+            opacity: 0.45;
+            border-style: dashed;
+        }
+        .nav-item-row.sub-item {
+            margin-left: 1.5rem;
+            border-left: 2px solid rgba(0, 170, 255, 0.15);
+        }
+
+        .nav-item-row .drag-handle {
+            cursor: grab;
+            color: var(--text-muted);
+            font-size: 1rem;
+            user-select: none;
+            padding: 0 0.2rem;
+        }
+        .nav-item-row .drag-handle:active { cursor: grabbing; }
+
+        .nav-item-row .item-label {
+            flex: 1;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-primary);
+        }
+        .nav-item-row .item-url {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .nav-item-row input[type="text"] {
+            padding: 0.2rem 0.4rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 170, 255, 0.3);
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.78rem;
+            outline: none;
+            border-radius: 2px;
+            width: 160px;
+        }
+        .nav-item-row input[type="text"]:focus {
+            border-color: var(--accent-cyan);
+        }
+        .nav-item-row input.url-input {
+            width: 200px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .visibility-toggle {
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0.1rem 0.3rem;
+            border-radius: 2px;
+            transition: all 0.15s;
+        }
+        .visibility-toggle:hover {
+            background: rgba(0, 170, 255, 0.1);
+        }
+
+        .actions-bar {
+            display: flex;
+            gap: 0.6rem;
+            margin-top: 1.2rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .btn-primary {
+            padding: 0.5rem 1.5rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.82rem;
+            cursor: pointer;
+            border: 1px solid var(--accent-cyan);
+            background: rgba(0, 170, 255, 0.15);
+            color: var(--accent-cyan);
+            border-radius: 3px;
+            transition: all 0.2s;
+            letter-spacing: 1px;
+        }
+        .btn-primary:hover { background: rgba(0, 170, 255, 0.3); }
+        .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .add-item-form {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-top: 0.6rem;
+            flex-wrap: wrap;
+        }
+        .add-item-form input {
+            padding: 0.3rem 0.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.78rem;
+            outline: none;
+            border-radius: 2px;
+        }
+        .add-item-form input:focus { border-color: var(--accent-cyan); }
+        .add-item-form select {
+            padding: 0.3rem 0.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.78rem;
+            outline: none;
+            border-radius: 2px;
+        }
+
+        .preview-box {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 170, 255, 0.15);
+            border-radius: 4px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        .preview-box h4 {
+            color: var(--accent-cyan);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            margin-bottom: 0.6rem;
+        }
+        .preview-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+        .preview-nav .preview-item {
+            padding: 0.2rem 0.5rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.68rem;
+            color: var(--accent-cyan);
+            border: 1px solid rgba(0, 170, 255, 0.3);
+            border-radius: 2px;
+            background: rgba(0, 170, 255, 0.06);
+        }
+        .preview-nav .preview-item.has-sub::after {
+            content: ' ▼';
+            font-size: 0.55rem;
+            opacity: 0.5;
+        }
+        .preview-nav .preview-item.is-hidden {
+            opacity: 0.35;
+            border-style: dashed;
+            text-decoration: line-through;
+        }
+
+        .change-indicator {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #ffaa00;
+            margin-left: 0.3rem;
+            animation: pulse-dot 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        #access-denied { display: none; text-align: center; padding: 3rem; }
+    </style>
+</head>
+<body>
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <div>
+                        <h1 class="logo">MPF</h1>
+                        <p class="logo-subtitle">Éditeur Navigation</p>
+                    </div>
+                </div>
+                <div id="authBtn" class="header-auth"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div id="loading" style="text-align:center;padding:3rem;">
+                <p style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;">CHARGEMENT...</p>
+            </div>
+            <div id="access-denied">
+                <h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">ACCÈS REFUSÉ</h2>
+                <p style="color:var(--text-muted);">Vous n'avez pas les droits administrateur.</p>
+                <a href="../index.html" style="color:var(--accent-cyan);">Retour au site</a>
+            </div>
+
+            <div id="adminContent" style="display:none;">
+                <div class="admin-nav" style="margin-top: 1rem;">
+                    <a href="panel.html">PANEL ADMIN</a>
+                    <a href="unites.html">UNITÉS</a>
+                    <a href="heures.html">HEURES DE JEU</a>
+                    <a href="heures-archives.html">ARCHIVES</a>
+                    <a href="absences.html">ABSENCES</a>
+                    <a href="maintenance-admin.html">MAINTENANCE</a>
+                    <a href="navigation.html" class="active">NAVIGATION</a>
+                </div>
+
+                <div id="actionMessage" class="alert-msg"></div>
+
+                <div class="combine-terminal-wrapper" style="margin-top:1rem;">
+                    <div class="combine-header">
+                        <h2>ÉDITEUR DE NAVIGATION</h2>
+                        <span class="header-code">ADMINISTRATION // MODE ÉDITION</span>
+                    </div>
+                    <div class="combine-body">
+                        <p style="color:var(--text-muted);font-size:0.78rem;margin-bottom:1rem;font-family:'Share Tech Mono',monospace;">
+                            Modifiez les libellés, la visibilité et l'ordre des éléments de navigation. Les changements sont appliqués à tous les utilisateurs du site après sauvegarde.
+                        </p>
+
+                        <!-- Row 1 editor -->
+                        <div class="nav-editor-section">
+                            <h3>BARRE SUPÉRIEURE (ROW 1)</h3>
+                            <div id="row1Editor"></div>
+                            <div class="add-item-form">
+                                <input type="text" id="newRow1Label" placeholder="Libellé" style="width:120px;">
+                                <input type="text" id="newRow1Url" placeholder="page.html" style="width:150px;">
+                                <button class="btn-sm success" onclick="addItem('row1')">+ AJOUTER</button>
+                            </div>
+                        </div>
+
+                        <!-- Row 2 editor -->
+                        <div class="nav-editor-section">
+                            <h3>BARRE INFÉRIEURE (ROW 2)</h3>
+                            <div id="row2Editor"></div>
+                            <div class="add-item-form">
+                                <input type="text" id="newRow2Label" placeholder="Libellé" style="width:120px;">
+                                <input type="text" id="newRow2Url" placeholder="page.html" style="width:150px;">
+                                <button class="btn-sm success" onclick="addItem('row2')">+ AJOUTER</button>
+                            </div>
+                        </div>
+
+                        <!-- Preview -->
+                        <div class="preview-box">
+                            <h4>APERÇU DE LA NAVIGATION</h4>
+                            <div style="margin-bottom:0.5rem;">
+                                <span style="color:var(--text-muted);font-size:0.65rem;font-family:'Share Tech Mono',monospace;">ROW 1:</span>
+                                <div class="preview-nav" id="previewRow1"></div>
+                            </div>
+                            <div>
+                                <span style="color:var(--text-muted);font-size:0.65rem;font-family:'Share Tech Mono',monospace;">ROW 2:</span>
+                                <div class="preview-nav" id="previewRow2"></div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="actions-bar">
+                            <button class="btn-primary" id="saveBtn" onclick="saveNavConfig()">SAUVEGARDER</button>
+                            <button class="btn-sm danger" onclick="resetToDefault()">RÉINITIALISER (DÉFAUT)</button>
+                            <span id="changeIndicator" style="display:none;color:#ffaa00;font-family:'Share Tech Mono',monospace;font-size:0.72rem;">
+                                <span class="change-indicator"></span> Modifications non sauvegardées
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="../assets/js/auth.js"></script>
+    <script src="../assets/js/global-nav.js"></script>
+    <script src="../assets/js/interactive-system.js"></script>
+    <script src="../assets/js/combine-animations.js"></script>
+
+    <script type="module">
+        import { auth, db } from '../assets/js/auth.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        let navConfig = { row1: [], row2: [] };
+        let hasChanges = false;
+
+        // Default nav structure (mirrors global-nav.js getMenuStructure)
+        function getDefaultNav() {
+            return {
+                row1: [
+                    { label: 'ACCUEIL', url: 'index.html' },
+                    { label: 'LOYALISME', url: 'loyalisme.html' },
+                    { label: 'JUGEMENT', url: 'jugement.html' },
+                    { label: 'CONTREBANDE', url: 'contrebande.html' },
+                    { label: 'HIERARCHIE', url: 'hierarchie.html' },
+                    { label: 'CODEX', url: 'codex.html' },
+                    {
+                        label: 'GUIDE', url: 'guide.html',
+                        dropdown: [
+                            { label: 'Terminologie', url: 'guide-terminologie.html' },
+                            { label: 'Respect & Salutations', url: 'guide-respect.html' },
+                            { label: 'Commandement', url: 'guide-commandement.html' },
+                            { label: 'Dispatch & Haut-parleur', url: 'guide-dispatch.html' },
+                            { label: 'Code Vestimentaire', url: 'guide-vestimentaire.html' },
+                            { label: 'Formations Tactiques', url: 'guide-formations.html' },
+                            { label: 'Sociostatus', url: 'guide-sociostatus.html' },
+                            { label: 'Brèches & Sanctions', url: 'guide-breches.html' },
+                            { label: 'Équipement', url: 'equipment.html' },
+                            { label: 'Tactique', url: 'tactics.html' },
+                            { label: 'Unités & Grades', url: 'units.html' }
+                        ]
+                    },
+                    {
+                        label: 'COURS', url: 'cours.html',
+                        dropdown: [
+                            { label: 'Cours RCT', url: 'cours-rct.html' },
+                            { label: 'Cours 05+', url: 'cours-05.html' },
+                            { label: 'Cours 03+', url: 'cours-03.html' }
+                        ]
+                    },
+                    {
+                        label: 'PROCEDURES', url: 'procedures.html',
+                        dropdown: [
+                            { label: 'Declarations MPF', url: 'declarations.html' },
+                            { label: 'Test de Loyauté', url: 'test-loyaute.html' },
+                            { label: 'Conscription', url: 'procedure-conscription.html' },
+                            { label: 'Incarcération', url: 'procedure-incarceration.html' },
+                            { label: 'Code 7 & Escouade', url: 'procedure-code7.html' },
+                            { label: 'Procédures Générales', url: 'procedures-generales.html' }
+                        ]
+                    },
+                    {
+                        label: 'CWU', url: 'cwu.html',
+                        dropdown: [
+                            { label: 'Procédure CWU-MPF', url: 'cwu-procedure.html' }
+                        ]
+                    },
+                    { label: 'SCANNER', url: 'scanner.html' },
+                    { label: 'CARTE', url: 'carte.html' },
+                    { label: 'À PROPOS', url: 'about.html' }
+                ],
+                row2: [
+                    {
+                        label: 'ACTIVITE', url: 'activite.html',
+                        dropdown: [
+                            { label: 'Planning Semaine', url: 'activite-tableaux.html' },
+                            { label: 'Activité Milice', url: 'activite-milice.html' }
+                        ]
+                    },
+                    {
+                        label: 'DIVISIONS', url: 'divisions.html',
+                        dropdown: [
+                            { label: 'HELIX', url: 'divisions/helix.html' },
+                            { label: 'RAZOR', url: 'divisions/razor.html' },
+                            { label: 'JURY', url: 'divisions/jury.html' },
+                            { label: 'EXOGEN', url: 'divisions/exogen.html' },
+                            { label: 'GRID', url: 'divisions/grid.html' },
+                            { label: 'ZONE', url: 'divisions/zone.html' },
+                            { label: 'SPECTRE', url: 'divisions/spectre.html' }
+                        ]
+                    },
+                    {
+                        label: 'FORMULAIRES', url: 'formulaires.html',
+                        dropdown: [
+                            { label: 'Rapport', url: 'form-rapport.html' },
+                            { label: 'Dépense & Gain', url: 'form-depot.html' },
+                            { label: 'Test', url: 'form-test.html' },
+                            { label: 'Formation', url: 'form-formation.html' },
+                            { label: 'Plainte', url: 'form-plainte.html' }
+                        ]
+                    },
+                    {
+                        label: 'RAPPORTS', url: 'rapports.html',
+                        dropdown: [
+                            { label: 'Rapports', url: 'rapports.html' },
+                            { label: 'Rapports Divisionnaires', url: 'rapports-divisionnaires.html' }
+                        ]
+                    },
+                    { label: 'PAYES', url: 'payes.html' },
+                    { label: 'VIEWTIME', url: 'viewtime.html' },
+                    { label: 'RADIO & MDP', url: 'radio.html' },
+                    { label: 'ABSENCES', url: 'declaration-absence.html' },
+                    { label: 'LIENS', url: 'liens.html' }
+                ]
+            };
+        }
+
+        function showMessage(text, type = 'success') {
+            const msg = document.getElementById('actionMessage');
+            msg.style.display = 'block';
+            msg.className = 'alert-msg ' + type;
+            msg.textContent = text;
+            setTimeout(() => { msg.style.display = 'none'; }, 4000);
+        }
+
+        function markChanged() {
+            hasChanges = true;
+            document.getElementById('changeIndicator').style.display = 'inline-flex';
+        }
+
+        function renderEditor() {
+            renderRowEditor('row1', navConfig.row1, document.getElementById('row1Editor'));
+            renderRowEditor('row2', navConfig.row2, document.getElementById('row2Editor'));
+            renderPreview();
+        }
+
+        function renderRowEditor(rowKey, items, container) {
+            let html = '';
+            items.forEach((item, idx) => {
+                const hidden = item.hidden ? 'hidden-item' : '';
+                const visIcon = item.hidden ? '👁‍🗨' : '👁';
+                html += `
+                    <div class="nav-item-row ${hidden}" data-row="${rowKey}" data-idx="${idx}" draggable="true">
+                        <span class="drag-handle" title="Glisser pour réordonner">⠿</span>
+                        <input type="text" value="${escHtml(item.label)}" onchange="updateLabel('${rowKey}', ${idx}, this.value)" title="Libellé">
+                        <input type="text" class="url-input" value="${escHtml(item.url)}" onchange="updateUrl('${rowKey}', ${idx}, this.value)" title="URL">
+                        <span class="visibility-toggle" onclick="toggleVisibility('${rowKey}', ${idx})" title="${item.hidden ? 'Afficher' : 'Masquer'}">${visIcon}</span>
+                        <button class="btn-sm" onclick="moveItem('${rowKey}', ${idx}, -1)" title="Monter" ${idx === 0 ? 'disabled' : ''}>▲</button>
+                        <button class="btn-sm" onclick="moveItem('${rowKey}', ${idx}, 1)" title="Descendre" ${idx === items.length - 1 ? 'disabled' : ''}>▼</button>
+                        <button class="btn-sm danger" onclick="removeItem('${rowKey}', ${idx})" title="Supprimer">✕</button>
+                    </div>
+                `;
+                // Render dropdown sub-items
+                if (item.dropdown && item.dropdown.length > 0) {
+                    item.dropdown.forEach((sub, subIdx) => {
+                        const subHidden = sub.hidden ? 'hidden-item' : '';
+                        const subVisIcon = sub.hidden ? '👁‍🗨' : '👁';
+                        html += `
+                            <div class="nav-item-row sub-item ${subHidden}" data-row="${rowKey}" data-idx="${idx}" data-subidx="${subIdx}">
+                                <span class="drag-handle" style="visibility:hidden;">⠿</span>
+                                <input type="text" value="${escHtml(sub.label)}" onchange="updateSubLabel('${rowKey}', ${idx}, ${subIdx}, this.value)" title="Sous-libellé">
+                                <input type="text" class="url-input" value="${escHtml(sub.url)}" onchange="updateSubUrl('${rowKey}', ${idx}, ${subIdx}, this.value)" title="URL">
+                                <span class="visibility-toggle" onclick="toggleSubVisibility('${rowKey}', ${idx}, ${subIdx})" title="${sub.hidden ? 'Afficher' : 'Masquer'}">${subVisIcon}</span>
+                                <button class="btn-sm" onclick="moveSubItem('${rowKey}', ${idx}, ${subIdx}, -1)" ${subIdx === 0 ? 'disabled' : ''}>▲</button>
+                                <button class="btn-sm" onclick="moveSubItem('${rowKey}', ${idx}, ${subIdx}, 1)" ${subIdx === item.dropdown.length - 1 ? 'disabled' : ''}>▼</button>
+                                <button class="btn-sm danger" onclick="removeSubItem('${rowKey}', ${idx}, ${subIdx})">✕</button>
+                            </div>
+                        `;
+                    });
+                    // Add sub-item form
+                    html += `
+                        <div class="nav-item-row sub-item" style="border-style:dashed;opacity:0.6;">
+                            <span style="visibility:hidden;">⠿</span>
+                            <input type="text" id="newSub_${rowKey}_${idx}_label" placeholder="Sous-libellé" style="width:130px;">
+                            <input type="text" id="newSub_${rowKey}_${idx}_url" placeholder="page.html" style="width:140px;" class="url-input">
+                            <button class="btn-sm success" onclick="addSubItem('${rowKey}', ${idx})" style="font-size:0.65rem;">+ SOUS-ITEM</button>
+                        </div>
+                    `;
+                }
+            });
+            container.innerHTML = html;
+            setupDragDrop(rowKey, container);
+        }
+
+        function renderPreview() {
+            ['row1', 'row2'].forEach(rowKey => {
+                const items = navConfig[rowKey];
+                const container = document.getElementById('preview' + rowKey.charAt(0).toUpperCase() + rowKey.slice(1));
+                container.innerHTML = items.map(item => {
+                    const cls = ['preview-item'];
+                    if (item.dropdown && item.dropdown.length > 0) cls.push('has-sub');
+                    if (item.hidden) cls.push('is-hidden');
+                    return `<span class="${cls.join(' ')}">${escHtml(item.label)}</span>`;
+                }).join('');
+            });
+        }
+
+        function escHtml(str) {
+            return (str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        // --- Edit operations ---
+        window.updateLabel = (row, idx, value) => {
+            navConfig[row][idx].label = value;
+            markChanged();
+            renderPreview();
+        };
+        window.updateUrl = (row, idx, value) => {
+            navConfig[row][idx].url = value;
+            markChanged();
+        };
+        window.updateSubLabel = (row, idx, subIdx, value) => {
+            navConfig[row][idx].dropdown[subIdx].label = value;
+            markChanged();
+        };
+        window.updateSubUrl = (row, idx, subIdx, value) => {
+            navConfig[row][idx].dropdown[subIdx].url = value;
+            markChanged();
+        };
+        window.toggleVisibility = (row, idx) => {
+            navConfig[row][idx].hidden = !navConfig[row][idx].hidden;
+            markChanged();
+            renderEditor();
+        };
+        window.toggleSubVisibility = (row, idx, subIdx) => {
+            navConfig[row][idx].dropdown[subIdx].hidden = !navConfig[row][idx].dropdown[subIdx].hidden;
+            markChanged();
+            renderEditor();
+        };
+        window.moveItem = (row, idx, dir) => {
+            const arr = navConfig[row];
+            const newIdx = idx + dir;
+            if (newIdx < 0 || newIdx >= arr.length) return;
+            [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
+            markChanged();
+            renderEditor();
+        };
+        window.moveSubItem = (row, idx, subIdx, dir) => {
+            const arr = navConfig[row][idx].dropdown;
+            const newIdx = subIdx + dir;
+            if (newIdx < 0 || newIdx >= arr.length) return;
+            [arr[subIdx], arr[newIdx]] = [arr[newIdx], arr[subIdx]];
+            markChanged();
+            renderEditor();
+        };
+        window.removeItem = (row, idx) => {
+            const item = navConfig[row][idx];
+            if (!confirm(`Supprimer "${item.label}" de la navigation ?`)) return;
+            navConfig[row].splice(idx, 1);
+            markChanged();
+            renderEditor();
+        };
+        window.removeSubItem = (row, idx, subIdx) => {
+            const sub = navConfig[row][idx].dropdown[subIdx];
+            if (!confirm(`Supprimer le sous-item "${sub.label}" ?`)) return;
+            navConfig[row][idx].dropdown.splice(subIdx, 1);
+            markChanged();
+            renderEditor();
+        };
+        window.addItem = (row) => {
+            const label = document.getElementById('new' + row.charAt(0).toUpperCase() + row.slice(1) + 'Label').value.trim();
+            const url = document.getElementById('new' + row.charAt(0).toUpperCase() + row.slice(1) + 'Url').value.trim();
+            if (!label || !url) { showMessage('Libellé et URL requis', 'error'); return; }
+            navConfig[row].push({ label: label.toUpperCase(), url });
+            document.getElementById('new' + row.charAt(0).toUpperCase() + row.slice(1) + 'Label').value = '';
+            document.getElementById('new' + row.charAt(0).toUpperCase() + row.slice(1) + 'Url').value = '';
+            markChanged();
+            renderEditor();
+        };
+        window.addSubItem = (row, idx) => {
+            const labelEl = document.getElementById(`newSub_${row}_${idx}_label`);
+            const urlEl = document.getElementById(`newSub_${row}_${idx}_url`);
+            const label = labelEl.value.trim();
+            const url = urlEl.value.trim();
+            if (!label || !url) { showMessage('Libellé et URL requis', 'error'); return; }
+            if (!navConfig[row][idx].dropdown) navConfig[row][idx].dropdown = [];
+            navConfig[row][idx].dropdown.push({ label, url });
+            labelEl.value = '';
+            urlEl.value = '';
+            markChanged();
+            renderEditor();
+        };
+
+        // --- Drag & drop for reordering ---
+        function setupDragDrop(rowKey, container) {
+            const rows = container.querySelectorAll(`.nav-item-row[data-row="${rowKey}"]:not(.sub-item)`);
+            rows.forEach(row => {
+                row.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', row.dataset.idx);
+                    e.dataTransfer.effectAllowed = 'move';
+                    row.style.opacity = '0.4';
+                });
+                row.addEventListener('dragend', () => { row.style.opacity = '1'; });
+                row.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    row.style.borderColor = 'var(--accent-cyan)';
+                });
+                row.addEventListener('dragleave', () => {
+                    row.style.borderColor = '';
+                });
+                row.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    row.style.borderColor = '';
+                    const fromIdx = parseInt(e.dataTransfer.getData('text/plain'));
+                    const toIdx = parseInt(row.dataset.idx);
+                    if (fromIdx === toIdx) return;
+                    const arr = navConfig[rowKey];
+                    const [moved] = arr.splice(fromIdx, 1);
+                    arr.splice(toIdx, 0, moved);
+                    markChanged();
+                    renderEditor();
+                });
+            });
+        }
+
+        // --- Save / Reset ---
+        window.saveNavConfig = async () => {
+            const btn = document.getElementById('saveBtn');
+            btn.disabled = true;
+            btn.textContent = 'SAUVEGARDE...';
+            try {
+                // Clean hidden flags for items that are visible (don't store false)
+                const cleanConfig = JSON.parse(JSON.stringify(navConfig));
+                ['row1', 'row2'].forEach(row => {
+                    cleanConfig[row].forEach(item => {
+                        if (!item.hidden) delete item.hidden;
+                        if (item.dropdown) {
+                            item.dropdown.forEach(sub => {
+                                if (!sub.hidden) delete sub.hidden;
+                            });
+                            // Remove empty dropdown arrays
+                            if (item.dropdown.length === 0) delete item.dropdown;
+                        }
+                    });
+                });
+                cleanConfig.updated_at = new Date().toISOString();
+                await setDoc(doc(db, 'config', 'navigation'), cleanConfig);
+                // Also update localStorage cache
+                localStorage.setItem('mpf_nav_config', JSON.stringify(cleanConfig));
+                localStorage.setItem('mpf_nav_config_ts', Date.now().toString());
+                hasChanges = false;
+                document.getElementById('changeIndicator').style.display = 'none';
+                showMessage('✓ Navigation sauvegardée — les changements sont actifs', 'success');
+            } catch (err) {
+                showMessage('✗ Erreur: ' + err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'SAUVEGARDER';
+            }
+        };
+
+        window.resetToDefault = async () => {
+            if (!confirm('Réinitialiser la navigation aux valeurs par défaut ?\nCette action supprimera toutes les personnalisations.')) return;
+            try {
+                const defaultNav = getDefaultNav();
+                defaultNav.updated_at = new Date().toISOString();
+                await setDoc(doc(db, 'config', 'navigation'), defaultNav);
+                localStorage.removeItem('mpf_nav_config');
+                localStorage.removeItem('mpf_nav_config_ts');
+                navConfig = getDefaultNav();
+                hasChanges = false;
+                document.getElementById('changeIndicator').style.display = 'none';
+                renderEditor();
+                showMessage('✓ Navigation réinitialisée aux valeurs par défaut', 'success');
+            } catch (err) {
+                showMessage('✗ Erreur: ' + err.message, 'error');
+            }
+        };
+
+        // --- Warn before leaving with unsaved changes ---
+        window.addEventListener('beforeunload', (e) => {
+            if (hasChanges) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        // --- Init ---
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) return;
+            try {
+                const snap = await getDoc(doc(db, 'users', user.uid));
+                if (!snap.exists() || !snap.data().is_admin) {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('access-denied').style.display = 'block';
+                    return;
+                }
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('adminContent').style.display = 'block';
+
+                // Load existing nav config from Firestore
+                try {
+                    const navSnap = await getDoc(doc(db, 'config', 'navigation'));
+                    if (navSnap.exists()) {
+                        const data = navSnap.data();
+                        navConfig = { row1: data.row1 || [], row2: data.row2 || [] };
+                    } else {
+                        navConfig = getDefaultNav();
+                    }
+                } catch {
+                    navConfig = getDefaultNav();
+                }
+                renderEditor();
+            } catch (err) {
+                console.error('Admin auth error:', err);
+                document.getElementById('loading').innerHTML = '<p style="color:#ff4444;">Erreur: ' + err.message + '</p>';
+            }
+        });
+    </script>
+</body>
+</html>

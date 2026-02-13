@@ -12,433 +12,228 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <style>
         .test-wrapper { max-width: 700px; margin: 0 auto; }
-
-        .user-info-bar {
-            display: flex; align-items: center; gap: 1rem;
-            padding: 0.8rem 1rem;
-            background: rgba(0, 170, 255, 0.04);
-            border: 1px solid rgba(0, 170, 255, 0.15);
-            border-radius: 4px; margin-bottom: 1.5rem;
-            font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;
-        }
-        .user-info-bar .user-avatar {
-            width: 42px; height: 42px;
-            background: rgba(0, 170, 255, 0.15);
-            border: 1px solid var(--accent-cyan); border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-family: 'Orbitron', sans-serif; font-size: 0.85rem;
-            color: var(--accent-cyan); font-weight: 700; flex-shrink: 0;
-        }
+        .user-info-bar { display: flex; align-items: center; gap: 1rem; padding: 0.8rem 1rem; background: rgba(0,170,255,0.04); border: 1px solid rgba(0,170,255,0.15); border-radius: 4px; margin-bottom: 1.5rem; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; }
+        .user-info-bar .user-avatar { width: 42px; height: 42px; background: rgba(0,170,255,0.15); border: 1px solid var(--accent-cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; color: var(--accent-cyan); font-weight: 700; flex-shrink: 0; }
         .user-info-bar .user-details { flex: 1; }
-        .user-info-bar .user-matricule {
-            font-family: 'Orbitron', sans-serif; font-size: 0.82rem;
-            color: var(--accent-cyan); font-weight: 700;
-        }
-        .user-info-bar .user-status {
-            font-size: 0.68rem; padding: 0.15rem 0.5rem; border-radius: 2px;
-            background: rgba(0, 200, 80, 0.1); border: 1px solid rgba(0, 200, 80, 0.3); color: #00cc55;
-        }
-
-        /* Candidat selector */
+        .user-info-bar .user-matricule { font-family: 'Orbitron', sans-serif; font-size: 0.82rem; color: var(--accent-cyan); font-weight: 700; }
+        .user-info-bar .user-status { font-size: 0.68rem; padding: 0.15rem 0.5rem; border-radius: 2px; background: rgba(0,200,80,0.1); border: 1px solid rgba(0,200,80,0.3); color: #00cc55; }
         .form-group { margin-bottom: 1.2rem; }
-        .form-group label {
-            display: block; font-family: 'Share Tech Mono', monospace;
-            font-size: 0.72rem; color: var(--text-muted);
-            letter-spacing: 1px; margin-bottom: 0.3rem;
-        }
+        .form-group label { display: block; font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 0.3rem; }
         .form-group label .req { color: #ff4444; }
-        .form-group input, .form-group textarea, .form-group select {
-            width: 100%; padding: 0.5rem 0.7rem;
-            background: rgba(0, 170, 255, 0.04);
-            border: 1px solid rgba(0, 170, 255, 0.2);
-            color: var(--text-primary);
-            font-family: 'Share Tech Mono', monospace; font-size: 0.82rem;
-            outline: none; border-radius: 2px;
-        }
-        .form-group input:focus, .form-group select:focus { border-color: var(--accent-cyan); }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.5rem 0.7rem; background: rgba(0,170,255,0.04); border: 1px solid rgba(0,170,255,0.2); color: var(--text-primary); font-family: 'Share Tech Mono', monospace; font-size: 0.82rem; outline: none; border-radius: 2px; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--accent-cyan); }
         .form-group select { cursor: pointer; }
         .form-group select option { background: #0a1628; color: var(--text-primary); }
-
-        /* Questions */
-        .question-block {
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            background: rgba(0, 170, 255, 0.02);
-            border: 1px solid rgba(0, 170, 255, 0.1);
-            border-radius: 4px;
-            transition: border-color 0.2s;
-        }
-        .question-block:hover { border-color: rgba(0, 170, 255, 0.25); }
-        .question-block .q-number {
-            font-family: 'Orbitron', sans-serif; font-size: 0.7rem;
-            color: var(--accent-cyan); letter-spacing: 1px; margin-bottom: 0.4rem;
-            opacity: 0.7;
-        }
-        .question-block .q-text {
-            font-family: 'Share Tech Mono', monospace; font-size: 0.88rem;
-            color: var(--text-primary); margin-bottom: 0.8rem; line-height: 1.5;
-        }
-        .question-block .q-options { display: flex; flex-direction: column; gap: 0.4rem; }
-        .q-option {
-            display: flex; align-items: center; gap: 0.6rem;
-            padding: 0.4rem 0.6rem; border-radius: 3px; cursor: pointer;
-            border: 1px solid rgba(0, 170, 255, 0.1);
-            transition: all 0.15s;
-            font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-        .q-option:hover { background: rgba(0, 170, 255, 0.06); border-color: rgba(0, 170, 255, 0.25); }
-        .q-option.selected {
-            background: rgba(0, 170, 255, 0.1);
-            border-color: var(--accent-cyan);
-            color: var(--accent-cyan);
-        }
-        .q-option .q-radio {
-            width: 16px; height: 16px; border-radius: 50%;
-            border: 2px solid rgba(0, 170, 255, 0.3);
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0; transition: all 0.15s;
-        }
-        .q-option.selected .q-radio {
-            border-color: var(--accent-cyan);
-        }
-        .q-option.selected .q-radio::after {
-            content: ''; width: 8px; height: 8px; border-radius: 50%;
-            background: var(--accent-cyan);
-        }
-
-        /* Results */
-        .result-banner {
-            text-align: center; padding: 1.5rem;
-            border-radius: 4px; margin-bottom: 1.5rem;
-            font-family: 'Share Tech Mono', monospace;
-            display: none;
-        }
-        .result-banner.pass {
-            display: block;
-            background: rgba(0, 200, 80, 0.08);
-            border: 1px solid rgba(0, 200, 80, 0.3);
-        }
-        .result-banner.fail {
-            display: block;
-            background: rgba(255, 60, 60, 0.08);
-            border: 1px solid rgba(255, 60, 60, 0.3);
-        }
-        .result-score {
-            font-family: 'Orbitron', sans-serif; font-size: 2rem;
-            font-weight: 700; line-height: 1;
-        }
-        .result-banner.pass .result-score { color: #00cc55; }
-        .result-banner.fail .result-score { color: #ff4444; }
-        .result-label { font-size: 0.82rem; color: var(--text-muted); margin-top: 0.4rem; }
-        .result-verdict { font-size: 0.9rem; font-weight: 700; margin-top: 0.3rem; }
-        .result-banner.pass .result-verdict { color: #00cc55; }
-        .result-banner.fail .result-verdict { color: #ff4444; }
-
-        /* Answer feedback */
-        .question-block.correct { border-color: rgba(0, 200, 80, 0.4); }
-        .question-block.incorrect { border-color: rgba(255, 60, 60, 0.4); }
-        .q-option.correct-answer { background: rgba(0, 200, 80, 0.1); border-color: rgba(0, 200, 80, 0.4); color: #00cc55; }
-        .q-option.wrong-answer { background: rgba(255, 60, 60, 0.1); border-color: rgba(255, 60, 60, 0.4); color: #ff4444; }
-
-        .form-actions {
-            display: flex; gap: 0.8rem; margin-top: 1.5rem; justify-content: flex-end;
-        }
-        .btn-action {
-            padding: 0.5rem 1.2rem; font-family: 'Share Tech Mono', monospace;
-            font-size: 0.8rem; cursor: pointer;
-            border: 1px solid rgba(0, 170, 255, 0.4);
-            background: rgba(0, 170, 255, 0.1); color: var(--accent-cyan);
-            border-radius: 3px; transition: all 0.15s; letter-spacing: 0.5px;
-        }
-        .btn-action:hover { background: rgba(0, 170, 255, 0.2); border-color: var(--accent-cyan); }
-        .btn-action.primary { background: rgba(0, 170, 255, 0.2); border-color: var(--accent-cyan); font-weight: 700; }
-        .btn-action.primary:hover { background: rgba(0, 170, 255, 0.35); }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        .form-group .hint { font-size: 0.68rem; color: var(--text-muted); margin-top: 0.2rem; font-family: 'Share Tech Mono', monospace; }
+        .form-group.error input, .form-group.error textarea, .form-group.error select { border-color: #ff4444; }
+        .form-group .error-msg { font-size: 0.7rem; color: #ff4444; margin-top: 0.2rem; font-family: 'Share Tech Mono', monospace; display: none; }
+        .form-group.error .error-msg { display: block; }
+        .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .rating-group { margin-bottom: 1.2rem; }
+        .rating-group label { display: block; font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 0.5rem; }
+        .rating-scale { display: flex; gap: 0.5rem; }
+        .rating-option { flex: 1; text-align: center; padding: 0.6rem 0.3rem; background: rgba(0,170,255,0.04); border: 1px solid rgba(0,170,255,0.15); border-radius: 3px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 0.9rem; color: var(--text-muted); transition: all 0.15s; }
+        .rating-option:hover { background: rgba(0,170,255,0.1); border-color: rgba(0,170,255,0.3); }
+        .rating-option.selected { background: rgba(0,170,255,0.2); border-color: var(--accent-cyan); color: var(--accent-cyan); font-weight: 700; }
+        .rating-option .rating-label { display: block; font-size: 0.6rem; margin-top: 0.2rem; font-family: 'Share Tech Mono', monospace; opacity: 0.7; }
+        .rating-group.error .rating-scale { border: 1px solid #ff4444; border-radius: 3px; padding: 2px; }
+        .rating-group .error-msg { font-size: 0.7rem; color: #ff4444; margin-top: 0.2rem; font-family: 'Share Tech Mono', monospace; display: none; }
+        .rating-group.error .error-msg { display: block; }
+        .section-divider { margin: 1.5rem 0; padding: 0.5rem 0.8rem; background: rgba(0,170,255,0.04); border-left: 3px solid var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: var(--accent-cyan); letter-spacing: 1px; }
+        .form-actions { display: flex; gap: 0.8rem; margin-top: 1.5rem; justify-content: flex-end; }
+        .btn-action { padding: 0.5rem 1.2rem; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; cursor: pointer; border: 1px solid rgba(0,170,255,0.4); background: rgba(0,170,255,0.1); color: var(--accent-cyan); border-radius: 3px; transition: all 0.15s; letter-spacing: 0.5px; }
+        .btn-action:hover { background: rgba(0,170,255,0.2); border-color: var(--accent-cyan); }
+        .btn-action.primary { background: rgba(0,170,255,0.2); border-color: var(--accent-cyan); font-weight: 700; }
+        .btn-action.primary:hover { background: rgba(0,170,255,0.35); }
         .btn-action:disabled { opacity: 0.4; cursor: not-allowed; }
-
-        .alert-msg {
-            padding: 0.6rem 1rem; border-radius: 3px; margin-bottom: 1rem;
-            font-size: 0.8rem; font-family: 'Share Tech Mono', monospace; display: none;
-        }
-        .alert-msg.error { display: block; background: rgba(255, 60, 60, 0.1); border: 1px solid rgba(255, 60, 60, 0.3); color: #ff4444; }
-
+        .alert-msg { padding: 0.6rem 1rem; border-radius: 3px; margin-bottom: 1rem; font-size: 0.8rem; font-family: 'Share Tech Mono', monospace; display: none; }
+        .alert-msg.success { display: block; background: rgba(0,200,80,0.08); border: 1px solid rgba(0,200,80,0.3); color: #00cc55; }
+        .alert-msg.error { display: block; background: rgba(255,60,60,0.1); border: 1px solid rgba(255,60,60,0.3); color: #ff4444; }
+        .tab-bar { display: flex; gap: 0; margin-bottom: 1.5rem; border-bottom: 2px solid rgba(0,170,255,0.15); }
+        .tab-btn { padding: 0.5rem 1.2rem; font-family: 'Orbitron', sans-serif; font-size: 0.72rem; color: var(--text-muted); background: transparent; border: none; cursor: pointer; letter-spacing: 1px; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+        .tab-btn:hover { color: var(--accent-cyan); }
+        .tab-btn.active { color: var(--accent-cyan); border-bottom-color: var(--accent-cyan); font-weight: 700; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .archives-table { width: 100%; border-collapse: collapse; font-family: 'Share Tech Mono', monospace; }
+        .archives-table th { text-align: left; padding: 0.5rem 0.4rem; color: var(--accent-cyan); font-size: 0.68rem; letter-spacing: 1px; border-bottom: 2px solid rgba(0,170,255,0.2); }
+        .archives-table td { padding: 0.4rem; color: var(--text-primary); border-bottom: 1px solid rgba(0,170,255,0.06); vertical-align: middle; font-size: 0.78rem; }
+        .archives-table tr:hover { background: rgba(0,170,255,0.03); cursor: pointer; }
+        .status-badge { display: inline-block; padding: 0.1rem 0.4rem; border-radius: 2px; font-size: 0.68rem; font-weight: 700; }
+        .status-badge.pending { background: rgba(255,200,0,0.15); color: #ffc800; border: 1px solid rgba(255,200,0,0.3); }
+        .status-badge.validated { background: rgba(0,200,80,0.15); color: #00cc55; border: 1px solid rgba(0,200,80,0.3); }
+        .status-badge.rejected { background: rgba(255,60,60,0.15); color: #ff4444; border: 1px solid rgba(255,60,60,0.3); }
+        .avg-score { font-family: 'Orbitron', sans-serif; font-weight: 700; }
+        .detail-overlay { position: fixed; top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.75);z-index:1000;display:flex;align-items:center;justify-content:center; }
+        .detail-box { background:#0a1628;border:1px solid rgba(0,170,255,0.2);padding:1.5rem;border-radius:6px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto; }
+        .detail-box h3 { color:#fff;font-family:'Orbitron',sans-serif;font-size:0.9rem;margin-bottom:1rem; }
+        .detail-box .detail-row { display:flex;gap:0.5rem;margin-bottom:0.5rem;font-family:'Share Tech Mono',monospace;font-size:0.82rem; }
+        .detail-box .detail-label { color:var(--text-muted);min-width:160px; }
+        .detail-box .detail-value { color:var(--text-primary);flex:1; }
+        .detail-box .close-btn { margin-top:1rem;padding:0.4rem 1rem;border:1px solid rgba(0,170,255,0.2);background:rgba(0,170,255,0.05);color:#fff;font-family:'Share Tech Mono',monospace;font-size:0.8rem;cursor:pointer;border-radius:3px;display:block;margin-left:auto; }
+        .sync-indicator { position: fixed; bottom: 1rem; right: 1rem; padding: 0.4rem 0.8rem; border-radius: 3px; font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; z-index: 999; transition: all 0.3s; pointer-events: none; opacity: 0; }
+        .sync-indicator.syncing { opacity: 1; background: rgba(255,200,0,0.15); border: 1px solid rgba(255,200,0,0.4); color: #ffc800; }
+        .sync-indicator.synced { opacity: 1; background: rgba(0,200,80,0.15); border: 1px solid rgba(0,200,80,0.4); color: #00cc55; }
+        .sync-indicator.error { opacity: 1; background: rgba(255,60,60,0.15); border: 1px solid rgba(255,60,60,0.4); color: #ff4444; }
+        .sync-indicator.hidden { opacity: 0; }
+        @keyframes spin-sync { to { transform: rotate(360deg); } }
+        .sync-spinner { display: inline-block; animation: spin-sync 1s linear infinite; }
         #access-denied, #notApproved, #noAccess { display: none; text-align: center; padding: 3rem; }
     </style>
 </head>
 <body>
     <div class="scanline-overlay"></div>
     <div class="particles-bg"></div>
-
     <header class="site-header">
         <div class="container">
             <div class="header-content">
                 <div class="logo-section">
                     <div class="logo-icon">M</div>
-                    <div>
-                        <h1 class="logo">MPF</h1>
-                        <p class="logo-subtitle">Formulaire de Test</p>
-                    </div>
+                    <div><h1 class="logo">MPF</h1><p class="logo-subtitle">Formulaire de Test</p></div>
                 </div>
                 <div id="authBtn" class="header-auth"></div>
             </div>
         </div>
     </header>
-
     <main>
         <div class="container">
-            <div id="loading" style="text-align:center;padding:3rem;">
-                <p style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;">CHARGEMENT...</p>
-            </div>
-            <div id="access-denied">
-                <h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">CONNEXION REQUISE</h2>
-                <p style="color:var(--text-muted);font-family:'Share Tech Mono',monospace;margin-top:0.5rem;">Vous devez être connecté.</p>
-                <a href="login.html" style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;display:inline-block;margin-top:1rem;">→ SE CONNECTER</a>
-            </div>
-            <div id="notApproved">
-                <h2 style="color:#ffaa00;font-family:'Orbitron',sans-serif;">EN ATTENTE D'APPROBATION</h2>
-                <p style="color:var(--text-muted);font-family:'Share Tech Mono',monospace;margin-top:0.5rem;">Votre compte n'a pas encore été approuvé.</p>
-            </div>
-            <div id="noAccess">
-                <h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">ACCÈS RESTREINT</h2>
-                <p style="color:var(--text-muted);font-family:'Share Tech Mono',monospace;margin-top:0.5rem;">
-                    Ce formulaire est réservé aux <span style="color:var(--accent-cyan);font-weight:700;">Unités Formatrices</span> et <span style="color:var(--accent-cyan);font-weight:700;">HautGradés</span>.
-                </p>
-                <a href="formulaires.html" style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;display:inline-block;margin-top:1rem;">← RETOUR AUX FORMULAIRES</a>
-            </div>
-
+            <div id="loading" style="text-align:center;padding:3rem;"><p style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;">CHARGEMENT...</p></div>
+            <div id="access-denied"><h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">CONNEXION REQUISE</h2><p style="color:var(--text-muted);font-family:'Share Tech Mono',monospace;margin-top:0.5rem;">Vous devez être connecté.</p><a href="login.html" style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;display:inline-block;margin-top:1rem;">→ SE CONNECTER</a></div>
+            <div id="notApproved"><h2 style="color:#ffaa00;font-family:'Orbitron',sans-serif;">EN ATTENTE D'APPROBATION</h2><p style="color:var(--text-muted);font-family:'Share Tech Mono',monospace;margin-top:0.5rem;">Votre compte n'a pas encore été approuvé.</p></div>
+            <div id="noAccess"><h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">ACCÈS RESTREINT</h2><p style="color:var(--text-muted);font-family:'Share Tech Mono',monospace;margin-top:0.5rem;">Ce formulaire est réservé aux <span style="color:var(--accent-cyan);font-weight:700;">Unités Formatrices</span> et <span style="color:var(--accent-cyan);font-weight:700;">HautGradés</span>.</p><a href="formulaires.html" style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;display:inline-block;margin-top:1rem;">← RETOUR AUX FORMULAIRES</a></div>
             <div id="mainContent" style="display:none;">
                 <div class="test-wrapper">
-
                     <div class="user-info-bar">
                         <div class="user-avatar" id="userAvatar">?</div>
-                        <div class="user-details">
-                            <div class="user-matricule" id="userIdentification">---</div>
-                            <div id="userAccreditation" style="font-size:0.7rem;color:var(--text-muted);font-family:'Share Tech Mono',monospace;margin-top:0.15rem;"></div>
-                        </div>
+                        <div class="user-details"><div class="user-matricule" id="userIdentification">---</div><div id="userAccreditation" style="font-size:0.7rem;color:var(--text-muted);font-family:'Share Tech Mono',monospace;margin-top:0.15rem;"></div></div>
                         <div class="user-status">CONNECTÉ</div>
                     </div>
-
+                    <div class="tab-bar">
+                        <button class="tab-btn active" onclick="switchTab('form')">FORMULAIRE DE TEST</button>
+                        <button class="tab-btn" onclick="switchTab('archives')">ARCHIVES</button>
+                    </div>
                     <div id="alertMsg" class="alert-msg"></div>
-
-                    <!-- Candidat info -->
-                    <div class="combine-terminal-wrapper" style="margin-bottom:1.5rem;">
-                        <div class="combine-header">
-                            <h2>📝 ÉVALUATION</h2>
-                            <span class="header-code">FORM-04</span>
-                        </div>
-                        <div class="combine-body">
-                            <div class="form-group">
-                                <label>MATRICULE DU CANDIDAT <span class="req">*</span></label>
-                                <input type="text" id="fCandidat" placeholder="Ex: 123" maxlength="3" pattern="\d{3}">
-                                <div class="hint">Le matricule du RCT ou de l'unité évaluée</div>
+                    <!-- TAB: Formulaire -->
+                    <div id="tabForm" class="tab-content active">
+                        <div class="combine-terminal-wrapper">
+                            <div class="combine-header"><h2>📝 ÉVALUATION D'UNITÉ</h2><span class="header-code">FORM-04</span></div>
+                            <div class="combine-body">
+                                <div class="row-2">
+                                    <div class="form-group" id="grpMatricule"><label>MATRICULE DE L'UNITÉ TESTÉE <span class="req">*</span></label><input type="text" id="fMatricule" placeholder="Ex: 123" maxlength="3" pattern="\d{3}"><div class="hint">3 chiffres — XX - 0YY</div><div class="error-msg" id="errMatricule"></div></div>
+                                    <div class="form-group" id="grpGrade"><label>GRADE ACTUEL <span class="req">*</span></label><select id="fGrade"><option value="">— Sélectionner —</option><option value="RCT">RCT (Recrue)</option><option value=".05">.05</option><option value=".04">.04</option><option value=".03">.03</option><option value="STB">STB</option><option value=".02">.02</option><option value=".01">.01</option><option value="DvL">DvL</option><option value="STBE">STBE</option><option value="CABAL">CABAL</option><option value="Ofc">Ofc</option><option value="Cmd">Cmd</option></select><div class="error-msg" id="errGrade"></div></div>
+                                </div>
+                                <div class="section-divider">▸ RÉSULTATS — La note la plus basse est 1, la meilleure est 4</div>
+                                <div class="rating-group" id="grpSaluts"><label>NOTE SUR LES SALUTS <span class="req">*</span></label><div class="rating-scale" data-field="noteSaluts"><div class="rating-option" data-value="1" onclick="selectRating('noteSaluts',1)">1<span class="rating-label">Faible</span></div><div class="rating-option" data-value="2" onclick="selectRating('noteSaluts',2)">2<span class="rating-label">Moyen</span></div><div class="rating-option" data-value="3" onclick="selectRating('noteSaluts',3)">3<span class="rating-label">Bon</span></div><div class="rating-option" data-value="4" onclick="selectRating('noteSaluts',4)">4<span class="rating-label">Excellent</span></div></div><div class="error-msg" id="errSaluts"></div></div>
+                                <div class="rating-group" id="grpSociostatus"><label>NOTE SUR LES SOCIOSTATUS <span class="req">*</span></label><div class="rating-scale" data-field="noteSociostatus"><div class="rating-option" data-value="1" onclick="selectRating('noteSociostatus',1)">1<span class="rating-label">Faible</span></div><div class="rating-option" data-value="2" onclick="selectRating('noteSociostatus',2)">2<span class="rating-label">Moyen</span></div><div class="rating-option" data-value="3" onclick="selectRating('noteSociostatus',3)">3<span class="rating-label">Bon</span></div><div class="rating-option" data-value="4" onclick="selectRating('noteSociostatus',4)">4<span class="rating-label">Excellent</span></div></div><div class="error-msg" id="errSociostatus"></div></div>
+                                <div class="rating-group" id="grpVerdicts"><label>NOTE SUR LES VERDICTS 1 À 5 <span class="req">*</span></label><div class="rating-scale" data-field="noteVerdicts"><div class="rating-option" data-value="1" onclick="selectRating('noteVerdicts',1)">1<span class="rating-label">Faible</span></div><div class="rating-option" data-value="2" onclick="selectRating('noteVerdicts',2)">2<span class="rating-label">Moyen</span></div><div class="rating-option" data-value="3" onclick="selectRating('noteVerdicts',3)">3<span class="rating-label">Bon</span></div><div class="rating-option" data-value="4" onclick="selectRating('noteVerdicts',4)">4<span class="rating-label">Excellent</span></div></div><div class="error-msg" id="errVerdicts"></div></div>
+                                <div class="rating-group" id="grpProcedures"><label>NOTE SUR LES PROCÉDURES BASIQUES <span class="req">*</span></label><div class="rating-scale" data-field="noteProcedures"><div class="rating-option" data-value="1" onclick="selectRating('noteProcedures',1)">1<span class="rating-label">Faible</span></div><div class="rating-option" data-value="2" onclick="selectRating('noteProcedures',2)">2<span class="rating-label">Moyen</span></div><div class="rating-option" data-value="3" onclick="selectRating('noteProcedures',3)">3<span class="rating-label">Bon</span></div><div class="rating-option" data-value="4" onclick="selectRating('noteProcedures',4)">4<span class="rating-label">Excellent</span></div></div><div class="error-msg" id="errProcedures"></div></div>
+                                <div class="section-divider">▸ INFORMATIONS COMPLÉMENTAIRES</div>
+                                <div class="row-2">
+                                    <div class="form-group" id="grpFormationArmement"><label>FORMATION ARMEMENT ? <span class="req">*</span></label><select id="fFormationArmement"><option value="">— Sélectionner —</option><option value="Oui">Oui</option><option value="Non">Non</option></select><div class="error-msg" id="errFormationArmement"></div></div>
+                                    <div class="form-group" id="grpCodes"><label>CODES COMPLET MENTIONNÉ ? <span class="req">*</span></label><select id="fCodes"><option value="">— Sélectionner —</option><option value="Oui">Oui</option><option value="Non">Non</option></select><div class="hint" style="color:#ff4444;">⚠ ERREUR MAJEURE si "Non"</div><div class="error-msg" id="errCodes"></div></div>
+                                </div>
+                                <div class="form-group" id="grpReforme"><label>TEST RÉALISÉ EN RÉFORME ? <span class="req">*</span></label><select id="fReforme"><option value="">— Sélectionner —</option><option value="Oui">Oui</option><option value="Non">Non</option></select><div class="error-msg" id="errReforme"></div></div>
+                                <div class="form-group"><label>COMMENTAIRES</label><textarea id="fCommentaires" rows="4" placeholder="Observations, remarques, points d'amélioration... (optionnel)"></textarea></div>
+                                <div class="form-actions"><button class="btn-action" onclick="resetTest()">RÉINITIALISER</button><button class="btn-action primary" id="btnSubmit" onclick="submitTest()">⟩ SOUMETTRE LE TEST</button></div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Result banner (shown after submit) -->
-                    <div id="resultBanner" class="result-banner"></div>
-
-                    <!-- Questions container -->
-                    <div class="combine-terminal-wrapper">
-                        <div class="combine-header">
-                            <h2>QUESTIONS</h2>
-                            <span class="header-code" id="qCount">0 / 0</span>
-                        </div>
-                        <div class="combine-body" id="questionsContainer">
-                            <p style="color:var(--text-muted);text-align:center;font-family:'Share Tech Mono',monospace;font-size:0.85rem;">
-                                Aucune question configurée. Ajoutez des questions dans le tableau <code>QUESTIONS</code> du script.
-                            </p>
+                    <!-- TAB: Archives -->
+                    <div id="tabArchives" class="tab-content">
+                        <div class="combine-terminal-wrapper">
+                            <div class="combine-header"><h2>📋 ARCHIVES DES TESTS</h2><span class="header-code" id="archiveCount">0</span></div>
+                            <div class="combine-body">
+                                <div style="overflow-x:auto;">
+                                    <table class="archives-table"><thead><tr><th>DATE</th><th>UNITÉ</th><th>GRADE</th><th>MOYENNE</th><th>ÉVALUATEUR</th><th>STATUT</th></tr></thead><tbody id="archivesBody"><tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Aucun test enregistré</td></tr></tbody></table>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="form-actions" id="formActions" style="display:none;">
-                        <button class="btn-action" onclick="resetTest()">RÉINITIALISER</button>
-                        <button class="btn-action primary" id="btnSubmit" onclick="submitTest()">⟩ SOUMETTRE LE TEST</button>
-                    </div>
-
                 </div>
             </div>
         </div>
     </main>
-
     <script type="module" src="assets/js/auth.js"></script>
     <script src="assets/js/global-nav.js"></script>
     <script src="assets/js/interactive-system.js"></script>
     <script src="assets/js/combine-animations.js"></script>
-
     <script type="module">
       import { auth, db } from './assets/js/auth.js';
       import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
       import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-      import { loadUnits as ghLoadUnits } from './assets/js/github-data.js';
+      import { loadUnits as ghLoadUnits, loadUnitTests as ghLoadUnitTests, addUnitTest as ghAddUnitTest, addReport as ghAddReport, onSyncStatus } from './assets/js/github-data.js';
 
-      // ══════════════════════════════════════════════════════
-      //  QUESTIONS — Modifiez ce tableau pour changer le test
-      //  Format: { q: "Question", options: ["A","B","C","D"], answer: 0 }
-      //  answer = index de la bonne réponse (0 = première option)
-      // ══════════════════════════════════════════════════════
-      const QUESTIONS = [
-        // Ajoutez vos questions ici, par exemple :
-        // { q: "Quel est le code radio pour une urgence ?", options: ["Code 1", "Code 3", "Code 7", "Code 10"], answer: 2 },
-        // { q: "Que signifie 10-4 ?", options: ["En route", "Bien reçu", "Négatif", "Besoin de renfort"], answer: 1 },
-      ];
+      let currentUser = null, allTests = [], ratings = {};
+      function showAlert(t, type='success') { const e=document.getElementById('alertMsg'); e.style.display='block'; e.className='alert-msg '+type; e.textContent=t; setTimeout(()=>e.style.display='none',6000); }
+      function fmtDate(d) { if(!d)return'-'; const p=d.split('-'); return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:d; }
+      function getAccreditation(r) { if(r==='RCT')return'Recrue';if(['.05','.04','.03','STB'].includes(r))return'MPF';if(['.02','.01','DvL','STBE','CABAL'].includes(r))return'MPEF';if(['Ofc','Cmd'].includes(r))return'HautGradé';return''; }
+      { const i=document.createElement('div');i.id='syncIndicator';i.className='sync-indicator hidden';document.body.appendChild(i);let t=null;onSyncStatus(s=>{clearTimeout(t);if(s==='syncing'){i.innerHTML='<span class="sync-spinner">⟳</span> Synchronisation...';i.className='sync-indicator syncing';}else if(s==='synced'){i.innerHTML='✓ Synchronisé';i.className='sync-indicator synced';t=setTimeout(()=>i.className='sync-indicator hidden',2500);}else{i.innerHTML='⚠ Erreur sync';i.className='sync-indicator error';t=setTimeout(()=>i.className='sync-indicator hidden',6000);}}); }
 
-      const PASS_THRESHOLD = 0.7; // 70% pour réussir
-
-      function getAccreditation(r) {
-        if (r==='RCT') return 'Recrue';
-        if (['.05','.04','.03','STB'].includes(r)) return 'MPF';
-        if (['.02','.01','DvL','STBE','CABAL'].includes(r)) return 'MPEF';
-        if (['Ofc','Cmd'].includes(r)) return 'HautGradé';
-        return '';
-      }
-
-      let currentUser=null, userAnswers={}, testSubmitted=false;
-
-      // Build questions UI
-      function buildQuestions() {
-        const container = document.getElementById('questionsContainer');
-        if (!QUESTIONS.length) return;
-
-        document.getElementById('qCount').textContent = `0 / ${QUESTIONS.length}`;
-        document.getElementById('formActions').style.display = 'flex';
-
-        container.innerHTML = QUESTIONS.map((q, qi) => {
-          const optionsHtml = q.options.map((opt, oi) =>
-            `<div class="q-option" data-q="${qi}" data-o="${oi}" onclick="selectOption(${qi},${oi})">
-              <div class="q-radio"></div>
-              <span>${opt}</span>
-            </div>`
-          ).join('');
-          return `<div class="question-block" id="qBlock${qi}">
-            <div class="q-number">QUESTION ${qi + 1}</div>
-            <div class="q-text">${q.q}</div>
-            <div class="q-options">${optionsHtml}</div>
-          </div>`;
-        }).join('');
-      }
-
-      window.selectOption = function(qi, oi) {
-        if (testSubmitted) return;
-        userAnswers[qi] = oi;
-
-        // Update UI
-        document.querySelectorAll(`.q-option[data-q="${qi}"]`).forEach(el => el.classList.remove('selected'));
-        document.querySelector(`.q-option[data-q="${qi}"][data-o="${oi}"]`).classList.add('selected');
-
-        // Update counter
-        const answered = Object.keys(userAnswers).length;
-        document.getElementById('qCount').textContent = `${answered} / ${QUESTIONS.length}`;
+      window.switchTab = function(tab) {
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+        if(tab==='form'){document.querySelectorAll('.tab-btn')[0].classList.add('active');document.getElementById('tabForm').classList.add('active');}
+        else{document.querySelectorAll('.tab-btn')[1].classList.add('active');document.getElementById('tabArchives').classList.add('active');renderArchives();}
       };
-
-      window.submitTest = function() {
-        if (testSubmitted) return;
-        const candidat = document.getElementById('fCandidat').value.trim();
-        if (!candidat) {
-          const el = document.getElementById('alertMsg');
-          el.style.display = 'block'; el.className = 'alert-msg error';
-          el.textContent = 'Entrez le matricule du candidat'; setTimeout(() => el.style.display = 'none', 4000);
-          return;
-        }
-        if (Object.keys(userAnswers).length < QUESTIONS.length) {
-          const el = document.getElementById('alertMsg');
-          el.style.display = 'block'; el.className = 'alert-msg error';
-          el.textContent = 'Répondez à toutes les questions avant de soumettre'; setTimeout(() => el.style.display = 'none', 4000);
-          return;
-        }
-
-        testSubmitted = true;
-        document.getElementById('btnSubmit').disabled = true;
-
-        // Calculate score
-        let correct = 0;
-        QUESTIONS.forEach((q, qi) => {
-          const block = document.getElementById(`qBlock${qi}`);
-          const isCorrect = userAnswers[qi] === q.answer;
-          if (isCorrect) correct++;
-
-          block.classList.add(isCorrect ? 'correct' : 'incorrect');
-          // Show correct answer
-          const correctOpt = document.querySelector(`.q-option[data-q="${qi}"][data-o="${q.answer}"]`);
-          if (correctOpt) correctOpt.classList.add('correct-answer');
-          // Mark wrong if different
-          if (!isCorrect && userAnswers[qi] !== undefined) {
-            const wrongOpt = document.querySelector(`.q-option[data-q="${qi}"][data-o="${userAnswers[qi]}"]`);
-            if (wrongOpt) wrongOpt.classList.add('wrong-answer');
-          }
-        });
-
-        const score = correct / QUESTIONS.length;
-        const pct = Math.round(score * 100);
-        const passed = score >= PASS_THRESHOLD;
-
-        const banner = document.getElementById('resultBanner');
-        banner.className = 'result-banner ' + (passed ? 'pass' : 'fail');
-        banner.innerHTML = `
-          <div class="result-score">${pct}%</div>
-          <div class="result-label">${correct} / ${QUESTIONS.length} réponses correctes — Candidat: ${candidat}</div>
-          <div class="result-verdict">${passed ? '✓ TEST RÉUSSI' : '✗ TEST ÉCHOUÉ'}</div>
-        `;
-        banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      window.selectRating = function(field, value) {
+        ratings[field]=value;
+        document.querySelectorAll(`.rating-scale[data-field="${field}"] .rating-option`).forEach(el=>{el.classList.toggle('selected',parseInt(el.dataset.value)===value);});
       };
-
+      window.submitTest = async function() {
+        if(!currentUser){showAlert('Erreur: utilisateur non identifié','error');return;}
+        let ok=true;
+        ['grpMatricule','grpGrade','grpFormationArmement','grpCodes','grpReforme'].forEach(id=>document.getElementById(id).classList.remove('error'));
+        ['grpSaluts','grpSociostatus','grpVerdicts','grpProcedures'].forEach(id=>document.getElementById(id).classList.remove('error'));
+        const matricule=document.getElementById('fMatricule').value.trim();
+        if(!matricule){document.getElementById('grpMatricule').classList.add('error');document.getElementById('errMatricule').textContent='Matricule requis';ok=false;}
+        const grade=document.getElementById('fGrade').value;
+        if(!grade){document.getElementById('grpGrade').classList.add('error');document.getElementById('errGrade').textContent='Grade requis';ok=false;}
+        if(!ratings.noteSaluts){document.getElementById('grpSaluts').classList.add('error');document.getElementById('errSaluts').textContent='Note requise';ok=false;}
+        if(!ratings.noteSociostatus){document.getElementById('grpSociostatus').classList.add('error');document.getElementById('errSociostatus').textContent='Note requise';ok=false;}
+        if(!ratings.noteVerdicts){document.getElementById('grpVerdicts').classList.add('error');document.getElementById('errVerdicts').textContent='Note requise';ok=false;}
+        if(!ratings.noteProcedures){document.getElementById('grpProcedures').classList.add('error');document.getElementById('errProcedures').textContent='Note requise';ok=false;}
+        const formationArmement=document.getElementById('fFormationArmement').value;
+        if(!formationArmement){document.getElementById('grpFormationArmement').classList.add('error');document.getElementById('errFormationArmement').textContent='Requis';ok=false;}
+        const codes=document.getElementById('fCodes').value;
+        if(!codes){document.getElementById('grpCodes').classList.add('error');document.getElementById('errCodes').textContent='Requis';ok=false;}
+        const reforme=document.getElementById('fReforme').value;
+        if(!reforme){document.getElementById('grpReforme').classList.add('error');document.getElementById('errReforme').textContent='Requis';ok=false;}
+        if(!ok)return;
+        const btn=document.getElementById('btnSubmit');btn.disabled=true;btn.textContent='⏳ ENVOI...';
+        const avg=((ratings.noteSaluts+ratings.noteSociostatus+ratings.noteVerdicts+ratings.noteProcedures)/4).toFixed(2);
+        const test={unite_matricule:matricule,unite_grade:grade,note_saluts:ratings.noteSaluts,note_sociostatus:ratings.noteSociostatus,note_verdicts:ratings.noteVerdicts,note_procedures:ratings.noteProcedures,moyenne:parseFloat(avg),formation_armement:formationArmement,codes_complet:codes,reforme:reforme,commentaires:document.getElementById('fCommentaires').value.trim(),evaluateur_matricule:currentUser.matricule,evaluateur_nom:currentUser.nom_steam||'',statut:'en_attente',created_at:new Date().toISOString().substring(0,10)};
+        try{const saved=await ghAddUnitTest(test);allTests.push(saved);await ghAddReport({matricule:currentUser.matricule,nom_steam:currentUser.nom_steam||'',type:'Test d\'évaluation',secteur:'',unités:matricule,resume:`Test — Unité ${matricule} (${grade}) — Moyenne: ${avg}/4`,notes:test.commentaires,created_at:test.created_at,type_rapport:'unité',division:currentUser.division||''});showAlert('✓ Test soumis. En attente de validation par un HautGradé.','success');resetTest();renderArchives();}catch(e){showAlert('✗ Erreur: '+e.message,'error');}finally{btn.disabled=false;btn.textContent='⟩ SOUMETTRE LE TEST';}
+      };
       window.resetTest = function() {
-        testSubmitted = false;
-        userAnswers = {};
-        document.getElementById('btnSubmit').disabled = false;
-        document.getElementById('resultBanner').className = 'result-banner';
-        document.getElementById('resultBanner').innerHTML = '';
-        document.getElementById('fCandidat').value = '';
-        document.getElementById('alertMsg').style.display = 'none';
-        document.querySelectorAll('.question-block').forEach(el => { el.classList.remove('correct', 'incorrect'); });
-        document.querySelectorAll('.q-option').forEach(el => { el.classList.remove('selected', 'correct-answer', 'wrong-answer'); });
-        document.getElementById('qCount').textContent = `0 / ${QUESTIONS.length}`;
+        ['fMatricule','fGrade','fFormationArmement','fCodes','fReforme','fCommentaires'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+        ['grpMatricule','grpGrade','grpFormationArmement','grpCodes','grpReforme','grpSaluts','grpSociostatus','grpVerdicts','grpProcedures'].forEach(id=>document.getElementById(id).classList.remove('error'));
+        ratings={};document.querySelectorAll('.rating-option').forEach(el=>el.classList.remove('selected'));
       };
-
-      // Auth + access control
+      function renderArchives() {
+        const tb=document.getElementById('archivesBody');const tests=allTests.sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||''));
+        document.getElementById('archiveCount').textContent=tests.length+' TEST'+(tests.length>1?'S':'');
+        if(!tests.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Aucun test enregistré</td></tr>';return;}
+        tb.innerHTML=tests.map(t=>{const sc=t.statut==='valide'?'validated':(t.statut==='rejete'?'rejected':'pending');const sl=t.statut==='valide'?'VALIDÉ':(t.statut==='rejete'?'REJETÉ':'EN ATTENTE');const ac=t.moyenne>=3?'#00cc55':(t.moyenne>=2?'#ffc800':'#ff4444');return`<tr onclick="showTestDetail('${t._id}')"><td>${fmtDate(t.created_at)}</td><td>${t.unite_matricule||'-'}</td><td>${t.unite_grade||'-'}</td><td><span class="avg-score" style="color:${ac}">${t.moyenne}/4</span></td><td>${t.evaluateur_matricule||'-'}</td><td><span class="status-badge ${sc}">${sl}</span></td></tr>`;}).join('');
+      }
+      window.showTestDetail = function(id) {
+        const t=allTests.find(x=>x._id===id);if(!t)return;
+        const o=document.createElement('div');o.className='detail-overlay';
+        const ac=t.moyenne>=3?'#00cc55':(t.moyenne>=2?'#ffc800':'#ff4444');
+        o.innerHTML=`<div class="detail-box"><h3>TEST — ${t.unite_matricule} (${t.unite_grade})</h3><div class="detail-row"><span class="detail-label">DATE</span><span class="detail-value">${fmtDate(t.created_at)}</span></div><div class="detail-row"><span class="detail-label">ÉVALUATEUR</span><span class="detail-value">${t.evaluateur_matricule} (${t.evaluateur_nom||'-'})</span></div><div class="detail-row"><span class="detail-label">SALUTS</span><span class="detail-value">${t.note_saluts}/4</span></div><div class="detail-row"><span class="detail-label">SOCIOSTATUS</span><span class="detail-value">${t.note_sociostatus}/4</span></div><div class="detail-row"><span class="detail-label">VERDICTS</span><span class="detail-value">${t.note_verdicts}/4</span></div><div class="detail-row"><span class="detail-label">PROCÉDURES</span><span class="detail-value">${t.note_procedures}/4</span></div><div class="detail-row"><span class="detail-label">MOYENNE</span><span class="detail-value" style="font-weight:700;color:${ac}">${t.moyenne}/4</span></div><div class="detail-row"><span class="detail-label">FORMATION ARME</span><span class="detail-value">${t.formation_armement}</span></div><div class="detail-row"><span class="detail-label">CODES COMPLET</span><span class="detail-value">${t.codes_complet}${t.codes_complet==='Non'?' ⚠ ERREUR MAJEURE':''}</span></div><div class="detail-row"><span class="detail-label">EN RÉFORME</span><span class="detail-value">${t.reforme}</span></div>${t.commentaires?`<div class="detail-row"><span class="detail-label">COMMENTAIRES</span><span class="detail-value">${t.commentaires}</span></div>`:''}<div class="detail-row"><span class="detail-label">STATUT</span><span class="detail-value">${t.statut==='valide'?'✓ VALIDÉ':t.statut==='rejete'?'✗ REJETÉ':'⏳ EN ATTENTE'}</span></div><button class="close-btn" onclick="this.closest('.detail-overlay').remove()">FERMER</button></div>`;
+        document.body.appendChild(o);o.addEventListener('click',e=>{if(e.target===o)o.remove();});
+      };
       onAuthStateChanged(auth, async(user) => {
-        if (!user) { document.getElementById('loading').style.display='none'; document.getElementById('access-denied').style.display='block'; return; }
-        try {
-          const s = await getDoc(doc(db, 'users', user.uid));
-          if (!s.exists()) { document.getElementById('loading').style.display='none'; document.getElementById('access-denied').style.display='block'; return; }
-          const ud = s.data();
-          if (!ud.approved) { document.getElementById('loading').style.display='none'; document.getElementById('notApproved').style.display='block'; return; }
-
-          currentUser = { matricule: ud.matricule||'???', nom_steam: ud.nom_steam||'' };
-
-          let ui = null;
-          try { const u = await ghLoadUnits(); ui = u.find(x => x.matricule === currentUser.matricule) || null; } catch(_) {}
-
-          const rang = ui ? (ui.rang || '') : '';
-          const isHG = rang === 'Ofc' || rang === 'Cmd';
-          const isFormateur = ui ? (ui.formateur || false) : false;
-          const acc = getAccreditation(rang);
-
-          // ACCESS CHECK: formateur ou HautGradé uniquement
-          if (!isFormateur && !isHG) {
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('noAccess').style.display = 'block';
-            return;
-          }
-
-          // User info
-          const dv = !isHG && ui ? (ui.division || '') : '';
-          document.getElementById('userIdentification').textContent = 'Identification : ' + [rang, dv, currentUser.matricule].filter(Boolean).join(' ');
-          document.getElementById('userAvatar').textContent = currentUser.matricule.substring(0, 3);
-          if (acc) {
-            let l = 'Accréditation : ' + acc;
-            if (isFormateur) l += ' — ' + ((acc === 'MPF' || acc === 'Recrue') ? 'Unité Formatrice MPF' : 'Unité Formatrice MPEF');
-            document.getElementById('userAccreditation').textContent = l;
-          }
-
-          document.getElementById('loading').style.display = 'none';
-          document.getElementById('mainContent').style.display = 'block';
-          buildQuestions();
-        } catch(e) {
-          console.error(e);
-          document.getElementById('loading').style.display = 'none';
-          document.getElementById('access-denied').style.display = 'block';
-        }
+        if(!user){document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';return;}
+        try{const s=await getDoc(doc(db,'users',user.uid));if(!s.exists()){document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';return;}const ud=s.data();if(!ud.approved){document.getElementById('loading').style.display='none';document.getElementById('notApproved').style.display='block';return;}
+        currentUser={matricule:ud.matricule||'???',nom_steam:ud.nom_steam||'',division:''};let ui=null;try{const u=await ghLoadUnits();ui=u.find(x=>x.matricule===currentUser.matricule)||null;}catch(_){}
+        const rang=ui?(ui.rang||''):'';const isHG=rang==='Ofc'||rang==='Cmd';const isFormateur=ui?(ui.formateur||false):false;const acc=getAccreditation(rang);currentUser.division=ui?(ui.division||''):'';
+        if(!isFormateur&&!isHG){document.getElementById('loading').style.display='none';document.getElementById('noAccess').style.display='block';return;}
+        const dv=!isHG&&ui?(ui.division||''):'';document.getElementById('userIdentification').textContent='Identification : '+[rang,dv,currentUser.matricule].filter(Boolean).join(' ');document.getElementById('userAvatar').textContent=currentUser.matricule.substring(0,3);
+        if(acc){let l='Accréditation : '+acc;if(isFormateur)l+=' — '+((acc==='MPF'||acc==='Recrue')?'Unité Formatrice MPF':'Unité Formatrice MPEF');document.getElementById('userAccreditation').textContent=l;}
+        document.getElementById('loading').style.display='none';document.getElementById('mainContent').style.display='block';
+        try{allTests=await ghLoadUnitTests();}catch(_){allTests=[];}
+        }catch(e){console.error(e);document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';}
       });
     </script>
 </body>

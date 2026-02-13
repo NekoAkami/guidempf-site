@@ -34,6 +34,12 @@
         .sub-page-card:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.25); }
         .sub-page-card h3 { color: #e74c3c; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; margin-bottom: 0.3rem; }
         .sub-page-card p { color: var(--text-muted); font-size: 0.8rem; }
+        .jury-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+        .jury-tab { padding: 0.5rem 1rem; border-radius: 3px; cursor: pointer; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; border: 1px solid rgba(231,76,60,0.3); background: rgba(231,76,60,0.05); color: #e74c3c; transition: all 0.15s; font-weight: 700; }
+        .jury-tab:hover { background: rgba(231,76,60,0.15); }
+        .jury-tab.active { background: rgba(231,76,60,0.2); border-color: #e74c3c; }
+        .jury-tab-content { display: none; }
+        .jury-tab-content.active { display: block; }
         .rapports-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
         .rapports-table th {
             text-align: left; padding: 0.5rem 0.4rem; color: #e74c3c;
@@ -81,6 +87,16 @@
         .report-detail-box .detail-label { color: var(--text-muted); min-width: 120px; }
         .report-detail-box .detail-value { color: var(--text-primary); flex: 1; }
         .report-detail-box .close-btn { margin-top: 1rem; padding: 0.4rem 1rem; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: #fff; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; cursor: pointer; border-radius: 3px; display: block; margin-left: auto; }
+        .status-badge { display: inline-block; padding: 0.1rem 0.4rem; border-radius: 2px; font-size: 0.68rem; font-weight: 700; }
+        .status-badge.pending { background: rgba(255,200,0,0.15); color: #ffc800; border: 1px solid rgba(255,200,0,0.3); }
+        .status-badge.treated { background: rgba(0,200,80,0.15); color: #00cc55; border: 1px solid rgba(0,200,80,0.3); }
+        .status-badge.archived { background: rgba(150,150,150,0.15); color: #999; border: 1px solid rgba(150,150,150,0.3); }
+        .complaint-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
+        .complaint-actions button { padding: 0.4rem 0.8rem; font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; cursor: pointer; border-radius: 3px; transition: all 0.15s; }
+        .complaint-actions .btn-treat { border: 1px solid rgba(0,200,80,0.4); background: rgba(0,200,80,0.1); color: #00cc55; }
+        .complaint-actions .btn-treat:hover { background: rgba(0,200,80,0.2); }
+        .complaint-actions .btn-archive { border: 1px solid rgba(150,150,150,0.4); background: rgba(150,150,150,0.1); color: #999; }
+        .complaint-actions .btn-archive:hover { background: rgba(150,150,150,0.2); }
         #access-denied { display: none; text-align: center; padding: 3rem; }
     </style>
 </head>
@@ -118,6 +134,13 @@
                         <div class="div-info">ACCÈS : GRADE 05+ — CODE COULEUR : OR</div>
                     </div>
                     <div id="divInfoSection"></div>
+
+                    <div class="jury-tabs">
+                        <button class="jury-tab active" onclick="switchJuryTab('rapports')">📄 RAPPORTS</button>
+                        <button class="jury-tab" onclick="switchJuryTab('plaintes')">⚠️ PLAINTES</button>
+                    </div>
+
+                    <div id="juryTabRapports" class="jury-tab-content active">
                     <div class="combine-terminal-wrapper animate-fadeInUp" style="border-color: rgba(255,255,255,0.15);">
                         <div class="combine-header" style="border-color: rgba(255,255,255,0.1);">
                             <h2 style="color:#e74c3c;">RAPPORTS DIVISION JURY</h2>
@@ -146,6 +169,37 @@
                             <div class="pagination" id="pagination"></div>
                         </div>
                     </div>
+                    </div>
+
+                    <div id="juryTabPlaintes" class="jury-tab-content">
+                    <div class="combine-terminal-wrapper animate-fadeInUp" style="border-color: rgba(255,255,255,0.15);">
+                        <div class="combine-header" style="border-color: rgba(255,255,255,0.1);">
+                            <h2 style="color:#e74c3c;">PLAINTES REÇUES</h2>
+                            <span class="header-code" id="complaintCount">0</span>
+                        </div>
+                        <div class="combine-body">
+                            <div class="search-bar">
+                                <input type="text" id="complaintSearch" placeholder="Rechercher dans les plaintes..." oninput="renderComplaints()">
+                            </div>
+                            <div style="overflow-x:auto;">
+                                <table class="rapports-table">
+                                    <thead>
+                                        <tr>
+                                            <th>DATE</th>
+                                            <th>PLAIGNANT</th>
+                                            <th>CIBLE</th>
+                                            <th>CATÉGORIE</th>
+                                            <th>STATUT</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="complaintsBody">
+                                        <tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -158,11 +212,17 @@
       import { auth, db } from '../assets/js/auth.js';
       import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
       import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-      import { loadReports, loadUnits } from '../assets/js/github-data.js';
+      import { loadReports, loadUnits, loadComplaints, updateComplaint } from '../assets/js/github-data.js';
       const DIVISION = 'JURY';
-      let allReports = [], filteredReports = [], currentPage = 1, perPage = 20;
+      let allReports = [], allComplaints = [], filteredReports = [], currentPage = 1, perPage = 20;
       let sortField = 'created_at', sortDir = 'desc';
       function fmtDate(d) { if(!d) return '-'; const p=d.split('-'); return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:d; }
+      window.switchJuryTab = function(tab) {
+        document.querySelectorAll('.jury-tab').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.jury-tab-content').forEach(c=>c.classList.remove('active'));
+        if(tab==='rapports'){document.querySelectorAll('.jury-tab')[0].classList.add('active');document.getElementById('juryTabRapports').classList.add('active');}
+        else{document.querySelectorAll('.jury-tab')[1].classList.add('active');document.getElementById('juryTabPlaintes').classList.add('active');renderComplaints();}
+      };
       window.applyFilters = function() {
         const q = (document.getElementById('searchInput').value || '').toLowerCase();
         filteredReports = allReports.filter(r => {
@@ -194,6 +254,39 @@
         o.innerHTML=`<div class="report-detail-box"><h3>RAPPORT DIVISIONNAIRE — ${DIVISION}</h3><div class="detail-row"><span class="detail-label">DATE</span><span class="detail-value">${fmtDate(r.created_at)}</span></div><div class="detail-row"><span class="detail-label">MATRICULE</span><span class="detail-value">${r.matricule||'-'}</span></div><div class="detail-row"><span class="detail-label">NOM</span><span class="detail-value">${r.nom_steam||'-'}</span></div><div class="detail-row"><span class="detail-label">TYPE</span><span class="detail-value">${r.type||'-'}</span></div><div class="detail-row"><span class="detail-label">SECTEUR</span><span class="detail-value">${r.secteur||'-'}</span></div><div class="detail-row"><span class="detail-label">UNITÉS</span><span class="detail-value">${r.unites||'-'}</span></div><div class="detail-row"><span class="detail-label">RÉSUMÉ</span><span class="detail-value">${r.resume||'-'}</span></div>${r.notes?`<div class="detail-row"><span class="detail-label">NOTES</span><span class="detail-value">${r.notes}</span></div>`:''}<button class="close-btn" onclick="this.closest('.report-detail-overlay').remove()">FERMER</button></div>`;
         document.body.appendChild(o); o.addEventListener('click',e=>{if(e.target===o)o.remove();});
       };
+      window.renderComplaints = function() {
+        const q = (document.getElementById('complaintSearch')?.value || '').toLowerCase();
+        let list = allComplaints;
+        if(q) list = list.filter(c => `${c.plaignant_matricule||''} ${c.cible_matricule||''} ${c.categorie||''} ${c.description||''}`.toLowerCase().includes(q));
+        list.sort((a,b) => (b.created_at||'').localeCompare(a.created_at||''));
+        document.getElementById('complaintCount').textContent = list.length + ' PLAINTE' + (list.length>1?'S':'');
+        const tb = document.getElementById('complaintsBody');
+        if(!list.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">Aucune plainte</td></tr>';return;}
+        tb.innerHTML = list.map(c => {
+          const sc = c.statut==='traite'?'treated':(c.statut==='archive'?'archived':'pending');
+          const sl = c.statut==='traite'?'TRAITÉ':(c.statut==='archive'?'ARCHIVÉ':'EN ATTENTE');
+          return `<tr style="cursor:pointer;" onclick="showComplaintDetail('${c._id}')"><td style="font-size:0.75rem;">${fmtDate(c.created_at)}</td><td>${c.plaignant_matricule||'-'}</td><td>${c.cible_matricule||'-'}</td><td><span class="type-badge">${c.categorie||'-'}</span></td><td><span class="status-badge ${sc}">${sl}</span></td></tr>`;
+        }).join('');
+      };
+      window.showComplaintDetail = function(id) {
+        const c = allComplaints.find(x=>x._id===id); if(!c) return;
+        const o = document.createElement('div'); o.className='report-detail-overlay';
+        const sc = c.statut==='traite'?'TRAITÉ':(c.statut==='archive'?'ARCHIVÉ':'EN ATTENTE');
+        let actionsHtml = '';
+        if(c.statut==='en_attente') actionsHtml = `<div class="complaint-actions"><button class="btn-treat" onclick="updateComplaintStatus('${c._id}','traite')">✓ MARQUER TRAITÉ</button><button class="btn-archive" onclick="updateComplaintStatus('${c._id}','archive')">📁 ARCHIVER</button></div>`;
+        else if(c.statut==='traite') actionsHtml = `<div class="complaint-actions"><button class="btn-archive" onclick="updateComplaintStatus('${c._id}','archive')">📁 ARCHIVER</button></div>`;
+        o.innerHTML=`<div class="report-detail-box"><h3>PLAINTE — ${c.categorie||'-'}</h3><div class="detail-row"><span class="detail-label">DATE</span><span class="detail-value">${fmtDate(c.created_at)}</span></div><div class="detail-row"><span class="detail-label">PLAIGNANT</span><span class="detail-value">${c.plaignant_matricule||'-'}</span></div><div class="detail-row"><span class="detail-label">CIBLE</span><span class="detail-value">${c.cible_matricule||'-'}</span></div><div class="detail-row"><span class="detail-label">DATE INCIDENT</span><span class="detail-value">${fmtDate(c.date_incident)}</span></div><div class="detail-row"><span class="detail-label">LIEU</span><span class="detail-value">${c.lieu||'-'}</span></div><div class="detail-row"><span class="detail-label">DESCRIPTION</span><span class="detail-value">${c.description||'-'}</span></div>${c.temoins?`<div class="detail-row"><span class="detail-label">TÉMOINS</span><span class="detail-value">${c.temoins}</span></div>`:''}${c.preuves?`<div class="detail-row"><span class="detail-label">PREUVES</span><span class="detail-value">${c.preuves}</span></div>`:''}<div class="detail-row"><span class="detail-label">STATUT</span><span class="detail-value">${sc}</span></div>${actionsHtml}<button class="close-btn" onclick="this.closest('.report-detail-overlay').remove()">FERMER</button></div>`;
+        document.body.appendChild(o); o.addEventListener('click',e=>{if(e.target===o)o.remove();});
+      };
+      window.updateComplaintStatus = async function(id, newStatus) {
+        try {
+          await updateComplaint(id, { statut: newStatus });
+          const c = allComplaints.find(x=>x._id===id);
+          if(c) c.statut = newStatus;
+          document.querySelector('.report-detail-overlay')?.remove();
+          renderComplaints();
+        } catch(e) { alert('Erreur: ' + e.message); }
+      };
       onAuthStateChanged(auth, async(user) => {
         if(!user){document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';return;}
         try {
@@ -209,6 +302,7 @@
           document.getElementById('loading').style.display='none';
           document.getElementById('mainContent').style.display='block';
           try { allReports = await loadReports(); } catch(_) { allReports = []; }
+          try { allComplaints = await loadComplaints(); } catch(_) { allComplaints = []; }
           applyFilters();
         } catch(e) { console.error(e); document.getElementById('loading').style.display='none'; document.getElementById('access-denied').style.display='block'; }
       });

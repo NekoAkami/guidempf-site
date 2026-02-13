@@ -35,9 +35,11 @@ class GlobalNavigation {
 
     async init() {
         this.basePath = this.getBasePath();
+        this.navOverride = null;
         this.injectFavicon();
         this.injectServerLogo();
         this.injectMissingAssets();
+        await this.loadNavConfig();
         this.createNavigationHTML();
         this.injectSearchBar();
         this.injectBackButton();
@@ -46,6 +48,53 @@ class GlobalNavigation {
         this.setupMobileMenu();
         this.setupDropdowns();
         this.cleanGlitchText();
+    }
+
+    // Load navigation config from Firestore (with localStorage cache)
+    async loadNavConfig() {
+        // 1. Try localStorage cache first (instant)
+        try {
+            const cached = localStorage.getItem('mpf_nav_config');
+            const ts = parseInt(localStorage.getItem('mpf_nav_config_ts') || '0');
+            if (cached && Date.now() - ts < 5 * 60 * 1000) { // 5 min cache
+                const parsed = JSON.parse(cached);
+                if (parsed.row1 && parsed.row2) {
+                    this.navOverride = parsed;
+                    return;
+                }
+            }
+        } catch {}
+
+        // 2. Load from Firestore
+        try {
+            const { initializeApp, getApp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
+            const { getFirestore, doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+
+            const firebaseConfig = {
+                apiKey: "AIzaSyDPs4x2EE1pyeQTC_V-Ze5uyZ8Rs2N8qF4",
+                authDomain: "guidempf.firebaseapp.com",
+                projectId: "guidempf",
+                storageBucket: "guidempf.firebasestorage.app",
+                messagingSenderId: "806309770965",
+                appId: "1:806309770965:web:3621f58bfb252446c1945c"
+            };
+
+            let app;
+            try { app = getApp(); } catch { app = initializeApp(firebaseConfig); }
+            const db = getFirestore(app);
+
+            const snap = await getDoc(doc(db, 'config', 'navigation'));
+            if (snap.exists()) {
+                const data = snap.data();
+                if (data.row1 && data.row2) {
+                    this.navOverride = data;
+                    localStorage.setItem('mpf_nav_config', JSON.stringify(data));
+                    localStorage.setItem('mpf_nav_config_ts', Date.now().toString());
+                }
+            }
+        } catch (err) {
+            console.warn('Nav config load failed, using defaults:', err.message);
+        }
     }
     async injectMaintenanceIndicator() {
         // Ajoute l'indicateur maintenance/en ligne à côté du compteur en ligne
@@ -348,6 +397,23 @@ class GlobalNavigation {
     }
 
     getMenuStructure() {
+        // Use Firestore nav config if loaded, otherwise fall back to hardcoded
+        if (this.navOverride && this.navOverride.row1 && this.navOverride.row2) {
+            const filterItems = (items) => items
+                .filter(item => !item.hidden)
+                .map(item => {
+                    const clean = { label: item.label, url: item.url };
+                    if (item.dropdown && item.dropdown.length > 0) {
+                        clean.dropdown = item.dropdown.filter(sub => !sub.hidden);
+                    }
+                    return clean;
+                });
+            return {
+                row1: filterItems(this.navOverride.row1),
+                row2: filterItems(this.navOverride.row2)
+            };
+        }
+        // Hardcoded default
         return {
             row1: [
                 { label: 'ACCUEIL', url: 'index.html' },
@@ -410,7 +476,7 @@ class GlobalNavigation {
                     label: 'ACTIVITE',
                     url: 'activite.html',
                     dropdown: [
-                        { label: 'Tableaux Milice', url: 'activite-tableaux.html' },
+                        { label: 'Planning Semaine', url: 'activite-tableaux.html' },
                         { label: 'Activité Milice', url: 'activite-milice.html' }
                     ]
                 },
@@ -434,7 +500,8 @@ class GlobalNavigation {
                         { label: 'Rapport', url: 'form-rapport.html' },
                         { label: 'Dépense & Gain', url: 'form-depot.html' },
                         { label: 'Test', url: 'form-test.html' },
-                        { label: 'Formation', url: 'form-formation.html' }
+                        { label: 'Formation', url: 'form-formation.html' },
+                        { label: 'Plainte', url: 'form-plainte.html' }
                     ]
                 },
                 {
