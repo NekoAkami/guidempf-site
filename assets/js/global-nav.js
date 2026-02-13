@@ -348,115 +348,119 @@ class GlobalNavigation {
     }
 
     getMenuStructure() {
-        return [
-            { label: 'ACCUEIL', url: 'index.html' },
-            {
-                label: 'ACTIVITE',
-                url: 'activite.html',
-                dropdown: [
-                    { label: 'Tableaux Milice', url: 'activite-tableaux.html' },
-                    { label: 'Activité Milice', url: 'activite-milice.html' },
-                    { label: 'Worker Announcement', url: 'worker-announcement.html' },
-                    { label: 'Ration Announcement', url: 'ration-announcement.html' },
-                    { label: 'Suspended Rations', url: 'suspended-rations.html' },
-                    { label: 'Social Infraction', url: 'social-infraction.html' },
-                    { label: 'Judgement Waiver', url: 'judgement-waiver.html' }
-                ]
-            },
-            { label: 'RADIO & MDP', url: 'radio.html' },
-            { label: 'LOYALISME', url: 'loyalisme.html' },
-            { label: 'JUGEMENT', url: 'jugement.html' },
-            { label: 'CONTREBANDE', url: 'contrebande.html' },
-            { label: 'HIERARCHIE', url: 'hierarchie.html' },
-            { label: 'CODEX', url: 'codex.html' },
-            {
-                label: 'GUIDE',
-                url: 'guide.html',
-                dropdown: [
-                    { label: 'Terminologie', url: 'guide-terminologie.html' },
-                    { label: 'Respect & Salutations', url: 'guide-respect.html' },
-                    { label: 'Commandement', url: 'guide-commandement.html' },
-                    { label: 'Dispatch & Haut-parleur', url: 'guide-dispatch.html' },
-                    { label: 'Code Vestimentaire', url: 'guide-vestimentaire.html' },
-                    { label: 'Formations Tactiques', url: 'guide-formations.html' },
-                    { label: 'Sociostatus', url: 'guide-sociostatus.html' },
-                    { label: 'Brèches & Sanctions', url: 'guide-breches.html' },
-                    { label: 'Équipement', url: 'equipment.html' },
-                    { label: 'Tactique', url: 'tactics.html' },
-                    { label: 'Unités & Grades', url: 'units.html' }
-                ]
-            },
-            {
-                label: 'DIVISIONS',
-                url: 'divisions.html',
-                dropdown: [
-                    { label: 'HELIX', url: 'divisions/helix.html' },
-                    { label: 'RAZOR', url: 'divisions/razor.html' },
-                    { label: 'JURY', url: 'divisions/jury.html' },
-                    { label: 'EXOGEN', url: 'divisions/exogen.html' },
-                    { label: 'GRID', url: 'divisions/grid.html' },
-                    { label: 'ZONE', url: 'divisions/zone.html' },
-                    { label: 'SPECTRE', url: 'divisions/spectre.html' }
-                ]
-            },
-            {
-                label: 'COURS',
-                url: 'cours.html',
-                dropdown: [
-                    { label: 'Cours RCT', url: 'cours-rct.html' },
-                    { label: 'Cours 05+', url: 'cours-05.html' },
-                    { label: 'Cours 03+', url: 'cours-03.html' }
-                ]
-            },
-            {
-                label: 'PROCEDURES',
-                url: 'procedures.html',
-                dropdown: [
-                    { label: 'Declarations MPF', url: 'declarations.html' },
-                    { label: 'Test de Loyauté', url: 'test-loyaute.html' },
-                    { label: 'Conscription', url: 'procedure-conscription.html' },
-                    { label: 'Incarcération', url: 'procedure-incarceration.html' },
-                    { label: 'Dispatch Administrateur', url: 'procedure-dispatch-admin.html' },
-                    { label: 'Code 7 & Escouade', url: 'procedure-code7.html' }
-                ]
-            },
-            {
-                label: 'CWU',
-                url: 'cwu.html',
-                dropdown: [
-                    { label: 'Procédure CWU-MPF', url: 'cwu-procedure.html' }
-                ]
-            },
-            {
-                label: 'FORMULAIRES',
-                url: 'formulaires.html',
-                dropdown: [
-                    { label: 'Rapport', url: 'form-rapport.html' },
-                    { label: 'Dépense & Gain', url: 'form-depot.html' },
-                    { label: 'Test', url: 'form-test.html' },
-                    { label: 'Formation', url: 'form-formation.html' }
-                ]
-            },
-            {
-                label: 'RAPPORTS',
-                url: 'rapports.html',
-                dropdown: [
-                    { label: 'Rapports', url: 'rapports.html' },
-                    { label: 'Rapports Divisionnaires', url: 'rapports-divisionnaires.html' }
-                ]
-            },
-            { label: 'PAYES', url: 'payes.html' },
-            { label: 'SCANNER', url: 'scanner.html' },
-            { label: 'VIEWTIME', url: 'viewtime.html' },
-            { label: 'ABSENCES', url: 'declaration-absence.html' },
-            { label: 'CARTE', url: 'carte.html' },
-            { label: 'LIENS', url: 'liens.html' },
-            { label: 'À PROPOS', url: 'about.html' }
-        ];
+        return {
+            row1: [
+                { label: 'ACCUEIL', url: 'index.html' },
+                { label: 'RADIO & MDP', url: 'radio.html' },
+                { label: 'LOYALISME', url: 'loyalisme.html' },
+                { label: 'JUGEMENT', url: 'jugement.html' },
+                { label: 'CONTREBANDE', url: 'contrebande.html' },
+                { label: 'HIERARCHIE', url: 'hierarchie.html' },
+                { label: 'CODEX', url: 'codex.html' },
+                {
+                    label: 'GUIDE',
+                    url: 'guide.html',
+                    dropdown: [
+                        { label: 'Terminologie', url: 'guide-terminologie.html' },
+                        { label: 'Respect & Salutations', url: 'guide-respect.html' },
+                        { label: 'Commandement', url: 'guide-commandement.html' },
+                        { label: 'Dispatch & Haut-parleur', url: 'guide-dispatch.html' },
+                        { label: 'Code Vestimentaire', url: 'guide-vestimentaire.html' },
+                        { label: 'Formations Tactiques', url: 'guide-formations.html' },
+                        { label: 'Sociostatus', url: 'guide-sociostatus.html' },
+                        { label: 'Brèches & Sanctions', url: 'guide-breches.html' },
+                        { label: 'Équipement', url: 'equipment.html' },
+                        { label: 'Tactique', url: 'tactics.html' },
+                        { label: 'Unités & Grades', url: 'units.html' }
+                    ]
+                },
+                {
+                    label: 'COURS',
+                    url: 'cours.html',
+                    dropdown: [
+                        { label: 'Cours RCT', url: 'cours-rct.html' },
+                        { label: 'Cours 05+', url: 'cours-05.html' },
+                        { label: 'Cours 03+', url: 'cours-03.html' }
+                    ]
+                },
+                {
+                    label: 'PROCEDURES',
+                    url: 'procedures.html',
+                    dropdown: [
+                        { label: 'Declarations MPF', url: 'declarations.html' },
+                        { label: 'Test de Loyauté', url: 'test-loyaute.html' },
+                        { label: 'Conscription', url: 'procedure-conscription.html' },
+                        { label: 'Incarcération', url: 'procedure-incarceration.html' },
+                        { label: 'Dispatch Administrateur', url: 'procedure-dispatch-admin.html' },
+                        { label: 'Code 7 & Escouade', url: 'procedure-code7.html' }
+                    ]
+                },
+                {
+                    label: 'CWU',
+                    url: 'cwu.html',
+                    dropdown: [
+                        { label: 'Procédure CWU-MPF', url: 'cwu-procedure.html' }
+                    ]
+                },
+                { label: 'SCANNER', url: 'scanner.html' },
+                { label: 'VIEWTIME', url: 'viewtime.html' },
+                { label: 'ABSENCES', url: 'declaration-absence.html' },
+                { label: 'CARTE', url: 'carte.html' },
+                { label: 'LIENS', url: 'liens.html' },
+                { label: 'À PROPOS', url: 'about.html' }
+            ],
+            row2: [
+                {
+                    label: 'ACTIVITE',
+                    url: 'activite.html',
+                    dropdown: [
+                        { label: 'Tableaux Milice', url: 'activite-tableaux.html' },
+                        { label: 'Activité Milice', url: 'activite-milice.html' },
+                        { label: 'Worker Announcement', url: 'worker-announcement.html' },
+                        { label: 'Ration Announcement', url: 'ration-announcement.html' },
+                        { label: 'Suspended Rations', url: 'suspended-rations.html' },
+                        { label: 'Social Infraction', url: 'social-infraction.html' },
+                        { label: 'Judgement Waiver', url: 'judgement-waiver.html' }
+                    ]
+                },
+                {
+                    label: 'DIVISIONS',
+                    url: 'divisions.html',
+                    dropdown: [
+                        { label: 'HELIX', url: 'divisions/helix.html' },
+                        { label: 'RAZOR', url: 'divisions/razor.html' },
+                        { label: 'JURY', url: 'divisions/jury.html' },
+                        { label: 'EXOGEN', url: 'divisions/exogen.html' },
+                        { label: 'GRID', url: 'divisions/grid.html' },
+                        { label: 'ZONE', url: 'divisions/zone.html' },
+                        { label: 'SPECTRE', url: 'divisions/spectre.html' }
+                    ]
+                },
+                {
+                    label: 'FORMULAIRES',
+                    url: 'formulaires.html',
+                    dropdown: [
+                        { label: 'Rapport', url: 'form-rapport.html' },
+                        { label: 'Dépense & Gain', url: 'form-depot.html' },
+                        { label: 'Test', url: 'form-test.html' },
+                        { label: 'Formation', url: 'form-formation.html' }
+                    ]
+                },
+                {
+                    label: 'RAPPORTS',
+                    url: 'rapports.html',
+                    dropdown: [
+                        { label: 'Rapports', url: 'rapports.html' },
+                        { label: 'Rapports Divisionnaires', url: 'rapports-divisionnaires.html' }
+                    ]
+                },
+                { label: 'PAYES', url: 'payes.html' }
+            ]
+        };
     }
 
     createNavigationHTML() {
-        const menuStructure = this.getMenuStructure();
+        const menu = this.getMenuStructure();
         const navHTML = `
             <nav class="main-nav">
                 <div class="nav-container">
@@ -464,7 +468,11 @@ class GlobalNavigation {
                         MENU
                     </button>
                     <ul class="nav-list" id="mainNavList">
-                        ${menuStructure.map(item => this.createNavItem(item)).join('')}
+                        ${menu.row1.map(item => this.createNavItem(item)).join('')}
+                    </ul>
+                    <div class="nav-separator"></div>
+                    <ul class="nav-list nav-list-row2" id="mainNavList2">
+                        ${menu.row2.map(item => this.createNavItem(item)).join('')}
                     </ul>
                 </div>
             </nav>
@@ -517,9 +525,11 @@ class GlobalNavigation {
 
     toggleMobileMenu() {
         const navList = document.getElementById('mainNavList');
-        if (navList) {
-            navList.classList.toggle('active');
-        }
+        const navList2 = document.getElementById('mainNavList2');
+        const sep = document.querySelector('.nav-separator');
+        if (navList) navList.classList.toggle('active');
+        if (navList2) navList2.classList.toggle('active');
+        if (sep) sep.classList.toggle('active');
     }
 
     setupDropdowns() {
@@ -555,9 +565,10 @@ class GlobalNavigation {
     setupMobileMenu() {
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('dropdown-link')) {
-                const navList = document.getElementById('mainNavList');
-                if (navList && window.innerWidth <= 768) {
-                    navList.classList.remove('active');
+                if (window.innerWidth <= 768) {
+                    document.querySelectorAll('.nav-list').forEach(nl => nl.classList.remove('active'));
+                    const sep = document.querySelector('.nav-separator');
+                    if (sep) sep.classList.remove('active');
                     document.querySelectorAll('.nav-item.dropdown-open').forEach(item => {
                         item.classList.remove('dropdown-open');
                     });
@@ -567,8 +578,9 @@ class GlobalNavigation {
 
         window.addEventListener('resize', () => {
             if (window.innerWidth > 768) {
-                const navList = document.getElementById('mainNavList');
-                if (navList) navList.classList.remove('active');
+                document.querySelectorAll('.nav-list').forEach(nl => nl.classList.remove('active'));
+                const sep = document.querySelector('.nav-separator');
+                if (sep) sep.classList.remove('active');
                 document.querySelectorAll('.nav-item.dropdown-open').forEach(item => {
                     item.classList.remove('dropdown-open');
                 });
