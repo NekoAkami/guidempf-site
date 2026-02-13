@@ -259,6 +259,54 @@
         }
 
         #access-denied { display: none; text-align: center; padding: 3rem; }
+
+        /* Access control table */
+        .access-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+        .access-table th {
+            text-align: left; padding: 0.5rem; color: var(--accent-cyan);
+            font-family: 'Share Tech Mono', monospace; font-size: 0.68rem;
+            letter-spacing: 1px; border-bottom: 2px solid rgba(0,170,255,0.2); white-space: nowrap;
+        }
+        .access-table td {
+            padding: 0.4rem 0.5rem; border-bottom: 1px solid rgba(0,170,255,0.06);
+            vertical-align: middle; font-family: 'Share Tech Mono', monospace;
+        }
+        .access-table tr:hover { background: rgba(0,170,255,0.03); }
+        .access-table tr.has-restriction { background: rgba(255,170,0,0.04); }
+        .access-table .page-url {
+            font-size: 0.72rem; color: var(--text-primary); max-width: 220px;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .access-table select {
+            padding: 0.2rem 0.4rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(0,170,255,0.2);
+            color: var(--text-primary); font-family: 'Share Tech Mono', monospace; font-size: 0.72rem;
+            outline: none; border-radius: 2px;
+        }
+        .access-table select:focus { border-color: var(--accent-cyan); }
+        .div-chips-wrap { display: flex; flex-wrap: wrap; gap: 0.2rem; align-items: center; }
+        .div-chip {
+            padding: 0.1rem 0.4rem; font-size: 0.62rem; border-radius: 2px; cursor: pointer;
+            font-family: 'Share Tech Mono', monospace; transition: all 0.15s; user-select: none;
+        }
+        .div-chip.active { background: rgba(0,170,255,0.2); border: 1px solid rgba(0,170,255,0.4); color: var(--accent-cyan); }
+        .div-chip.inactive { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); opacity: 0.5; }
+        .div-chip:hover { opacity: 1; }
+        .div-all-label {
+            font-size: 0.58rem; color: var(--text-muted); margin-right: 0.3rem;
+            font-family: 'Share Tech Mono', monospace; opacity: 0.7;
+        }
+        .access-check { width: 16px; height: 16px; accent-color: var(--accent-cyan); cursor: pointer; }
+        .access-filter {
+            display: flex; gap: 0.8rem; margin-bottom: 0.8rem; flex-wrap: wrap; align-items: center;
+        }
+        .access-filter select, .access-filter input {
+            padding: 0.3rem 0.5rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(0,170,255,0.2);
+            color: var(--text-primary); font-family: 'Share Tech Mono', monospace; font-size: 0.75rem;
+            outline: none; border-radius: 2px;
+        }
+        .access-filter input:focus, .access-filter select:focus { border-color: var(--accent-cyan); }
+        .access-stat { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; color: var(--text-muted); }
+        .access-stat strong { color: var(--accent-cyan); }
     </style>
 </head>
 <body>
@@ -359,6 +407,51 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- ===== CONTRÔLE D'ACCÈS PAR PAGE ===== -->
+                <div class="combine-terminal-wrapper" style="margin-top:1.5rem;">
+                    <div class="combine-header">
+                        <h2>🔒 CONTRÔLE D'ACCÈS PAR PAGE</h2>
+                        <span class="header-code">RESTRICTIONS // GRADES & DIVISIONS</span>
+                    </div>
+                    <div class="combine-body">
+                        <p style="color:var(--text-muted);font-size:0.78rem;margin-bottom:1rem;font-family:'Share Tech Mono',monospace;">
+                            Configurez les restrictions d'accès pour chaque page. Par défaut, toutes les pages sont accessibles à tous les membres approuvés.<br>
+                            Les <strong style="color:var(--accent-cyan);">HG (Ofc/Cmd)</strong> et <strong style="color:var(--accent-cyan);">admins</strong> contournent toutes les restrictions.
+                        </p>
+                        <div class="access-filter">
+                            <select id="accessFilterType">
+                                <option value="">Toutes les pages</option>
+                                <option value="restricted">Avec restrictions</option>
+                                <option value="unrestricted">Sans restriction</option>
+                            </select>
+                            <input type="text" id="accessSearch" placeholder="Filtrer par nom de page..." style="flex:1;min-width:150px;">
+                            <span class="access-stat" id="accessStat"></span>
+                        </div>
+                        <div class="table-scroll" style="max-height:500px;overflow-y:auto;">
+                            <table class="access-table">
+                                <thead>
+                                    <tr>
+                                        <th>PAGE</th>
+                                        <th>GRADE MINIMUM</th>
+                                        <th>DIVISIONS AUTORISÉES</th>
+                                        <th style="text-align:center;">FORMATEUR</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="accessTableBody">
+                                    <tr><td colspan="4" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="actions-bar" style="margin-top:1rem;">
+                            <button class="btn-primary" id="saveAccessBtn" onclick="saveAccessConfig()">SAUVEGARDER ACCÈS</button>
+                            <button class="btn-sm danger" onclick="clearAllAccess()">TOUT RÉINITIALISER</button>
+                            <span id="accessChangeIndicator" style="display:none;color:#ffaa00;font-family:'Share Tech Mono',monospace;font-size:0.72rem;">
+                                <span class="change-indicator"></span> Modifications accès non sauvegardées
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -375,6 +468,13 @@
 
         let navConfig = { row1: [], row2: [] };
         let hasChanges = false;
+
+        // === ACCESS CONTROL ===
+        const RANKS = ['', 'RCT', '.05', '.04', '.03', 'STB', '.02', '.01', 'DvL', 'STBE', 'CABAL', 'Ofc', 'Cmd'];
+        const RANK_LABELS = { '': 'Tous', 'RCT': 'RCT+', '.05': '.05+', '.04': '.04+', '.03': '.03+', 'STB': 'STB+', '.02': '.02+', '.01': '.01+', 'DvL': 'DvL+', 'STBE': 'STBE+', 'CABAL': 'CABAL+', 'Ofc': 'Ofc+', 'Cmd': 'Cmd seul' };
+        const DIVISIONS = ['HELIX', 'RAZOR', 'JURY', 'EXOGEN', 'GRID', 'ZONE', 'SPECTRE'];
+        let accessConfig = { pages: {} };
+        let accessHasChanges = false;
 
         // Default nav structure (mirrors global-nav.js getMenuStructure)
         function getDefaultNav() {
@@ -730,9 +830,170 @@
             }
         };
 
+        // === ACCESS CONTROL FUNCTIONS ===
+        function collectAllPages() {
+            const pages = new Set();
+            ['row1', 'row2'].forEach(row => {
+                (navConfig[row] || []).forEach(item => {
+                    if (item.url) pages.add(item.url);
+                    if (item.dropdown) item.dropdown.forEach(sub => { if (sub.url) pages.add(sub.url); });
+                });
+            });
+            if (accessConfig.pages) Object.keys(accessConfig.pages).forEach(p => pages.add(p));
+            // Exclude special pages
+            ['login.html', 'register.html', 'pending.html', 'maintenance.html', 'index.html'].forEach(p => pages.delete(p));
+            return Array.from(pages).sort();
+        }
+
+        function getPageAccess(pageUrl) {
+            return accessConfig.pages[pageUrl] || { rang_min: '', divisions: [], formateur_only: false };
+        }
+
+        function hasRestriction(pageUrl) {
+            const a = accessConfig.pages[pageUrl];
+            if (!a) return false;
+            return !!(a.rang_min || (a.divisions && a.divisions.length > 0) || a.formateur_only);
+        }
+
+        function markAccessChanged() {
+            accessHasChanges = true;
+            document.getElementById('accessChangeIndicator').style.display = 'inline-flex';
+        }
+
+        function renderAccessEditor() {
+            const allPages = collectAllPages();
+            const filterType = (document.getElementById('accessFilterType') || {}).value || '';
+            const searchQuery = ((document.getElementById('accessSearch') || {}).value || '').toLowerCase();
+
+            const pages = allPages.filter(p => {
+                if (searchQuery && !p.toLowerCase().includes(searchQuery)) return false;
+                if (filterType === 'restricted' && !hasRestriction(p)) return false;
+                if (filterType === 'unrestricted' && hasRestriction(p)) return false;
+                return true;
+            });
+
+            const restricted = allPages.filter(p => hasRestriction(p)).length;
+            const statEl = document.getElementById('accessStat');
+            if (statEl) statEl.innerHTML = `<strong>${allPages.length}</strong> pages · <strong>${restricted}</strong> avec restrictions`;
+
+            const tbody = document.getElementById('accessTableBody');
+            if (!tbody) return;
+
+            if (pages.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);">Aucune page trouvée</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = pages.map(pageUrl => {
+                const access = getPageAccess(pageUrl);
+                const rowClass = hasRestriction(pageUrl) ? 'has-restriction' : '';
+
+                // Rank select
+                const rankOptions = RANKS.map(r =>
+                    `<option value="${r}"${access.rang_min === r ? ' selected' : ''}>${RANK_LABELS[r]}</option>`
+                ).join('');
+
+                // Division chips
+                const activeDivs = access.divisions && access.divisions.length > 0 ? access.divisions : null;
+                const allLabel = !activeDivs ? '<span class="div-all-label">TOUTES</span>' : '';
+                const divChips = DIVISIONS.map(d => {
+                    const isActive = !activeDivs || activeDivs.includes(d);
+                    const cls = activeDivs ? (isActive ? 'active' : 'inactive') : 'active';
+                    return `<span class="div-chip ${cls}" onclick="toggleAccessDiv('${pageUrl}', '${d}')">${d}</span>`;
+                }).join('');
+
+                // Formateur checkbox
+                const fmtChecked = access.formateur_only ? 'checked' : '';
+
+                return `<tr class="${rowClass}">
+                    <td class="page-url" title="${escHtml(pageUrl)}">${escHtml(pageUrl)}</td>
+                    <td><select onchange="updateAccessRank('${pageUrl}', this.value)">${rankOptions}</select></td>
+                    <td><div class="div-chips-wrap">${allLabel}${divChips}</div></td>
+                    <td style="text-align:center;"><input type="checkbox" class="access-check" ${fmtChecked} onchange="updateAccessFormateur('${pageUrl}', this.checked)"></td>
+                </tr>`;
+            }).join('');
+        }
+
+        window.updateAccessRank = (pageUrl, value) => {
+            if (!accessConfig.pages[pageUrl]) accessConfig.pages[pageUrl] = { rang_min: '', divisions: [], formateur_only: false };
+            accessConfig.pages[pageUrl].rang_min = value;
+            markAccessChanged();
+            renderAccessEditor();
+        };
+
+        window.toggleAccessDiv = (pageUrl, div) => {
+            if (!accessConfig.pages[pageUrl]) accessConfig.pages[pageUrl] = { rang_min: '', divisions: [], formateur_only: false };
+            const access = accessConfig.pages[pageUrl];
+            if (!access.divisions || access.divisions.length === 0) {
+                // Currently "all" → start specific mode with just this division
+                access.divisions = [div];
+            } else {
+                if (access.divisions.includes(div)) {
+                    access.divisions = access.divisions.filter(d => d !== div);
+                    // If empty → back to "all"
+                } else {
+                    access.divisions.push(div);
+                    // If all selected → back to "all"
+                    if (access.divisions.length >= DIVISIONS.length) access.divisions = [];
+                }
+            }
+            markAccessChanged();
+            renderAccessEditor();
+        };
+
+        window.updateAccessFormateur = (pageUrl, checked) => {
+            if (!accessConfig.pages[pageUrl]) accessConfig.pages[pageUrl] = { rang_min: '', divisions: [], formateur_only: false };
+            accessConfig.pages[pageUrl].formateur_only = checked;
+            markAccessChanged();
+            renderAccessEditor();
+        };
+
+        window.saveAccessConfig = async () => {
+            const btn = document.getElementById('saveAccessBtn');
+            btn.disabled = true;
+            btn.textContent = 'SAUVEGARDE...';
+            try {
+                // Clean: only keep pages that have actual restrictions
+                const cleanConfig = { pages: {} };
+                Object.entries(accessConfig.pages).forEach(([url, rules]) => {
+                    const hasRule = rules.rang_min || (rules.divisions && rules.divisions.length > 0) || rules.formateur_only;
+                    if (hasRule) {
+                        const entry = {};
+                        if (rules.rang_min) entry.rang_min = rules.rang_min;
+                        if (rules.divisions && rules.divisions.length > 0) entry.divisions = rules.divisions;
+                        if (rules.formateur_only) entry.formateur_only = true;
+                        cleanConfig.pages[url] = entry;
+                    }
+                });
+                cleanConfig.updated_at = new Date().toISOString();
+                await setDoc(doc(db, 'config', 'page_access'), cleanConfig);
+                localStorage.setItem('mpf_page_access', JSON.stringify(cleanConfig));
+                localStorage.setItem('mpf_page_access_ts', Date.now().toString());
+                accessHasChanges = false;
+                document.getElementById('accessChangeIndicator').style.display = 'none';
+                showMessage('✓ Restrictions d\'accès sauvegardées — actives immédiatement', 'success');
+            } catch (err) {
+                showMessage('✗ Erreur: ' + err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'SAUVEGARDER ACCÈS';
+            }
+        };
+
+        window.clearAllAccess = () => {
+            if (!confirm('Supprimer TOUTES les restrictions d\'accès ?\nToutes les pages seront accessibles à tous les membres approuvés.')) return;
+            accessConfig = { pages: {} };
+            markAccessChanged();
+            renderAccessEditor();
+        };
+
+        // Hook access filter inputs
+        document.getElementById('accessFilterType')?.addEventListener('change', renderAccessEditor);
+        document.getElementById('accessSearch')?.addEventListener('input', renderAccessEditor);
+
         // --- Warn before leaving with unsaved changes ---
         window.addEventListener('beforeunload', (e) => {
-            if (hasChanges) {
+            if (hasChanges || accessHasChanges) {
                 e.preventDefault();
                 e.returnValue = '';
             }
@@ -764,6 +1025,16 @@
                     navConfig = getDefaultNav();
                 }
                 renderEditor();
+
+                // Load access control config from Firestore
+                try {
+                    const accessSnap = await getDoc(doc(db, 'config', 'page_access'));
+                    if (accessSnap.exists()) {
+                        const data = accessSnap.data();
+                        accessConfig = { pages: data.pages || {} };
+                    }
+                } catch {}
+                renderAccessEditor();
             } catch (err) {
                 console.error('Admin auth error:', err);
                 document.getElementById('loading').innerHTML = '<p style="color:#ff4444;">Erreur: ' + err.message + '</p>';

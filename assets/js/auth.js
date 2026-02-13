@@ -216,6 +216,106 @@ function startPresence(uid) {
   });
 }
 
+// ========== CONTRÔLE D'ACCÈS PAR PAGE ==========
+// Retourne null si accès autorisé, ou un message d'erreur si refusé
+async function _checkPageAccess(currentPage, userData) {
+  try {
+    // Admin bypass
+    if (userData.is_admin === true) return null;
+
+    // Construire le chemin relatif (pour pages dans sous-dossiers comme divisions/helix.html)
+    const pathParts = window.location.pathname.split('/').filter(Boolean);
+    const filename = pathParts.pop() || 'index.html';
+    const parentFolder = pathParts.length > 0 ? pathParts[pathParts.length - 1] : '';
+    const pageCandidates = [filename];
+    if (parentFolder && !['guidempf-site', 'workspaces', ''].includes(parentFolder)) {
+      pageCandidates.push(parentFolder + '/' + filename);
+    }
+
+    // Charger la config d'accès (cache ou Firestore)
+    let pageAccessConfig = null;
+    try {
+      const cached = localStorage.getItem('mpf_page_access');
+      const ts = parseInt(localStorage.getItem('mpf_page_access_ts') || '0');
+      if (cached && Date.now() - ts < 5 * 60 * 1000) { // 5 min cache
+        pageAccessConfig = JSON.parse(cached);
+      }
+    } catch {}
+
+    if (!pageAccessConfig) {
+      try {
+        const snap = await getDoc(doc(db, 'config', 'page_access'));
+        if (snap.exists()) {
+          pageAccessConfig = snap.data();
+          localStorage.setItem('mpf_page_access', JSON.stringify(pageAccessConfig));
+          localStorage.setItem('mpf_page_access_ts', Date.now().toString());
+        }
+      } catch {}
+    }
+
+    if (!pageAccessConfig || !pageAccessConfig.pages) return null;
+
+    // Trouver les restrictions pour cette page
+    let rules = null;
+    for (const candidate of pageCandidates) {
+      if (pageAccessConfig.pages[candidate]) {
+        rules = pageAccessConfig.pages[candidate];
+        break;
+      }
+    }
+    if (!rules) return null;
+    if (!rules.rang_min && (!rules.divisions || rules.divisions.length === 0) && !rules.formateur_only) return null;
+
+    // Charger les données d'unité pour vérifier rang/division/formateur
+    const matricule = userData.matricule || '';
+    let unit = null;
+    try {
+      const res = await fetch('https://raw.githubusercontent.com/NekoAkami/guidempf-site/main/data/units.json');
+      if (res.ok) {
+        const units = await res.json();
+        unit = units.find(u => u.matricule === matricule);
+      }
+    } catch {}
+
+    if (!unit) return 'Unité introuvable. Contactez un administrateur.';
+
+    const rang = unit.rang || '';
+    const division = unit.division || '';
+    const isFormateur = unit.formateur || false;
+    const isHG = rang === 'Ofc' || rang === 'Cmd';
+
+    // HG contournent toutes les restrictions
+    if (isHG) return null;
+
+    // Vérifier le grade minimum
+    if (rules.rang_min) {
+      const rankOrder = ['RCT', '.05', '.04', '.03', 'STB', '.02', '.01', 'DvL', 'STBE', 'CABAL', 'Ofc', 'Cmd'];
+      const userRankIdx = rankOrder.indexOf(rang);
+      const minRankIdx = rankOrder.indexOf(rules.rang_min);
+      if (userRankIdx === -1 || userRankIdx < minRankIdx) {
+        return `Grade insuffisant. Minimum requis : ${rules.rang_min}+`;
+      }
+    }
+
+    // Vérifier les divisions autorisées
+    if (rules.divisions && rules.divisions.length > 0) {
+      if (!rules.divisions.includes(division)) {
+        return `Division non autorisée. Divisions requises : ${rules.divisions.join(', ')}`;
+      }
+    }
+
+    // Vérifier formateur
+    if (rules.formateur_only && !isFormateur) {
+      return 'Accès réservé aux formateurs.';
+    }
+
+    return null; // Accès autorisé
+  } catch (err) {
+    console.warn('Page access check error:', err);
+    return null; // En cas d'erreur, ne pas bloquer
+  }
+}
+
 // Initialisation automatique du bouton d'authentification + protection des pages
 function initAuth() {
   updateAuthButton();
@@ -247,6 +347,22 @@ function initAuth() {
         window.location.href = _basePath + 'pending.html';
         return;
       }
+
+      // === Vérification des restrictions d'accès par page ===
+      const accessDenied = await _checkPageAccess(currentPage, userData);
+      if (accessDenied) {
+        if (main) {
+          main.innerHTML = `<div style="text-align:center;padding:3rem;">
+            <h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;font-size:1.2rem;">ACCÈS RESTREINT</h2>
+            <p style="color:var(--text-muted);font-family:'Share Tech Mono',monospace;font-size:0.82rem;margin-top:1rem;">${accessDenied}</p>
+            <a href="${_basePath}index.html" style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;display:inline-block;margin-top:1rem;">→ RETOUR À L'ACCUEIL</a>
+          </div>`;
+          main.style.transition = 'opacity 0.3s';
+          main.style.opacity = '1';
+        }
+        return;
+      }
+
       // Utilisateur authentifié et approuvé — afficher le contenu
       if (main) {
         main.style.transition = 'opacity 0.3s';

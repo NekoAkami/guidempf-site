@@ -2214,3 +2214,36 @@ main {
   color: var(--text-muted);
   margin-left: 0.5rem;
 }
+
+/* ==================== PANNEAUX FLOTTANTS GLOBAUX ==================== */
+.gp-float{position:fixed;top:80px;width:280px;max-height:calc(100vh - 100px);z-index:150;display:flex;flex-direction:column;transition:transform 0.3s ease,opacity 0.3s ease;}
+.gp-float.gp-left{left:0;}
+.gp-float.gp-right{right:0;}
+.gp-float.gp-collapsed.gp-left{transform:translateX(calc(-100% + 36px));}
+.gp-float.gp-collapsed.gp-right{transform:translateX(calc(100% - 36px));}
+.gp-float-inner{background:rgba(6,16,30,0.97);border:1px solid rgba(0,170,255,0.2);border-radius:0 4px 4px 0;overflow:hidden;display:flex;flex-direction:column;max-height:100%;box-shadow:0 4px 20px rgba(0,0,0,0.5);backdrop-filter:blur(8px);}
+.gp-float.gp-right .gp-float-inner{border-radius:4px 0 0 4px;}
+.gp-float-header{display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0.7rem;background:rgba(0,170,255,0.08);border-bottom:1px solid rgba(0,170,255,0.2);cursor:pointer;user-select:none;flex-shrink:0;}
+.gp-float-header h3{font-family:'Orbitron',sans-serif;font-size:0.65rem;color:var(--accent-cyan);letter-spacing:1px;margin:0;white-space:nowrap;}
+.gp-float-toggle{font-size:0.7rem;color:var(--accent-cyan);opacity:0.7;transition:opacity 0.15s;}
+.gp-float-toggle:hover{opacity:1;}
+.gp-float-body{padding:0.6rem;overflow-y:auto;flex:1;scrollbar-width:thin;scrollbar-color:rgba(0,170,255,0.2) transparent;}
+.gp-notepad-textarea{width:100%;min-height:180px;max-height:350px;resize:vertical;background:rgba(0,0,0,0.3);border:1px solid rgba(0,170,255,0.15);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.75rem;padding:0.5rem;outline:none;border-radius:2px;line-height:1.5;box-sizing:border-box;}
+.gp-notepad-textarea:focus{border-color:rgba(0,170,255,0.4);}
+.gp-notepad-footer{display:flex;align-items:center;justify-content:space-between;padding:0.3rem 0;font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:var(--text-muted);}
+.gp-notepad-clear{padding:0.2rem 0.5rem;background:rgba(255,60,60,0.08);border:1px solid rgba(255,60,60,0.25);color:#ff6666;font-family:'Share Tech Mono',monospace;font-size:0.62rem;cursor:pointer;border-radius:2px;transition:all 0.15s;}
+.gp-notepad-clear:hover{background:rgba(255,60,60,0.2);}
+.gp-today-event{padding:0.4rem 0.5rem;margin-bottom:0.4rem;border-radius:3px;font-family:'Share Tech Mono',monospace;font-size:0.7rem;border-left:3px solid;cursor:pointer;}
+.gp-today-event .gp-ev-time{font-weight:700;font-size:0.72rem;}
+.gp-today-event .gp-ev-type{opacity:0.8;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.5px;}
+.gp-today-event .gp-ev-desc{color:var(--text-muted);font-size:0.65rem;margin-top:0.1rem;}
+.gp-today-event.gp-type-formation{background:rgba(0,170,255,0.08);border-color:var(--accent-cyan);color:var(--accent-cyan);}
+.gp-today-event.gp-type-test{background:rgba(255,200,0,0.08);border-color:#ffc800;color:#ffc800;}
+.gp-today-event.gp-type-recrutement{background:rgba(0,200,80,0.08);border-color:#00cc55;color:#00cc55;}
+.gp-today-event.gp-type-operation{background:rgba(255,100,60,0.08);border-color:#ff6644;color:#ff6644;}
+.gp-today-event.gp-type-patrouille{background:rgba(100,200,255,0.08);border-color:#64c8ff;color:#64c8ff;}
+.gp-today-event.gp-type-autre{background:rgba(200,100,255,0.08);border-color:#c864ff;color:#c864ff;}
+.gp-no-events{text-align:center;padding:1rem 0.5rem;color:var(--text-muted);font-family:'Share Tech Mono',monospace;font-size:0.7rem;opacity:0.6;}
+.gp-today-link{display:block;text-align:center;margin-top:0.5rem;padding:0.3rem;border:1px solid rgba(0,170,255,0.2);border-radius:2px;color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;font-size:0.65rem;text-decoration:none;transition:background 0.15s;}
+.gp-today-link:hover{background:rgba(0,170,255,0.08);}
+@media(max-width:768px){.gp-float{width:240px;top:60px;}.gp-float.gp-collapsed.gp-left{transform:translateX(calc(-100% + 28px));}.gp-float.gp-collapsed.gp-right{transform:translateX(calc(100% - 28px));}}

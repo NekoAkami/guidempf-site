@@ -47,6 +47,7 @@ class GlobalNavigation {
         this.createNavigationHTML();
         this.injectSearchBar();
         this.injectBackButton();
+        this.injectFloatingPanels();
         this.markActivePage();
         this.setupMobileMenu();
         this.setupDropdowns();
@@ -401,6 +402,162 @@ class GlobalNavigation {
             }
         };
         document.body.appendChild(btn);
+    }
+
+    // ===== PANNEAUX FLOTTANTS GLOBAUX (Bloc-notes + Planning du jour) =====
+    injectFloatingPanels() {
+        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        // Skip on auth/maintenance pages
+        if (['login.html','register.html','maintenance.html',''].includes(currentPage)) return;
+        if (document.getElementById('gpNotepadPanel')) return; // already injected
+
+        const bp = this.basePath;
+
+        // ---- Bloc-notes (left panel, starts collapsed) ----
+        const notepadHTML = `
+            <div class="gp-float gp-left gp-collapsed" id="gpNotepadPanel">
+                <div class="gp-float-inner">
+                    <div class="gp-float-header" id="gpNotepadHeader">
+                        <h3>📝 BLOC-NOTES</h3>
+                        <span class="gp-float-toggle" id="gpNotepadToggle">►</span>
+                    </div>
+                    <div class="gp-float-body">
+                        <textarea class="gp-notepad-textarea" id="gpNotepadText" placeholder="Notes personnelles...&#10;Sauvegardé automatiquement."></textarea>
+                        <div class="gp-notepad-footer">
+                            <span id="gpNotepadStatus">Sauvegardé</span>
+                            <button class="gp-notepad-clear" id="gpNotepadClear">🗑 EFFACER</button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+
+        // ---- Planning du jour (right panel, starts collapsed) ----
+        const todayHTML = `
+            <div class="gp-float gp-right gp-collapsed" id="gpTodayPanel">
+                <div class="gp-float-inner">
+                    <div class="gp-float-header" id="gpTodayHeader">
+                        <h3>📋 PLANNING DU JOUR</h3>
+                        <span class="gp-float-toggle" id="gpTodayToggle">◄</span>
+                    </div>
+                    <div class="gp-float-body" id="gpTodayBody">
+                        <div id="gpTodayEvents"><div class="gp-no-events">Chargement…</div></div>
+                        <a href="${bp}activite-tableaux.html" class="gp-today-link">→ VOIR LE PLANNING COMPLET</a>
+                    </div>
+                </div>
+            </div>`;
+
+        document.body.insertAdjacentHTML('beforeend', notepadHTML + todayHTML);
+
+        // ---- Toggle logic ----
+        const togglePanel = (panelId, storageKey) => {
+            const panel = document.getElementById(panelId);
+            if (!panel) return;
+            panel.classList.toggle('gp-collapsed');
+            const collapsed = panel.classList.contains('gp-collapsed');
+            localStorage.setItem(storageKey, collapsed ? '1' : '0');
+            // Update toggle icon
+            const toggle = panel.querySelector('.gp-float-toggle');
+            if (toggle) {
+                if (panelId === 'gpNotepadPanel') {
+                    toggle.textContent = collapsed ? '►' : '◄';
+                } else {
+                    toggle.textContent = collapsed ? '◄' : '►';
+                }
+            }
+        };
+
+        document.getElementById('gpNotepadHeader').addEventListener('click', () => togglePanel('gpNotepadPanel', 'mpf_notepad_collapsed'));
+        document.getElementById('gpTodayHeader').addEventListener('click', () => togglePanel('gpTodayPanel', 'mpf_today_collapsed'));
+
+        // ---- Restore panel states from localStorage ----
+        if (localStorage.getItem('mpf_notepad_collapsed') !== '1') {
+            document.getElementById('gpNotepadPanel').classList.remove('gp-collapsed');
+            document.getElementById('gpNotepadToggle').textContent = '◄';
+        }
+        if (localStorage.getItem('mpf_today_collapsed') !== '1') {
+            document.getElementById('gpTodayPanel').classList.remove('gp-collapsed');
+            document.getElementById('gpTodayToggle').textContent = '►';
+        }
+
+        // ---- Bloc-notes logic (localStorage) ----
+        const textarea = document.getElementById('gpNotepadText');
+        const statusEl = document.getElementById('gpNotepadStatus');
+        textarea.value = localStorage.getItem('mpf_notepad_content') || '';
+        let saveTimeout = null;
+        textarea.addEventListener('input', () => {
+            clearTimeout(saveTimeout);
+            statusEl.textContent = 'Enregistrement...';
+            saveTimeout = setTimeout(() => {
+                localStorage.setItem('mpf_notepad_content', textarea.value);
+                statusEl.textContent = 'Sauvegardé ✓';
+            }, 500);
+        });
+
+        document.getElementById('gpNotepadClear').addEventListener('click', () => {
+            if (!confirm('Supprimer toutes les notes ?\nCette action est irréversible.')) return;
+            textarea.value = '';
+            localStorage.removeItem('mpf_notepad_content');
+            statusEl.textContent = 'Notes supprimées';
+        });
+
+        // ---- Planning du jour (lazy Firebase load) ----
+        this._loadTodayPanel();
+    }
+
+    async _loadTodayPanel() {
+        const container = document.getElementById('gpTodayEvents');
+        if (!container) return;
+
+        try {
+            const ghData = await import(this.basePath + 'assets/js/github-data.js');
+            const entries = await ghData.loadPlanning();
+
+            const today = new Date().toISOString().substring(0, 10);
+            const todayEntries = entries.filter(e => e.date === today);
+
+            // Sort by slot time
+            todayEntries.sort((a, b) => {
+                const toMin = s => { const [h, m] = s.split(':').map(Number); return (h === 0 ? 24 : h) * 60 + m; };
+                return toMin(a.slot) - toMin(b.slot);
+            });
+
+            if (todayEntries.length === 0) {
+                container.innerHTML = '<div class="gp-no-events">Aucun événement aujourd\'hui</div>';
+                return;
+            }
+
+            const getTypeClass = (type) => {
+                const t = (type || '').toLowerCase();
+                if (t.includes('formation')) return 'gp-type-formation';
+                if (t.includes('test')) return 'gp-type-test';
+                if (t.includes('recrutement')) return 'gp-type-recrutement';
+                if (t.includes('opération') || t.includes('operation')) return 'gp-type-operation';
+                if (t.includes('patrouille')) return 'gp-type-patrouille';
+                return 'gp-type-autre';
+            };
+
+            container.innerHTML = todayEntries.map(e => {
+                const timeLabel = e.slot_end && e.slot_end !== e.slot ? `${e.slot} → ${e.slot_end}` : e.slot;
+                return `<div class="gp-today-event ${getTypeClass(e.type)}">
+                    <div class="gp-ev-time">${timeLabel}</div>
+                    <div class="gp-ev-type">${e.type}</div>
+                    ${e.description ? `<div class="gp-ev-desc">${e.description}</div>` : ''}
+                    <div class="gp-ev-desc">Par: ${e.matricule || '?'}</div>
+                </div>`;
+            }).join('');
+
+            // Auto-expand if there are events today and user hasn't explicitly collapsed
+            if (localStorage.getItem('mpf_today_collapsed') !== '1') {
+                const panel = document.getElementById('gpTodayPanel');
+                if (panel) {
+                    panel.classList.remove('gp-collapsed');
+                    const toggle = document.getElementById('gpTodayToggle');
+                    if (toggle) toggle.textContent = '►';
+                }
+            }
+        } catch (err) {
+            container.innerHTML = '<div class="gp-no-events">Données indisponibles</div>';
+        }
     }
 
     getMenuStructure() {

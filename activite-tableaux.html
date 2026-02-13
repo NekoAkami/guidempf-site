@@ -11,41 +11,8 @@
     <link rel="stylesheet" href="assets/css/bundle.css">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <style>
-        /* ===== LAYOUT 3 COLONNES ===== */
-        .planning-layout{display:flex;gap:0.8rem;align-items:flex-start;max-width:1600px;margin:0 auto;}
-        .planning-main{flex:1;min-width:0;}
-        .side-panel{width:260px;flex-shrink:0;position:sticky;top:80px;max-height:calc(100vh - 100px);overflow-y:auto;transition:all 0.3s;scrollbar-width:thin;scrollbar-color:rgba(0,170,255,0.2) transparent;}
-        .side-panel.collapsed{width:36px;overflow:hidden;}
-        .side-panel .panel-header{display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0.6rem;background:rgba(0,170,255,0.08);border-bottom:1px solid rgba(0,170,255,0.2);cursor:pointer;user-select:none;}
-        .side-panel .panel-header h3{font-family:'Orbitron',sans-serif;font-size:0.65rem;color:var(--accent-cyan);letter-spacing:1px;margin:0;white-space:nowrap;}
-        .side-panel .panel-toggle{font-size:0.7rem;color:var(--accent-cyan);cursor:pointer;opacity:0.7;transition:opacity 0.15s;}
-        .side-panel .panel-toggle:hover{opacity:1;}
-        .side-panel .panel-body{padding:0.5rem;overflow-y:auto;}
-        .side-panel.collapsed .panel-body{display:none;}
-        .side-panel.collapsed .panel-header h3{writing-mode:vertical-rl;text-orientation:mixed;font-size:0.6rem;padding:0.3rem 0;}
-        .side-panel-border{border:1px solid rgba(0,170,255,0.15);border-radius:4px;background:rgba(0,10,30,0.5);overflow:hidden;}
-
-        /* ===== PLANNING DU JOUR (droite) ===== */
-        .today-event{padding:0.4rem 0.5rem;margin-bottom:0.4rem;border-radius:3px;font-family:'Share Tech Mono',monospace;font-size:0.7rem;border-left:3px solid;}
-        .today-event .ev-time{font-weight:700;font-size:0.72rem;}
-        .today-event .ev-type{opacity:0.8;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.5px;}
-        .today-event .ev-desc{color:var(--text-muted);font-size:0.65rem;margin-top:0.1rem;}
-        .today-event.type-formation{background:rgba(0,170,255,0.08);border-color:var(--accent-cyan);color:var(--accent-cyan);}
-        .today-event.type-test{background:rgba(255,200,0,0.08);border-color:#ffc800;color:#ffc800;}
-        .today-event.type-recrutement{background:rgba(0,200,80,0.08);border-color:#00cc55;color:#00cc55;}
-        .today-event.type-operation{background:rgba(255,100,60,0.08);border-color:#ff6644;color:#ff6644;}
-        .today-event.type-patrouille{background:rgba(100,200,255,0.08);border-color:#64c8ff;color:#64c8ff;}
-        .today-event.type-autre{background:rgba(200,100,255,0.08);border-color:#c864ff;color:#c864ff;}
-        .no-events{text-align:center;padding:1rem 0.5rem;color:var(--text-muted);font-family:'Share Tech Mono',monospace;font-size:0.7rem;opacity:0.6;}
-
-        /* ===== BLOC-NOTES (gauche) ===== */
-        .notepad-textarea{width:100%;min-height:200px;max-height:400px;resize:vertical;background:rgba(0,0,0,0.3);border:1px solid rgba(0,170,255,0.15);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.75rem;padding:0.5rem;outline:none;border-radius:2px;line-height:1.5;}
-        .notepad-textarea:focus{border-color:rgba(0,170,255,0.4);}
-        .notepad-footer{display:flex;align-items:center;justify-content:space-between;padding:0.3rem 0;font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:var(--text-muted);}
-        .notepad-clear{padding:0.2rem 0.5rem;background:rgba(255,60,60,0.08);border:1px solid rgba(255,60,60,0.25);color:#ff6666;font-family:'Share Tech Mono',monospace;font-size:0.62rem;cursor:pointer;border-radius:2px;transition:all 0.15s;}
-        .notepad-clear:hover{background:rgba(255,60,60,0.2);}
-
         /* ===== PLANNING GRID ===== */
+        .planning-wrapper{max-width:1400px;margin:0 auto;}
         .planning-wrapper{max-width:100%;}
         .week-nav{display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:1.2rem;font-family:'Orbitron',sans-serif;}
         .week-nav button{padding:0.4rem 0.8rem;background:rgba(0,170,255,0.08);border:1px solid rgba(0,170,255,0.3);color:var(--accent-cyan);cursor:pointer;border-radius:3px;font-family:'Share Tech Mono',monospace;font-size:0.8rem;transition:all 0.15s;}
@@ -98,7 +65,6 @@
         .sync-indicator.error{opacity:1;background:rgba(255,60,60,0.15);border:1px solid rgba(255,60,60,0.4);color:#ff4444;}
         .sync-indicator.hidden{opacity:0;}
         #access-denied,#notApproved{display:none;text-align:center;padding:3rem;}
-        @media(max-width:1100px){.side-panel{width:220px;}.planning-layout{flex-wrap:wrap;}.side-panel{width:100%;position:static;max-height:none;}.side-panel.collapsed{width:100%;}.side-panel.collapsed .panel-header h3{writing-mode:horizontal-tb;}}
         @media(max-width:900px){.planning-grid{font-size:0.6rem;}.planning-grid .day-header,.planning-grid .time-header{font-size:0.55rem;}.slot-entry{font-size:0.55rem;}}
     </style>
 </head>
@@ -122,26 +88,7 @@
             <div id="access-denied"><h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">CONNEXION REQUISE</h2><a href="login.html" style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;display:inline-block;margin-top:1rem;">→ SE CONNECTER</a></div>
             <div id="notApproved"><h2 style="color:#ffaa00;font-family:'Orbitron',sans-serif;">EN ATTENTE D'APPROBATION</h2></div>
             <div id="mainContent" style="display:none;">
-
-                <div class="planning-layout">
-                    <!-- BLOC-NOTES PERSONNEL (gauche) -->
-                    <div class="side-panel side-panel-border" id="notepadPanel">
-                        <div class="panel-header" onclick="togglePanel('notepadPanel')">
-                            <h3>📝 BLOC-NOTES</h3>
-                            <span class="panel-toggle" id="notepadToggle">◄</span>
-                        </div>
-                        <div class="panel-body">
-                            <textarea class="notepad-textarea" id="notepadText" placeholder="Notes personnelles...&#10;Sauvegardé automatiquement."></textarea>
-                            <div class="notepad-footer">
-                                <span id="notepadStatus">Sauvegardé</span>
-                                <button class="notepad-clear" onclick="clearNotepad()">🗑 TOUT SUPPRIMER</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- PLANNING PRINCIPAL (centre) -->
-                    <div class="planning-main">
-                        <div class="planning-wrapper">
+                    <div class="planning-wrapper">
                             <div id="alertMsg" class="alert-msg"></div>
                             <div class="week-nav">
                                 <button onclick="changeWeek(-1)">◄ SEMAINE PRÉC.</button>
@@ -162,21 +109,7 @@
                                     <div class="planning-grid" id="planningGrid"></div>
                                 </div>
                             </div>
-                        </div>
                     </div>
-
-                    <!-- PLANNING DU JOUR (droite) -->
-                    <div class="side-panel side-panel-border" id="todayPanel">
-                        <div class="panel-header" onclick="togglePanel('todayPanel')">
-                            <h3>📋 PLANNING DU JOUR</h3>
-                            <span class="panel-toggle" id="todayToggle">►</span>
-                        </div>
-                        <div class="panel-body" id="todayBody">
-                            <div id="todayEvents"></div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
     </main>
@@ -273,7 +206,6 @@
           });
         });
         grid.innerHTML=html;
-        renderTodayPanel();
       }
 
       function getBgForType(type){
@@ -285,77 +217,6 @@
         if(t.includes('patrouille'))return'rgba(100,200,255,0.04)';
         return'rgba(200,100,255,0.04)';
       }
-
-      // ===== PLANNING DU JOUR (panneau droit) =====
-      function renderTodayPanel(){
-        const today=new Date().toISOString().substring(0,10);
-        const todayEntries=allEntries.filter(e=>e.date===today);
-        // Sort by slot start time
-        todayEntries.sort((a,b)=>{
-          const toMin=s=>{const[h,m]=s.split(':').map(Number);return(h===0?24:h)*60+m;};
-          return toMin(a.slot)-toMin(b.slot);
-        });
-        const container=document.getElementById('todayEvents');
-        if(todayEntries.length===0){
-          container.innerHTML='<div class="no-events">Aucun événement prévu aujourd\'hui</div>';
-          return;
-        }
-        container.innerHTML=todayEntries.map(e=>{
-          const timeLabel=e.slot_end&&e.slot_end!==e.slot?`${e.slot} → ${e.slot_end}`:e.slot;
-          return`<div class="today-event ${getTypeClass(e.type)}" onclick="showEntryDetail('${e._id}')" style="cursor:pointer;">
-            <div class="ev-time">${timeLabel}</div>
-            <div class="ev-type">${e.type}</div>
-            ${e.description?`<div class="ev-desc">${e.description}</div>`:''}
-            <div class="ev-desc">Par: ${e.matricule||'?'}</div>
-          </div>`;
-        }).join('');
-      }
-
-      // ===== PANELS TOGGLE =====
-      window.togglePanel=function(id){
-        const panel=document.getElementById(id);
-        panel.classList.toggle('collapsed');
-        const toggleIcon=panel.querySelector('.panel-toggle');
-        if(id==='notepadPanel'){
-          toggleIcon.textContent=panel.classList.contains('collapsed')?'►':'◄';
-          localStorage.setItem('mpf_notepad_collapsed',panel.classList.contains('collapsed')?'1':'0');
-        } else {
-          toggleIcon.textContent=panel.classList.contains('collapsed')?'◄':'►';
-          localStorage.setItem('mpf_today_collapsed',panel.classList.contains('collapsed')?'1':'0');
-        }
-      };
-
-      // ===== BLOC-NOTES PERSONNEL (localStorage) =====
-      function initNotepad(){
-        const textarea=document.getElementById('notepadText');
-        const saved=localStorage.getItem('mpf_notepad_content')||'';
-        textarea.value=saved;
-        let saveTimeout=null;
-        textarea.addEventListener('input',()=>{
-          clearTimeout(saveTimeout);
-          document.getElementById('notepadStatus').textContent='Enregistrement...';
-          saveTimeout=setTimeout(()=>{
-            localStorage.setItem('mpf_notepad_content',textarea.value);
-            document.getElementById('notepadStatus').textContent='Sauvegardé ✓';
-          },500);
-        });
-        // Restore panel states
-        if(localStorage.getItem('mpf_notepad_collapsed')==='1'){
-          document.getElementById('notepadPanel').classList.add('collapsed');
-          document.getElementById('notepadToggle').textContent='►';
-        }
-        if(localStorage.getItem('mpf_today_collapsed')==='1'){
-          document.getElementById('todayPanel').classList.add('collapsed');
-          document.getElementById('todayToggle').textContent='◄';
-        }
-      }
-
-      window.clearNotepad=function(){
-        if(!confirm('Supprimer toutes les notes ?\nCette action est irréversible.'))return;
-        document.getElementById('notepadText').value='';
-        localStorage.removeItem('mpf_notepad_content');
-        document.getElementById('notepadStatus').textContent='Notes supprimées';
-      };
 
       // ===== WEEK NAVIGATION =====
       window.changeWeek=function(dir){weekOffset+=dir;renderPlanning();};
@@ -464,7 +325,6 @@
           document.getElementById('loading').style.display='none';
           document.getElementById('mainContent').style.display='block';
 
-          initNotepad();
           try{allEntries=await loadPlanning();}catch(_){allEntries=[];}
           renderPlanning();
         }catch(e){console.error(e);document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';}
