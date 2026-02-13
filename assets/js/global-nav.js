@@ -351,7 +351,6 @@ class GlobalNavigation {
         return {
             row1: [
                 { label: 'ACCUEIL', url: 'index.html' },
-                { label: 'RADIO & MDP', url: 'radio.html' },
                 { label: 'LOYALISME', url: 'loyalisme.html' },
                 { label: 'JUGEMENT', url: 'jugement.html' },
                 { label: 'CONTREBANDE', url: 'contrebande.html' },
@@ -404,9 +403,7 @@ class GlobalNavigation {
                 },
                 { label: 'SCANNER', url: 'scanner.html' },
                 { label: 'VIEWTIME', url: 'viewtime.html' },
-                { label: 'ABSENCES', url: 'declaration-absence.html' },
                 { label: 'CARTE', url: 'carte.html' },
-                { label: 'LIENS', url: 'liens.html' },
                 { label: 'À PROPOS', url: 'about.html' }
             ],
             row2: [
@@ -454,7 +451,10 @@ class GlobalNavigation {
                         { label: 'Rapports Divisionnaires', url: 'rapports-divisionnaires.html' }
                     ]
                 },
-                { label: 'PAYES', url: 'payes.html' }
+                { label: 'PAYES', url: 'payes.html' },
+                { label: 'RADIO & MDP', url: 'radio.html' },
+                { label: 'ABSENCES', url: 'declaration-absence.html' },
+                { label: 'LIENS', url: 'liens.html' }
             ]
         };
     }
