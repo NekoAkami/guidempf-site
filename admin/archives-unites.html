@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unités Virées - MPF Documentation</title>
+    <link rel="stylesheet" href="../assets/css/bundle.css">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <style>
+        /* Admin nav */
+        .admin-nav {
+            display: flex;
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+            flex-wrap: wrap;
+        }
+        .admin-nav a {
+            padding: 0.35rem 0.8rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border: 1px solid rgba(0, 170, 255, 0.15);
+            border-radius: 2px;
+            transition: all 0.15s;
+        }
+        .admin-nav a:hover, .admin-nav a.active {
+            color: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            background: rgba(0, 170, 255, 0.08);
+        }
+
+        /* Stats */
+        .unit-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+        .stat-box {
+            background: rgba(255, 60, 60, 0.03);
+            border: 1px solid rgba(255, 60, 60, 0.15);
+            padding: 0.8rem;
+            text-align: center;
+            border-radius: 4px;
+        }
+        .stat-box .number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: #ff4444;
+            font-weight: 700;
+        }
+        .stat-box .label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-top: 0.2rem;
+        }
+
+        /* Table */
+        .fired-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+        .fired-table th {
+            text-align: left;
+            padding: 0.55rem 0.4rem;
+            color: #ff4444;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.68rem;
+            letter-spacing: 1px;
+            border-bottom: 2px solid rgba(255, 60, 60, 0.2);
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+        }
+        .fired-table th:hover { color: #fff; }
+        .fired-table td {
+            padding: 0.45rem 0.4rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid rgba(255, 60, 60, 0.06);
+            vertical-align: middle;
+        }
+        .fired-table tr:hover { background: rgba(255, 60, 60, 0.03); }
+        .fired-table .matricule-cell {
+            font-weight: 700;
+            color: #ff4444;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+        }
+
+        /* Division badges */
+        .div-badge {
+            display: inline-block;
+            padding: 0.12rem 0.45rem;
+            border-radius: 2px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            background: rgba(60, 60, 60, 0.15);
+            color: #666;
+            border: 1px solid rgba(60, 60, 60, 0.3);
+        }
+
+        /* Rang badge */
+        .rang-badge {
+            display: inline-block;
+            padding: 0.1rem 0.4rem;
+            border-radius: 2px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #666;
+            border: 1px solid rgba(100, 100, 100, 0.3);
+        }
+
+        /* Buttons */
+        .btn-sm {
+            padding: 0.2rem 0.5rem;
+            font-size: 0.7rem;
+            font-family: 'Share Tech Mono', monospace;
+            cursor: pointer;
+            border: 1px solid rgba(0, 170, 255, 0.3);
+            background: rgba(0, 170, 255, 0.08);
+            color: var(--accent-cyan);
+            border-radius: 2px;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .btn-sm:hover { background: rgba(0, 170, 255, 0.2); }
+        .btn-sm.danger { border-color: rgba(255, 60, 60, 0.3); background: rgba(255, 60, 60, 0.08); color: #ff4444; }
+        .btn-sm.danger:hover { background: rgba(255, 60, 60, 0.2); }
+        .btn-sm.success { border-color: rgba(0, 200, 80, 0.3); background: rgba(0, 200, 80, 0.08); color: #00cc55; }
+        .btn-sm.success:hover { background: rgba(0, 200, 80, 0.2); }
+        .action-cell { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+
+        /* Alert */
+        .alert-msg {
+            padding: 0.6rem 1rem;
+            border-radius: 3px;
+            margin-bottom: 1rem;
+            font-size: 0.8rem;
+            font-family: 'Share Tech Mono', monospace;
+            display: none;
+        }
+        .alert-msg.success { background: rgba(0, 200, 80, 0.1); border: 1px solid rgba(0, 200, 80, 0.3); color: #00cc55; }
+        .alert-msg.error { background: rgba(255, 60, 60, 0.1); border: 1px solid rgba(255, 60, 60, 0.3); color: #ff4444; }
+
+        /* Filter */
+        .filter-row {
+            display: flex;
+            gap: 0.6rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filter-row input {
+            flex: 1;
+            min-width: 180px;
+            padding: 0.4rem 0.6rem;
+            background: rgba(0, 170, 255, 0.04);
+            border: 1px solid rgba(0, 170, 255, 0.2);
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.78rem;
+            outline: none;
+            border-radius: 2px;
+        }
+        .filter-row input:focus { border-color: var(--accent-cyan); }
+
+        .table-scroll { overflow-x: auto; }
+        #access-denied { display: none; text-align: center; padding: 3rem; }
+
+        /* Fired stamp */
+        .fired-stamp {
+            display: inline-block;
+            padding: 0.15rem 0.5rem;
+            border-radius: 2px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            background: rgba(255, 40, 40, 0.15);
+            color: #ff4444;
+            border: 1px solid rgba(255, 40, 40, 0.4);
+            text-transform: uppercase;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+        .empty-state .icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.8rem;
+            opacity: 0.4;
+        }
+        .empty-state p {
+            color: var(--text-muted);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <div>
+                        <h1 class="logo">MPF</h1>
+                        <p class="logo-subtitle">Archives — Unités Virées</p>
+                    </div>
+                </div>
+                <div id="authBtn" class="header-auth"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div id="loading" style="text-align:center;padding:3rem;">
+                <p style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;">CHARGEMENT...</p>
+            </div>
+            <div id="access-denied">
+                <h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">ACCÈS REFUSÉ</h2>
+                <p style="color:var(--text-muted);">Vous n'avez pas les droits administrateur.</p>
+                <a href="../index.html" style="color:var(--accent-cyan);">Retour au site</a>
+            </div>
+
+            <div id="mainContent" style="display:none;">
+                <!-- Nav -->
+                <div class="admin-nav" style="margin-top: 1rem;">
+                    <a href="panel.html">← PANEL ADMIN</a>
+                    <a href="unites.html">UNITÉS</a>
+                    <a href="archives-unites.html" class="active">VIRÉS</a>
+                    <a href="heures.html">HEURES DE JEU</a>
+                    <a href="heures-archives.html">ARCHIVES</a>
+                    <a href="absences.html">ABSENCES</a>
+                    <a href="maintenance-admin.html">MAINTENANCE</a>
+                    <a href="navigation.html">NAVIGATION</a>
+                </div>
+
+                <!-- Stats -->
+                <div class="unit-stats">
+                    <div class="stat-box">
+                        <div class="number" id="statTotal">0</div>
+                        <div class="label">UNITÉS VIRÉES</div>
+                    </div>
+                </div>
+
+                <!-- Alert -->
+                <div id="alertMsg" class="alert-msg"></div>
+
+                <!-- Fired units table -->
+                <div class="combine-terminal-wrapper" style="border-left: 3px solid rgba(255, 60, 60, 0.5);">
+                    <div class="combine-header" style="border-bottom-color: rgba(255, 60, 60, 0.2);">
+                        <h2 style="color: #ff4444;">⊘ ARCHIVES — UNITÉS VIRÉES</h2>
+                        <span class="header-code" id="firedCount" style="color: #ff4444;">CHARGEMENT...</span>
+                    </div>
+                    <div class="combine-body">
+                        <div class="filter-row">
+                            <input type="text" id="searchInput" placeholder="Rechercher matricule, nom, division..." autocomplete="off">
+                        </div>
+                        <div class="table-scroll">
+                            <table class="fired-table">
+                                <thead>
+                                    <tr>
+                                        <th>MATRICULE</th>
+                                        <th>NOM STEAM</th>
+                                        <th>DIVISION</th>
+                                        <th>RANG</th>
+                                        <th>DATE VIRÉE</th>
+                                        <th>ANCIEN DEPUIS</th>
+                                        <th>ACTIONS</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="firedBody">
+                                    <tr><td colspan="7" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script type="module" src="../assets/js/auth.js"></script>
+    <script src="../assets/js/global-nav.js" defer></script>
+    <script src="../assets/js/interactive-system.js" defer></script>
+    <script src="../assets/js/combine-animations.js" defer></script>
+
+    <script type="module">
+      import { auth, db } from '../assets/js/auth.js';
+      import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+      import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+      import {
+        loadFiredUnits, deleteFiredUnit,
+        loadUnits as ghLoadUnits, saveUnits as ghSaveUnits,
+        onSyncStatus
+      } from '../assets/js/github-data.js';
+
+      // ========== SYNC INDICATOR ==========
+      {
+        const ind = document.createElement('div');
+        ind.id = 'syncIndicator';
+        ind.className = 'sync-indicator hidden';
+        ind.style.cssText = 'position:fixed;bottom:1rem;right:1rem;padding:0.4rem 0.8rem;border-radius:3px;font-family:"Share Tech Mono",monospace;font-size:0.72rem;z-index:999;transition:all 0.3s;pointer-events:none;opacity:0;';
+        document.body.appendChild(ind);
+        let hideTimer = null;
+        onSyncStatus(status => {
+          clearTimeout(hideTimer);
+          if (status === 'syncing') {
+            ind.innerHTML = '<span style="display:inline-block;animation:spin 1s linear infinite;">⟳</span> Synchronisation...';
+            ind.style.opacity = '1';
+            ind.style.background = 'rgba(255, 200, 0, 0.15)';
+            ind.style.border = '1px solid rgba(255, 200, 0, 0.4)';
+            ind.style.color = '#ffc800';
+          } else if (status === 'synced') {
+            ind.innerHTML = '✓ Synchronisé';
+            ind.style.opacity = '1';
+            ind.style.background = 'rgba(0, 200, 80, 0.15)';
+            ind.style.border = '1px solid rgba(0, 200, 80, 0.4)';
+            ind.style.color = '#00cc55';
+            hideTimer = setTimeout(() => { ind.style.opacity = '0'; }, 2500);
+          } else {
+            ind.innerHTML = '⚠ Erreur sync';
+            ind.style.opacity = '1';
+            ind.style.background = 'rgba(255, 60, 60, 0.15)';
+            ind.style.border = '1px solid rgba(255, 60, 60, 0.4)';
+            ind.style.color = '#ff4444';
+            hideTimer = setTimeout(() => { ind.style.opacity = '0'; }, 6000);
+          }
+        });
+      }
+
+      // ========== STATE ==========
+      let firedUnits = [];
+
+      // ========== UTILS ==========
+      function showAlert(text, type = 'success') {
+        const el = document.getElementById('alertMsg');
+        el.style.display = 'block';
+        el.className = 'alert-msg ' + type;
+        el.textContent = text;
+        setTimeout(() => { el.style.display = 'none'; }, 5000);
+      }
+
+      function formatDate(iso) {
+        if (!iso) return '-';
+        try {
+          const d = new Date(iso);
+          return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        } catch (_) { return iso; }
+      }
+
+      // ========== LOAD ==========
+      async function loadFired() {
+        try {
+          firedUnits = await loadFiredUnits();
+          updateStats();
+          renderTable();
+        } catch (err) {
+          console.error('Erreur chargement unités virées:', err);
+          showAlert('Erreur chargement: ' + err.message, 'error');
+        }
+      }
+
+      function updateStats() {
+        document.getElementById('statTotal').textContent = firedUnits.length;
+      }
+
+      function renderTable() {
+        const search = (document.getElementById('searchInput').value || '').toLowerCase();
+
+        let filtered = firedUnits.filter(u => {
+          if (!search) return true;
+          return (u.matricule || '').toLowerCase().includes(search) ||
+                 (u.nom_steam || '').toLowerCase().includes(search) ||
+                 (u.division || '').toLowerCase().includes(search) ||
+                 (u.discord || '').toLowerCase().includes(search);
+        });
+
+        // Tri par date de renvoi (plus récent en premier)
+        filtered.sort((a, b) => (b.fired_at || '').localeCompare(a.fired_at || ''));
+
+        document.getElementById('firedCount').textContent = `${filtered.length} / ${firedUnits.length} VIRÉE${firedUnits.length > 1 ? 'S' : ''}`;
+
+        const tbody = document.getElementById('firedBody');
+        if (filtered.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="icon">✓</div><p>Aucune unité virée dans les archives</p></div></td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = filtered.map(u => {
+          const safeId = (u._id || '').replace(/'/g, "\\'");
+          const safeMatricule = (u.matricule || '').replace(/'/g, "\\'");
+          return `<tr>
+            <td class="matricule-cell">${u.matricule || '-'}</td>
+            <td>${u.nom_steam || '<span style="color:var(--text-muted);">-</span>'}</td>
+            <td><span class="div-badge">${u.division || '-'}</span></td>
+            <td><span class="rang-badge">${u.rang || '-'}</span></td>
+            <td style="font-size:0.72rem;color:var(--text-muted);">${formatDate(u.fired_at)}</td>
+            <td style="font-size:0.72rem;color:var(--text-muted);">${u.date_entree || '-'}</td>
+            <td class="action-cell">
+              <button class="btn-sm success" onclick="reintegrateUnit('${safeId}', '${safeMatricule}')" title="Réintégrer dans la milice">↩ RÉINTÉGRER</button>
+              <button class="btn-sm danger" onclick="permanentDelete('${safeId}', '${safeMatricule}')" title="Supprimer définitivement">✗</button>
+            </td>
+          </tr>`;
+        }).join('');
+      }
+
+      // ========== RÉINTÉGRER ==========
+      window.reintegrateUnit = async function(docId, matricule) {
+        const unit = firedUnits.find(u => u._id === docId);
+        if (!unit) return;
+        if (!confirm(`Réintégrer l'unité ${matricule} (${unit.nom_steam || '?'}) dans la milice ?`)) return;
+
+        try {
+          // Charger les unités actuelles
+          let currentUnits = await ghLoadUnits();
+
+          // Vérifier que le matricule n'existe pas déjà
+          if (currentUnits.some(u => u.matricule === matricule)) {
+            showAlert(`Le matricule ${matricule} existe déjà dans la liste active !`, 'error');
+            return;
+          }
+
+          // Préparer l'unité à réintégrer (sans les champs fired_*)
+          const reUnit = {
+            matricule: unit.matricule || '',
+            steamid64: unit.steamid64 || '',
+            nom_steam: unit.nom_steam || '',
+            discord: unit.discord || '',
+            division: unit.division || '',
+            rang: 'RCT',
+            ordre: unit.ordre || '',
+            date_entree: new Date().toISOString().substring(0, 10),
+            formateur: false,
+            updated_at: new Date().toISOString().substring(0, 10)
+          };
+
+          // Ajouter à la liste active
+          currentUnits.push(reUnit);
+          await ghSaveUnits(currentUnits, `Réintégration unité ${matricule}`);
+
+          // Supprimer de l'archive
+          await deleteFiredUnit(docId);
+
+          // MAJ locale
+          firedUnits = firedUnits.filter(u => u._id !== docId);
+          updateStats();
+          renderTable();
+          showAlert(`✓ Unité ${matricule} réintégrée avec succès (grade: RCT)`, 'success');
+        } catch (err) {
+          showAlert('⚠ Erreur réintégration: ' + err.message, 'error');
+        }
+      };
+
+      // ========== SUPPRIMER DÉFINITIVEMENT ==========
+      window.permanentDelete = async function(docId, matricule) {
+        if (!confirm(`Supprimer DÉFINITIVEMENT l'unité ${matricule} des archives ?\n\nCette action est irréversible.`)) return;
+
+        try {
+          await deleteFiredUnit(docId);
+          firedUnits = firedUnits.filter(u => u._id !== docId);
+          updateStats();
+          renderTable();
+          showAlert(`✓ Unité ${matricule} supprimée définitivement`, 'success');
+        } catch (err) {
+          showAlert('⚠ Erreur suppression: ' + err.message, 'error');
+        }
+      };
+
+      // ========== FILTER ==========
+      document.getElementById('searchInput').addEventListener('input', renderTable);
+
+      // ========== AUTH CHECK ==========
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) return;
+        try {
+          const snap = await getDoc(doc(db, 'users', user.uid));
+          if (!snap.exists() || !snap.data().is_admin) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('access-denied').style.display = 'block';
+            return;
+          }
+        } catch (err) {
+          console.warn('Firestore admin check failed, allowing authenticated user:', err.message);
+        }
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+        await loadFired();
+      });
+    </script>
+</body>
+</html>

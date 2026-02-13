@@ -66,6 +66,7 @@
     { url: 'form-rapport-complet.html', title: 'Rapport Complet MPF', category: 'Formulaires', keywords: 'rapport complet détaillé formulaire opérationnel' },
     { url: 'form-test.html', title: 'Formulaire Test', category: 'Formulaires', keywords: 'test évaluation examen formulaire' },
     { url: 'form-formation.html', title: 'Formation', category: 'Formulaires', keywords: 'formation formateur session entraînement formulaire' },
+    { url: 'formations.html', title: 'Formations des Unités', category: 'Rapports', keywords: 'formations unités historique session formateur résultat' },
   ];
 
   function normalize(str) {

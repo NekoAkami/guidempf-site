@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formations des Unités - MPF Documentation</title>
+    <link rel="stylesheet" href="assets/css/bundle.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        .formations-wrapper{max-width:1200px;margin:0 auto;}
+        .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0.8rem;margin-bottom:1.5rem;}
+        .stat-box{padding:0.8rem;text-align:center;background:rgba(0,170,255,0.03);border:1px solid rgba(0,170,255,0.1);border-radius:4px;}
+        .stat-box .stat-number{font-family:'Orbitron',sans-serif;font-size:1.3rem;color:var(--accent-cyan);font-weight:700;}
+        .stat-box .stat-label{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--text-muted);letter-spacing:1px;margin-top:0.2rem;}
+        .stat-box.green .stat-number{color:#00cc55;}
+        .stat-box.green{border-color:rgba(0,204,102,0.15);}
+        .stat-box.yellow .stat-number{color:#ffc800;}
+        .stat-box.yellow{border-color:rgba(255,200,0,0.15);}
+        .stat-box.red .stat-number{color:#ff4444;}
+        .stat-box.red{border-color:rgba(255,68,68,0.15);}
+        .filter-bar{display:flex;gap:0.8rem;flex-wrap:wrap;margin-bottom:1rem;align-items:center;}
+        .filter-bar input{flex:1;min-width:200px;padding:0.45rem 0.7rem;background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.2);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.8rem;outline:none;border-radius:2px;}
+        .filter-bar input:focus{border-color:var(--accent-cyan);}
+        .filter-bar select{padding:0.45rem 0.7rem;background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.2);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.8rem;outline:none;border-radius:2px;cursor:pointer;}
+        .filter-bar select option{background:#0a1628;}
+        .form-table{width:100%;border-collapse:collapse;font-size:0.8rem;}
+        .form-table th{text-align:left;padding:0.5rem 0.4rem;color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;font-size:0.68rem;letter-spacing:1px;border-bottom:2px solid rgba(0,170,255,0.2);cursor:pointer;user-select:none;white-space:nowrap;}
+        .form-table th:hover{color:#fff;}
+        .form-table td{padding:0.4rem;color:var(--text-primary);border-bottom:1px solid rgba(0,170,255,0.06);font-family:'Share Tech Mono',monospace;vertical-align:middle;}
+        .form-table tr:hover{background:rgba(0,170,255,0.03);cursor:pointer;}
+        .result-badge{display:inline-block;padding:0.1rem 0.4rem;border-radius:2px;font-size:0.72rem;font-weight:700;}
+        .result-ok{color:#00cc55;border:1px solid rgba(0,200,80,0.3);background:rgba(0,200,80,0.08);}
+        .result-review{color:#ffc800;border:1px solid rgba(255,200,0,0.3);background:rgba(255,200,0,0.08);}
+        .result-fail{color:#ff4444;border:1px solid rgba(255,68,68,0.3);background:rgba(255,68,68,0.08);}
+        .type-badge{display:inline-block;padding:0.1rem 0.4rem;border-radius:2px;font-size:0.68rem;background:rgba(0,170,255,0.08);border:1px solid rgba(0,170,255,0.15);color:var(--text-muted);}
+        .detail-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.75);z-index:1000;display:flex;align-items:center;justify-content:center;}
+        .detail-box{background:#0a1628;border:1px solid rgba(0,170,255,0.2);padding:1.5rem;border-radius:6px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;}
+        .detail-box h3{color:var(--accent-cyan);font-family:'Orbitron',sans-serif;font-size:0.9rem;margin-bottom:1rem;}
+        .detail-box .detail-row{display:flex;gap:0.5rem;margin-bottom:0.5rem;font-family:'Share Tech Mono',monospace;font-size:0.82rem;}
+        .detail-box .detail-label{color:var(--text-muted);min-width:150px;}
+        .detail-box .detail-value{color:var(--text-primary);flex:1;}
+        .detail-box .close-btn{margin-top:1rem;padding:0.4rem 1rem;border:1px solid rgba(0,170,255,0.2);background:rgba(0,170,255,0.05);color:#fff;font-family:'Share Tech Mono',monospace;font-size:0.8rem;cursor:pointer;border-radius:3px;display:block;margin-left:auto;}
+        .table-scroll{overflow-x:auto;}
+        #access-denied,#notApproved{display:none;text-align:center;padding:3rem;}
+        .unit-formations-section{margin-top:2rem;}
+        .unit-formations-section h3{font-family:'Orbitron',sans-serif;font-size:0.82rem;color:var(--accent-cyan);margin-bottom:0.8rem;letter-spacing:1px;}
+        .unit-card{background:rgba(0,170,255,0.02);border:1px solid rgba(0,170,255,0.12);border-left:3px solid rgba(0,170,255,0.3);padding:0.8rem 1rem;margin-bottom:0.5rem;border-radius:3px;}
+        .unit-card .unit-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem;}
+        .unit-card .unit-mat{font-family:'Orbitron',sans-serif;font-size:0.85rem;color:var(--accent-cyan);font-weight:700;}
+        .unit-card .unit-count{font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--text-muted);}
+        .unit-card .unit-name{font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--text-primary);}
+        .unit-card .unit-formations-list{font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--text-muted);margin-top:0.3rem;}
+    </style>
+</head>
+<body>
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <div><h1 class="logo">MPF</h1><p class="logo-subtitle">Formations des Unités</p></div>
+                </div>
+                <div id="authBtn" class="header-auth"></div>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <div id="loading" style="text-align:center;padding:3rem;"><p style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;">CHARGEMENT...</p></div>
+            <div id="access-denied"><h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">CONNEXION REQUISE</h2><a href="login.html" style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;display:inline-block;margin-top:1rem;">→ SE CONNECTER</a></div>
+            <div id="notApproved"><h2 style="color:#ffaa00;font-family:'Orbitron',sans-serif;">EN ATTENTE D'APPROBATION</h2></div>
+            <div id="mainContent" style="display:none;">
+                <div class="formations-wrapper">
+                    <!-- Stats -->
+                    <div class="stats-row">
+                        <div class="stat-box"><div class="stat-number" id="statTotal">0</div><div class="stat-label">FORMATIONS TOTALES</div></div>
+                        <div class="stat-box green"><div class="stat-number" id="statReussi">0</div><div class="stat-label">RÉUSSIES</div></div>
+                        <div class="stat-box yellow"><div class="stat-number" id="statRevoir">0</div><div class="stat-label">À REVOIR</div></div>
+                        <div class="stat-box red"><div class="stat-number" id="statEchoue">0</div><div class="stat-label">ÉCHOUÉES</div></div>
+                        <div class="stat-box"><div class="stat-number" id="statFormateurs">0</div><div class="stat-label">FORMATEURS</div></div>
+                    </div>
+
+                    <!-- Toutes les formations -->
+                    <div class="combine-terminal-wrapper">
+                        <div class="combine-header"><h2>🎓 TOUTES LES FORMATIONS</h2><span class="header-code" id="formationCount">CHARGEMENT...</span></div>
+                        <div class="combine-body">
+                            <div class="filter-bar">
+                                <input type="text" id="searchInput" placeholder="Rechercher par matricule, nom, type, formateur..." autocomplete="off">
+                                <select id="filterType"><option value="">Tous les types</option></select>
+                                <select id="filterResult"><option value="">Tous les résultats</option><option value="Réussi">Réussi</option><option value="À revoir">À revoir</option><option value="Échoué">Échoué</option></select>
+                            </div>
+                            <div class="table-scroll">
+                                <table class="form-table">
+                                    <thead><tr>
+                                        <th onclick="sortBy('date')">DATE ▾</th>
+                                        <th onclick="sortBy('type')">TYPE</th>
+                                        <th onclick="sortBy('formateur')">FORMATEUR</th>
+                                        <th>PARTICIPANTS</th>
+                                        <th onclick="sortBy('duree')">DURÉE</th>
+                                        <th onclick="sortBy('resultat')">RÉSULTAT</th>
+                                    </tr></thead>
+                                    <tbody id="formationsBody"><tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formations par unité -->
+                    <div class="unit-formations-section">
+                        <div class="combine-terminal-wrapper">
+                            <div class="combine-header"><h2>👤 FORMATIONS PAR UNITÉ</h2><span class="header-code" id="unitFormCount">—</span></div>
+                            <div class="combine-body">
+                                <div class="filter-bar">
+                                    <input type="text" id="unitSearchInput" placeholder="Rechercher une unité (matricule, nom)..." autocomplete="off">
+                                </div>
+                                <div id="unitCardsContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script type="module" src="assets/js/auth.js"></script>
+    <script src="assets/js/global-nav.js" defer></script>
+    <script src="assets/js/interactive-system.js" defer></script>
+    <script src="assets/js/combine-animations.js" defer></script>
+    <script type="module">
+      import { auth, db } from './assets/js/auth.js';
+      import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+      import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+      import { loadFormations, loadUnits } from './assets/js/github-data.js';
+
+      let allFormations = [], allUnits = [];
+      let sortField = 'date', sortDir = 'desc';
+
+      function fmtDate(d) {
+        if (!d) return '-';
+        const p = d.split('-');
+        return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : d;
+      }
+
+      function resultBadge(r) {
+        if (r === 'Réussi') return '<span class="result-badge result-ok">RÉUSSI</span>';
+        if (r === 'À revoir') return '<span class="result-badge result-review">À REVOIR</span>';
+        if (r === 'Échoué') return '<span class="result-badge result-fail">ÉCHOUÉ</span>';
+        return r || '-';
+      }
+
+      function getUnitName(mat) {
+        const u = allUnits.find(x => x.matricule === mat);
+        return u ? u.nom_steam || mat : mat;
+      }
+
+      // ========== STATS ==========
+      function updateStats() {
+        document.getElementById('statTotal').textContent = allFormations.length;
+        document.getElementById('statReussi').textContent = allFormations.filter(f => f.resultat === 'Réussi').length;
+        document.getElementById('statRevoir').textContent = allFormations.filter(f => f.resultat === 'À revoir').length;
+        document.getElementById('statEchoue').textContent = allFormations.filter(f => f.resultat === 'Échoué').length;
+        const formateurs = new Set(allFormations.map(f => f.formateur_matricule).filter(Boolean));
+        document.getElementById('statFormateurs').textContent = formateurs.size;
+      }
+
+      // ========== POPULATE FILTERS ==========
+      function populateFilters() {
+        const types = [...new Set(allFormations.map(f => f.type).filter(Boolean))].sort();
+        const sel = document.getElementById('filterType');
+        sel.innerHTML = '<option value="">Tous les types</option>' +
+          types.map(t => `<option value="${t}">${t}</option>`).join('');
+      }
+
+      // ========== SORT ==========
+      window.sortBy = function(field) {
+        if (sortField === field) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+        else { sortField = field; sortDir = field === 'date' ? 'desc' : 'asc'; }
+        renderTable();
+      };
+
+      // ========== RENDER TABLE ==========
+      function renderTable() {
+        const search = (document.getElementById('searchInput').value || '').toLowerCase();
+        const typeFilter = document.getElementById('filterType').value;
+        const resultFilter = document.getElementById('filterResult').value;
+
+        let filtered = allFormations.filter(f => {
+          if (typeFilter && f.type !== typeFilter) return false;
+          if (resultFilter && f.resultat !== resultFilter) return false;
+          if (search) {
+            const haystack = `${f.formateur_matricule||''} ${f.formateur_nom||''} ${f.type||''} ${f.participants_str||''} ${f.contenu||''}`.toLowerCase();
+            if (!haystack.includes(search)) return false;
+          }
+          return true;
+        });
+
+        // Sort
+        filtered.sort((a, b) => {
+          let va, vb;
+          if (sortField === 'date') { va = a.date_formation || a.created_at || ''; vb = b.date_formation || b.created_at || ''; }
+          else if (sortField === 'type') { va = a.type || ''; vb = b.type || ''; }
+          else if (sortField === 'formateur') { va = a.formateur_matricule || ''; vb = b.formateur_matricule || ''; }
+          else if (sortField === 'duree') { va = a.duree || 0; vb = b.duree || 0; }
+          else if (sortField === 'resultat') { va = a.resultat || ''; vb = b.resultat || ''; }
+          else { va = ''; vb = ''; }
+          const cmp = typeof va === 'number' ? va - vb : String(va).localeCompare(String(vb));
+          return sortDir === 'asc' ? cmp : -cmp;
+        });
+
+        document.getElementById('formationCount').textContent = `${filtered.length} / ${allFormations.length} FORMATION${allFormations.length > 1 ? 'S' : ''}`;
+
+        const tbody = document.getElementById('formationsBody');
+        if (!filtered.length) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:2rem;">Aucune formation trouvée</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = filtered.map(f => {
+          const partDisplay = (f.participants_str || f.participants?.join(', ') || '-');
+          const partShort = partDisplay.length > 30 ? partDisplay.substring(0, 30) + '...' : partDisplay;
+          return `<tr onclick="showDetail('${f._id}')">
+            <td style="white-space:nowrap;">${fmtDate(f.date_formation || f.created_at)}</td>
+            <td><span class="type-badge">${f.type || '-'}</span></td>
+            <td>${f.formateur_matricule || '-'} <span style="color:var(--text-muted);font-size:0.72rem;">${f.formateur_nom ? '(' + f.formateur_nom + ')' : ''}</span></td>
+            <td style="font-size:0.75rem;">${partShort}</td>
+            <td>${f.duree || '-'} min</td>
+            <td>${resultBadge(f.resultat)}</td>
+          </tr>`;
+        }).join('');
+      }
+
+      // ========== DETAIL ==========
+      window.showDetail = function(id) {
+        const f = allFormations.find(x => x._id === id);
+        if (!f) return;
+        const rc = f.resultat === 'Réussi' ? '#00cc55' : (f.resultat === 'Échoué' ? '#ff4444' : '#ffc800');
+        const o = document.createElement('div');
+        o.className = 'detail-overlay';
+        o.innerHTML = `<div class="detail-box">
+          <h3>FORMATION — ${f.type || '-'}</h3>
+          <div class="detail-row"><span class="detail-label">DATE</span><span class="detail-value">${fmtDate(f.date_formation || f.created_at)}</span></div>
+          <div class="detail-row"><span class="detail-label">FORMATEUR</span><span class="detail-value">${f.formateur_matricule || '-'} (${f.formateur_nom || '-'})</span></div>
+          <div class="detail-row"><span class="detail-label">PARTICIPANTS</span><span class="detail-value">${f.participants_str || f.participants?.join(', ') || '-'}</span></div>
+          <div class="detail-row"><span class="detail-label">DURÉE</span><span class="detail-value">${f.duree || '-'} min</span></div>
+          <div class="detail-row"><span class="detail-label">RÉSULTAT</span><span class="detail-value" style="color:${rc};font-weight:700;">${f.resultat || '-'}</span></div>
+          <div class="detail-row"><span class="detail-label">CONTENU</span><span class="detail-value">${f.contenu || '-'}</span></div>
+          ${f.remarques ? `<div class="detail-row"><span class="detail-label">REMARQUES</span><span class="detail-value">${f.remarques}</span></div>` : ''}
+          <button class="close-btn" onclick="this.closest('.detail-overlay').remove()">FERMER</button>
+        </div>`;
+        document.body.appendChild(o);
+        o.addEventListener('click', e => { if (e.target === o) o.remove(); });
+      };
+
+      // ========== FORMATIONS PAR UNITÉ ==========
+      function buildUnitFormations() {
+        // Build map: matricule → [formations as participant]
+        const unitMap = new Map();
+
+        allFormations.forEach(f => {
+          const participants = f.participants || (f.participants_str ? f.participants_str.split(',').map(s => s.trim()) : []);
+          participants.forEach(mat => {
+            if (!mat) return;
+            if (!unitMap.has(mat)) unitMap.set(mat, []);
+            unitMap.get(mat).push(f);
+          });
+        });
+
+        return unitMap;
+      }
+
+      function renderUnitCards() {
+        const search = (document.getElementById('unitSearchInput').value || '').toLowerCase();
+        const unitMap = buildUnitFormations();
+        const container = document.getElementById('unitCardsContainer');
+
+        // Get all matricules, sorted
+        let mats = [...unitMap.keys()].sort();
+
+        if (search) {
+          mats = mats.filter(mat => {
+            const u = allUnits.find(x => x.matricule === mat);
+            const haystack = `${mat} ${u?.nom_steam || ''} ${u?.division || ''}`.toLowerCase();
+            return haystack.includes(search);
+          });
+        }
+
+        document.getElementById('unitFormCount').textContent = `${mats.length} UNITÉ${mats.length > 1 ? 'S' : ''} FORMÉE${mats.length > 1 ? 'S' : ''}`;
+
+        if (!mats.length) {
+          container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);font-family:\'Share Tech Mono\',monospace;">Aucune unité trouvée</div>';
+          return;
+        }
+
+        container.innerHTML = mats.map(mat => {
+          const formations = unitMap.get(mat);
+          const u = allUnits.find(x => x.matricule === mat);
+          const name = u ? u.nom_steam || '' : '';
+          const div = u ? u.division || '' : '';
+          const reussi = formations.filter(f => f.resultat === 'Réussi').length;
+          const echoue = formations.filter(f => f.resultat === 'Échoué').length;
+          const revoir = formations.filter(f => f.resultat === 'À revoir').length;
+
+          const formList = formations.sort((a, b) => (b.date_formation || b.created_at || '').localeCompare(a.date_formation || a.created_at || '')).slice(0, 5).map(f => {
+            const rc = f.resultat === 'Réussi' ? '#00cc55' : (f.resultat === 'Échoué' ? '#ff4444' : '#ffc800');
+            return `${fmtDate(f.date_formation || f.created_at)} — ${f.type || '?'} — <span style="color:${rc}">${f.resultat || '?'}</span>`;
+          }).join('<br>');
+
+          return `<div class="unit-card">
+            <div class="unit-header">
+              <span><span class="unit-mat">${mat}</span> <span class="unit-name">${name}</span> ${div ? `<span style="color:var(--text-muted);font-size:0.7rem;">[${div}]</span>` : ''}</span>
+              <span class="unit-count">${formations.length} formation${formations.length > 1 ? 's' : ''} — <span style="color:#00cc55">${reussi}✓</span> <span style="color:#ffc800">${revoir}~</span> <span style="color:#ff4444">${echoue}✗</span></span>
+            </div>
+            <div class="unit-formations-list">${formList}${formations.length > 5 ? `<br><span style="color:var(--accent-cyan);">... et ${formations.length - 5} autres</span>` : ''}</div>
+          </div>`;
+        }).join('');
+      }
+
+      // ========== EVENT LISTENERS ==========
+      document.getElementById('searchInput').addEventListener('input', renderTable);
+      document.getElementById('filterType').addEventListener('change', renderTable);
+      document.getElementById('filterResult').addEventListener('change', renderTable);
+      document.getElementById('unitSearchInput').addEventListener('input', renderUnitCards);
+
+      // ========== AUTH ==========
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('access-denied').style.display = 'block';
+          return;
+        }
+        try {
+          const s = await getDoc(doc(db, 'users', user.uid));
+          if (!s.exists() || !s.data().approved) {
+            document.getElementById('loading').style.display = 'none';
+            if (!s.exists()) document.getElementById('access-denied').style.display = 'block';
+            else document.getElementById('notApproved').style.display = 'block';
+            return;
+          }
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('mainContent').style.display = 'block';
+
+          try { [allFormations, allUnits] = await Promise.all([loadFormations(), loadUnits()]); } catch (_) { allFormations = []; allUnits = []; }
+
+          updateStats();
+          populateFilters();
+          renderTable();
+          renderUnitCards();
+        } catch (e) {
+          console.error(e);
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('access-denied').style.display = 'block';
+        }
+      });
+    </script>
+</body>
+</html>

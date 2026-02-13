@@ -788,7 +788,8 @@ class GlobalNavigation {
                     url: 'rapports.html',
                     dropdown: [
                         { label: 'Rapports', url: 'rapports.html' },
-                        { label: 'Rapports Divisionnaires', url: 'rapports-divisionnaires.html' }
+                        { label: 'Rapports Divisionnaires', url: 'rapports-divisionnaires.html' },
+                        { label: 'Formations', url: 'formations.html' }
                     ]
                 },
                 { label: 'PAYES', url: 'payes.html' },

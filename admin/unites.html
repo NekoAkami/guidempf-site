@@ -246,7 +246,34 @@
         .btn-sm.danger:hover { background: rgba(255, 60, 60, 0.2); }
         .btn-sm.success { border-color: rgba(0, 200, 80, 0.3); background: rgba(0, 200, 80, 0.08); color: #00cc55; }
         .btn-sm.success:hover { background: rgba(0, 200, 80, 0.2); }
+        .btn-sm.warning { border-color: rgba(255, 140, 0, 0.3); background: rgba(255, 140, 0, 0.08); color: #ff8800; }
+        .btn-sm.warning:hover { background: rgba(255, 140, 0, 0.2); }
         .action-cell { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+
+        /* LED de connexion */
+        .online-led {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #333;
+            margin-right: 6px;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+        .online-led.active {
+            background: #00cc66;
+            box-shadow: 0 0 6px rgba(0, 204, 102, 0.7);
+            animation: ledPulse 2s ease infinite;
+        }
+        @keyframes ledPulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 6px rgba(0, 204, 102, 0.7); }
+            50% { opacity: 0.7; box-shadow: 0 0 12px rgba(0, 204, 102, 0.9); }
+        }
+        .nom-cell-wrapper {
+            display: flex;
+            align-items: center;
+        }
 
         .btn-action {
             padding: 0.5rem 1.2rem;
@@ -396,6 +423,7 @@
                 <div class="admin-nav" style="margin-top: 1rem;">
                     <a href="panel.html">← PANEL ADMIN</a>
                     <a href="unites.html" class="active">UNITÉS</a>
+                    <a href="archives-unites.html">VIRÉS</a>
                     <a href="heures.html">HEURES DE JEU</a>
                     <a href="heures-archives.html">ARCHIVES</a>
                     <a href="absences.html">ABSENCES</a>
@@ -642,6 +670,7 @@
       import {
         loadUnits as ghLoadUnits, saveUnits as ghSaveUnits,
         loadAbsences as ghLoadAbsences,
+        addFiredUnit, loadFiredUnits,
         onSyncStatus
       } from '../assets/js/github-data.js';
 
@@ -672,6 +701,7 @@
       // ========== STATE ==========
       let allUnits = [];
       let allAbsences = [];
+      let onlineMatricules = new Set();
       let currentSort = { key: 'ordre', asc: true };
 
       // ========== UTILS ==========
@@ -695,6 +725,26 @@
       }
 
       // ========== LOAD UNITS ==========
+      /** Récupère les matricules des unités actuellement en ligne */
+      async function fetchOnlineMatricules() {
+        try {
+          const { Timestamp, collection: col, getDocs: gDocs, query: q, where: w, doc: d, getDoc: gDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+          const cutoff = Timestamp.fromDate(new Date(Date.now() - 2 * 60 * 1000));
+          const snap = await gDocs(q(col(db, 'presence'), w('last_seen', '>', cutoff)));
+          const onlineUids = snap.docs.map(s => s.id);
+          const mats = new Set();
+          for (const uid of onlineUids) {
+            try {
+              const uDoc = await gDoc(d(db, 'users', uid));
+              if (uDoc.exists() && uDoc.data().matricule) {
+                mats.add(uDoc.data().matricule);
+              }
+            } catch (_) {}
+          }
+          return mats;
+        } catch (_) { return new Set(); }
+      }
+
       /** Lundi de la semaine contenant d */
       function getWeekMonday(d) {
         const date = new Date(d);
@@ -747,10 +797,15 @@
 
       async function loadUnits() {
         try {
-          [allUnits, allAbsences] = await Promise.all([ghLoadUnits(), ghLoadAbsences()]);
+          [allUnits, allAbsences, onlineMatricules] = await Promise.all([ghLoadUnits(), ghLoadAbsences(), fetchOnlineMatricules()]);
           allUnits = allUnits.map(u => ({ ...u, id: u.matricule || Math.random().toString(36).substr(2, 9) }));
           updateStats();
           renderTable();
+          // Rafraîchir la présence toutes les 30s
+          setInterval(async () => {
+            onlineMatricules = await fetchOnlineMatricules();
+            renderTable();
+          }, 30000);
         } catch (err) {
           console.error('Erreur chargement units:', err);
           showAlert('Erreur chargement: ' + err.message, 'error');
@@ -813,9 +868,11 @@
 
         tbody.innerHTML = filtered.map(u => {
           const safeMatricule = (u.matricule || '').replace(/'/g, "\\'");
+          const isOnline = onlineMatricules.has(u.matricule);
+          const ledClass = isOnline ? 'online-led active' : 'online-led';
           return `<tr>
             <td class="matricule-cell">${u.matricule || '-'}</td>
-            <td>${u.nom_steam || '<span style="color:var(--text-muted);">-</span>'}</td>
+            <td><div class="nom-cell-wrapper"><span class="${ledClass}" title="${isOnline ? 'En ligne' : 'Hors ligne'}"></span>${u.nom_steam || '<span style="color:var(--text-muted);">-</span>'}</div></td>
             <td class="steamid-cell">${u.steamid64 || '-'}</td>
             <td style="font-size:0.78rem;">${u.discord || '<span style="color:var(--text-muted);">-</span>'}</td>
             <td>${divBadge(u.division)}</td>
@@ -825,8 +882,9 @@
             <td style="font-size:0.78rem;color:var(--text-muted);">${u.ordre || '-'}</td>
             <td style="font-size:0.72rem;color:var(--text-muted);">${u.date_entree || '-'}</td>
             <td class="action-cell">
-              <button class="btn-sm" onclick="editUnit('${safeMatricule}')">✎</button>
-              <button class="btn-sm danger" onclick="deleteUnit('${safeMatricule}')">✗</button>
+              <button class="btn-sm" onclick="editUnit('${safeMatricule}')" title="Modifier">✎</button>
+              <button class="btn-sm warning" onclick="fireUnit('${safeMatricule}')" title="Virer">⊘</button>
+              <button class="btn-sm danger" onclick="deleteUnit('${safeMatricule}')" title="Supprimer">✗</button>
             </td>
           </tr>`;
         }).join('');
@@ -943,6 +1001,48 @@
         ghSaveUnits(toSave, editId ? `Modification unité ${matricule}` : `Ajout unité ${matricule}`)
           .catch(err => {
             showAlert('⚠ Sync échouée: ' + err.message, 'error');
+          });
+      };
+
+      // ========== FIRE UNIT (VIRER) ==========
+      window.fireUnit = async function(matricule) {
+        const unit = allUnits.find(u => u.matricule === matricule);
+        if (!unit) return;
+        if (!confirm(`Virer l'unité ${matricule} (${unit.nom_steam || '?'}) de la milice ?\n\nL'unité sera archivée et pourra être réintégrée depuis les archives.`)) return;
+
+        // Archiver l'unité
+        const firedData = {
+          matricule: unit.matricule || '',
+          steamid64: unit.steamid64 || '',
+          nom_steam: unit.nom_steam || '',
+          discord: unit.discord || '',
+          division: unit.division || '',
+          rang: unit.rang || '',
+          ordre: unit.ordre || '',
+          date_entree: unit.date_entree || '',
+          formateur: unit.formateur || false,
+          fired_at: new Date().toISOString(),
+          fired_reason: 'Viré de la milice'
+        };
+
+        try {
+          await addFiredUnit(firedData);
+        } catch (err) {
+          showAlert('⚠ Erreur archivage: ' + err.message, 'error');
+          return;
+        }
+
+        // Retirer de la liste active
+        allUnits = allUnits.filter(u => u.matricule !== matricule);
+        updateStats();
+        renderTable();
+        showAlert(`✓ Unité ${matricule} virée et archivée`, 'success');
+
+        // Sauvegarder la liste active
+        const toSave = allUnits.map(({ id, ...rest }) => rest);
+        ghSaveUnits(toSave, `Unité ${matricule} virée`)
+          .catch(err => {
+            showAlert('⚠ Sync liste échouée: ' + err.message, 'error');
           });
       };
 

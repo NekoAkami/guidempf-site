@@ -486,6 +486,19 @@ async function updateFormation(docId, formation) {
   return await updateInSubCollection('formations', docId, formation);
 }
 
+// ========== UNITÉS VIRÉES (sous-collection) ==========
+async function loadFiredUnits() {
+  return await readSubCollection('fired_units', 'fired_at', 'desc');
+}
+
+async function addFiredUnit(unit) {
+  return await addToSubCollection('fired_units', unit);
+}
+
+async function deleteFiredUnit(docId) {
+  return await deleteFromSubCollection('fired_units', docId);
+}
+
 // ========== PLANNING ==========
 async function loadPlanning() {
   return await readSubCollection('planning', 'date', 'asc');
@@ -520,5 +533,6 @@ export {
   loadUnitTests, addUnitTest, deleteUnitTest, updateUnitTest,
   loadFormations, addFormation, deleteFormation, updateFormation,
   loadPlanning, addPlanningEntry, deletePlanningEntry, updatePlanningEntry,
+  loadFiredUnits, addFiredUnit, deleteFiredUnit,
   GITHUB_OWNER, GITHUB_REPO
 };
