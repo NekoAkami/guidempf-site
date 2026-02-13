@@ -11,7 +11,42 @@
     <link rel="stylesheet" href="assets/css/bundle.css">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <style>
-        .planning-wrapper{max-width:1200px;margin:0 auto;}
+        /* ===== LAYOUT 3 COLONNES ===== */
+        .planning-layout{display:flex;gap:0.8rem;align-items:flex-start;max-width:1600px;margin:0 auto;}
+        .planning-main{flex:1;min-width:0;}
+        .side-panel{width:260px;flex-shrink:0;position:sticky;top:80px;max-height:calc(100vh - 100px);overflow-y:auto;transition:all 0.3s;scrollbar-width:thin;scrollbar-color:rgba(0,170,255,0.2) transparent;}
+        .side-panel.collapsed{width:36px;overflow:hidden;}
+        .side-panel .panel-header{display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0.6rem;background:rgba(0,170,255,0.08);border-bottom:1px solid rgba(0,170,255,0.2);cursor:pointer;user-select:none;}
+        .side-panel .panel-header h3{font-family:'Orbitron',sans-serif;font-size:0.65rem;color:var(--accent-cyan);letter-spacing:1px;margin:0;white-space:nowrap;}
+        .side-panel .panel-toggle{font-size:0.7rem;color:var(--accent-cyan);cursor:pointer;opacity:0.7;transition:opacity 0.15s;}
+        .side-panel .panel-toggle:hover{opacity:1;}
+        .side-panel .panel-body{padding:0.5rem;overflow-y:auto;}
+        .side-panel.collapsed .panel-body{display:none;}
+        .side-panel.collapsed .panel-header h3{writing-mode:vertical-rl;text-orientation:mixed;font-size:0.6rem;padding:0.3rem 0;}
+        .side-panel-border{border:1px solid rgba(0,170,255,0.15);border-radius:4px;background:rgba(0,10,30,0.5);overflow:hidden;}
+
+        /* ===== PLANNING DU JOUR (droite) ===== */
+        .today-event{padding:0.4rem 0.5rem;margin-bottom:0.4rem;border-radius:3px;font-family:'Share Tech Mono',monospace;font-size:0.7rem;border-left:3px solid;}
+        .today-event .ev-time{font-weight:700;font-size:0.72rem;}
+        .today-event .ev-type{opacity:0.8;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.5px;}
+        .today-event .ev-desc{color:var(--text-muted);font-size:0.65rem;margin-top:0.1rem;}
+        .today-event.type-formation{background:rgba(0,170,255,0.08);border-color:var(--accent-cyan);color:var(--accent-cyan);}
+        .today-event.type-test{background:rgba(255,200,0,0.08);border-color:#ffc800;color:#ffc800;}
+        .today-event.type-recrutement{background:rgba(0,200,80,0.08);border-color:#00cc55;color:#00cc55;}
+        .today-event.type-operation{background:rgba(255,100,60,0.08);border-color:#ff6644;color:#ff6644;}
+        .today-event.type-patrouille{background:rgba(100,200,255,0.08);border-color:#64c8ff;color:#64c8ff;}
+        .today-event.type-autre{background:rgba(200,100,255,0.08);border-color:#c864ff;color:#c864ff;}
+        .no-events{text-align:center;padding:1rem 0.5rem;color:var(--text-muted);font-family:'Share Tech Mono',monospace;font-size:0.7rem;opacity:0.6;}
+
+        /* ===== BLOC-NOTES (gauche) ===== */
+        .notepad-textarea{width:100%;min-height:200px;max-height:400px;resize:vertical;background:rgba(0,0,0,0.3);border:1px solid rgba(0,170,255,0.15);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.75rem;padding:0.5rem;outline:none;border-radius:2px;line-height:1.5;}
+        .notepad-textarea:focus{border-color:rgba(0,170,255,0.4);}
+        .notepad-footer{display:flex;align-items:center;justify-content:space-between;padding:0.3rem 0;font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:var(--text-muted);}
+        .notepad-clear{padding:0.2rem 0.5rem;background:rgba(255,60,60,0.08);border:1px solid rgba(255,60,60,0.25);color:#ff6666;font-family:'Share Tech Mono',monospace;font-size:0.62rem;cursor:pointer;border-radius:2px;transition:all 0.15s;}
+        .notepad-clear:hover{background:rgba(255,60,60,0.2);}
+
+        /* ===== PLANNING GRID ===== */
+        .planning-wrapper{max-width:100%;}
         .week-nav{display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:1.2rem;font-family:'Orbitron',sans-serif;}
         .week-nav button{padding:0.4rem 0.8rem;background:rgba(0,170,255,0.08);border:1px solid rgba(0,170,255,0.3);color:var(--accent-cyan);cursor:pointer;border-radius:3px;font-family:'Share Tech Mono',monospace;font-size:0.8rem;transition:all 0.15s;}
         .week-nav button:hover{background:rgba(0,170,255,0.2);}
@@ -30,6 +65,8 @@
         .slot-entry.type-autre{background:rgba(200,100,255,0.15);border-left:2px solid #c864ff;color:#c864ff;}
         .slot-entry.type-operation{background:rgba(255,100,60,0.15);border-left:2px solid #ff6644;color:#ff6644;}
         .slot-entry.type-patrouille{background:rgba(100,200,255,0.15);border-left:2px solid #64c8ff;color:#64c8ff;}
+        /* Multi-slot entries spanning multiple rows */
+        .slot-entry.multi-slot{position:relative;}
         .slot-add{position:absolute;top:0;right:0;width:14px;height:14px;background:rgba(0,170,255,0.15);border:1px solid rgba(0,170,255,0.3);border-radius:2px;color:var(--accent-cyan);display:none;align-items:center;justify-content:center;font-size:0.6rem;cursor:pointer;z-index:2;}
         .slot-cell:hover .slot-add{display:flex;}
         .legend{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;font-family:'Share Tech Mono',monospace;font-size:0.7rem;}
@@ -40,8 +77,11 @@
         .modal-box h3{color:var(--accent-cyan);font-family:'Orbitron',sans-serif;font-size:0.85rem;margin-bottom:1rem;}
         .modal-box .form-group{margin-bottom:0.8rem;}
         .modal-box .form-group label{display:block;font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--text-muted);letter-spacing:1px;margin-bottom:0.2rem;}
-        .modal-box .form-group input,.modal-box .form-group select,.modal-box .form-group textarea{width:100%;padding:0.4rem 0.6rem;background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.2);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.8rem;outline:none;border-radius:2px;}
+        .modal-box .form-group input,.modal-box .form-group select,.modal-box .form-group textarea{width:100%;padding:0.4rem 0.6rem;background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.2);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.8rem;outline:none;border-radius:2px;box-sizing:border-box;}
         .modal-box .form-group select option{background:#0a1628;}
+        .modal-box .form-group .time-range{display:flex;gap:0.5rem;align-items:center;}
+        .modal-box .form-group .time-range span{color:var(--text-muted);font-family:'Share Tech Mono',monospace;font-size:0.75rem;}
+        .modal-box .form-group .time-range select{width:auto;flex:1;}
         .modal-box .modal-actions{display:flex;gap:0.5rem;justify-content:flex-end;margin-top:1rem;}
         .modal-box .modal-actions button{padding:0.4rem 1rem;font-family:'Share Tech Mono',monospace;font-size:0.78rem;cursor:pointer;border-radius:3px;transition:all 0.15s;}
         .btn-cancel{border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:#fff;}
@@ -58,6 +98,7 @@
         .sync-indicator.error{opacity:1;background:rgba(255,60,60,0.15);border:1px solid rgba(255,60,60,0.4);color:#ff4444;}
         .sync-indicator.hidden{opacity:0;}
         #access-denied,#notApproved{display:none;text-align:center;padding:3rem;}
+        @media(max-width:1100px){.side-panel{width:220px;}.planning-layout{flex-wrap:wrap;}.side-panel{width:100%;position:static;max-height:none;}.side-panel.collapsed{width:100%;}.side-panel.collapsed .panel-header h3{writing-mode:horizontal-tb;}}
         @media(max-width:900px){.planning-grid{font-size:0.6rem;}.planning-grid .day-header,.planning-grid .time-header{font-size:0.55rem;}.slot-entry{font-size:0.55rem;}}
     </style>
 </head>
@@ -81,28 +122,61 @@
             <div id="access-denied"><h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">CONNEXION REQUISE</h2><a href="login.html" style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;display:inline-block;margin-top:1rem;">→ SE CONNECTER</a></div>
             <div id="notApproved"><h2 style="color:#ffaa00;font-family:'Orbitron',sans-serif;">EN ATTENTE D'APPROBATION</h2></div>
             <div id="mainContent" style="display:none;">
-                <div class="planning-wrapper">
-                    <div id="alertMsg" class="alert-msg"></div>
-                    <div class="week-nav">
-                        <button onclick="changeWeek(-1)">◄ SEMAINE PRÉC.</button>
-                        <span class="week-label" id="weekLabel">---</span>
-                        <button onclick="changeWeek(1)">SEMAINE SUIV. ►</button>
+
+                <div class="planning-layout">
+                    <!-- BLOC-NOTES PERSONNEL (gauche) -->
+                    <div class="side-panel side-panel-border" id="notepadPanel">
+                        <div class="panel-header" onclick="togglePanel('notepadPanel')">
+                            <h3>📝 BLOC-NOTES</h3>
+                            <span class="panel-toggle" id="notepadToggle">◄</span>
+                        </div>
+                        <div class="panel-body">
+                            <textarea class="notepad-textarea" id="notepadText" placeholder="Notes personnelles...&#10;Sauvegardé automatiquement."></textarea>
+                            <div class="notepad-footer">
+                                <span id="notepadStatus">Sauvegardé</span>
+                                <button class="notepad-clear" onclick="clearNotepad()">🗑 TOUT SUPPRIMER</button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="legend">
-                        <div class="legend-item"><div class="legend-dot" style="background:rgba(0,170,255,0.4);"></div><span>Formation</span></div>
-                        <div class="legend-item"><div class="legend-dot" style="background:rgba(255,200,0,0.4);"></div><span>Test</span></div>
-                        <div class="legend-item"><div class="legend-dot" style="background:rgba(0,200,80,0.4);"></div><span>Recrutement</span></div>
-                        <div class="legend-item"><div class="legend-dot" style="background:rgba(255,100,60,0.4);"></div><span>Opération</span></div>
-                        <div class="legend-item"><div class="legend-dot" style="background:rgba(100,200,255,0.4);"></div><span>Patrouille</span></div>
-                        <div class="legend-item"><div class="legend-dot" style="background:rgba(200,100,255,0.4);"></div><span>Autre</span></div>
+
+                    <!-- PLANNING PRINCIPAL (centre) -->
+                    <div class="planning-main">
+                        <div class="planning-wrapper">
+                            <div id="alertMsg" class="alert-msg"></div>
+                            <div class="week-nav">
+                                <button onclick="changeWeek(-1)">◄ SEMAINE PRÉC.</button>
+                                <span class="week-label" id="weekLabel">---</span>
+                                <button onclick="changeWeek(1)">SEMAINE SUIV. ►</button>
+                            </div>
+                            <div class="legend">
+                                <div class="legend-item"><div class="legend-dot" style="background:rgba(0,170,255,0.4);"></div><span>Formation</span></div>
+                                <div class="legend-item"><div class="legend-dot" style="background:rgba(255,200,0,0.4);"></div><span>Test</span></div>
+                                <div class="legend-item"><div class="legend-dot" style="background:rgba(0,200,80,0.4);"></div><span>Recrutement</span></div>
+                                <div class="legend-item"><div class="legend-dot" style="background:rgba(255,100,60,0.4);"></div><span>Opération</span></div>
+                                <div class="legend-item"><div class="legend-dot" style="background:rgba(100,200,255,0.4);"></div><span>Patrouille</span></div>
+                                <div class="legend-item"><div class="legend-dot" style="background:rgba(200,100,255,0.4);"></div><span>Autre</span></div>
+                            </div>
+                            <div class="combine-terminal-wrapper animate-fadeInUp">
+                                <div class="combine-header"><h2>📅 PLANNING DE LA SEMAINE</h2><span class="header-code" id="entryCount">0 ENTRÉES</span></div>
+                                <div class="combine-body" style="padding:0;overflow-x:auto;">
+                                    <div class="planning-grid" id="planningGrid"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="combine-terminal-wrapper animate-fadeInUp">
-                        <div class="combine-header"><h2>📅 PLANNING DE LA SEMAINE</h2><span class="header-code" id="entryCount">0 ENTRÉES</span></div>
-                        <div class="combine-body" style="padding:0;overflow-x:auto;">
-                            <div class="planning-grid" id="planningGrid"></div>
+
+                    <!-- PLANNING DU JOUR (droite) -->
+                    <div class="side-panel side-panel-border" id="todayPanel">
+                        <div class="panel-header" onclick="togglePanel('todayPanel')">
+                            <h3>📋 PLANNING DU JOUR</h3>
+                            <span class="panel-toggle" id="todayToggle">►</span>
+                        </div>
+                        <div class="panel-body" id="todayBody">
+                            <div id="todayEvents"></div>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </main>
@@ -119,13 +193,17 @@
       let currentUser=null, isHG=false, canEdit=false, userMatricule='';
       let allEntries=[], weekOffset=0;
       const DAYS=['LUN','MAR','MER','JEU','VEN','SAM','DIM'];
-      const SLOTS=['00:00','00:30','01:00','01:30','02:00','02:30','03:00','03:30','04:00','04:30','05:00','05:30','06:00','06:30','07:00','07:30','08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30','21:00','21:30','22:00','22:30','23:00','23:30'];
+      // Créneaux de 14h à 00h (minuit)
+      const SLOTS=['14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30','21:00','21:30','22:00','22:30','23:00','23:30','00:00'];
       const TYPES=['Formation','Test','Recrutement','Opération','Patrouille','Autre'];
 
       function showAlert(t,type='success'){const e=document.getElementById('alertMsg');e.style.display='block';e.className='alert-msg '+type;e.textContent=t;setTimeout(()=>e.style.display='none',5000);}
       function fmtDate(d){if(!d)return'-';const p=d.split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:d;}
+
+      // Sync indicator
       {const i=document.createElement('div');i.id='syncIndicator';i.className='sync-indicator hidden';document.body.appendChild(i);let t=null;onSyncStatus(s=>{clearTimeout(t);if(s==='syncing'){i.innerHTML='<span style="display:inline-block;animation:spin 1s linear infinite;">⟳</span> Sync...';i.className='sync-indicator syncing';}else if(s==='synced'){i.innerHTML='✓ Sync';i.className='sync-indicator synced';t=setTimeout(()=>i.className='sync-indicator hidden',2500);}else{i.innerHTML='⚠ Erreur';i.className='sync-indicator error';t=setTimeout(()=>i.className='sync-indicator hidden',6000);}});}
 
+      // ===== WEEK HELPERS =====
       function getWeekDates(offset=0){
         const now=new Date();now.setDate(now.getDate()+offset*7);
         const day=now.getDay();const diff=now.getDate()-day+(day===0?-6:1);
@@ -144,16 +222,26 @@
         return'type-autre';
       }
 
+      // Compare slot times: returns true if slotA <= slotB
+      function slotLte(a,b){
+        const toMin=s=>{const[h,m]=s.split(':').map(Number);return(h===0?24:h)*60+m;};
+        return toMin(a)<=toMin(b);
+      }
+      function slotInRange(slot, from, to){
+        const toMin=s=>{const[h,m]=s.split(':').map(Number);return(h===0?24:h)*60+m;};
+        const sv=toMin(slot),fv=toMin(from),tv=toMin(to);
+        return sv>=fv&&sv<tv; // slot is within [from, to)
+      }
+
+      // ===== RENDER PLANNING GRID =====
       function renderPlanning(){
         const dates=getWeekDates(weekOffset);
         const today=new Date().toISOString().substring(0,10);
         document.getElementById('weekLabel').textContent=fmtDate(dates[0])+' — '+fmtDate(dates[6]);
 
-        // Filter entries for this week
         const weekEntries=allEntries.filter(e=>dates.includes(e.date));
         document.getElementById('entryCount').textContent=weekEntries.length+' ENTRÉE'+(weekEntries.length>1?'S':'');
 
-        // Build grid
         const grid=document.getElementById('planningGrid');
         let html='<div class="time-header">HEURE</div>';
         DAYS.forEach((d,i)=>{html+=`<div class="day-header${dates[i]===today?' today':''}">${d}<br><span style="font-size:0.55rem;opacity:0.7;">${dates[i].substring(8)}</span></div>`;});
@@ -161,39 +249,191 @@
         SLOTS.forEach(slot=>{
           html+=`<div class="time-cell">${slot}</div>`;
           dates.forEach((date,di)=>{
-            const cellEntries=weekEntries.filter(e=>e.date===date&&e.slot===slot);
-            const entriesHtml=cellEntries.map(e=>`<div class="slot-entry ${getTypeClass(e.type)}" onclick="event.stopPropagation();showEntryDetail('${e._id}')" title="${e.type} — ${e.description||''} (${e.matricule})">${e.type.substring(0,4)} ${e.matricule||''}</div>`).join('');
+            // Show entries that START at this slot OR span across this slot
+            const cellEntries=weekEntries.filter(e=>{
+              if(e.date!==date)return false;
+              if(!e.slot_end||e.slot_end===e.slot){
+                return e.slot===slot; // single slot
+              }
+              return slotInRange(slot,e.slot,e.slot_end);
+            });
+            // For multi-slot, only show the label on the first slot
+            const visibleEntries=cellEntries.filter(e=>{
+              if(!e.slot_end||e.slot_end===e.slot)return true;
+              return e.slot===slot;
+            });
+            const bgEntries=cellEntries.filter(e=>e.slot_end&&e.slot_end!==e.slot&&e.slot!==slot);
+            const bgClass=bgEntries.length>0?` style="background:${getBgForType(bgEntries[0].type)}"`:'';
+            const entriesHtml=visibleEntries.map(e=>{
+              const span=e.slot_end&&e.slot_end!==e.slot?` [${e.slot}→${e.slot_end}]`:'';
+              return`<div class="slot-entry ${getTypeClass(e.type)}" onclick="event.stopPropagation();showEntryDetail('${e._id}')" title="${e.type}${span} — ${e.description||''} (${e.matricule})">${e.type.substring(0,4)} ${e.matricule||''}${span?'…':''}</div>`;
+            }).join('');
             const addBtn=canEdit?`<div class="slot-add" onclick="event.stopPropagation();openAddModal('${date}','${slot}')">+</div>`:'';
-            html+=`<div class="slot-cell" onclick="openAddModal('${date}','${slot}')">${entriesHtml}${addBtn}</div>`;
+            html+=`<div class="slot-cell"${bgClass} onclick="openAddModal('${date}','${slot}')">${entriesHtml}${addBtn}</div>`;
           });
         });
         grid.innerHTML=html;
+        renderTodayPanel();
       }
 
+      function getBgForType(type){
+        const t=(type||'').toLowerCase();
+        if(t.includes('formation'))return'rgba(0,170,255,0.04)';
+        if(t.includes('test'))return'rgba(255,200,0,0.04)';
+        if(t.includes('recrutement'))return'rgba(0,200,80,0.04)';
+        if(t.includes('opération')||t.includes('operation'))return'rgba(255,100,60,0.04)';
+        if(t.includes('patrouille'))return'rgba(100,200,255,0.04)';
+        return'rgba(200,100,255,0.04)';
+      }
+
+      // ===== PLANNING DU JOUR (panneau droit) =====
+      function renderTodayPanel(){
+        const today=new Date().toISOString().substring(0,10);
+        const todayEntries=allEntries.filter(e=>e.date===today);
+        // Sort by slot start time
+        todayEntries.sort((a,b)=>{
+          const toMin=s=>{const[h,m]=s.split(':').map(Number);return(h===0?24:h)*60+m;};
+          return toMin(a.slot)-toMin(b.slot);
+        });
+        const container=document.getElementById('todayEvents');
+        if(todayEntries.length===0){
+          container.innerHTML='<div class="no-events">Aucun événement prévu aujourd\'hui</div>';
+          return;
+        }
+        container.innerHTML=todayEntries.map(e=>{
+          const timeLabel=e.slot_end&&e.slot_end!==e.slot?`${e.slot} → ${e.slot_end}`:e.slot;
+          return`<div class="today-event ${getTypeClass(e.type)}" onclick="showEntryDetail('${e._id}')" style="cursor:pointer;">
+            <div class="ev-time">${timeLabel}</div>
+            <div class="ev-type">${e.type}</div>
+            ${e.description?`<div class="ev-desc">${e.description}</div>`:''}
+            <div class="ev-desc">Par: ${e.matricule||'?'}</div>
+          </div>`;
+        }).join('');
+      }
+
+      // ===== PANELS TOGGLE =====
+      window.togglePanel=function(id){
+        const panel=document.getElementById(id);
+        panel.classList.toggle('collapsed');
+        const toggleIcon=panel.querySelector('.panel-toggle');
+        if(id==='notepadPanel'){
+          toggleIcon.textContent=panel.classList.contains('collapsed')?'►':'◄';
+          localStorage.setItem('mpf_notepad_collapsed',panel.classList.contains('collapsed')?'1':'0');
+        } else {
+          toggleIcon.textContent=panel.classList.contains('collapsed')?'◄':'►';
+          localStorage.setItem('mpf_today_collapsed',panel.classList.contains('collapsed')?'1':'0');
+        }
+      };
+
+      // ===== BLOC-NOTES PERSONNEL (localStorage) =====
+      function initNotepad(){
+        const textarea=document.getElementById('notepadText');
+        const saved=localStorage.getItem('mpf_notepad_content')||'';
+        textarea.value=saved;
+        let saveTimeout=null;
+        textarea.addEventListener('input',()=>{
+          clearTimeout(saveTimeout);
+          document.getElementById('notepadStatus').textContent='Enregistrement...';
+          saveTimeout=setTimeout(()=>{
+            localStorage.setItem('mpf_notepad_content',textarea.value);
+            document.getElementById('notepadStatus').textContent='Sauvegardé ✓';
+          },500);
+        });
+        // Restore panel states
+        if(localStorage.getItem('mpf_notepad_collapsed')==='1'){
+          document.getElementById('notepadPanel').classList.add('collapsed');
+          document.getElementById('notepadToggle').textContent='►';
+        }
+        if(localStorage.getItem('mpf_today_collapsed')==='1'){
+          document.getElementById('todayPanel').classList.add('collapsed');
+          document.getElementById('todayToggle').textContent='◄';
+        }
+      }
+
+      window.clearNotepad=function(){
+        if(!confirm('Supprimer toutes les notes ?\nCette action est irréversible.'))return;
+        document.getElementById('notepadText').value='';
+        localStorage.removeItem('mpf_notepad_content');
+        document.getElementById('notepadStatus').textContent='Notes supprimées';
+      };
+
+      // ===== WEEK NAVIGATION =====
       window.changeWeek=function(dir){weekOffset+=dir;renderPlanning();};
 
+      // ===== ADD ENTRY MODAL (with time range) =====
       window.openAddModal=function(date,slot){
         if(!canEdit){return;}
+        // Build slot options
+        const slotOpts=SLOTS.map(s=>`<option value="${s}"${s===slot?' selected':''}>${s}</option>`).join('');
+        // Default end slot = next slot
+        const sIdx=SLOTS.indexOf(slot);
+        const defaultEnd=sIdx<SLOTS.length-1?SLOTS[sIdx+1]:SLOTS[SLOTS.length-1];
+        const endOpts=SLOTS.map(s=>`<option value="${s}"${s===defaultEnd?' selected':''}>${s}</option>`).join('');
+
         const o=document.createElement('div');o.className='modal-overlay';
-        o.innerHTML=`<div class="modal-box"><h3>AJOUTER UNE ENTRÉE</h3><div class="form-group"><label>DATE</label><input type="date" id="mDate" value="${date}"></div><div class="form-group"><label>CRÉNEAU</label><select id="mSlot">${SLOTS.map(s=>`<option value="${s}"${s===slot?' selected':''}>${s}</option>`).join('')}</select></div><div class="form-group"><label>TYPE</label><select id="mType">${TYPES.map(t=>`<option value="${t}">${t}</option>`).join('')}</select></div><div class="form-group"><label>DESCRIPTION</label><input type="text" id="mDesc" placeholder="Détails (optionnel)"></div><div class="modal-actions"><button class="btn-cancel" onclick="this.closest('.modal-overlay').remove()">ANNULER</button><button class="btn-save" onclick="saveEntry()">AJOUTER</button></div></div>`;
-        document.body.appendChild(o);o.addEventListener('click',e=>{if(e.target===o)o.remove();});
+        o.innerHTML=`<div class="modal-box">
+          <h3>AJOUTER UNE ENTRÉE</h3>
+          <div class="form-group"><label>DATE</label><input type="date" id="mDate" value="${date}"></div>
+          <div class="form-group">
+            <label>CRÉNEAU HORAIRE</label>
+            <div class="time-range">
+              <select id="mSlotStart">${slotOpts}</select>
+              <span>→</span>
+              <select id="mSlotEnd">${endOpts}</select>
+            </div>
+          </div>
+          <div class="form-group"><label>TYPE</label><select id="mType">${TYPES.map(t=>`<option value="${t}">${t}</option>`).join('')}</select></div>
+          <div class="form-group"><label>DESCRIPTION</label><input type="text" id="mDesc" placeholder="Détails (optionnel)"></div>
+          <div class="modal-actions">
+            <button class="btn-cancel" onclick="this.closest('.modal-overlay').remove()">ANNULER</button>
+            <button class="btn-save" onclick="saveEntry()">AJOUTER</button>
+          </div>
+        </div>`;
+        document.body.appendChild(o);
+        o.addEventListener('click',e=>{if(e.target===o)o.remove();});
+
+        // Auto-adjust end slot when start changes
+        document.getElementById('mSlotStart').addEventListener('change',function(){
+          const startIdx=SLOTS.indexOf(this.value);
+          const endSel=document.getElementById('mSlotEnd');
+          const endIdx=SLOTS.indexOf(endSel.value);
+          if(startIdx>=endIdx&&startIdx<SLOTS.length-1){
+            endSel.value=SLOTS[startIdx+1];
+          }
+        });
       };
 
       window.saveEntry=async function(){
         const date=document.getElementById('mDate').value;
-        const slot=document.getElementById('mSlot').value;
+        const slotStart=document.getElementById('mSlotStart').value;
+        const slotEnd=document.getElementById('mSlotEnd').value;
         const type=document.getElementById('mType').value;
         const desc=document.getElementById('mDesc').value.trim();
-        if(!date||!slot||!type){showAlert('Champs requis','error');return;}
-        const entry={date,slot,type,description:desc,matricule:userMatricule,created_at:new Date().toISOString().substring(0,10)};
+        if(!date||!slotStart||!type){showAlert('Champs requis','error');return;}
+        // Validate: end must be after start
+        const toMin=s=>{const[h,m]=s.split(':').map(Number);return(h===0?24:h)*60+m;};
+        if(toMin(slotEnd)<=toMin(slotStart)){showAlert('L\'heure de fin doit être après l\'heure de début','error');return;}
+        const entry={date,slot:slotStart,slot_end:slotEnd,type,description:desc,matricule:userMatricule,created_at:new Date().toISOString().substring(0,10)};
         try{const saved=await addPlanningEntry(entry);allEntries.push(saved);document.querySelector('.modal-overlay')?.remove();showAlert('✓ Entrée ajoutée');renderPlanning();}catch(e){showAlert('✗ '+e.message,'error');}
       };
 
+      // ===== ENTRY DETAIL MODAL =====
       window.showEntryDetail=function(id){
         const e=allEntries.find(x=>x._id===id);if(!e)return;
         const canModify=isHG||(canEdit&&e.matricule===userMatricule);
+        const timeDisplay=e.slot_end&&e.slot_end!==e.slot?`${e.slot} → ${e.slot_end}`:e.slot;
         const o=document.createElement('div');o.className='modal-overlay';
-        o.innerHTML=`<div class="modal-box"><h3>${e.type}</h3><div class="form-group"><label>DATE</label><input type="text" value="${fmtDate(e.date)}" readonly style="opacity:0.6;"></div><div class="form-group"><label>CRÉNEAU</label><input type="text" value="${e.slot}" readonly style="opacity:0.6;"></div><div class="form-group"><label>MATRICULE</label><input type="text" value="${e.matricule||'-'}" readonly style="opacity:0.6;"></div><div class="form-group"><label>DESCRIPTION</label><input type="text" value="${e.description||'-'}" readonly style="opacity:0.6;"></div><div class="modal-actions">${canModify?`<button class="btn-delete" onclick="deleteEntry('${e._id}')">SUPPRIMER</button>`:''}<button class="btn-cancel" onclick="this.closest('.modal-overlay').remove()">FERMER</button></div></div>`;
+        o.innerHTML=`<div class="modal-box">
+          <h3>${e.type}</h3>
+          <div class="form-group"><label>DATE</label><input type="text" value="${fmtDate(e.date)}" readonly style="opacity:0.6;"></div>
+          <div class="form-group"><label>CRÉNEAU</label><input type="text" value="${timeDisplay}" readonly style="opacity:0.6;"></div>
+          <div class="form-group"><label>MATRICULE</label><input type="text" value="${e.matricule||'-'}" readonly style="opacity:0.6;"></div>
+          <div class="form-group"><label>DESCRIPTION</label><input type="text" value="${e.description||'-'}" readonly style="opacity:0.6;"></div>
+          <div class="modal-actions">
+            ${canModify?`<button class="btn-delete" onclick="deleteEntry('${e._id}')">SUPPRIMER</button>`:''}
+            <button class="btn-cancel" onclick="this.closest('.modal-overlay').remove()">FERMER</button>
+          </div>
+        </div>`;
         document.body.appendChild(o);o.addEventListener('click',ev=>{if(ev.target===o)o.remove();});
       };
 
@@ -201,21 +441,32 @@
         try{await deletePlanningEntry(id);allEntries=allEntries.filter(e=>e._id!==id);document.querySelector('.modal-overlay')?.remove();showAlert('✓ Entrée supprimée');renderPlanning();}catch(e){showAlert('✗ '+e.message,'error');}
       };
 
+      // ===== AUTH + INIT =====
       onAuthStateChanged(auth, async(user)=>{
         if(!user){document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';return;}
-        try{const s=await getDoc(doc(db,'users',user.uid));if(!s.exists()||!s.data().approved){document.getElementById('loading').style.display='none';if(!s.exists())document.getElementById('access-denied').style.display='block';else document.getElementById('notApproved').style.display='block';return;}
-        const ud=s.data();userMatricule=ud.matricule||'???';currentUser=ud;
-        let units=[];try{units=await loadUnits();}catch(_){}
-        const ui=units.find(x=>x.matricule===userMatricule);
-        const rang=ui?(ui.rang||''):'';
-        isHG=rang==='Ofc'||rang==='Cmd';
-        // .04+ can add/edit own entries, HG full control
-        const rankOrder=['RCT','.05','.04','.03','STB','.02','.01','DvL','STBE','CABAL','Ofc','Cmd'];
-        const ri=rankOrder.indexOf(rang);
-        canEdit=isHG||ri>=2; // .04 is index 2
-        document.getElementById('loading').style.display='none';document.getElementById('mainContent').style.display='block';
-        try{allEntries=await loadPlanning();}catch(_){allEntries=[];}
-        renderPlanning();
+        try{
+          const s=await getDoc(doc(db,'users',user.uid));
+          if(!s.exists()||!s.data().approved){
+            document.getElementById('loading').style.display='none';
+            if(!s.exists())document.getElementById('access-denied').style.display='block';
+            else document.getElementById('notApproved').style.display='block';
+            return;
+          }
+          const ud=s.data();userMatricule=ud.matricule||'???';currentUser=ud;
+          let units=[];try{units=await loadUnits();}catch(_){}
+          const ui=units.find(x=>x.matricule===userMatricule);
+          const rang=ui?(ui.rang||''):'';
+          isHG=rang==='Ofc'||rang==='Cmd';
+          const rankOrder=['RCT','.05','.04','.03','STB','.02','.01','DvL','STBE','CABAL','Ofc','Cmd'];
+          const ri=rankOrder.indexOf(rang);
+          canEdit=isHG||ri>=2;
+
+          document.getElementById('loading').style.display='none';
+          document.getElementById('mainContent').style.display='block';
+
+          initNotepad();
+          try{allEntries=await loadPlanning();}catch(_){allEntries=[];}
+          renderPlanning();
         }catch(e){console.error(e);document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';}
       });
     </script>
