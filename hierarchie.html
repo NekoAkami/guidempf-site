@@ -102,6 +102,18 @@
             color: var(--text-primary);
         }
 
+        .org-rank-desc {
+            display: block;
+            margin-top: 0.6rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            font-family: 'Rajdhani', sans-serif;
+            text-align: left;
+            padding: 0.5rem 0.3rem 0;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+
         /* Variations de couleurs */
         .org-box.white {
             border-color: #ffffff;
@@ -284,18 +296,21 @@
                             <div class="org-box gold">
                                 <span class="org-rank-id">DvL-JUDGE [01]</span>
                                 <span class="org-rank-name">Gérant JURY</span>
+                                <span class="org-rank-desc">Dirige l'ensemble du secteur judiciaire. Supervise les protocoles d'amputation et les sentences capitales. Autorité finale sur les verdicts V6-V7.</span>
                             </div>
 
                             <div class="group-label">UNITÉ ÉLITE</div>
                             <div class="org-box red">
                                 <span class="org-rank-id">JUDGE [01]</span>
                                 <span class="org-rank-name">Autorité & Discipline</span>
+                                <span class="org-rank-desc">Officier judiciaire d'élite. Application de la justice Combine, exécution des sentences lourdes et supervision de la discipline interne.</span>
                             </div>
                             
                             <div class="group-label">UNITÉ JURY</div>
                             <div class="org-box red">
                                 <span class="org-rank-id">JURY [03]</span>
                                 <span class="org-rank-name">Discipline</span>
+                                <span class="org-rank-desc">Agent judiciaire spécialisé. Gère les procès, verdicts et sanctions disciplinaires. Habilité à émettre tous les verdicts de V1 à V7.</span>
                             </div>
                             
                             <div class="note-box red-note">
@@ -311,40 +326,48 @@
                             <div class="org-box white">
                                 <span class="org-rank-id">CMD</span>
                                 <span class="org-rank-name">COMMANDER</span>
+                                <span class="org-rank-desc">Plus haut gradé de la MPF. Autorité absolue sur l'ensemble du personnel, des opérations et des protocoles. Décisions stratégiques et administratives finales.</span>
                             </div>
                             <div class="org-box white">
                                 <span class="org-rank-id">OfC</span>
                                 <span class="org-rank-name">OFFICIER</span>
+                                <span class="org-rank-desc">Officier supérieur commandant les opérations quotidiennes. Supervision directe des divisions, gestion du personnel et autorité disciplinaire générale.</span>
                             </div>
 
                             <div class="group-label">UNITÉS D'ÉLITE</div>
                             <div class="org-box gold">
                                 <span class="org-rank-id">RANK 01</span>
                                 <span class="org-rank-name">ADJ. ADMINISTRATIF</span>
+                                <span class="org-rank-desc">Adjoint administratif de la MPF. Gestion des dossiers, logistique et coordination des unités d'élite. Responsable de la formation MPEF.</span>
                             </div>
                             <div class="org-box gold">
                                 <span class="org-rank-id">RANK 02</span>
                                 <span class="org-rank-name">ADJOINT</span>
+                                <span class="org-rank-desc">Adjoint opérationnel. Encadre les unités de terrain, supervise les missions complexes et assiste la gestion divisionnaire.</span>
                             </div>
 
                             <div class="group-label">UNITÉS DE TERRAIN</div>
                             <div class="org-box blue">
                                 <span class="org-rank-id">RANK 03</span>
                                 <span class="org-rank-name">AGENT RESPONSABLE</span>
+                                <span class="org-rank-desc">Agent senior responsable. Habilité à tous les verdicts, supervision des patrouilles, formation des recrues et coordination terrain avancée.</span>
                             </div>
                             <div class="org-box blue">
                                 <span class="org-rank-id">RANK 04</span>
                                 <span class="org-rank-name">AGENT AUTONOME</span>
+                                <span class="org-rank-desc">Agent autonome confirmé. Peut opérer seul, émettre des verdicts V1-V5, effectuer des relocalisations et gérer des situations de terrain standard.</span>
                             </div>
                             <div class="org-box blue">
                                 <span class="org-rank-id">RANK 05</span>
                                 <span class="org-rank-name">AGENT PC</span>
+                                <span class="org-rank-desc">Agent de Protection Civile. Premier grade opérationnel. Patrouilles avec supervision, verdicts V1-V3, contrôles de citoyens et éligible aux divisions.</span>
                             </div>
 
                             <div class="group-label">INITIATION</div>
                             <div class="org-box gray">
                                 <span class="org-rank-id">RCT</span>
                                 <span class="org-rank-name">RECRUE</span>
+                                <span class="org-rank-desc">Nouvelle recrue en période de formation. Aucun droit de verdict. Doit être accompagnée d'un agent 05+ en permanence. Formation théorique et pratique obligatoire.</span>
                             </div>
                         </div>
 
@@ -358,18 +381,21 @@
                             <div class="org-box gold">
                                 <span class="org-rank-id">DvL [01]</span>
                                 <span class="org-rank-name">Gérant Division</span>
+                                <span class="org-rank-desc">Dirige une division spécialisée. Responsable du recrutement, de la formation divisionnaire et de la coordination opérationnelle de son unité.</span>
                             </div>
 
                             <div class="group-label">UNITÉ ÉLITE</div>
                             <div class="org-box blue">
                                 <span class="org-rank-id">ÉL [02+]</span>
                                 <span class="org-rank-name">Élite Divisionnaire</span>
+                                <span class="org-rank-desc">Membre d'élite d'une division. Opérations spécialisées avancées, formation des nouveaux membres divisionnaires et missions à haute priorité.</span>
                             </div>
                             
                             <div class="group-label">UNITÉ MÉDICALE</div>
                             <div class="org-box blue">
                                 <span class="org-rank-id">HELIX [05+]</span>
                                 <span class="org-rank-name">Médical</span>
+                                <span class="org-rank-desc">Unité médicale spécialisée. Soins de terrain, interventions bio-chimiques, gestion des contaminations et soutien médical aux opérations.</span>
                             </div>
 
                             <div class="note-box blue-note">

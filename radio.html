@@ -10,6 +10,49 @@
     <link rel="stylesheet" href="assets/css/interactive-system.css">
     <link rel="stylesheet" href="assets/css/combine-animations.css">
     <link rel="stylesheet" href="assets/css/dynamic-features.css">
+    <style>
+        .edit-btn {
+            display: none;
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            color: #ffd700;
+            padding: 0.35rem 0.8rem;
+            border-radius: 4px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .edit-btn:hover { background: rgba(255, 215, 0, 0.3); }
+        .edit-btn.visible { display: inline-block; }
+        .editable-value { transition: all 0.3s ease; }
+        .editable-value.editing {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 4px;
+            padding: 0.3rem 0.6rem;
+            outline: none;
+            color: inherit;
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: inherit;
+            text-align: center;
+            width: auto;
+            min-width: 120px;
+        }
+        .save-indicator {
+            display: none;
+            font-size: 0.75rem;
+            color: var(--accent-green);
+            margin-top: 0.3rem;
+            font-family: 'Share Tech Mono', monospace;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
 </head>
 <body>
     <div class="particles-bg"></div>
@@ -53,8 +96,10 @@
                         <div style="margin-top: 1rem;">
                             <div style="font-size: 0.85rem; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem;">Fréquence Radio</div>
                             <div style="font-size: 3rem; color: var(--accent-cyan); font-weight: 700; font-family: 'Share Tech Mono', monospace; text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);">
-                                119.8<span style="font-size: 1.2rem; color: var(--text-secondary);"> MHz</span>
+                                <span id="val-frequence" class="editable-value">119.8</span><span style="font-size: 1.2rem; color: var(--text-secondary);"> MHz</span>
                             </div>
+                            <button class="edit-btn" data-field="frequence">✏️ Modifier</button>
+                            <div class="save-indicator" id="save-frequence"></div>
                             <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0, 0, 0, 0.3); border-radius: 6px; font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6;">
                                 Fréquence dédiée aux communications opérationnelles de la Protection Civile. <strong style="color: var(--accent-cyan);">Cryptage automatique activé.</strong>
                             </div>
@@ -67,8 +112,10 @@
                         <div style="margin-top: 1rem;">
                             <div style="font-size: 0.85rem; color: var(--accent-green); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem;">Stockage MPF / Armoire</div>
                             <div style="font-size: 2.5rem; color: var(--accent-green); font-weight: 700; font-family: 'Share Tech Mono', monospace; text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);">
-                                Milice.954
+                                <span id="val-stockage" class="editable-value">Milice.954</span>
                             </div>
+                            <button class="edit-btn" data-field="stockage">✏️ Modifier</button>
+                            <div class="save-indicator" id="save-stockage"></div>
                             <div style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">Armoire de stockage principale - Salle d'équipement</div>
                             <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0, 0, 0, 0.3); border-radius: 6px; font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6;">
                                 Accès aux équipements standard, munitions, et matériel de maintenance. <strong style="color: var(--accent-green);">Réapprovisionnement hebdomadaire.</strong>
@@ -86,8 +133,10 @@
                             <div>
                                 <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;">Adresse de Contact</div>
                                 <div style="font-size: 2rem; color: var(--accent-yellow); font-weight: 700; font-family: 'Share Tech Mono', monospace; text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);">
-                                    Lettrempf2
+                                    <span id="val-boite" class="editable-value">Lettrempf2</span>
                                 </div>
+                                <button class="edit-btn" data-field="boite">✏️ Modifier</button>
+                                <div class="save-indicator" id="save-boite"></div>
                             </div>
                             <div style="padding: 0.7rem 1.5rem; background: rgba(26, 45, 66, 0.5); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 6px; font-size: 0.85rem; color: var(--accent-yellow); text-transform: uppercase; letter-spacing: 1px;">
                                 ✓ Active - Vérifiée Quotidiennement
@@ -114,15 +163,15 @@
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
                         <div>
                             <div style="font-weight: 700; color: var(--accent-cyan); margin-bottom: 0.5rem;">Urgences</div>
-                            <div style="color: var(--text-secondary); font-size: 0.9rem;">Utiliser la fréquence 119.8 MHz</div>
+                            <div id="proto-frequence" style="color: var(--text-secondary); font-size: 0.9rem;">Utiliser la fréquence 119.8 MHz</div>
                         </div>
                         <div>
                             <div style="font-weight: 700; color: var(--accent-green); margin-bottom: 0.5rem;">Approvisionnement</div>
-                            <div style="color: var(--text-secondary); font-size: 0.9rem;">Armoire Milice.954</div>
+                            <div id="proto-stockage" style="color: var(--text-secondary); font-size: 0.9rem;">Armoire Milice.954</div>
                         </div>
                         <div>
                             <div style="font-weight: 700; color: var(--accent-yellow); margin-bottom: 0.5rem;">Non-urgent</div>
-                            <div style="color: var(--text-secondary); font-size: 0.9rem;">Boîte Lettrempf2</div>
+                            <div id="proto-boite" style="color: var(--text-secondary); font-size: 0.9rem;">Boîte Lettrempf2</div>
                         </div>
                     </div>
                 </div>
@@ -143,5 +192,149 @@
     <script type="module" src="assets/js/auth.js"></script>
     <script src="assets/js/global-nav.js"></script>
     <script src="assets/js/dynamic-features.js"></script>
+
+    <!-- Système d'édition en direct pour haut-gradés -->
+    <script type="module">
+        import { app, auth, db } from './assets/js/auth.js';
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const DEFAULTS = { frequence: '119.8', stockage: 'Milice.954', boite: 'Lettrempf2' };
+        const FIELDS = ['frequence', 'stockage', 'boite'];
+        let isHG = false;
+
+        // Charger les valeurs depuis Firestore
+        async function loadValues() {
+            try {
+                const snap = await getDoc(doc(db, 'settings', 'radio'));
+                if (snap.exists()) {
+                    const data = snap.data();
+                    FIELDS.forEach(f => {
+                        if (data[f]) {
+                            const el = document.getElementById('val-' + f);
+                            if (el) el.textContent = data[f];
+                        }
+                    });
+                    // Mettre à jour aussi le protocole en bas
+                    if (data.frequence) {
+                        const pf = document.getElementById('proto-frequence');
+                        if (pf) pf.textContent = 'Utiliser la fréquence ' + data.frequence + ' MHz';
+                    }
+                    if (data.stockage) {
+                        const ps = document.getElementById('proto-stockage');
+                        if (ps) ps.textContent = 'Armoire ' + data.stockage;
+                    }
+                    if (data.boite) {
+                        const pb = document.getElementById('proto-boite');
+                        if (pb) pb.textContent = 'Boîte ' + data.boite;
+                    }
+                }
+            } catch (e) { console.warn('Impossible de charger les valeurs radio:', e); }
+        }
+
+        // Sauvegarder une valeur
+        async function saveField(field, value) {
+            try {
+                await setDoc(doc(db, 'settings', 'radio'), {
+                    [field]: value,
+                    lastModified: serverTimestamp()
+                }, { merge: true });
+                const indicator = document.getElementById('save-' + field);
+                if (indicator) {
+                    indicator.textContent = '✓ Sauvegardé';
+                    indicator.style.display = 'block';
+                    setTimeout(() => { indicator.style.display = 'none'; }, 2500);
+                }
+            } catch (e) {
+                console.error('Erreur sauvegarde:', e);
+                alert('Erreur lors de la sauvegarde. Vérifiez vos permissions.');
+            }
+        }
+
+        // Activer l'édition inline
+        function enableEdit(field) {
+            const el = document.getElementById('val-' + field);
+            if (!el || el.contentEditable === 'true') return;
+            const original = el.textContent;
+            el.contentEditable = 'true';
+            el.classList.add('editing');
+            el.focus();
+
+            // Select all text
+            const range = document.createRange();
+            range.selectNodeContents(el);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+
+            function finish() {
+                el.contentEditable = 'false';
+                el.classList.remove('editing');
+                const newVal = el.textContent.trim();
+                if (newVal && newVal !== original) {
+                    saveField(field, newVal);
+                    // Mettre à jour protocole
+                    if (field === 'frequence') {
+                        const pf = document.getElementById('proto-frequence');
+                        if (pf) pf.textContent = 'Utiliser la fréquence ' + newVal + ' MHz';
+                    } else if (field === 'stockage') {
+                        const ps = document.getElementById('proto-stockage');
+                        if (ps) ps.textContent = 'Armoire ' + newVal;
+                    } else if (field === 'boite') {
+                        const pb = document.getElementById('proto-boite');
+                        if (pb) pb.textContent = 'Boîte ' + newVal;
+                    }
+                } else {
+                    el.textContent = original;
+                }
+                el.removeEventListener('blur', finish);
+                el.removeEventListener('keydown', onKey);
+            }
+
+            function onKey(e) {
+                if (e.key === 'Enter') { e.preventDefault(); finish(); }
+                if (e.key === 'Escape') { el.textContent = original; finish(); }
+            }
+
+            el.addEventListener('blur', finish);
+            el.addEventListener('keydown', onKey);
+        }
+
+        // Détecter si l'utilisateur est haut-gradé
+        async function checkHGStatus() {
+            onAuthStateChanged(auth, async (user) => {
+                if (!user) return;
+                try {
+                    const userDoc = await getDoc(doc(db, 'users', user.uid));
+                    if (!userDoc.exists()) return;
+                    const userData = userDoc.data();
+                    if (!userData.approved) return;
+                    const matricule = userData.matricule;
+                    
+                    // Vérifier le rang via units.json
+                    const res = await fetch('https://raw.githubusercontent.com/NekoAkami/guidempf-site/main/data/units.json');
+                    if (!res.ok) return;
+                    const units = await res.json();
+                    const unit = units.find(u => u.matricule === matricule);
+                    if (unit && (unit.rang === 'Ofc' || unit.rang === 'Cmd' || userData.is_admin)) {
+                        isHG = true;
+                        document.querySelectorAll('.edit-btn').forEach(btn => btn.classList.add('visible'));
+                    }
+                } catch (_) {}
+            });
+        }
+
+        // Attacher les événements aux boutons
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const field = btn.dataset.field;
+                enableEdit(field);
+            });
+        });
+
+        // Initialisation
+        loadValues();
+        checkHGStatus();
+    </script>
 </body>
 </html>

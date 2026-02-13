@@ -59,6 +59,43 @@
             box-shadow: 0 0 8px rgba(0,170,255,0.15);
         }
         .code-item { transition: all 0.2s ease; }
+
+        /* Couleurs par section */
+        .section-general .section-divider { border-left-color: #00d4ff; background: linear-gradient(90deg, rgba(0, 212, 255, 0.12), transparent); }
+        .section-general .section-divider h3 { color: #00d4ff; }
+        .section-general .code-item { border-color: rgba(0, 212, 255, 0.2); background: rgba(0, 212, 255, 0.04); }
+        .section-general .code-item:hover { border-color: #00d4ff; background: rgba(0, 212, 255, 0.1); }
+        .section-general .code-num { color: #00d4ff; }
+
+        .section-activites .section-divider { border-left-color: #4ade80; background: linear-gradient(90deg, rgba(74, 222, 128, 0.12), transparent); }
+        .section-activites .section-divider h3 { color: #4ade80; }
+        .section-activites .code-item { border-color: rgba(74, 222, 128, 0.2); background: rgba(74, 222, 128, 0.04); }
+        .section-activites .code-item:hover { border-color: #4ade80; background: rgba(74, 222, 128, 0.1); }
+        .section-activites .code-num { color: #4ade80; }
+
+        .section-finaux .section-divider { border-left-color: #f97316; background: linear-gradient(90deg, rgba(249, 115, 22, 0.12), transparent); }
+        .section-finaux .section-divider h3 { color: #f97316; }
+        .section-finaux .code-item { border-color: rgba(249, 115, 22, 0.2); background: rgba(249, 115, 22, 0.04); }
+        .section-finaux .code-item:hover { border-color: #f97316; background: rgba(249, 115, 22, 0.1); }
+        .section-finaux .code-num { color: #f97316; }
+
+        .section-speciaux .section-divider { border-left-color: #e879f9; background: linear-gradient(90deg, rgba(232, 121, 249, 0.12), transparent); }
+        .section-speciaux .section-divider h3 { color: #e879f9; }
+        .section-speciaux .code-item { border-color: rgba(232, 121, 249, 0.2); background: rgba(232, 121, 249, 0.04); }
+        .section-speciaux .code-item:hover { border-color: #e879f9; background: rgba(232, 121, 249, 0.1); }
+        .section-speciaux .code-num { color: #e879f9; }
+
+        .section-statut .section-divider { border-left-color: #fbbf24; background: linear-gradient(90deg, rgba(251, 191, 36, 0.12), transparent); }
+        .section-statut .section-divider h3 { color: #fbbf24; }
+        .section-statut .code-item { border-color: rgba(251, 191, 36, 0.2); background: rgba(251, 191, 36, 0.04); }
+        .section-statut .code-item:hover { border-color: #fbbf24; background: rgba(251, 191, 36, 0.1); }
+        .section-statut .code-num { color: #fbbf24; }
+
+        .section-lieux .section-divider { border-left-color: #38bdf8; background: linear-gradient(90deg, rgba(56, 189, 248, 0.12), transparent); }
+        .section-lieux .section-divider h3 { color: #38bdf8; }
+        .section-lieux .code-item { border-color: rgba(56, 189, 248, 0.2); background: rgba(56, 189, 248, 0.04); }
+        .section-lieux .code-item:hover { border-color: #38bdf8; background: rgba(56, 189, 248, 0.1); }
+        .section-lieux .code-num { color: #38bdf8; }
     </style>
 </head>
 <body>
@@ -103,8 +140,9 @@
                     </div>
 
                     <!-- CODES 10-XX GÉNÉRAUX -->
+                    <div class="section-general">
                     <div class="section-divider">
-                        <h3>🔹 CODES 10-XX GÉNÉRAUX</h3>
+                        <h3>📘 CODES 10-XX GÉNÉRAUX</h3>
                     </div>
                     <div class="code-grid">
                         <div class="code-item"><div class="code-num">10-1</div><div class="code-desc">Réception mauvaise</div></div>
@@ -138,10 +176,12 @@
                         <div class="code-item"><div class="code-num">10-29</div><div class="code-desc">Vérifier pour recherche</div></div>
                         <div class="code-item"><div class="code-num">10-30</div><div class="code-desc">Danger imminent</div></div>
                     </div>
+                    </div>
 
                     <!-- CODES ACTIVITÉS -->
+                    <div class="section-activites">
                     <div class="section-divider">
-                        <h3>🔹 CODES ACTIVITÉS / OPÉRATIONS</h3>
+                        <h3>📗 CODES ACTIVITÉS / OPÉRATIONS</h3>
                     </div>
                     <div class="code-grid">
                         <div class="code-item"><div class="code-num">10-40</div><div class="code-desc">Pause / Sortie de service temporaire</div></div>
@@ -214,22 +254,29 @@
                         <div class="code-item"><div class="code-num">10-118</div><div class="code-desc">Urgence médicale</div></div>
                         <div class="code-item"><div class="code-num">10-119</div><div class="code-desc">Administrateur de Cité</div></div>
                     </div>
+                    </div>
 
                     <!-- CODES 11-XX -->
+                    <div class="section-finaux">
                     <div class="section-divider">
-                        <h3>🔹 CODES 11-XX FINAUX</h3>
+                        <h3>📙 CODES 11-XX FINAUX</h3>
                     </div>
                     <div class="code-grid">
                         <div class="code-item"><div class="code-num">11-3</div><div class="code-desc">Alarme cambriolage</div></div>
                         <div class="code-item"><div class="code-num">11-6</div><div class="code-desc">Unité suspecte endommagée</div></div>
+                        <div class="code-item"><div class="code-num">11-10</div><div class="code-desc">Prise d'otage en cours</div></div>
+                        <div class="code-item"><div class="code-num">11-24</div><div class="code-desc">Abandon de poste</div></div>
                         <div class="code-item"><div class="code-num">11-40</div><div class="code-desc">Fin de transmission / Terminé</div></div>
+                        <div class="code-item"><div class="code-num">11-44</div><div class="code-desc">Décès confirmé / Unité morte</div></div>
                         <div class="code-item"><div class="code-num">11-65</div><div class="code-desc">Point de vérification (S08)</div></div>
                         <div class="code-item"><div class="code-num">11-99</div><div class="code-desc">Officier en danger - Code d'urgence maximale</div></div>
                     </div>
+                    </div>
 
                     <!-- CODES SPÉCIAUX -->
+                    <div class="section-speciaux">
                     <div class="section-divider">
-                        <h3>🔹 CODES SPÉCIAUX COMBINE</h3>
+                        <h3>📕 CODES SPÉCIAUX COMBINE</h3>
                     </div>
                     <div class="code-grid">
                         <div class="code-item"><div class="code-num">Code 2</div><div class="code-desc">Renforts demandés - Urgence modérée</div></div>
@@ -240,16 +287,21 @@
                         <div class="code-item"><div class="code-num">Code 10</div><div class="code-desc">Briefing / Réunion opérationnelle</div></div>
                         <div class="code-item"><div class="code-num">Code 30</div><div class="code-desc">Raid en cours</div></div>
                         <div class="code-item"><div class="code-num">Code 100</div><div class="code-desc">RAS / Rien à signaler</div></div>
+                        <div class="code-item"><div class="code-num">Code 1</div><div class="code-desc">Répondre à l'appel - Pas d'urgence</div></div>
+                        <div class="code-item"><div class="code-num">Code 6</div><div class="code-desc">Hors de la zone / Quitter le secteur</div></div>
+                        <div class="code-item"><div class="code-num">Code 8</div><div class="code-desc">Appel de vérification</div></div>
                         <div class="code-item"><div class="code-num">404</div><div class="code-desc">Anti-Citoyen</div></div>
                         <div class="code-item"><div class="code-num">505</div><div class="code-desc">Rebelle capturé</div></div>
                         <div class="code-item"><div class="code-num">S08</div><div class="code-desc">Point de vérification / Checkpoint</div></div>
                         <div class="code-item"><div class="code-num">S99</div><div class="code-desc">Scanner biométrique</div></div>
                         <div class="code-item"><div class="code-num">3-22</div><div class="code-desc">Surveillance statique</div></div>
                     </div>
+                    </div>
 
                     <!-- CODES STATUT UNITÉ -->
+                    <div class="section-statut">
                     <div class="section-divider">
-                        <h3>🔹 CODES STATUT / GRADES</h3>
+                        <h3>📒 CODES STATUT / GRADES</h3>
                     </div>
                     <div class="code-grid">
                         <div class="code-item"><div class="code-num">10-08</div><div class="code-desc">Unité / Agent MPF</div></div>
@@ -258,10 +310,12 @@
                         <div class="code-item"><div class="code-num">10-100</div><div class="code-desc">Officier Commandant</div></div>
                         <div class="code-item"><div class="code-num">10-119</div><div class="code-desc">Administrateur</div></div>
                     </div>
+                    </div>
 
                     <!-- CODES LOCALISATIONS -->
+                    <div class="section-lieux">
                     <div class="section-divider">
-                        <h3>🔹 CODES LOCALISATIONS / ZONES</h3>
+                        <h3>📓 CODES LOCALISATIONS / ZONES</h3>
                     </div>
                     <div class="code-grid">
                         <div class="code-item"><div class="code-num">PZ</div><div class="code-desc">Plaza / Place centrale</div></div>
@@ -274,6 +328,11 @@
                         <div class="code-item"><div class="code-num">CANAUX</div><div class="code-desc">Zone des canaux / Égouts</div></div>
                         <div class="code-item"><div class="code-num">GARE</div><div class="code-desc">Gare ferroviaire</div></div>
                         <div class="code-item"><div class="code-num">OUTLANDS</div><div class="code-desc">Zones extérieures / Terres sauvages</div></div>
+                        <div class="code-item"><div class="code-num">INDUSTRIE</div><div class="code-desc">Zone industrielle</div></div>
+                        <div class="code-item"><div class="code-num">MARCHÉ</div><div class="code-desc">Zone de commerce / Marché noir</div></div>
+                        <div class="code-item"><div class="code-num">TOITS</div><div class="code-desc">Accès aux toitures / Zones en hauteur</div></div>
+                        <div class="code-item"><div class="code-num">SOUS-SOL</div><div class="code-desc">Zones souterraines / Caves</div></div>
+                    </div>
                     </div>
 
                     <!-- EXEMPLE MESSAGE -->
