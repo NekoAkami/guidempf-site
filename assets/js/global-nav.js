@@ -412,10 +412,12 @@ class GlobalNavigation {
         if (document.getElementById('gpNotepadPanel')) return; // already injected
 
         const bp = this.basePath;
+        const MIN_W = 200, MAX_W = 500, DEFAULT_W = 280;
 
         // ---- Bloc-notes (left panel, starts collapsed) ----
         const notepadHTML = `
             <div class="gp-float gp-left gp-collapsed" id="gpNotepadPanel">
+                <div class="gp-resize-handle" id="gpNotepadResize"></div>
                 <div class="gp-float-inner">
                     <div class="gp-float-header" id="gpNotepadHeader">
                         <h3>📝 BLOC-NOTES</h3>
@@ -434,6 +436,7 @@ class GlobalNavigation {
         // ---- Planning du jour (right panel, starts collapsed) ----
         const todayHTML = `
             <div class="gp-float gp-right gp-collapsed" id="gpTodayPanel">
+                <div class="gp-resize-handle" id="gpTodayResize"></div>
                 <div class="gp-float-inner">
                     <div class="gp-float-header" id="gpTodayHeader">
                         <h3>📋 PLANNING DU JOUR</h3>
@@ -448,6 +451,24 @@ class GlobalNavigation {
 
         document.body.insertAdjacentHTML('beforeend', notepadHTML + todayHTML);
 
+        // ---- Restore saved widths ----
+        const notepadPanel = document.getElementById('gpNotepadPanel');
+        const todayPanel = document.getElementById('gpTodayPanel');
+        const savedNotepadW = parseInt(localStorage.getItem('mpf_notepad_width'));
+        const savedTodayW = parseInt(localStorage.getItem('mpf_today_width'));
+        if (savedNotepadW && savedNotepadW >= MIN_W && savedNotepadW <= MAX_W) {
+            notepadPanel.style.width = savedNotepadW + 'px';
+        }
+        if (savedTodayW && savedTodayW >= MIN_W && savedTodayW <= MAX_W) {
+            todayPanel.style.width = savedTodayW + 'px';
+        }
+        // Restore saved textarea height
+        const savedTAh = parseInt(localStorage.getItem('mpf_notepad_ta_height'));
+        if (savedTAh && savedTAh >= 80 && savedTAh <= 600) {
+            const ta = document.getElementById('gpNotepadText');
+            if (ta) { ta.style.minHeight = savedTAh + 'px'; ta.style.height = savedTAh + 'px'; }
+        }
+
         // ---- Toggle logic ----
         const togglePanel = (panelId, storageKey) => {
             const panel = document.getElementById(panelId);
@@ -455,7 +476,6 @@ class GlobalNavigation {
             panel.classList.toggle('gp-collapsed');
             const collapsed = panel.classList.contains('gp-collapsed');
             localStorage.setItem(storageKey, collapsed ? '1' : '0');
-            // Update toggle icon
             const toggle = panel.querySelector('.gp-float-toggle');
             if (toggle) {
                 if (panelId === 'gpNotepadPanel') {
@@ -471,13 +491,58 @@ class GlobalNavigation {
 
         // ---- Restore panel states from localStorage ----
         if (localStorage.getItem('mpf_notepad_collapsed') !== '1') {
-            document.getElementById('gpNotepadPanel').classList.remove('gp-collapsed');
+            notepadPanel.classList.remove('gp-collapsed');
             document.getElementById('gpNotepadToggle').textContent = '◄';
         }
         if (localStorage.getItem('mpf_today_collapsed') !== '1') {
-            document.getElementById('gpTodayPanel').classList.remove('gp-collapsed');
+            todayPanel.classList.remove('gp-collapsed');
             document.getElementById('gpTodayToggle').textContent = '►';
         }
+
+        // ---- Resize handles ----
+        const setupResize = (handleId, panelId, storageKey, isLeft) => {
+            const handle = document.getElementById(handleId);
+            const panel = document.getElementById(panelId);
+            if (!handle || !panel) return;
+            let startX = 0, startW = 0, dragging = false;
+
+            const onMouseMove = (e) => {
+                if (!dragging) return;
+                e.preventDefault();
+                const dx = e.clientX - startX;
+                let newW = isLeft ? startW + dx : startW - dx;
+                newW = Math.max(MIN_W, Math.min(MAX_W, newW));
+                panel.style.width = newW + 'px';
+            };
+
+            const onMouseUp = () => {
+                if (!dragging) return;
+                dragging = false;
+                handle.classList.remove('active');
+                panel.classList.remove('gp-dragging');
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+                localStorage.setItem(storageKey, panel.offsetWidth + '');
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            };
+
+            handle.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dragging = true;
+                startX = e.clientX;
+                startW = panel.offsetWidth;
+                handle.classList.add('active');
+                panel.classList.add('gp-dragging');
+                document.body.style.cursor = 'col-resize';
+                document.body.style.userSelect = 'none';
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+        };
+        setupResize('gpNotepadResize', 'gpNotepadPanel', 'mpf_notepad_width', true);
+        setupResize('gpTodayResize', 'gpTodayPanel', 'mpf_today_width', false);
 
         // ---- Bloc-notes logic (localStorage) ----
         const textarea = document.getElementById('gpNotepadText');
@@ -492,6 +557,13 @@ class GlobalNavigation {
                 statusEl.textContent = 'Sauvegardé ✓';
             }, 500);
         });
+
+        // Save textarea height on resize
+        const taResizeObs = new ResizeObserver(() => {
+            const h = textarea.offsetHeight;
+            if (h > 0) localStorage.setItem('mpf_notepad_ta_height', h + '');
+        });
+        taResizeObs.observe(textarea);
 
         document.getElementById('gpNotepadClear').addEventListener('click', () => {
             if (!confirm('Supprimer toutes les notes ?\nCette action est irréversible.')) return;
