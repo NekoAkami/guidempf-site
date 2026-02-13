@@ -4,17 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Procédure d'Incarcération - MPF Documentation</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="assets/css/main-style.css">
     <link rel="stylesheet" href="assets/css/combine-terminals.css">
     <link rel="stylesheet" href="assets/css/global-nav.css">
     <link rel="stylesheet" href="assets/css/interactive-system.css">
     <link rel="stylesheet" href="assets/css/combine-animations.css">
+    <style>
+        .incar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1rem; }
+        @media (max-width: 900px) { .incar-grid { grid-template-columns: 1fr; } }
+        .incar-step { display: flex; gap: 0.7rem; margin-bottom: 0.6rem; align-items: flex-start; }
+        .incar-num { font-family: 'Orbitron', sans-serif; font-size: 0.7rem; font-weight: 700; min-width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0; }
+        .num-cyan { background: rgba(0,170,255,0.15); color: var(--accent-cyan); border: 1px solid rgba(0,170,255,0.3); }
+        .num-red { background: rgba(255,60,60,0.15); color: #ff4444; border: 1px solid rgba(255,60,60,0.3); }
+        .incar-text { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; }
+        .incar-text strong { color: var(--text-primary); }
+        .incar-detail { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.2rem; padding: 0.3rem 0.5rem; border-radius: 2px; }
+        .detail-cyan { background: rgba(0,170,255,0.06); border-left: 2px solid rgba(0,170,255,0.3); }
+        .detail-yellow { background: rgba(255,200,0,0.06); border-left: 2px solid rgba(255,200,0,0.4); color: #ffc800; }
+        .detail-red { background: rgba(255,60,60,0.06); border-left: 2px solid rgba(255,60,60,0.4); color: #ff4444; }
+        .cmd-block { margin-top: 0.8rem; padding: 0.6rem 0.8rem; background: rgba(0,170,255,0.04); border: 1px solid rgba(0,170,255,0.1); border-radius: 4px; }
+        .cmd-block h4 { font-family: 'Orbitron', sans-serif; font-size: 0.68rem; color: var(--accent-cyan); letter-spacing: 2px; margin-bottom: 0.4rem; }
+        .cmd-line { font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--text-muted); padding: 0.2rem 0; border-bottom: 1px solid rgba(0,170,255,0.05); }
+        .cmd-line:last-child { border-bottom: none; }
+        .cmd-line span { color: var(--accent-cyan); }
+        .obj-banner { padding: 0.6rem 0.8rem; background: rgba(0,170,255,0.04); border: 1px solid rgba(0,170,255,0.1); border-radius: 4px; margin-bottom: 0.8rem; }
+        .obj-banner p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+        .obj-banner strong { color: var(--accent-cyan); }
+        .seq-title { font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--accent-cyan); letter-spacing: 2px; margin-bottom: 0.6rem; }
+        .sit-banner { padding: 0.6rem 0.8rem; background: rgba(255,60,60,0.04); border: 1px solid rgba(255,60,60,0.1); border-radius: 4px; margin-bottom: 0.8rem; }
+        .sit-banner p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+    </style>
 </head>
 <body>
-    <!-- Scanline overlay -->
     <div class="scanline-overlay"></div>
     <div class="particles-bg"></div>
-
     <header class="site-header">
         <div class="container">
             <div class="header-content">
@@ -32,154 +56,158 @@
 
     <main>
         <div class="container">
-            <div class="combine-terminal-wrapper animate-fadeInUp">
+            <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;">
                 <div class="combine-header">
-                    <h2>🔒 PROCÉDURE D'INCARCÉRATION</h2>
-                    <span class="header-code">PROTOCOLE 10-91 / 10-92</span>
+                    <h2>PROCÉDURE D'INCARCÉRATION</h2>
+                    <span class="header-code">DÉTENTION & ESCALADE</span>
                 </div>
-
                 <div class="combine-body">
-                    <!-- Alertes importantes -->
-                    <div style="display: grid; gap: 1rem; margin-bottom: 2rem;">
-                        <div style="padding: 1rem; background: rgba(255, 69, 0, 0.15); border: 2px solid #ff4500; border-radius: 6px;">
-                            <strong style="color: #ff4500; font-size: 1rem;">⛔ NE JAMAIS LIBÉRER UN VERDICT 7</strong>
-                        </div>
-                        <div style="padding: 1rem; background: rgba(255, 69, 0, 0.15); border: 2px solid #ff4500; border-radius: 6px;">
-                            <strong style="color: #ff4500; font-size: 1rem;">🔥 NE JAMAIS UTILISER L'INCINÉRATEUR</strong>
-                        </div>
-                    </div>
+                    <p style="font-size:0.75rem;color:var(--text-muted);font-family:'Share Tech Mono',monospace;">
+                        INCARCÉRATION // PROTOCOLE_STANDARD<br>
+                        ► CHARGEMENT: SÉQUENCE_ARRESTATION / ESCALADE_DE_FORCE
+                    </p>
 
-                    <!-- Grille 3 étapes -->
-                    <div class="interactive-grid" style="grid-template-columns: repeat(3, 1fr);">
-                        
-                        <!-- Étape 1 -->
-                        <div class="info-card" style="border-color: #4287f5;">
-                            <div class="card-header" style="background: rgba(66, 135, 245, 0.1); border-bottom: 2px solid #4287f5; padding: 0.8rem;">
-                                <div style="text-align: center; width: 100%;">
-                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">1️⃣</div>
-                                    <div style="color: #4287f5; font-weight: 700; font-size: 1rem;">TRANSFERT</div>
-                                    <div style="font-size: 0.75rem; color: #4287f5; opacity: 0.8; margin-top: 0.3rem;">Code 10-91</div>
+                    <div class="incar-grid">
+                        <!-- PANNEAU GAUCHE: PROCÉDURE DE DÉTENTION -->
+                        <div class="combine-terminal-wrapper">
+                            <div class="combine-header">
+                                <h2>PROCÉDURE DE DÉTENTION</h2>
+                            </div>
+                            <div style="padding: 1rem;">
+                                <div class="obj-banner">
+                                    <p><strong>OBJECTIF OPÉRATIONNEL :</strong><br>
+                                    Assurer un processus d'arrestation propre, justifié et parfaitement cohérent avec les standards RP de la Protection Civile.</p>
                                 </div>
-                            </div>
-                            <div class="card-content" style="padding: 1rem;">
-                                <ul style="font-size: 0.85rem; line-height: 1.5; margin: 0; padding-left: 1rem;">
-                                    <li>Menotter <strong>dès sas sécurité</strong></li>
-                                    <li>Vérifier absence intrusion</li>
-                                    <li>Vérifier absence exfiltration</li>
-                                    <li>Escorte sécurisée cellules</li>
-                                    <li>Placement dans cellule</li>
-                                </ul>
-                            </div>
-                        </div>
 
-                        <!-- Étape 2 -->
-                        <div class="info-card" style="border-color: #ffd700;">
-                            <div class="card-header" style="background: rgba(255, 215, 0, 0.1); border-bottom: 2px solid #ffd700; padding: 0.8rem;">
-                                <div style="text-align: center; width: 100%;">
-                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">2️⃣</div>
-                                    <div style="color: #ffd700; font-weight: 700; font-size: 1rem;">APPEL SUPÉRIEUR</div>
-                                    <div style="font-size: 0.75rem; color: #ffd700; opacity: 0.8; margin-top: 0.3rem;">Code 10-103</div>
-                                </div>
-                            </div>
-                            <div class="card-content" style="padding: 1rem;">
-                                <div style="display: grid; gap: 0.6rem; font-size: 0.85rem;">
-                                    <div style="padding: 0.5rem; background: rgba(46, 204, 113, 0.1); border-left: 3px solid #2ecc71; border-radius: 3px;">
-                                        <strong style="color: #2ecc71;">V1-3</strong> → 05+
-                                    </div>
-                                    <div style="padding: 0.5rem; background: rgba(243, 156, 18, 0.1); border-left: 3px solid #f39c12; border-radius: 3px;">
-                                        <strong style="color: #f39c12;">V4-5</strong> → 04+
-                                    </div>
-                                    <div style="padding: 0.5rem; background: rgba(231, 76, 60, 0.1); border-left: 3px solid #e74c3c; border-radius: 3px;">
-                                        <strong style="color: #e74c3c;">V6-7</strong> → 03+
-                                    </div>
-                                    <div style="padding: 0.5rem; background: rgba(192, 57, 43, 0.1); border-left: 3px solid #c0392b; border-radius: 3px;">
-                                        <strong style="color: #c0392b;">505</strong> → JURY
+                                <p class="seq-title">/// SÉQUENCE D'ARRESTATION ///</p>
+
+                                <div class="incar-step">
+                                    <span class="incar-num num-cyan">01</span>
+                                    <div class="incar-text">
+                                        <strong>CITATION DU VERDICT</strong><br>
+                                        Annoncer clairement le motif de formalisation au sujet.
+                                        <div class="incar-detail detail-cyan">
+                                            "Citoyen, vous êtes arrêté pour [Code Arrestation : /Verdict]."
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <!-- Étape 3 -->
-                        <div class="info-card" style="border-color: #32CD32;">
-                            <div class="card-header" style="background: rgba(50, 205, 50, 0.1); border-bottom: 2px solid #32CD32; padding: 0.8rem;">
-                                <div style="text-align: center; width: 100%;">
-                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">3️⃣</div>
-                                    <div style="color: #32CD32; font-weight: 700; font-size: 1rem;">VERDICT & DATA</div>
-                                    <div style="font-size: 0.75rem; color: #32CD32; opacity: 0.8; margin-top: 0.3rem;">Code 10-92</div>
+                                <div class="incar-step">
+                                    <span class="incar-num num-cyan">02</span>
+                                    <div class="incar-text">
+                                        <strong>IMMOBILISATION & FOUILLE</strong><br>
+                                        Placer le sujet dos à vous. Signifier et appuyez sur <strong>F1</strong> pour initier le menottage.
+                                        <div class="incar-detail detail-yellow">
+                                            ⚠ La fouille n'est valide RP que si le sujet est positionné de dos.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="incar-step">
+                                    <span class="incar-num num-cyan">03</span>
+                                    <div class="incar-text">
+                                        <strong>MISE À JOUR DU CASIER (DATA)</strong><br>
+                                        Consulter et mettre à jour le profil du citoyen.
+                                        <div class="incar-detail detail-cyan">
+                                            → Commande <span style="color:var(--accent-cyan);">/viewdata [CID]</span><br>
+                                            → Clic Droit → Historique Loyauté → Ajouter → Sélectionner Pénal.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="incar-step">
+                                    <span class="incar-num num-cyan">04</span>
+                                    <div class="incar-text">
+                                        <strong>INCARCÉRATION</strong><br>
+                                        Déterminer le temps de détention selon le verdict, viser le sujet et appliquer la sentence.
+                                        <div class="incar-detail detail-cyan">
+                                            → Commande : <span style="color:var(--accent-cyan);">/jail [Minutes]</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="incar-step">
+                                    <span class="incar-num num-cyan">05</span>
+                                    <div class="incar-text">
+                                        <strong>PROTOCOLE BRASSARD (404)</strong><br>
+                                        Une fois en cellule, fournir un brassard au détenu.
+                                        <div class="incar-detail detail-cyan">
+                                            1. Retirer 150 Tokens via le bureau d'entretien (Caravane).<br>
+                                            2. Récupérer le brassard à la réception.
+                                        </div>
+                                        <div class="incar-detail detail-yellow" style="margin-top:0.3rem;">
+                                            NOTE : Si le sujet n'a pas 150T, noter le déficit et le soumettre (pas dépasser 250). Informer la suite de lui rajouter une indemnité.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="cmd-block">
+                                    <h4>► RÉSUMÉ COMMANDES LOG</h4>
+                                    <div class="cmd-line"><span>[rp]</span> Menotter / Fouiller (Sujet de dos uniquement)</div>
+                                    <div class="cmd-line"><span>/viewdata [CID]</span> Accès au dossier & Ajout points de loyauté</div>
+                                    <div class="cmd-line"><span>/jail [Min]</span> Envoyer en cellule (Viser le sujet)</div>
                                 </div>
                             </div>
-                            <div class="card-content" style="padding: 1rem;">
-                                <ul style="font-size: 0.85rem; line-height: 1.5; margin: 0; padding-left: 1rem;">
-                                    <li>Appliquer <strong>verdict autorisé</strong></li>
-                                    <li>Vérifier et <strong>modifier data</strong></li>
-                                    <li>Enregistrer sanction</li>
-                                    <li>Documenter incident</li>
-                                    <li>Transmission Canal D</li>
-                                </ul>
+                        </div>
+
+                        <!-- PANNEAU DROIT: PROCÉDURE SI REFUS D'APPLIQUER -->
+                        <div class="combine-terminal-wrapper" style="border-color: rgba(255,60,60,0.15);">
+                            <div class="combine-header" style="border-bottom-color: rgba(255,60,60,0.15);">
+                                <h2 style="color:#ff4444;">PROCÉDURE SI REFUS D'APPLIQUER</h2>
+                            </div>
+                            <div style="padding: 1rem;">
+                                <div class="sit-banner">
+                                    <p><strong style="color:#ff4444;">SITUATION INITIALE :</strong><br>
+                                    Le sujet refuse de s'identifier ("appliquer") et ne présente aucune carte CID valide.</p>
+                                </div>
+
+                                <p class="seq-title" style="color:#ff4444;">/// PROCÉDURE D'ESCALADE DE FORCE ///</p>
+
+                                <div class="incar-step">
+                                    <span class="incar-num num-red">01</span>
+                                    <div class="incar-text">
+                                        <strong>TRANSFERT & SCAN</strong><br>
+                                        Emmener l'individu à la Prison du Haut. Le forcer à se lever face au scanner pour identification biométrique.
+                                    </div>
+                                </div>
+
+                                <div class="incar-step">
+                                    <span class="incar-num num-red">02</span>
+                                    <div class="incar-text">
+                                        <strong>CORRECTION PHYSIQUE (Non-Létale)</strong><br>
+                                        Si refus persistant, utiliser le Bâton Électrique pour contraindre l'individu (Coups d'avertissement).
+                                    </div>
+                                </div>
+
+                                <div class="incar-step">
+                                    <span class="incar-num num-red">03</span>
+                                    <div class="incar-text">
+                                        <strong>MENACE LÉTALE</strong><br>
+                                        En cas d'échec, pointer l'arme de service (Feu) vers l'individu. Sommation finale.
+                                    </div>
+                                </div>
+
+                                <div class="incar-step">
+                                    <span class="incar-num num-red">04</span>
+                                    <div class="incar-text">
+                                        <strong>AMPUTATION & SIGNALEMENT (FearRP)</strong><br>
+                                        Si l'individu ne réagit pas à la menace armée (Comportement "Super Héros") :
+                                        <div class="incar-detail detail-red">
+                                            → Abattre le sujet.<br>
+                                            → Créer un ticket administratif pour manquement aux règles (No FearRP).
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="cmd-block" style="border-color: rgba(255,60,60,0.15); background: rgba(255,60,60,0.03);">
+                                    <h4 style="color:#ff4444;">► SYSTÈME COMMANDES EXS</h4>
+                                    <div class="cmd-line"><span style="color:#ff4444;">/viewdata</span> : Vérifier l'identité après application ou via la console data scanner. (Clic droit profil > Statut arm.)</div>
+                                    <div class="cmd-line"><span style="color:#ff4444;">/scandata</span> : Si son CID n'apparaît pas, la date il est possible qu'il n'en a pas encore. Organiser la et refaire la commande.</div>
+                                    <div class="cmd-line"><span style="color:#ff4444;">/jail [Minutes]</span> : Prononcer le sujet. Nécessité de viser la personne pour la scanner.</div>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Message Radio -->
-                    <div style="margin: 2rem 0; padding: 1.5rem; background: rgba(66, 135, 245, 0.05); border-radius: 8px; border-left: 4px solid #4287f5;">
-                        <h3 style="color: #4287f5; margin-top: 0; font-size: 1rem; margin-bottom: 1rem;">📡 MESSAGE RADIO TYPE</h3>
-                        <div style="font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; color: #90EE90; background: rgba(0, 0, 0, 0.3); padding: 1rem; border-radius: 4px;">
-                            10-101 10-08 RCT.001 | 10-103 10-08 05+ pour 10-92 404 | 10-63 Code A | 11-40
-                        </div>
-                        <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem; margin-bottom: 0;">
-                            <strong>Traduction:</strong> Demande intervention 05+ pour verdict sur anticitizen en cellule Code A
-                        </p>
-                    </div>
-
-                    <!-- Procédure Libération -->
-                    <div style="background: linear-gradient(135deg, rgba(50, 205, 50, 0.1), rgba(66, 135, 245, 0.05)); padding: 1.5rem; border-radius: 8px; border: 2px solid #32CD32;">
-                        <h3 style="color: #32CD32; margin-top: 0; font-size: 1.1rem; margin-bottom: 1rem;">✅ PROTOCOLE DE LIBÉRATION</h3>
-                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
-                            <div>
-                                <h4 style="color: var(--accent-cyan); font-size: 0.9rem; margin-bottom: 0.8rem;">VÉRIFICATIONS OBLIGATOIRES</h4>
-                                <ul style="font-size: 0.85rem; line-height: 1.6; color: var(--text-secondary);">
-                                    <li>Faire appliquer verdict</li>
-                                    <li>Vérifier data mise à jour</li>
-                                    <li>Contrôler niveau anti-citoyenneté</li>
-                                    <li>Vérifier port brassard</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 style="color: #ffd700; font-size: 0.9rem; margin-bottom: 0.8rem;">SANCTIONS BRASSARD</h4>
-                                <ul style="font-size: 0.85rem; line-height: 1.6; color: var(--text-secondary);">
-                                    <li>Perte brassard → <strong style="color: #ffd700;">150 tokens</strong></li>
-                                    <li>Fourniture nouveau brassard</li>
-                                    <li>Enregistrement incident</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Verdict 7 Spécial -->
-                    <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(192, 57, 43, 0.15); border-radius: 8px; border: 3px solid #c0392b;">
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                            <span style="font-size: 2.5rem;">💀</span>
-                            <div>
-                                <h3 style="color: #c0392b; margin: 0; font-size: 1.2rem;">VERDICT 7 - PROCÉDURE SPÉCIALE</h3>
-                                <div style="color: #ff5555; font-size: 0.85rem; margin-top: 0.3rem;">SENTENCE CAPITALE - HAUTE AUTORISATION</div>
-                            </div>
-                        </div>
-                        <div style="display: grid; gap: 0.8rem; font-size: 0.9rem;">
-                            <div style="padding: 0.8rem; background: rgba(255, 69, 0, 0.2); border-left: 3px solid #ff4500; border-radius: 3px;">
-                                <strong style="color: #ff4500;">APPEL 04+</strong> → Relocalisation vers autre cité (Gare)
-                            </div>
-                            <div style="padding: 0.8rem; background: rgba(192, 57, 43, 0.2); border-left: 3px solid #c0392b; border-radius: 3px;">
-                                <strong style="color: #c0392b;">APPEL 03+</strong> → Stérilisation (Amputation/Exécution)
-                            </div>
-                            <div style="padding: 1rem; background: rgba(255, 0, 0, 0.1); border: 2px solid #ff0000; border-radius: 4px; text-align: center; margin-top: 0.5rem;">
-                                <strong style="color: #ff0000; font-size: 1rem;">⛔ INTERDICTION ABSOLUE DE LIBÉRER ⛔</strong>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="combine-footer">
-                    [INCARCERATION_PROTOCOL_v5.2 - JUSTICE_SYSTEM_ACTIVE]
                 </div>
             </div>
         </div>

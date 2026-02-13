@@ -3,14 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Procédures - MPF Documentation</title>
+    <title>Procédures Générales - MPF Documentation</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="assets/css/main-style.css">
     <link rel="stylesheet" href="assets/css/combine-terminals.css">
     <link rel="stylesheet" href="assets/css/global-nav.css">
     <link rel="stylesheet" href="assets/css/interactive-system.css">
     <link rel="stylesheet" href="assets/css/combine-animations.css">
-    <link rel="stylesheet" href="assets/css/components.css">
+    <style>
+        .proc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(480px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+        @media (max-width: 768px) { .proc-grid { grid-template-columns: 1fr; } }
+        .proc-card { background: rgba(0,0,0,0.3); border: 1px solid rgba(0,170,255,0.15); border-radius: 6px; overflow: hidden; }
+        .proc-card-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 1rem 1.2rem 0.6rem; border-bottom: 1px solid rgba(0,170,255,0.1); }
+        .proc-card-header h3 { font-family: 'Orbitron', sans-serif; font-size: 0.85rem; letter-spacing: 2px; margin: 0; }
+        .proc-card-header .proc-subtitle { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--text-muted); letter-spacing: 1px; margin-top: 0.15rem; }
+        .proc-badge { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; padding: 0.2rem 0.6rem; border-radius: 2px; white-space: nowrap; font-weight: 700; letter-spacing: 1px; }
+        .badge-green { background: rgba(0,200,80,0.15); border: 1px solid rgba(0,200,80,0.4); color: #00cc55; }
+        .badge-blue { background: rgba(0,170,255,0.15); border: 1px solid rgba(0,170,255,0.4); color: var(--accent-cyan); }
+        .badge-red { background: rgba(255,60,60,0.15); border: 1px solid rgba(255,60,60,0.4); color: #ff4444; }
+        .badge-yellow { background: rgba(255,200,0,0.15); border: 1px solid rgba(255,200,0,0.4); color: #ffc800; }
+        .badge-purple { background: rgba(180,60,255,0.15); border: 1px solid rgba(180,60,255,0.4); color: #b43cff; }
+        .proc-card-body { padding: 0.8rem 1.2rem 1rem; }
+        .proc-step { display: flex; gap: 0.7rem; margin-bottom: 0.5rem; align-items: flex-start; }
+        .step-num { font-family: 'Orbitron', sans-serif; font-size: 0.7rem; font-weight: 700; min-width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; flex-shrink: 0; }
+        .step-num.cyan { background: rgba(0,170,255,0.15); color: var(--accent-cyan); border: 1px solid rgba(0,170,255,0.3); }
+        .step-num.green { background: rgba(0,200,80,0.15); color: #00cc55; border: 1px solid rgba(0,200,80,0.3); }
+        .step-num.red { background: rgba(255,60,60,0.15); color: #ff4444; border: 1px solid rgba(255,60,60,0.3); }
+        .step-num.yellow { background: rgba(255,200,0,0.15); color: #ffc800; border: 1px solid rgba(255,200,0,0.3); }
+        .step-num.purple { background: rgba(180,60,255,0.15); color: #b43cff; border: 1px solid rgba(180,60,255,0.3); }
+        .step-text { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; }
+        .step-note { font-size: 0.72rem; margin-top: 0.25rem; padding: 0.3rem 0.5rem; border-radius: 2px; }
+        .note-yellow { background: rgba(255,200,0,0.08); border-left: 3px solid rgba(255,200,0,0.5); color: #ffc800; }
+        .note-red { background: rgba(255,60,60,0.08); border-left: 3px solid rgba(255,60,60,0.5); color: #ff4444; }
+        .note-cyan { background: rgba(0,170,255,0.08); border-left: 3px solid rgba(0,170,255,0.5); color: var(--accent-cyan); }
+        .icon-proc { font-size: 1.2rem; margin-right: 0.3rem; }
+        .proc-card-header .left { display: flex; flex-direction: column; }
+        .proc-card-header .title-row { display: flex; align-items: center; gap: 0.4rem; }
+        .warning-banner { background: rgba(255,60,60,0.06); border: 1px solid rgba(255,60,60,0.2); padding: 0.8rem 1rem; text-align: center; margin-top: 2rem; border-radius: 4px; }
+        .warning-banner h3 { font-family: 'Orbitron', sans-serif; color: #ff4444; font-size: 0.9rem; margin-bottom: 0.3rem; }
+        .warning-banner p { font-size: 0.78rem; color: var(--text-muted); }
+    </style>
 </head>
 <body>
     <div class="scanline-overlay"></div>
@@ -34,83 +66,193 @@
         <div class="container">
             <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;">
                 <div class="combine-header">
-                    <h2 class="glitch-text" data-text="PROCEDURES OPERATIONNELLES">PROCEDURES OPERATIONNELLES</h2>
-                    <span class="header-code">SOP // STANDARD OPERATING</span>
+                    <h2>MANUEL DES PROCÉDURES</h2>
+                    <span class="header-code">NIVEAU: UNITÉS_01</span>
                 </div>
-
-                <div style="padding: 0.8rem 0;">
-                    <p style="font-size: 0.92rem; color: var(--text-primary); line-height: 1.7; margin-bottom: 1rem;">
-                        Procédures standard à suivre pour chaque situation opérationnelle. Le respect strict de ces protocoles est <strong style="color: var(--accent-red);">obligatoire</strong>.
+                <div class="combine-body">
+                    <p style="font-size:0.75rem;color:var(--text-muted);font-family:'Share Tech Mono',monospace;">
+                        PROCÉDURES // INFORMATION_STANDARD_01<br>
+                        ► CHARGEMENT: PROTOCOLES_DE_TERRAIN
                     </p>
-                </div>
 
-                <div class="accordion-section" data-default-open>
-                    <div class="accordion-header" aria-expanded="true">
-                        <h3><span style="color: var(--accent-green);">SOP-01</span> Incarcération</h3>
-                        <div><span class="accordion-code">TOUT GRADE</span> <span class="accordion-arrow">&#9654;</span></div>
-                    </div>
-                    <div class="accordion-content">
-                        <div class="accordion-content-inner">
-                            <p>Protocole complet de mise en détention : fouille, menottage, transfert vers cellule, enregistrement et durée de peine.</p>
-                            <a href="procedure-incarceration.html" class="accordion-link">Consulter la procédure</a>
+                    <div class="proc-grid">
+                        <!-- PROCÉDURE DE PATROUILLE -->
+                        <div class="proc-card">
+                            <div class="proc-card-header">
+                                <div class="left">
+                                    <div class="title-row"><span class="icon-proc">🛡</span><h3>PROCÉDURE DE PATROUILLE</h3></div>
+                                    <span class="proc-subtitle">OPÉRATION DE ROUTINE</span>
+                                </div>
+                                <span class="proc-badge badge-green">COMPLÉMENT STANDARD</span>
+                            </div>
+                            <div class="proc-card-body">
+                                <div class="proc-step"><span class="step-num cyan">01</span><div class="step-text">S'équiper de tout le nécessaire en fonction du Socio-status actuel.</div></div>
+                                <div class="proc-step"><span class="step-num cyan">02</span><div class="step-text">Signaler son début de patrouille à la Centrale à travers le canal radio.</div></div>
+                                <div class="proc-step"><span class="step-num cyan">03</span><div class="step-text">Si socio-status BLEU minimum : Demander un partenaire de patrouille à la Centrale.</div></div>
+                                <div class="proc-step">
+                                    <span class="step-num cyan">04</span>
+                                    <div class="step-text">
+                                        Effectuer sa patrouille avec l'équipement approprié.
+                                        <div class="step-note note-yellow">
+                                            <strong>Mensonge en route</strong> : Socio-status Vert/Bleu<br>
+                                            <strong>Arme de service en main</strong> : Socio-status Jaune/Rouge
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="proc-step"><span class="step-num cyan">05</span><div class="step-text">Une fois la patrouille terminée : Retourner au Nexus.</div></div>
+                                <div class="proc-step"><span class="step-num cyan">06</span><div class="step-text">Faire un rapport général de ce qu'il s'est passé durant la patrouille à la Centrale.</div></div>
+                                <div class="proc-step"><span class="step-num cyan">07</span><div class="step-text">Effectuer un dépôt de rapport officiel dans les archives.</div></div>
+                            </div>
+                        </div>
+
+                        <!-- PROCÉDURE D'INJECTION -->
+                        <div class="proc-card">
+                            <div class="proc-card-header">
+                                <div class="left">
+                                    <div class="title-row"><span class="icon-proc">🔷</span><h3>PROCÉDURE D'INJECTION</h3></div>
+                                    <span class="proc-subtitle">PÉNÉTRATION DE ZONE</span>
+                                </div>
+                                <span class="proc-badge badge-blue">MINIMUM 2 UNITÉS</span>
+                            </div>
+                            <div class="proc-card-body">
+                                <div class="proc-step">
+                                    <span class="step-num cyan">01</span>
+                                    <div class="step-text">
+                                        Prendre son arme de service en main, et envoyer des renforts si seul.
+                                        <div class="step-note note-red"><strong>URGENCE ABSOLUE</strong> : Minimum deux unités doivent être présentes pour toute injection.</div>
+                                    </div>
+                                </div>
+                                <div class="proc-step">
+                                    <span class="step-num cyan">02</span>
+                                    <div class="step-text">
+                                        Se placer autour de la porte en surveillant les arrières des autres unités.
+                                        <div class="step-note note-red"><strong>INTERDICTION</strong> : Ne pas rester directement devant la porte.</div>
+                                    </div>
+                                </div>
+                                <div class="proc-step"><span class="step-num cyan">03</span><div class="step-text">L'unité du côté opposé à la poignée tire dans la porte, tandis que l'autre surveille toute attaque éventuelle.</div></div>
+                                <div class="proc-step"><span class="step-num cyan">04</span><div class="step-text">Après quelques secondes, l'unité du côté de la poignée tire entre en premier (limité et fouillé), arme levée vers l'intérieur.</div></div>
+                                <div class="proc-step"><span class="step-num cyan">05</span><div class="step-text">L'autre unité reste au niveau de la porte, empêchant toute entrée ou sortie (droit de garde).</div></div>
+                                <div class="proc-step">
+                                    <span class="step-num cyan">06</span>
+                                    <div class="step-text">
+                                        L'unité de fouille appréhende et ampute les individus selon leur comportement.
+                                        <div class="step-note note-cyan">
+                                            <strong>Docile</strong> : Menotter, fouiller, vérifier identité<br>
+                                            <strong>Hostile</strong> : Amputer immédiatement
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="proc-step"><span class="step-num cyan">07</span><div class="step-text">Inspection rapide des lieux et récupération de toute contrebande trouvée.</div></div>
+                                <div class="proc-step"><span class="step-num cyan">08</span><div class="step-text">Entraînement des individus (si contrebande) ou libération, puis évacuation des lieux par les deux unités.</div></div>
+                            </div>
+                        </div>
+
+                        <!-- PROCÉDURE D'AMPUTATION -->
+                        <div class="proc-card">
+                            <div class="proc-card-header">
+                                <div class="left">
+                                    <div class="title-row"><span class="icon-proc">☠</span><h3>PROCÉDURE D'AMPUTATION</h3></div>
+                                    <span class="proc-subtitle">EXÉCUTION DE VERDICT</span>
+                                </div>
+                                <span class="proc-badge badge-red">EXÉCUTION PRIMAIRE</span>
+                            </div>
+                            <div class="proc-card-body">
+                                <div class="proc-step"><span class="step-num red">01</span><div class="step-text">Amener l'individu à amputer dans un lieu discret (Nexus prioritaire, sinon ruelle éloignée ou appartement).</div></div>
+                                <div class="proc-step"><span class="step-num red">02</span><div class="step-text">Signaler à la Centrale l'identité de l'individu ainsi que le code du verdict soumis pour l'amputation.</div></div>
+                                <div class="proc-step"><span class="step-num red">03</span><div class="step-text">Placer l'individu face au mur puis positionner le canon à l'arrière du crâne pour étouffer le bruit.</div></div>
+                                <div class="proc-step"><span class="step-num red">04</span><div class="step-text">Tirer une balle dans le crâne pour exécution.</div></div>
+                                <div class="proc-step"><span class="step-num red">05</span><div class="step-text">Signaler à la Centrale la fin de l'amputation.</div></div>
+                                <div class="proc-step"><span class="step-num red">06</span><div class="step-text">Amener le cadavre au Nexus pour destruction.</div></div>
+                                <div style="margin-top:0.6rem;">
+                                    <div class="step-note note-red">
+                                        <strong>PROTOCOLE D'URGENCE (Niveau 2+)</strong> : Tirer instinctivement, puis achever avec une balle dans la tête, une fois au sol, peu importe l'endroit et le nombre d'individus présents.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PROCÉDURE EN CAS D'ÉMEUTE -->
+                        <div class="proc-card">
+                            <div class="proc-card-header">
+                                <div class="left">
+                                    <div class="title-row"><span class="icon-proc">⚠</span><h3>PROCÉDURE EN CAS D'ÉMEUTE</h3></div>
+                                    <span class="proc-subtitle">CONTRÔLE DE FOULE HOSTILE</span>
+                                </div>
+                                <span class="proc-badge badge-red">MINIMUM 2 UNITÉS ARMÉES</span>
+                            </div>
+                            <div class="proc-card-body">
+                                <div class="proc-step">
+                                    <span class="step-num yellow">01</span>
+                                    <div class="step-text">
+                                        Prendre son arme de service et la pointer en direction de l'émeute.
+                                        <div class="step-note note-red"><strong>INTERDICTION ABSOLUE</strong> : Ne prenez jamais de contact avec une foule tout seul.</div>
+                                    </div>
+                                </div>
+                                <div class="proc-step"><span class="step-num yellow">02</span><div class="step-text">Signaler l'émeute à la Centrale avec nombre d'individus et unités présentes.</div></div>
+                                <div class="proc-step"><span class="step-num yellow">03</span><div class="step-text">Tirer dans le tas pour éliminer le maximum d'émeutiers.</div></div>
+                                <div class="proc-step"><span class="step-num yellow">04</span><div class="step-text">Appréhender les fuyards pour amputation ultérieure.</div></div>
+                                <div class="proc-step"><span class="step-num yellow">05</span><div class="step-text">Traîner tous les cadavres au Nexus un par un pour destruction.</div></div>
+                                <div class="proc-step"><span class="step-num yellow">06</span><div class="step-text">Effectuer un rapport final avec nombre de cadavres détruits.</div></div>
+                                <div style="margin-top:0.6rem;">
+                                    <div class="step-note note-cyan">
+                                        <strong>NOTE</strong> : La procédure peut être modifiée en temps réel par la Centrale, mais les deux patrouilles doivent être en capacité en tout temps.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PROCÉDURE EN CAS D'ATTAQUE -->
+                        <div class="proc-card">
+                            <div class="proc-card-header">
+                                <div class="left">
+                                    <div class="title-row"><span class="icon-proc">✕</span><h3>PROCÉDURE EN CAS D'ATTAQUE</h3></div>
+                                    <span class="proc-subtitle">ANTIREBELLES / REBELLES / ENTRÉE</span>
+                                </div>
+                                <span class="proc-badge badge-yellow">COMMANDEMENT D'OPÉRATION</span>
+                            </div>
+                            <div class="proc-card-body">
+                                <div class="proc-step"><span class="step-num yellow">01</span><div class="step-text">Équiper son arme de service et être prêt à tirer en tout temps.</div></div>
+                                <div class="proc-step"><span class="step-num yellow">02</span><div class="step-text">Écouter les ordres de la Centrale et maintenir une communication radio constante.</div></div>
+                                <div class="proc-step"><span class="step-num yellow">03</span><div class="step-text">Mettre les citoyens en sécurité (appartement ou Nexus) avec une unité de surveillance permanente.</div></div>
+                                <div class="proc-step"><span class="step-num yellow">04</span><div class="step-text">Envoyer l'attaque en éliminant tous les dangers présents.</div></div>
+                                <div class="proc-step"><span class="step-num yellow">05</span><div class="step-text">Effectuer un rapport à la Centrale une fois l'attaque neutralisée.</div></div>
+                                <div class="proc-step"><span class="step-num yellow">06</span><div class="step-text">En cas d'échec : Se replier au Nexus et attendre des renforts transhumanistes.</div></div>
+                                <div class="proc-step"><span class="step-num yellow">07</span><div class="step-text">Coordonner avec les renforts transhumains pour envoyer définitivement l'attaque.</div></div>
+                            </div>
+                        </div>
+
+                        <!-- SOCIO-STATUS NOIR -->
+                        <div class="proc-card">
+                            <div class="proc-card-header">
+                                <div class="left">
+                                    <div class="title-row"><span class="icon-proc">☢</span><h3>SOCIO-STATUS NOIR</h3></div>
+                                    <span class="proc-subtitle">PROTOCOLE D'EXTINCTION</span>
+                                </div>
+                                <span class="proc-badge badge-purple">NETTOYAGE COMPLET</span>
+                            </div>
+                            <div class="proc-card-body">
+                                <div class="proc-step"><span class="step-num purple">01</span><div class="step-text">Équiper son arme de service et être prêt à tirer en tout temps.</div></div>
+                                <div class="proc-step"><span class="step-num purple">02</span><div class="step-text">Écouter les ordres de la Centrale et maintenir une communication radio constante.</div></div>
+                                <div class="proc-step"><span class="step-num purple">03</span><div class="step-text">Mettre les personnalités importantes de l'Union en sécurité au Nexus.</div></div>
+                                <div class="proc-step"><span class="step-num purple">04</span><div class="step-text">Éliminer à vue tous les citoyens dans la zone.</div></div>
+                                <div class="proc-step"><span class="step-num purple">05</span><div class="step-text">Se disperser en groupe de deux dans toute la CCH pour retrouver les fuyants.</div></div>
+                                <div class="proc-step"><span class="step-num purple">06</span><div class="step-text">Amputer tous les individus retrouvés.</div></div>
+                                <div class="proc-step"><span class="step-num purple">07</span><div class="step-text">Récupérer tous les cadavres et les traîner au Nexus pour destruction.</div></div>
+                                <div class="proc-step"><span class="step-num purple">08</span><div class="step-text">Effectuer un rapport final avec nombre de cadavres détruits.</div></div>
+                                <div style="margin-top:0.6rem;">
+                                    <div class="step-note note-red"><strong>EN CAS DE RÉSISTANCE</strong> : Répondre feu.</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="accordion-section">
-                    <div class="accordion-header" aria-expanded="false">
-                        <h3><span style="color: var(--accent-red);">SOP-02</span> Code 7 - Force Létale</h3>
-                        <div><span class="accordion-code">03+</span> <span class="accordion-arrow">&#9654;</span></div>
-                    </div>
-                    <div class="accordion-content">
-                        <div class="accordion-content-inner">
-                            <p>Déploiement d'escouade armée, règles d'engagement et protocole de force létale autorisée. Nécessite validation 03+.</p>
-                            <a href="procedure-code7.html" class="accordion-link">Consulter la procédure</a>
-                        </div>
+                    <!-- AVERTISSEMENT -->
+                    <div class="warning-banner">
+                        <p style="font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:2px;">UNION // PROTOCOLE DE SÉCURITÉ &nbsp;&nbsp;&nbsp;&nbsp; CODE: R019</p>
+                        <h3>AVERTISSEMENT</h3>
+                        <p>» Toute divulgation de ces informations sera sanctionnée immédiatement : <strong style="color:#ff4444;">exclusion définitive</strong> de la milice et <strong>Potentiel sanction</strong> 🚩</p>
                     </div>
                 </div>
-
-                <div class="accordion-section">
-                    <div class="accordion-header" aria-expanded="false">
-                        <h3><span style="color: var(--accent-green);">SOP-03</span> Conscription</h3>
-                        <div><span class="accordion-code">03+</span> <span class="accordion-arrow">&#9654;</span></div>
-                    </div>
-                    <div class="accordion-content">
-                        <div class="accordion-content-inner">
-                            <p>Procédure de recrutement et enrôlement de nouveaux citoyens dans les rangs de la Metropolice Force.</p>
-                            <a href="procedure-conscription.html" class="accordion-link">Consulter la procédure</a>
-                        </div>
-                    </div>
-                </div>
-
-
-
-                <div class="accordion-section">
-                    <div class="accordion-header" aria-expanded="false">
-                        <h3><span style="color: var(--accent-purple);">SOP-05</span> Test de Loyauté</h3>
-                        <div><span class="accordion-code">04+</span> <span class="accordion-arrow">&#9654;</span></div>
-                    </div>
-                    <div class="accordion-content">
-                        <div class="accordion-content-inner">
-                            <p>Interrogatoire et vérification de la fidélité des citoyens. Protocole de questions et critères d'évaluation.</p>
-                            <a href="test-loyaute.html" class="accordion-link">Consulter la procédure</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="accordion-section">
-                    <div class="accordion-header" aria-expanded="false">
-                        <h3><span style="color: var(--accent-cyan);">SOP-06</span> Déclarations MPF</h3>
-                        <div><span class="accordion-code">TOUT GRADE</span> <span class="accordion-arrow">&#9654;</span></div>
-                    </div>
-                    <div class="accordion-content">
-                        <div class="accordion-content-inner">
-                            <p>Formulaires de déclaration pour rapports d'incident, demandes de transfert et autres documents administratifs.</p>
-                            <a href="declarations.html" class="accordion-link">Consulter la procédure</a>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
     </main>
@@ -118,6 +260,5 @@
     <script src="assets/js/global-nav.js"></script>
     <script src="assets/js/interactive-system.js"></script>
     <script src="assets/js/combine-animations.js"></script>
-    <script src="assets/js/accordion.js"></script>
 </body>
 </html>

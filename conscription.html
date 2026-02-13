@@ -4,13 +4,212 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conscription - MPF Documentation</title>
-    <meta http-equiv="refresh" content="0; url=procedure-conscription.html">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="assets/css/main-style.css">
+    <link rel="stylesheet" href="assets/css/combine-terminals.css">
+    <link rel="stylesheet" href="assets/css/global-nav.css">
+    <link rel="stylesheet" href="assets/css/interactive-system.css">
+    <link rel="stylesheet" href="assets/css/combine-animations.css">
+    <style>
+        .consc-type { margin-top: 1.2rem; }
+        .consc-prereq { display: grid; gap: 0.4rem; padding: 0.8rem; background: rgba(0,170,255,0.04); border: 1px solid rgba(0,170,255,0.1); border-radius: 4px; margin-bottom: 0.8rem; }
+        .consc-prereq li { padding: 0.3rem 0; font-size: 0.8rem; color: var(--text-muted); border-bottom: 1px solid rgba(0,170,255,0.06); display: flex; gap: 0.4rem; }
+        .consc-prereq li:last-child { border-bottom: none; }
+        .consc-desc { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 0.8rem; padding: 0.6rem; background: rgba(0,0,0,0.2); border-radius: 4px; }
+        .consc-org { padding: 0.8rem; background: rgba(0,0,0,0.15); border-left: 3px solid var(--accent-cyan); border-radius: 0 4px 4px 0; }
+        .consc-org h4 { font-family: 'Orbitron', sans-serif; font-size: 0.72rem; color: var(--accent-cyan); letter-spacing: 2px; margin-bottom: 0.5rem; }
+        .org-step { padding: 0.35rem 0; font-size: 0.8rem; color: var(--text-muted); border-bottom: 1px solid rgba(0,170,255,0.05); display: flex; gap: 0.4rem; }
+        .org-step:last-child { border-bottom: none; }
+        .org-note { font-size: 0.72rem; padding: 0.3rem 0.5rem; background: rgba(255,200,0,0.06); border-left: 2px solid rgba(255,200,0,0.4); color: #ffc800; margin-top: 0.3rem; border-radius: 0 2px 2px 0; }
+        .consc-links { display: flex; gap: 0.6rem; margin-top: 0.6rem; flex-wrap: wrap; }
+        .consc-links a { font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--accent-cyan); text-decoration: none; padding: 0.3rem 0.8rem; border: 1px solid rgba(0,170,255,0.2); border-radius: 3px; transition: all 0.3s; }
+        .consc-links a:hover { background: rgba(0,170,255,0.1); border-color: rgba(0,170,255,0.4); }
+        .type-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+        .type-badge { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; padding: 0.2rem 0.6rem; border-radius: 2px; white-space: nowrap; font-weight: 700; letter-spacing: 1px; }
+    </style>
 </head>
-<body style="background: #020810; color: #c0d8f0; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: 'Share Tech Mono', monospace;">
-    <div style="text-align: center;">
-        <p>Redirection vers la procédure de conscription...</p>
-        <a href="procedure-conscription.html" style="color: #00aaff;">Cliquer ici si la redirection ne fonctionne pas</a>
-    </div>
+<body>
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <div>
+                        <h1 class="logo">MPF</h1>
+                        <p class="logo-subtitle">Metropolice Force Documentation</p>
+                    </div>
+                </div>
+                <div id="authBtn"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;">
+                <div class="combine-header">
+                    <h2>CONSCRIPTION</h2>
+                    <span class="header-code">SESSIONS DE TRAVAIL</span>
+                </div>
+                <div class="combine-body">
+                    <p style="font-size:0.75rem;color:var(--text-muted);font-family:'Share Tech Mono',monospace;">
+                        CONSCRIPTION // PROCÉDURES_DE_TRAVAIL<br>
+                        ► CHARGEMENT: TYPES_DE_CONSCRIPTION
+                    </p>
+
+                    <!-- TABLE DES MATIÈRES -->
+                    <div style="padding:0.8rem;background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.1);border-radius:4px;margin:1rem 0;">
+                        <p style="font-family:'Orbitron',sans-serif;font-size:0.72rem;color:var(--accent-cyan);letter-spacing:2px;margin-bottom:0.5rem;">DIFFÉRENTES CONSCRIPTIONS</p>
+                        <ul style="list-style:none;padding:0;font-size:0.8rem;">
+                            <li style="padding:0.3rem 0;color:var(--text-muted);border-bottom:1px solid rgba(0,170,255,0.06);">► La Conscription Volontaire</li>
+                            <li style="padding:0.3rem 0;color:var(--text-muted);border-bottom:1px solid rgba(0,170,255,0.06);">► La Conscription Obligatoire MPF</li>
+                            <li style="padding:0.3rem 0;color:var(--text-muted);">► La Session de travail Obligatoire CWU</li>
+                        </ul>
+                    </div>
+
+                    <!-- TYPE 1: CONSCRIPTION VOLONTAIRE -->
+                    <div class="consc-type">
+                        <div class="combine-terminal-wrapper" style="border-color: rgba(0,200,80,0.15);">
+                            <div class="combine-header" style="border-bottom-color: rgba(0,200,80,0.15);">
+                                <div class="type-header" style="width:100%;">
+                                    <h2 style="color:#00cc55;">1. CONSCRIPTION VOLONTAIRE</h2>
+                                    <span class="type-badge" style="background:rgba(0,200,80,0.15);border:1px solid rgba(0,200,80,0.4);color:#00cc55;">GRADE 04+</span>
+                                </div>
+                            </div>
+                            <div style="padding: 1rem;">
+                                <p style="font-family:'Orbitron',sans-serif;font-size:0.68rem;color:var(--text-muted);letter-spacing:2px;margin-bottom:0.5rem;">AVANT DE DÉBUTER, ASSUREZ-VOUS DE REMPLIR CES INFORMATIONS :</p>
+                                <ul class="consc-prereq" style="list-style:none;padding:0;">
+                                    <li><span style="color:#00cc55;font-weight:700;">►</span> Avoir au minimum le grade de <strong style="color:var(--text-primary);">04</strong>.</li>
+                                    <li><span style="color:#00cc55;font-weight:700;">►</span> Disposer de la formation à l'usage du <strong style="color:var(--text-primary);">Dispatch</strong>.</li>
+                                    <li><span style="color:#00cc55;font-weight:700;">►</span> Aucun CWU ne doit prévoir d'organiser une session de travail, aller informer les CWU qu'une conscription va être effectuée.</li>
+                                    <li><span style="color:#00cc55;font-weight:700;">►</span> Disposer d'un certain nombre d'unités en fonction du nombre de citoyens.</li>
+                                </ul>
+
+                                <div class="consc-desc">
+                                    La <strong style="color:#00cc55;">Conscription Volontaire</strong> réunit les citoyens dans le cadre d'une session de travail.<br>
+                                    Ils disposent pleinement du <strong style="color:var(--text-primary);">droit de refus</strong>, quel que soit leur statut.<br>
+                                    Rassemblez donc uniquement les personnes volontaires et organisez cette conscription.
+                                </div>
+
+                                <div class="consc-org">
+                                    <h4>ORGANISATION</h4>
+                                    <div class="org-step"><span style="color:#00cc55;font-weight:700;">►</span> Préparer le matériel (Ration, Canette, Pioche, etc.) dans des barils.</div>
+                                    <div class="org-note">Les rations pour les citoyens et pioches doivent être transportées par une unité et non un citoyen.</div>
+                                    <div class="org-step"><span style="color:#00cc55;font-weight:700;">►</span> Faire un dispatch : <span style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;font-size:0.75rem;">/dispatch Avis aux citoyens. Une Conscription Volontaire va avoir lieu, tout citoyen souhaitant y participer doit se présenter devant le Nexus.</span></div>
+                                    <div class="org-step"><span style="color:#00cc55;font-weight:700;">►</span> Une fois les citoyens rassemblés, débuter une fouille corporelle de chaque individu.</div>
+                                    <div class="org-step"><span style="color:#00cc55;font-weight:700;">►</span> Distribuer les barils (toujours avec 1 unité qui surveille les citoyens).</div>
+                                    <div class="org-step"><span style="color:#00cc55;font-weight:700;">►</span> Transporter les volontaires jusqu'au lieu de la session, puis les faire travailler.</div>
+                                    <div class="org-step"><span style="color:#00cc55;font-weight:700;">►</span> Une fois terminé, vérifier que tout a été produit avant de revenir devant le Nexus.</div>
+                                    <div class="org-step"><span style="color:#00cc55;font-weight:700;">►</span> Reprendre le matériel et fouiller chaque individu.</div>
+                                    <div class="org-step"><span style="color:#00cc55;font-weight:700;">►</span> Distribuer une ration selon le statut de l'individu ainsi que <strong style="color:#00cc55;">2 points de loyauté</strong>.</div>
+                                    <div class="org-step"><span style="color:#00cc55;font-weight:700;">►</span> Vendre toute la production, déposer les gains dans la caisse et rédiger un rapport.</div>
+                                    <div class="consc-links">
+                                        <a href="form-rapport.html">Rapport</a>
+                                        <a href="form-depot.html">Dépôt d'argents</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TYPE 2: CONSCRIPTION OBLIGATOIRE MPF -->
+                    <div class="consc-type">
+                        <div class="combine-terminal-wrapper" style="border-color: rgba(255,200,0,0.15);">
+                            <div class="combine-header" style="border-bottom-color: rgba(255,200,0,0.15);">
+                                <div class="type-header" style="width:100%;">
+                                    <h2 style="color:#ffc800;">2. CONSCRIPTION OBLIGATOIRE MPF</h2>
+                                    <span class="type-badge" style="background:rgba(255,200,0,0.15);border:1px solid rgba(255,200,0,0.4);color:#ffc800;">GRADE 03+ (AUTH. 02+)</span>
+                                </div>
+                            </div>
+                            <div style="padding: 1rem;">
+                                <p style="font-family:'Orbitron',sans-serif;font-size:0.68rem;color:var(--text-muted);letter-spacing:2px;margin-bottom:0.5rem;">AVANT DE DÉBUTER :</p>
+                                <ul class="consc-prereq" style="list-style:none;padding:0;">
+                                    <li><span style="color:#ffc800;font-weight:700;">►</span> Avoir au minimum le grade de <strong style="color:var(--text-primary);">03</strong> et disposer d'une autorisation d'un <strong style="color:var(--text-primary);">02 ou plus</strong>.</li>
+                                    <li><span style="color:#ffc800;font-weight:700;">►</span> Disposer de la formation à l'usage du <strong style="color:var(--text-primary);">Dispatch</strong>.</li>
+                                    <li><span style="color:#ffc800;font-weight:700;">►</span> Aucun CWU ne doit prévoir d'organiser une session de travail, aller informer les CWU qu'une conscription va être effectuée.</li>
+                                    <li><span style="color:#ffc800;font-weight:700;">►</span> Disposer d'un certain nombre d'unités en fonction du nombre de citoyens.</li>
+                                </ul>
+
+                                <div class="consc-desc">
+                                    La <strong style="color:#ffc800;">Conscription Obligatoire</strong> réunit <strong style="color:var(--text-primary);">tous les citoyens</strong> dans le cadre d'une session de travail.<br>
+                                    Les <strong style="color:var(--text-primary);">CWU et Loyalistes de rang 7</strong> disposent du droit de refus.<br>
+                                    Rassemblez donc tous les citoyens en fouillant les différents districts.
+                                </div>
+
+                                <div class="consc-org" style="border-left-color:#ffc800;">
+                                    <h4 style="color:#ffc800;">ORGANISATION</h4>
+                                    <div class="org-step"><span style="color:#ffc800;font-weight:700;">►</span> Préparer le matériel (Ration, Canette, Pioche, etc.) dans des barils.</div>
+                                    <div class="org-note">Les rations pour les citoyens et pioches doivent être transportées par une unité et non un citoyen.</div>
+                                    <div class="org-step"><span style="color:#ffc800;font-weight:700;">►</span> Faire un dispatch : <span style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;font-size:0.75rem;">/dispatch Inspection</span></div>
+                                    <div class="org-step"><span style="color:#ffc800;font-weight:700;">►</span> Une fois les citoyens rassemblés, débuter une fouille corporelle de chaque individu.</div>
+                                    <div class="org-step"><span style="color:#ffc800;font-weight:700;">►</span> Annexer le matériel de session aux travailleurs (Ration, Canette, ...) dans un baril pour chaque individu.</div>
+                                    <div class="org-step"><span style="color:#ffc800;font-weight:700;">►</span> Transporter les travailleurs jusqu'au lieu de session, puis expliquer les instructions.</div>
+                                    <div class="org-step"><span style="color:#ffc800;font-weight:700;">►</span> Une fois terminé, revenir devant le Nexus.</div>
+                                    <div class="org-step"><span style="color:#ffc800;font-weight:700;">►</span> Reprendre tout le matériel et fouiller chaque individu.</div>
+                                    <div class="org-step"><span style="color:#ffc800;font-weight:700;">►</span> Distribuer une ration selon le statut de l'individu ainsi que <strong style="color:#ffc800;">2 points de loyauté</strong>.</div>
+                                    <div class="org-step"><span style="color:#ffc800;font-weight:700;">►</span> Vendre toute la production, déposer les gains dans la caisse et rédiger un rapport.</div>
+                                    <div class="consc-links">
+                                        <a href="form-rapport.html">Rapport</a>
+                                        <a href="form-depot.html">Dépôt d'argents</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TYPE 3: SESSION DE TRAVAIL OBLIGATOIRE CWU -->
+                    <div class="consc-type">
+                        <div class="combine-terminal-wrapper" style="border-color: rgba(180,60,255,0.15);">
+                            <div class="combine-header" style="border-bottom-color: rgba(180,60,255,0.15);">
+                                <div class="type-header" style="width:100%;">
+                                    <h2 style="color:#b43cff;">3. SESSION DE TRAVAIL OBLIGATOIRE CWU</h2>
+                                    <span class="type-badge" style="background:rgba(180,60,255,0.15);border:1px solid rgba(180,60,255,0.4);color:#b43cff;">GRADE 03+ (AUTH. 02+)</span>
+                                </div>
+                            </div>
+                            <div style="padding: 1rem;">
+                                <div class="org-note" style="border-left-color:#b43cff;background:rgba(180,60,255,0.06);color:#b43cff;margin-bottom:0.8rem;">
+                                    <strong>Information importante :</strong> C'est une session de travail, donc la CWU la gère de A à Z et a les gains finaux.
+                                </div>
+
+                                <p style="font-family:'Orbitron',sans-serif;font-size:0.68rem;color:var(--text-muted);letter-spacing:2px;margin-bottom:0.5rem;">AVANT DE DÉBUTER :</p>
+                                <ul class="consc-prereq" style="list-style:none;padding:0;">
+                                    <li><span style="color:#b43cff;font-weight:700;">►</span> Avoir au minimum le grade de <strong style="color:var(--text-primary);">03</strong> sous autorisation d'un <strong style="color:var(--text-primary);">02 ou plus</strong>.</li>
+                                    <li><span style="color:#b43cff;font-weight:700;">►</span> Disposer de la formation à l'usage du <strong style="color:var(--text-primary);">Dispatch</strong>.</li>
+                                    <li><span style="color:#b43cff;font-weight:700;">►</span> Le CWU doit être prévenu et avoir validé la session de travail obligatoire.</li>
+                                </ul>
+
+                                <div class="consc-desc">
+                                    La <strong style="color:#b43cff;">Session de travail Obligatoire</strong> réunit <strong style="color:var(--text-primary);">tous les citoyens</strong>.<br>
+                                    Les <strong style="color:var(--text-primary);">CWU et Loyalistes de rang 7</strong> disposent du droit de refus.<br>
+                                    Rassemblez donc tous les citoyens en fouillant les rues des districts et sanctionnez tout contrevenant.
+                                </div>
+
+                                <div class="consc-org" style="border-left-color:#b43cff;">
+                                    <h4 style="color:#b43cff;">ORGANISATION</h4>
+                                    <div class="org-step"><span style="color:#b43cff;font-weight:700;">►</span> Annoncer le début de la conscription en utilisant le premier bouton à gauche (se référer à : <a href="cwu-procedure.html" style="color:var(--accent-cyan);text-decoration:none;">Procédures</a>).</div>
+                                    <div class="org-step"><span style="color:#b43cff;font-weight:700;">►</span> <strong style="color:var(--text-primary);">"Worker Announcement"</strong> dans le bureau de l'administration.</div>
+                                    <div class="org-step"><span style="color:#b43cff;font-weight:700;">►</span> Une fois les citoyens rassemblés au QG CWU, débuter une fouille corporelle de chaque individu.</div>
+                                    <div class="org-step"><span style="color:#b43cff;font-weight:700;">►</span> Escorter les citoyens jusqu'au lieu de la session, puis laisser la CWU expliquer les instructions.</div>
+                                    <div class="org-step"><span style="color:#b43cff;font-weight:700;">►</span> Une fois terminé, revenir au QG CWU.</div>
+                                    <div class="org-step"><span style="color:#b43cff;font-weight:700;">►</span> Laisser la CWU reprendre tout le matériel et fouiller chaque individu.</div>
+                                    <div class="org-step"><span style="color:#b43cff;font-weight:700;">►</span> Rédiger un rapport de protection de session.</div>
+                                    <div class="consc-links">
+                                        <a href="form-rapport.html">Rapport</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/global-nav.js"></script>
+    <script src="assets/js/interactive-system.js"></script>
+    <script src="assets/js/combine-animations.js"></script>
 </body>
 </html>

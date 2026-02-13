@@ -4,17 +4,100 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test de Loyauté - MPF Documentation</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="assets/css/main-style.css">
     <link rel="stylesheet" href="assets/css/combine-terminals.css">
     <link rel="stylesheet" href="assets/css/global-nav.css">
     <link rel="stylesheet" href="assets/css/interactive-system.css">
     <link rel="stylesheet" href="assets/css/combine-animations.css">
+    <style>
+        .proto-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 0.8rem 0; }
+        @media (max-width: 768px) { .proto-grid { grid-template-columns: 1fr; } }
+        .result-box { padding: 0.8rem; border-radius: 4px; }
+        .result-success { background: rgba(0,200,80,0.04); border: 1px solid rgba(0,200,80,0.15); }
+        .result-fail { background: rgba(255,60,60,0.04); border: 1px solid rgba(255,60,60,0.15); }
+        .result-box h4 { font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; letter-spacing: 2px; margin-bottom: 0.4rem; }
+        .result-box p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+        .warn-box { background: rgba(255,200,0,0.04); border: 1px solid rgba(255,200,0,0.15); padding: 0.6rem 0.8rem; border-radius: 4px; margin: 0.6rem 0; }
+        .warn-box p { font-size: 0.78rem; color: #ffc800; }
+        .form-section { margin-top: 1.2rem; }
+        .form-section .section-title {
+            font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--accent-cyan);
+            letter-spacing: 2px; padding: 0.5rem 0; border-bottom: 1px solid rgba(0,170,255,0.1); margin-bottom: 0.8rem;
+        }
+        .form-field { margin-bottom: 0.6rem; }
+        .form-field label { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.3rem; letter-spacing: 1px; }
+        .form-field input, .form-field select, .form-field textarea {
+            width: 100%; padding: 0.5rem 0.7rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(0,170,255,0.15);
+            color: var(--text-primary); font-family: 'Share Tech Mono', monospace; font-size: 0.8rem; border-radius: 3px;
+            outline: none; box-sizing: border-box;
+        }
+        .form-field input:focus, .form-field select:focus, .form-field textarea:focus { border-color: rgba(0,170,255,0.4); }
+        .likert-q { margin-bottom: 0.8rem; padding: 0.6rem; background: rgba(0,0,0,0.15); border-radius: 4px; border-left: 2px solid rgba(0,170,255,0.2); }
+        .likert-q p { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.4rem; }
+        .likert-options { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+        .likert-options label {
+            font-size: 0.68rem; padding: 0.3rem 0.5rem; background: rgba(0,170,255,0.04);
+            border: 1px solid rgba(0,170,255,0.1); border-radius: 3px; cursor: pointer;
+            color: var(--text-muted); transition: all 0.2s; display: flex; align-items: center; gap: 0.3rem;
+        }
+        .likert-options label:hover { background: rgba(0,170,255,0.1); border-color: rgba(0,170,255,0.3); }
+        .likert-options input[type="radio"] { display: none; }
+        .likert-options input[type="radio"]:checked + span { color: var(--accent-cyan); font-weight: 700; }
+        .likert-options label:has(input:checked) { background: rgba(0,170,255,0.15); border-color: rgba(0,170,255,0.4); }
+        .sem-q { margin-bottom: 0.8rem; padding: 0.6rem; background: rgba(0,0,0,0.15); border-radius: 4px; border-left: 2px solid rgba(180,60,255,0.2); }
+        .sem-q p.q-text { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.3rem; }
+        .sem-q .expected { font-size: 0.68rem; color: var(--text-muted); margin-bottom: 0.4rem; }
+        .sem-q .expected strong.good { color: #00cc55; }
+        .sem-q .expected strong.bad { color: #ff4444; }
+        .conform-btns { display: flex; gap: 0.4rem; }
+        .conform-btns button {
+            font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; padding: 0.3rem 0.8rem;
+            border: 1px solid; border-radius: 3px; cursor: pointer; transition: all 0.2s; background: transparent;
+        }
+        .btn-conforme { border-color: rgba(0,200,80,0.3); color: #00cc55; }
+        .btn-conforme:hover, .btn-conforme.active { background: rgba(0,200,80,0.15); border-color: rgba(0,200,80,0.5); }
+        .btn-nonconforme { border-color: rgba(255,60,60,0.3); color: #ff4444; }
+        .btn-nonconforme:hover, .btn-nonconforme.active { background: rgba(255,60,60,0.15); border-color: rgba(255,60,60,0.5); }
+        .stress-q { margin-bottom: 0.8rem; padding: 0.6rem; background: rgba(0,0,0,0.15); border-radius: 4px; border-left: 2px solid rgba(255,200,0,0.2); }
+        .stress-q p.q-text { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.3rem; }
+        .stress-q .context { font-size: 0.72rem; color: var(--text-muted); font-style: italic; margin-bottom: 0.4rem; }
+        .stress-result { display: flex; gap: 0.4rem; }
+        .stress-result button {
+            font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; padding: 0.3rem 0.6rem;
+            border: 1px solid; border-radius: 3px; cursor: pointer; transition: all 0.2s; background: transparent;
+        }
+        .btn-fail { border-color: rgba(255,60,60,0.3); color: #ff4444; }
+        .btn-fail:hover, .btn-fail.active { background: rgba(255,60,60,0.15); border-color: rgba(255,60,60,0.5); }
+        .btn-pass { border-color: rgba(0,200,80,0.3); color: #00cc55; }
+        .btn-pass:hover, .btn-pass.active { background: rgba(0,200,80,0.15); border-color: rgba(0,200,80,0.5); }
+        .matrix-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.8rem; }
+        @media (max-width: 600px) { .matrix-grid { grid-template-columns: 1fr; } }
+        .matrix-box { padding: 0.8rem; border-radius: 4px; }
+        .matrix-box h4 { font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; letter-spacing: 2px; margin-bottom: 0.5rem; }
+        .score-range { display: flex; justify-content: space-between; align-items: center; padding: 0.25rem 0; font-size: 0.72rem; border-bottom: 1px solid rgba(0,170,255,0.05); }
+        .score-range:last-of-type { border-bottom: none; }
+        .score-input { display: flex; align-items: center; gap: 0.4rem; margin-top: 0.5rem; }
+        .score-input span { font-size: 0.75rem; color: var(--text-muted); }
+        .score-input input {
+            width: 50px; padding: 0.3rem; background: rgba(0,0,0,0.3); border: 1px solid rgba(0,170,255,0.2);
+            color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.85rem;
+            text-align: center; border-radius: 3px; outline: none;
+        }
+        .copy-btn {
+            display: block; width: 100%; margin-top: 1.2rem; padding: 0.8rem; font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem; letter-spacing: 3px; background: rgba(0,170,255,0.1); border: 1px solid rgba(0,170,255,0.3);
+            color: var(--accent-cyan); cursor: pointer; border-radius: 4px; transition: all 0.3s;
+        }
+        .copy-btn:hover { background: rgba(0,170,255,0.2); border-color: rgba(0,170,255,0.5); }
+        .result-type { margin-bottom: 0.4rem; padding: 0.5rem 0.6rem; background: rgba(0,0,0,0.15); border-radius: 3px; border-left: 2px solid rgba(0,170,255,0.2); }
+        .result-type p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
+        .result-type strong { color: var(--text-primary); }
+    </style>
 </head>
 <body>
-    <!-- Scanline overlay -->
     <div class="scanline-overlay"></div>
     <div class="particles-bg"></div>
-
     <header class="site-header">
         <div class="container">
             <div class="header-content">
@@ -32,135 +115,272 @@
 
     <main>
         <div class="container">
-            <div class="combine-terminal-wrapper animate-fadeInUp">
+            <!-- PROTOCOLE -->
+            <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;">
                 <div class="combine-header">
-                    <h2>⚖️ TEST DE LOYAUTÉ</h2>
-                    <span class="header-code">PROTOCOLE LOY-CHK-101 - HABILITATION 04+</span>
+                    <h2>PROTOCOLE : TEST DE LOYAUTÉ</h2>
+                    <span class="header-code">RP / RRG.04</span>
                 </div>
-
                 <div class="combine-body">
-                    <!-- Restriction -->
-                    <div style="background: rgba(255, 107, 107, 0.15); border: 2px dashed #ff6b6b; padding: 1.5rem; margin-bottom: 2rem; border-radius: 8px; text-align: center;">
-                        <div style="font-size: 1.2rem; font-weight: 700; color: #ff6b6b; margin-bottom: 0.5rem;">
-                            ⚠️ HABILITATION REQUISE : UNITÉ 04 MINIMUM ⚠️
+                    <div style="text-align:center;padding:0.6rem;background:rgba(255,60,60,0.05);border:1px solid rgba(255,60,60,0.15);border-radius:4px;margin-bottom:1rem;">
+                        <p style="font-size:0.82rem;color:#ff4444;font-weight:700;letter-spacing:2px;">⚠ HABILITATION REQUISE : UNITÉ 04 MINIMUM ⚠</p>
+                    </div>
+
+                    <div style="padding:0.6rem 0.8rem;background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.1);border-radius:4px;margin-bottom:1rem;">
+                        <p style="font-size:0.72rem;color:var(--accent-cyan);font-weight:700;letter-spacing:2px;margin-bottom:0.3rem;">DÉCLENCHEUR :</p>
+                        <p style="font-size:0.8rem;color:var(--text-muted);line-height:1.5;">Le protocole s'applique lorsqu'un <strong style="color:var(--text-primary);">Loyaliste de Rang 1</strong> ou un <strong style="color:var(--text-primary);">membre de la CWU</strong> reçoit une quantité excessive de verdicts.</p>
+                    </div>
+
+                    <div class="proto-grid">
+                        <div class="result-box result-success">
+                            <h4 style="color:#00cc55;">» RÉSULTAT : SUCCÈS</h4>
+                            <p>L'individu a prouvé sa fidélité aux valeurs de l'Union.</p>
+                            <p style="margin-top:0.3rem;"><strong style="color:#00cc55;">ACTION :</strong> Libération immédiate du sujet.</p>
                         </div>
-                        <div style="color: var(--text-secondary); font-size: 0.9rem;">
-                            Procédure réservée aux grades 04, 03, 02, 01 et OFC
+                        <div class="result-box result-fail">
+                            <h4 style="color:#ff4444;">» RÉSULTAT : ÉCHEC</h4>
+                            <p>La milice interprétera une défaillance potentielle.</p>
+                            <p style="margin-top:0.3rem;"><strong style="color:#ff4444;">SANCTION IMMÉDIATE :</strong> Verdict Niveau 5 > Destitution de tous les grades [Retour statut Citoyen]</p>
+                            <p style="margin-top:0.3rem;font-size:0.72rem;color:#ffc800;">⚠ NOTE : L'échec ne signifie pas une mise à mort automatique.</p>
                         </div>
                     </div>
 
-                    <!-- Déclencheur -->
-                    <div class="info-card" style="margin-bottom: 2rem;">
-                        <div class="card-header">
-                            <div class="card-icon">🎯</div>
-                            <div class="card-title">Conditions de Déclenchement</div>
+                    <!-- Résultats par type -->
+                    <div style="margin-top:0.8rem;">
+                        <div class="result-type">
+                            <p><strong>RÉSULTAT Anti-Citoyen/Citoyen :</strong> Rédiger un rapport + Verdict 5</p>
                         </div>
-                        <div class="card-content">
-                            <p style="font-size: 0.95rem; line-height: 1.6; margin-bottom: 1rem;">
-                                Ce protocole s'applique lorsqu'un <strong style="color: var(--accent-cyan);">Loyaliste de Rang 1</strong> ou un membre de la <strong style="color: var(--accent-cyan);">CWU</strong> reçoit une quantité excessive de verdicts.
-                            </p>
-                            <div style="background: rgba(66, 135, 245, 0.1); border-left: 4px solid #4287f5; padding: 1rem; border-radius: 4px;">
-                                <strong style="color: #4287f5;">Objectif :</strong> Vérifier si l'individu mérite toujours son statut privilégié ou s'il représente une défaillance potentielle pour l'ordre établi.
-                            </div>
+                        <div class="result-type">
+                            <p><strong>RÉSULTAT LOYALISTE/CWU :</strong> Rédiger un rapport + transmettre au supérieur CWU/Administrateur pour évaluation</p>
+                        </div>
+                        <div class="result-type">
+                            <p><strong>RÉSULTAT CWU :</strong> Rédiger rapport + transmettre aux Supérieurs PC → Superviseur → Administrateur</p>
                         </div>
                     </div>
 
-                    <!-- Résultats possibles -->
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
-                        
-                        <!-- Succès -->
-                        <div class="info-card" style="border-color: #52c41a; box-shadow: 0 0 20px rgba(82, 196, 26, 0.2);">
-                            <div class="card-header" style="background: rgba(82, 196, 26, 0.1);">
-                                <div class="card-icon">✅</div>
-                                <div class="card-title" style="color: #52c41a;">RÉSULTAT : SUCCÈS</div>
-                            </div>
-                            <div class="card-content">
-                                <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(82, 196, 26, 0.1); border-radius: 6px;">
-                                    <strong style="color: #52c41a;">L'individu a prouvé sa fidélité aux valeurs de l'Union.</strong>
-                                </div>
-                                <div style="background: rgba(255, 255, 255, 0.05); padding: 1rem; border-radius: 6px;">
-                                    <strong style="color: var(--accent-cyan);">ACTION IMMÉDIATE :</strong><br>
-                                    <span style="color: var(--text-secondary);">
-                                        → Libération immédiate du sujet<br>
-                                        → Maintien du statut et privilèges<br>
-                                        → Rapport de conformité à soumettre
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Échec -->
-                        <div class="info-card" style="border-color: #da3633; box-shadow: 0 0 20px rgba(218, 54, 51, 0.2);">
-                            <div class="card-header" style="background: rgba(218, 54, 51, 0.1);">
-                                <div class="card-icon">❌</div>
-                                <div class="card-title" style="color: #da3633;">RÉSULTAT : ÉCHEC</div>
-                            </div>
-                            <div class="card-content">
-                                <div style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(218, 54, 51, 0.1); border-radius: 6px;">
-                                    <strong style="color: #da3633;">Le sujet représente une défaillance potentielle.</strong>
-                                </div>
-                                <div style="background: rgba(255, 255, 255, 0.05); padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
-                                    <strong style="color: var(--accent-red);">SANCTION IMMÉDIATE :</strong><br>
-                                    <span style="color: var(--text-secondary);">
-                                        → <strong style="color: #fff;">Verdict Niveau 5</strong> appliqué<br>
-                                        → Destitution de TOUS les grades<br>
-                                        → Retour au statut de Citoyen standard
-                                    </span>
-                                </div>
-                                <div style="border: 1px solid #d48806; background: rgba(212, 136, 6, 0.1); padding: 0.8rem; border-radius: 6px; font-size: 0.85rem;">
-                                    ⚠️ <strong style="color: #d48806;">NOTE IMPORTANTE :</strong><br>
-                                    <span style="color: var(--text-secondary);">L'échec ne signifie PAS une mise à mort automatique.</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Procédures selon cible -->
-                    <div style="background: rgba(10, 10, 15, 0.8); border: 2px solid #2a4a6a; padding: 2rem; margin-top: 2rem; border-radius: 8px;">
-                        <div style="color: var(--accent-cyan); font-weight: 700; font-size: 1.1rem; margin-bottom: 1.5rem; text-align: center;">
-                            📋 PROCÉDURES SELON TYPE DE CIBLE
-                        </div>
-
-                        <div style="display: grid; gap: 1.5rem;">
-                            <!-- Citoyen / Anti-Citoyen -->
-                            <div style="background: rgba(66, 135, 245, 0.05); border-left: 4px solid #4287f5; padding: 1rem; border-radius: 6px;">
-                                <strong style="color: #4287f5; font-size: 1rem;">SI CIBLE = Anti-Citoyen ou Citoyen :</strong><br><br>
-                                <span style="color: var(--text-secondary); line-height: 1.6;">
-                                    Rédiger un rapport détaillé à transmettre au Commandement et appliquer le <strong style="color: #fff;">Verdict 5</strong> pour échec au test de loyauté.
-                                </span>
-                            </div>
-
-                            <!-- Loyaliste -->
-                            <div style="background: rgba(255, 215, 0, 0.05); border-left: 4px solid #ffd700; padding: 1rem; border-radius: 6px;">
-                                <strong style="color: #ffd700; font-size: 1rem;">SI CIBLE = LOYALISTE :</strong><br><br>
-                                <span style="color: var(--text-secondary); line-height: 1.6;">
-                                    Rédiger un rapport et le transmettre à la <strong style="color: #fff;">direction CWU</strong> (gestionnaires par intérim) ou à l'<strong style="color: #fff;">Administrateur</strong> pour décision finale.
-                                </span>
-                            </div>
-
-                            <!-- CWU -->
-                            <div style="background: rgba(255, 107, 107, 0.05); border-left: 4px solid #ff6b6b; padding: 1rem; border-radius: 6px;">
-                                <strong style="color: #ff6b6b; font-size: 1rem;">SI CIBLE = CWU :</strong><br><br>
-                                <span style="color: var(--text-secondary); line-height: 1.6;">
-                                    Rédiger un rapport transmis aux <strong style="color: #fff;">Supérieurs de la PC</strong> → <strong style="color: #fff;">Superviseur</strong> → <strong style="color: #fff;">Administrateur</strong> pour jugement final de niveau supérieur.
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Citation finale -->
-                    <div style="text-align: center; margin-top: 2.5rem; padding: 1.5rem; background: rgba(10, 10, 15, 0.5); border-radius: 8px;">
-                        <div style="font-size: 1rem; color: #4287f5; font-weight: 700; margin-bottom: 0.5rem;">
-                            "LA LOYAUTÉ SE PROUVE PAR LES ACTES"
-                        </div>
-                        <div style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px;">
-                            Union Policy - Loyalty Check v2
-                        </div>
+                    <div class="warn-box" style="margin-top:1rem;">
+                        <p><strong>⚠ AVERTISSEMENT :</strong> Ce formulaire est un outil RP. Toute falsification ou utilisation abusive sera sanctionnée par le commandement.</p>
                     </div>
                 </div>
+            </div>
 
-                <div class="combine-footer">
-                    [PROTOCOL_LOY-CHK-101 - LOYALTY_TEST_PROCEDURE_ACTIVE]
+            <!-- FORMULAIRE DE LOYAUTÉ STANDARDISÉ -->
+            <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;" id="loyaltyForm">
+                <div class="combine-header">
+                    <h2>FORMULAIRE DE LOYAUTÉ STANDARDISÉ</h2>
+                    <span class="header-code">ÉVALUATION COMPLÈTE</span>
+                </div>
+                <div class="combine-body">
+
+                    <!-- IDENTIFICATION -->
+                    <div class="form-section">
+                        <p class="section-title">/// IDENTIFICATION SUJET</p>
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.6rem;">
+                            <div class="form-field">
+                                <label>NOM / MATRICULE</label>
+                                <input type="text" id="subjectName" placeholder="Nom complet...">
+                            </div>
+                            <div class="form-field">
+                                <label>CID DU SUJET</label>
+                                <input type="text" id="subjectCID" placeholder="CID...">
+                            </div>
+                            <div class="form-field">
+                                <label>CITOYEN</label>
+                                <select id="subjectType">
+                                    <option value="">-- Sélectionner --</option>
+                                    <option value="Anti-Citoyen">Anti-Citoyen</option>
+                                    <option value="Citoyen">Citoyen</option>
+                                    <option value="Loyaliste">Loyaliste</option>
+                                    <option value="CWU">CWU</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 1: ÉCHELLE DE CONFORMITÉ QCM -->
+                    <div class="form-section">
+                        <p class="section-title">/// 1. ÉCHELLE DE CONFORMITÉ (QCM)</p>
+
+                        <div class="likert-q">
+                            <p><strong>Q1 :</strong> Ressentez-vous de la nostalgie pour l'époque pré-Union ?</p>
+                            <div class="likert-options">
+                                <label><input type="radio" name="q1" value="0"><span>Jamais (0)</span></label>
+                                <label><input type="radio" name="q1" value="1"><span>Rarement (1)</span></label>
+                                <label><input type="radio" name="q1" value="2"><span>Parfois (2)</span></label>
+                                <label><input type="radio" name="q1" value="3"><span>Souvent (3)</span></label>
+                                <label><input type="radio" name="q1" value="4"><span>Toujours (4)</span></label>
+                            </div>
+                        </div>
+
+                        <div class="likert-q">
+                            <p><strong>Q2 :</strong> Jugez-vous les mesures de rationnement suffisantes et justes ?</p>
+                            <div class="likert-options">
+                                <label><input type="radio" name="q2" value="0"><span>Jamais (0)</span></label>
+                                <label><input type="radio" name="q2" value="1"><span>Rarement (1)</span></label>
+                                <label><input type="radio" name="q2" value="2"><span>Parfois (2)</span></label>
+                                <label><input type="radio" name="q2" value="3"><span>Souvent (3)</span></label>
+                                <label><input type="radio" name="q2" value="4"><span>Toujours (4)</span></label>
+                            </div>
+                        </div>
+
+                        <div class="likert-q">
+                            <p><strong>Q3 :</strong> Signaleriez-vous un membre de votre entourage pour une infraction mineure ?</p>
+                            <div class="likert-options">
+                                <label><input type="radio" name="q3" value="0"><span>Jamais (0)</span></label>
+                                <label><input type="radio" name="q3" value="1"><span>Rarement (1)</span></label>
+                                <label><input type="radio" name="q3" value="2"><span>Parfois (2)</span></label>
+                                <label><input type="radio" name="q3" value="3"><span>Souvent (3)</span></label>
+                                <label><input type="radio" name="q3" value="4"><span>Toujours (4)</span></label>
+                            </div>
+                        </div>
+
+                        <div class="likert-q">
+                            <p><strong>Q4 :</strong> Pensez-vous que la Protection Civile agit pleinement pour votre sécurité ?</p>
+                            <div class="likert-options">
+                                <label><input type="radio" name="q4" value="0"><span>Jamais (0)</span></label>
+                                <label><input type="radio" name="q4" value="1"><span>Rarement (1)</span></label>
+                                <label><input type="radio" name="q4" value="2"><span>Parfois (2)</span></label>
+                                <label><input type="radio" name="q4" value="3"><span>Souvent (3)</span></label>
+                                <label><input type="radio" name="q4" value="4"><span>Toujours (4)</span></label>
+                            </div>
+                        </div>
+
+                        <div class="likert-q">
+                            <p><strong>Q5 :</strong> Le Champ de Suppression est-il nécessaire pour pacifier nos territoires ?</p>
+                            <div class="likert-options">
+                                <label><input type="radio" name="q5" value="0"><span>Jamais (0)</span></label>
+                                <label><input type="radio" name="q5" value="1"><span>Rarement (1)</span></label>
+                                <label><input type="radio" name="q5" value="2"><span>Parfois (2)</span></label>
+                                <label><input type="radio" name="q5" value="3"><span>Souvent (3)</span></label>
+                                <label><input type="radio" name="q5" value="4"><span>Toujours (4)</span></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 2: ANALYSE SÉMANTIQUE -->
+                    <div class="form-section">
+                        <p class="section-title">/// 2. ANALYSE SÉMANTIQUE</p>
+
+                        <div class="sem-q">
+                            <p class="q-text"><strong>Q6 [Oral] :</strong> Comment décririez-vous la Cité 17 ?</p>
+                            <p class="expected">Attendu : <strong class="good">Place, Sécurité, Devoir</strong> // Déviant : <strong class="bad">Liberté, Ami, Joie, Haine</strong></p>
+                            <div class="conform-btns">
+                                <button class="btn-nonconforme" onclick="toggleConform(this,'q6')">NON-CONFORME</button>
+                                <button class="btn-conforme" onclick="toggleConform(this,'q6')">CONFORME</button>
+                            </div>
+                            <input type="hidden" id="q6" value="">
+                        </div>
+
+                        <div class="sem-q">
+                            <p class="q-text"><strong>Q7 [Oral] :</strong> Que représente pour vous la Protection Civile ?</p>
+                            <p class="expected">Attendu : <strong class="good">Sécurité, Protection</strong> // Déviant : <strong class="bad">Peur, Abus, Oppression</strong><br><span style="color:#00cc55;font-size:0.65rem;">(Mention de Bienveilleur : CONFORME [+2])</span></p>
+                            <div class="conform-btns">
+                                <button class="btn-nonconforme" onclick="toggleConform(this,'q7')">NON-CONFORME</button>
+                                <button class="btn-conforme" onclick="toggleConform(this,'q7')">CONFORME</button>
+                            </div>
+                            <input type="hidden" id="q7" value="">
+                        </div>
+
+                        <div class="sem-q">
+                            <p class="q-text"><strong>Q8 :</strong> Que pensez-vous de ceux qui vivent hors des murs ?</p>
+                            <p class="expected">Attendu : <strong class="good">Menace, Dangereux, Hostile</strong> // Déviant : <strong class="bad">Liberté, Espoir, Meilleur</strong></p>
+                            <div class="conform-btns">
+                                <button class="btn-nonconforme" onclick="toggleConform(this,'q8')">NON-CONFORME</button>
+                                <button class="btn-conforme" onclick="toggleConform(this,'q8')">CONFORME</button>
+                            </div>
+                            <input type="hidden" id="q8" value="">
+                        </div>
+
+                        <div class="sem-q">
+                            <p class="q-text"><strong>Q9 :</strong> Quelle est la plus grande menace pour notre société ?</p>
+                            <p class="expected">Attendu : <strong class="good">Résistance, Contestation, Désobéissance</strong> // Déviant : <strong class="bad">Faim, Ration, Restriction</strong></p>
+                            <div class="conform-btns">
+                                <button class="btn-nonconforme" onclick="toggleConform(this,'q9')">NON-CONFORME</button>
+                                <button class="btn-conforme" onclick="toggleConform(this,'q9')">CONFORME</button>
+                            </div>
+                            <input type="hidden" id="q9" value="">
+                        </div>
+                    </div>
+
+                    <!-- SECTION 3: MISES EN SITUATION (STRESS) -->
+                    <div class="form-section">
+                        <p class="section-title">/// 3. MISES EN SITUATION (STRESS)</p>
+
+                        <div class="stress-q">
+                            <p class="q-text"><strong>Q10 :</strong> Le test de la "Confiance aveugle"</p>
+                            <p class="context">Ordre : Face au mur ! Activer Microphone ! Demander "Baissez-vous ?"</p>
+                            <div class="stress-result">
+                                <button class="btn-fail" onclick="toggleStress(this,'q10')">A FUIS / FAIT (X)</button>
+                                <button class="btn-pass" onclick="toggleStress(this,'q10')">CALME / NON RÉACTION (+4)</button>
+                            </div>
+                            <input type="hidden" id="q10" value="">
+                        </div>
+
+                        <div class="stress-q">
+                            <p class="q-text"><strong>Q11 :</strong> Le dilemme de la ration</p>
+                            <p class="context">Contexte : "Notre Nation ne vous a-t-elle pas donné de quoi survivre ?"</p>
+                            <div class="stress-result">
+                                <button class="btn-fail" onclick="toggleStress(this,'q11')">AGITÉ / S'ÉNERVE FORT (X)</button>
+                                <button class="btn-pass" onclick="toggleStress(this,'q11')">SOUMIS / OFFRE (ÉMOTION) (+4)</button>
+                            </div>
+                            <input type="hidden" id="q11" value="">
+                        </div>
+
+                        <div class="stress-q">
+                            <p class="q-text"><strong>Q12 :</strong> Le piège de l'obéissance auditive</p>
+                            <p class="context">Ordre : Ne parlez pas. Puis brèche verbale → réponse vs silence</p>
+                            <div class="stress-result">
+                                <button class="btn-fail" onclick="toggleStress(this,'q12')">PARLE POUR RIEN (ÉCHEC) (X)</button>
+                                <button class="btn-pass" onclick="toggleStress(this,'q12')">OBÉISSANCE STRICTE (RÉUSSITE) (+4)</button>
+                            </div>
+                            <input type="hidden" id="q12" value="">
+                        </div>
+                    </div>
+
+                    <!-- MATRICE DE CALCUL -->
+                    <div class="form-section">
+                        <p class="section-title">/// MATRICE DE CALCUL</p>
+                        <div class="matrix-grid">
+                            <div class="matrix-box" style="background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.12);">
+                                <h4 style="color:var(--accent-cyan);">/// CONFORMITÉ IDÉOLOGIQUE</h4>
+                                <p style="font-size:0.68rem;color:var(--text-muted);margin-bottom:0.4rem;">/10 Likert / Sémantique</p>
+                                <div class="score-range"><span style="color:#00cc55;">08-10</span><span style="color:#00cc55;">OPTIMAL</span></div>
+                                <div class="score-range"><span style="color:#ffc800;">05-08</span><span style="color:#ffc800;">INSTABLE</span></div>
+                                <div class="score-range"><span style="color:#ff4444;">00-05</span><span style="color:#ff4444;">CRITIQUE</span></div>
+                                <div class="score-input">
+                                    <span>→</span>
+                                    <input type="number" id="scoreIdeol" min="0" max="10" placeholder="0">
+                                    <span>/ 10</span>
+                                </div>
+                            </div>
+                            <div class="matrix-box" style="background:rgba(255,200,0,0.04);border:1px solid rgba(255,200,0,0.12);">
+                                <h4 style="color:#ffc800;">/// RÉFLEXES & STRESS</h4>
+                                <p style="font-size:0.68rem;color:var(--text-muted);margin-bottom:0.4rem;">/12 Peur en situation</p>
+                                <div class="score-range"><span style="color:#00cc55;">12-12</span><span style="color:#00cc55;">SÛRE</span></div>
+                                <div class="score-range"><span style="color:#ffc800;">08-08</span><span style="color:#ffc800;">MOYEN</span></div>
+                                <div class="score-range"><span style="color:#ff4444;">00-08</span><span style="color:#ff4444;">FLOU</span></div>
+                                <div class="score-input">
+                                    <span>→</span>
+                                    <input type="number" id="scoreStress" min="0" max="12" placeholder="0">
+                                    <span>/ 12</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BOUTON COPIER -->
+                    <button class="copy-btn" onclick="copyReport()">COPIER LE RAPPORT</button>
+                    <p id="copyStatus" style="text-align:center;font-size:0.72rem;color:#00cc55;margin-top:0.4rem;display:none;">✓ Rapport copié dans le presse-papiers</p>
+
+                    <div style="margin-top:0.8rem;padding:0.5rem;background:rgba(0,170,255,0.03);border-radius:4px;">
+                        <p style="font-size:0.7rem;color:var(--text-muted);text-align:center;">En bas, tous détailler le questionnaire.</p>
+                    </div>
+
+                    <!-- Zone de texte pour détails -->
+                    <div class="form-field" style="margin-top:0.6rem;">
+                        <label>DÉTAILS SUPPLÉMENTAIRES DU QUESTIONNAIRE</label>
+                        <textarea id="extraDetails" rows="5" placeholder="Détailler les réponses orales, observations comportementales..."></textarea>
+                    </div>
                 </div>
             </div>
         </div>
@@ -169,5 +389,72 @@
     <script src="assets/js/global-nav.js"></script>
     <script src="assets/js/interactive-system.js"></script>
     <script src="assets/js/combine-animations.js"></script>
+    <script>
+        function toggleConform(btn, qId) {
+            const container = btn.parentElement;
+            container.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(qId).value = btn.classList.contains('btn-conforme') ? 'CONFORME' : 'NON-CONFORME';
+        }
+
+        function toggleStress(btn, qId) {
+            const container = btn.parentElement;
+            container.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(qId).value = btn.classList.contains('btn-pass') ? 'RÉUSSITE' : 'ÉCHEC';
+        }
+
+        function copyReport() {
+            const name = document.getElementById('subjectName').value || 'N/A';
+            const cid = document.getElementById('subjectCID').value || 'N/A';
+            const type = document.getElementById('subjectType').value || 'N/A';
+
+            let qcmLines = '';
+            for (let i = 1; i <= 5; i++) {
+                const sel = document.querySelector(`input[name="q${i}"]:checked`);
+                const labels = ['Jamais','Rarement','Parfois','Souvent','Toujours'];
+                qcmLines += `Q${i}: ${sel ? labels[parseInt(sel.value)] + ' (' + sel.value + ')' : 'Non répondu'}\n`;
+            }
+
+            let semLines = '';
+            for (let i = 6; i <= 9; i++) {
+                semLines += `Q${i}: ${document.getElementById('q'+i).value || 'Non évalué'}\n`;
+            }
+
+            let stressLines = '';
+            for (let i = 10; i <= 12; i++) {
+                stressLines += `Q${i}: ${document.getElementById('q'+i).value || 'Non évalué'}\n`;
+            }
+
+            const scoreI = document.getElementById('scoreIdeol').value || '?';
+            const scoreS = document.getElementById('scoreStress').value || '?';
+            const details = document.getElementById('extraDetails').value || '';
+
+            const report = `═══ RAPPORT DE LOYAUTÉ STANDARDISÉ ═══
+SUJET: ${name}
+CID: ${cid}
+TYPE: ${type}
+
+── SECTION 1: CONFORMITÉ QCM ──
+${qcmLines}
+── SECTION 2: ANALYSE SÉMANTIQUE ──
+${semLines}
+── SECTION 3: STRESS ──
+${stressLines}
+── MATRICE DE CALCUL ──
+Conformité Idéologique: ${scoreI}/10
+Réflexes & Stress: ${scoreS}/12
+
+── DÉTAILS ──
+${details}
+═══════════════════════════════════`;
+
+            navigator.clipboard.writeText(report).then(() => {
+                const status = document.getElementById('copyStatus');
+                status.style.display = 'block';
+                setTimeout(() => { status.style.display = 'none'; }, 3000);
+            });
+        }
+    </script>
 </body>
 </html>
