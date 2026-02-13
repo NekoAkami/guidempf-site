@@ -523,26 +523,6 @@ class GlobalNavigation {
     }
 
     setupDropdowns() {
-        const allDropdownItems = document.querySelectorAll('.nav-item.has-dropdown');
-
-        // Desktop: mouseenter/mouseleave pour ouvrir/fermer les dropdowns
-        allDropdownItems.forEach(item => {
-            item.addEventListener('mouseenter', () => {
-                if (window.innerWidth > 768) {
-                    // Fermer les autres
-                    allDropdownItems.forEach(other => {
-                        if (other !== item) other.classList.remove('dropdown-open');
-                    });
-                    item.classList.add('dropdown-open');
-                }
-            });
-            item.addEventListener('mouseleave', () => {
-                if (window.innerWidth > 768) {
-                    item.classList.remove('dropdown-open');
-                }
-            });
-        });
-
         // Mobile: clic sur le nav-link toggle le dropdown au lieu de naviguer
         document.querySelectorAll('.nav-item.has-dropdown > .nav-link').forEach(link => {
             link.addEventListener('click', (e) => {
@@ -553,7 +533,7 @@ class GlobalNavigation {
                     const isOpen = parentItem.classList.contains('dropdown-open');
 
                     // Fermer tous les autres dropdowns
-                    allDropdownItems.forEach(item => {
+                    document.querySelectorAll('.nav-item.dropdown-open').forEach(item => {
                         if (item !== parentItem) item.classList.remove('dropdown-open');
                     });
 
@@ -565,7 +545,7 @@ class GlobalNavigation {
         // Fermer les dropdowns quand on clique ailleurs
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.nav-item')) {
-                allDropdownItems.forEach(item => {
+                document.querySelectorAll('.nav-item.dropdown-open').forEach(item => {
                     item.classList.remove('dropdown-open');
                 });
             }

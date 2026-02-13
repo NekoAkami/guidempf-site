@@ -114,7 +114,14 @@
     to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
-/* Dropdown ouvert via JS (hover desktop + click mobile) */
+/* Desktop: hover natif CSS */
+@media (min-width: 769px) {
+    .nav-item.has-dropdown:hover > .dropdown-menu {
+        display: block;
+    }
+}
+
+/* Mobile: ouvert via JS click */
 .nav-item.dropdown-open > .dropdown-menu {
     display: block;
 }
