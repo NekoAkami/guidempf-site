@@ -478,24 +478,21 @@ class GlobalNavigation {
 
     createNavItem(item) {
         const hasDropdown = item.dropdown && item.dropdown.length > 0;
-        const dropdownClass = hasDropdown ? 'has-dropdown' : '';
 
-        let html = `
-            <li class="nav-item">
-                <a href="${this.basePath + item.url}" class="nav-link ${dropdownClass}">${item.label}</a>
-        `;
+        let linkContent = item.label;
+        if (hasDropdown) {
+            linkContent += ' <span class="nav-arrow">▼</span>';
+        }
+
+        let html = `<li class="nav-item${hasDropdown ? ' has-dropdown' : ''}">`;
+        html += `<a href="${this.basePath + item.url}" class="nav-link">${linkContent}</a>`;
 
         if (hasDropdown) {
-            html += `<button class="dropdown-toggle" aria-label="Ouvrir sous-menu">&#9660;</button>`;
-            html += `
-                <ul class="dropdown-menu">
-                    ${item.dropdown.map(subItem => `
-                        <li class="dropdown-item">
-                            <a href="${this.basePath + subItem.url}" class="dropdown-link">${subItem.label}</a>
-                        </li>
-                    `).join('')}
-                </ul>
-            `;
+            html += `<ul class="dropdown-menu">`;
+            html += item.dropdown.map(subItem =>
+                `<li class="dropdown-item"><a href="${this.basePath + subItem.url}" class="dropdown-link">${subItem.label}</a></li>`
+            ).join('');
+            html += `</ul>`;
         }
 
         html += '</li>';
@@ -526,21 +523,22 @@ class GlobalNavigation {
     }
 
     setupDropdowns() {
-        // Boutons flèche dropdown — fonctionnent sur desktop ET mobile
-        document.querySelectorAll('.dropdown-toggle').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                const parentItem = btn.closest('.nav-item');
-                const isOpen = parentItem.classList.contains('dropdown-open');
+        // Sur mobile, clic sur un nav-link avec dropdown toggle le menu au lieu de naviguer
+        document.querySelectorAll('.nav-item.has-dropdown > .nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const parentItem = link.closest('.nav-item');
+                    const isOpen = parentItem.classList.contains('dropdown-open');
 
-                // Fermer tous les autres dropdowns
-                document.querySelectorAll('.nav-item.dropdown-open').forEach(item => {
-                    if (item !== parentItem) item.classList.remove('dropdown-open', 'mobile-open');
-                });
+                    // Fermer tous les autres dropdowns
+                    document.querySelectorAll('.nav-item.dropdown-open').forEach(item => {
+                        if (item !== parentItem) item.classList.remove('dropdown-open');
+                    });
 
-                parentItem.classList.toggle('dropdown-open', !isOpen);
-                parentItem.classList.toggle('mobile-open', !isOpen);
+                    parentItem.classList.toggle('dropdown-open', !isOpen);
+                }
             });
         });
 
@@ -548,7 +546,7 @@ class GlobalNavigation {
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.nav-item')) {
                 document.querySelectorAll('.nav-item.dropdown-open').forEach(item => {
-                    item.classList.remove('dropdown-open', 'mobile-open');
+                    item.classList.remove('dropdown-open');
                 });
             }
         });
@@ -560,6 +558,9 @@ class GlobalNavigation {
                 const navList = document.getElementById('mainNavList');
                 if (navList && window.innerWidth <= 768) {
                     navList.classList.remove('active');
+                    document.querySelectorAll('.nav-item.dropdown-open').forEach(item => {
+                        item.classList.remove('dropdown-open');
+                    });
                 }
             }
         });
@@ -567,11 +568,9 @@ class GlobalNavigation {
         window.addEventListener('resize', () => {
             if (window.innerWidth > 768) {
                 const navList = document.getElementById('mainNavList');
-                if (navList) {
-                    navList.classList.remove('active');
-                }
-                document.querySelectorAll('.nav-item').forEach(item => {
-                    item.classList.remove('mobile-open');
+                if (navList) navList.classList.remove('active');
+                document.querySelectorAll('.nav-item.dropdown-open').forEach(item => {
+                    item.classList.remove('dropdown-open');
                 });
             }
         });
