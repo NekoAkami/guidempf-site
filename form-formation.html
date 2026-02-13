@@ -59,6 +59,25 @@
         .sync-indicator.synced{opacity:1;background:rgba(0,200,80,0.15);border:1px solid rgba(0,200,80,0.4);color:#00cc55;}
         .sync-indicator.error{opacity:1;background:rgba(255,60,60,0.15);border:1px solid rgba(255,60,60,0.4);color:#ff4444;}
         .sync-indicator.hidden{opacity:0;}
+        /* Sélection multiple unités */
+        .units-selector{position:relative;}
+        .units-input-row{display:flex;align-items:center;gap:0;}
+        .units-input-row input{flex:1;border-radius:2px 0 0 2px !important;}
+        .units-toggle-btn{padding:0.5rem 0.6rem;background:rgba(0,170,255,0.12);border:1px solid rgba(0,170,255,0.2);border-left:none;color:var(--accent-cyan);cursor:pointer;font-size:0.9rem;font-family:'Share Tech Mono',monospace;border-radius:0 2px 2px 0;transition:background 0.15s,border-color 0.15s;display:flex;align-items:center;justify-content:center;min-width:32px;}
+        .units-toggle-btn:hover{background:rgba(0,170,255,0.25);border-color:var(--accent-cyan);}
+        .units-toggle-btn.active{background:rgba(0,170,255,0.2);border-color:var(--accent-cyan);}
+        .units-dropdown{display:none;position:absolute;left:0;right:0;top:100%;background:#0a1628;border:1px solid rgba(0,170,255,0.3);border-top:none;max-height:200px;overflow-y:auto;z-index:50;border-radius:0 0 4px 4px;}
+        .units-dropdown.open{display:block;}
+        .units-dropdown-search{width:100%;padding:0.4rem 0.6rem;background:rgba(0,170,255,0.06);border:none;border-bottom:1px solid rgba(0,170,255,0.15);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.78rem;outline:none;}
+        .units-dropdown-item{padding:0.35rem 0.6rem;font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--text-primary);cursor:pointer;display:flex;align-items:center;gap:0.5rem;transition:background 0.1s;}
+        .units-dropdown-item:hover{background:rgba(0,170,255,0.1);}
+        .units-dropdown-item.selected{background:rgba(0,170,255,0.15);}
+        .units-dropdown-item .unit-check{width:14px;height:14px;border:1px solid rgba(0,170,255,0.4);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:var(--accent-cyan);flex-shrink:0;}
+        .units-dropdown-item.selected .unit-check{background:rgba(0,170,255,0.2);border-color:var(--accent-cyan);}
+        .units-tags{display:flex;flex-wrap:wrap;gap:0.3rem;margin-top:0.4rem;}
+        .unit-tag{display:inline-flex;align-items:center;gap:0.3rem;padding:0.15rem 0.45rem;background:rgba(0,170,255,0.12);border:1px solid rgba(0,170,255,0.25);border-radius:2px;font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--accent-cyan);}
+        .unit-tag .remove-tag{cursor:pointer;color:#ff6666;font-size:0.8rem;margin-left:0.1rem;}
+        .unit-tag .remove-tag:hover{color:#ff4444;}
         #access-denied,#notApproved,#noAccess{display:none;text-align:center;padding:3rem;}
     </style>
 </head>
@@ -103,7 +122,7 @@
                                     <div class="form-group" id="grpType"><label>TYPE DE FORMATION <span class="req">*</span></label><select id="fType"><option value="">— Sélectionner —</option><option value="Formation initiale">Formation initiale</option><option value="Formation armement">Formation armement</option><option value="Formation avancée">Formation avancée</option><option value="Formation spécialisée">Formation spécialisée</option><option value="Recyclage">Recyclage</option><option value="Autre">Autre</option></select><div class="error-msg" id="errType"></div></div>
                                     <div class="form-group" id="grpDate"><label>DATE <span class="req">*</span></label><input type="date" id="fDate"><div class="error-msg" id="errDate"></div></div>
                                 </div>
-                                <div class="form-group" id="grpParticipants"><label>PARTICIPANTS (MATRICULES) <span class="req">*</span></label><input type="text" id="fParticipants" placeholder="Ex: 123, 456, 789"><div class="hint">Séparez les matricules par des virgules</div><div class="error-msg" id="errParticipants"></div></div>
+                                <div class="form-group" id="grpParticipants"><label>PARTICIPANTS (MATRICULES) <span class="req">*</span></label><div class="units-selector" id="unitsSelectorWrapper"><div class="units-input-row"><input type="text" id="fParticipants" placeholder="Ex: 123, 456, 789" onkeydown="onUnitInputKey(event)"><button type="button" class="units-toggle-btn" id="unitsToggleBtn" onclick="toggleUnitsDropdown()" title="Liste des unités">▼</button></div><div class="units-dropdown" id="unitsDropdown"><input type="text" class="units-dropdown-search" id="unitsDropdownSearch" placeholder="Rechercher une unité..." oninput="filterUnitsDropdown()"><div id="unitsDropdownList"></div></div><div class="units-tags" id="unitsTags"></div></div><div class="hint">Saisissez les matricules séparés par des virgules ou utilisez ▼ pour sélectionner</div><div class="error-msg" id="errParticipants"></div></div>
                                 <div class="form-group" id="grpContenu"><label>CONTENU DE LA FORMATION <span class="req">*</span></label><textarea id="fContenu" rows="4" placeholder="Décrivez le contenu abordé, les exercices réalisés..."></textarea><div class="error-msg" id="errContenu"></div></div>
                                 <div class="row-2">
                                     <div class="form-group" id="grpDuree"><label>DURÉE (MINUTES) <span class="req">*</span></label><input type="number" id="fDuree" min="1" placeholder="Ex: 30"><div class="error-msg" id="errDuree"></div></div>
@@ -139,10 +158,22 @@
       import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
       import { loadUnits as ghLoadUnits, loadFormations as ghLoadFormations, addFormation as ghAddFormation, addReport as ghAddReport, onSyncStatus } from './assets/js/github-data.js';
 
-      let currentUser = null, allFormations = [];
+      let currentUser = null, allFormations = [], allUnitsData = [], selectedParticipants = new Set();
       function showAlert(t,type='success'){const e=document.getElementById('alertMsg');e.style.display='block';e.className='alert-msg '+type;e.textContent=t;setTimeout(()=>e.style.display='none',6000);}
       function fmtDate(d){if(!d)return'-';const p=d.split('-');return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:d;}
       {const i=document.createElement('div');i.id='syncIndicator';i.className='sync-indicator hidden';document.body.appendChild(i);let t=null;onSyncStatus(s=>{clearTimeout(t);if(s==='syncing'){i.innerHTML='<span style="display:inline-block;animation:spin 1s linear infinite;">⟳</span> Synchronisation...';i.className='sync-indicator syncing';}else if(s==='synced'){i.innerHTML='✓ Synchronisé';i.className='sync-indicator synced';t=setTimeout(()=>i.className='sync-indicator hidden',2500);}else{i.innerHTML='⚠ Erreur sync';i.className='sync-indicator error';t=setTimeout(()=>i.className='sync-indicator hidden',6000);}});}
+
+      /* === Dropdown sélection unités === */
+      window.toggleUnitsDropdown=function(){const dd=document.getElementById('unitsDropdown'),btn=document.getElementById('unitsToggleBtn');if(dd.classList.contains('open')){dd.classList.remove('open');btn.classList.remove('active');btn.textContent='▼';}else{dd.classList.add('open');btn.classList.add('active');btn.textContent='▲';document.getElementById('unitsDropdownSearch').value='';filterUnitsDropdown();document.getElementById('unitsDropdownSearch').focus();}};
+      document.addEventListener('click',function(e){const w=document.getElementById('unitsSelectorWrapper');if(w&&!w.contains(e.target)){const dd=document.getElementById('unitsDropdown'),btn=document.getElementById('unitsToggleBtn');if(dd&&dd.classList.contains('open')){dd.classList.remove('open');btn.classList.remove('active');btn.textContent='▼';}}});
+      window.filterUnitsDropdown=function(){const q=(document.getElementById('unitsDropdownSearch')?.value||'').toLowerCase();const list=document.getElementById('unitsDropdownList');if(!list)return;const filtered=allUnitsData.filter(u=>`${u.matricule} ${u.nom_steam||''} ${u.division||''} ${u.rang||''}`.toLowerCase().includes(q));list.innerHTML=filtered.length?filtered.map(u=>{const sel=selectedParticipants.has(u.matricule)?' selected':'';const chk=selectedParticipants.has(u.matricule)?'✓':'';const divL=u.division?` <span style="color:var(--text-muted);font-size:0.7rem;">[${u.division}]</span>`:'';
+        return`<div class="units-dropdown-item${sel}" onclick="toggleUnitSelection('${u.matricule}')"><span class="unit-check">${chk}</span><span>${u.matricule} — ${u.nom_steam||'Inconnu'}${divL}</span></div>`;}).join(''):'<div style="padding:0.5rem;color:var(--text-muted);font-size:0.78rem;text-align:center;">Aucune unité trouvée</div>';};
+      window.toggleUnitSelection=function(mat){if(selectedParticipants.has(mat))selectedParticipants.delete(mat);else selectedParticipants.add(mat);renderUnitsTags();filterUnitsDropdown();syncUnitsInput();};
+      window.removeUnitTag=function(mat){selectedParticipants.delete(mat);renderUnitsTags();filterUnitsDropdown();syncUnitsInput();};
+      function renderUnitsTags(){const c=document.getElementById('unitsTags');if(!selectedParticipants.size){c.innerHTML='';return;}c.innerHTML=Array.from(selectedParticipants).map(mat=>{const u=allUnitsData.find(x=>x.matricule===mat);const label=u?`${mat} (${u.nom_steam||'?'})`:mat;return`<span class="unit-tag">${label}<span class="remove-tag" onclick="removeUnitTag('${mat}')">&times;</span></span>`;}).join('');}
+      function syncUnitsInput(){document.getElementById('fParticipants').value=Array.from(selectedParticipants).join(', ');}
+      window.onUnitInputKey=function(e){if(e.key==='Enter'){e.preventDefault();parseManualUnits();}};
+      function parseManualUnits(){const raw=document.getElementById('fParticipants').value;const mats=raw.split(/[,;\s]+/).map(s=>s.trim()).filter(Boolean);mats.forEach(m=>{if(m)selectedParticipants.add(m);});syncUnitsInput();renderUnitsTags();filterUnitsDropdown();}
 
       window.switchTab=function(tab){
         document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
@@ -156,7 +187,7 @@
         fields.forEach(id=>document.getElementById(id).classList.remove('error'));
         const type=document.getElementById('fType').value;if(!type){document.getElementById('grpType').classList.add('error');document.getElementById('errType').textContent='Type requis';ok=false;}
         const date=document.getElementById('fDate').value;if(!date){document.getElementById('grpDate').classList.add('error');document.getElementById('errDate').textContent='Date requise';ok=false;}
-        const participants=document.getElementById('fParticipants').value.trim();if(!participants){document.getElementById('grpParticipants').classList.add('error');document.getElementById('errParticipants').textContent='Requis';ok=false;}
+        parseManualUnits();const participants=document.getElementById('fParticipants').value.trim();if(!participants){document.getElementById('grpParticipants').classList.add('error');document.getElementById('errParticipants').textContent='Requis';ok=false;}
         const contenu=document.getElementById('fContenu').value.trim();if(!contenu){document.getElementById('grpContenu').classList.add('error');document.getElementById('errContenu').textContent='Contenu requis';ok=false;}
         const duree=parseInt(document.getElementById('fDuree').value);if(!duree||duree<1){document.getElementById('grpDuree').classList.add('error');document.getElementById('errDuree').textContent='Durée invalide';ok=false;}
         const resultat=document.getElementById('fResultat').value;if(!resultat){document.getElementById('grpResultat').classList.add('error');document.getElementById('errResultat').textContent='Requis';ok=false;}
@@ -166,7 +197,7 @@
         const formation={type,date_formation:date,participants:partList,participants_str:partList.join(', '),contenu,duree,resultat,remarques:document.getElementById('fRemarques').value.trim(),formateur_matricule:currentUser.matricule,formateur_nom:currentUser.nom_steam||'',created_at:date};
         try{const saved=await ghAddFormation(formation);allFormations.push(saved);await ghAddReport({matricule:currentUser.matricule,nom_steam:currentUser.nom_steam||'',type:'Formation',secteur:'',unités:partList.join(', '),resume:`${type} — ${partList.length} participant(s) — ${duree} min — ${resultat}`,notes:formation.remarques,created_at:date,type_rapport:'unité',division:currentUser.division||''});showAlert('✓ Formation enregistrée.','success');resetForm();renderArchives();}catch(e){showAlert('✗ Erreur: '+e.message,'error');}finally{btn.disabled=false;btn.textContent='⟩ SOUMETTRE';}
       };
-      window.resetForm=function(){['fType','fDate','fParticipants','fContenu','fDuree','fResultat','fRemarques'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});['grpType','grpDate','grpParticipants','grpContenu','grpDuree','grpResultat'].forEach(id=>document.getElementById(id).classList.remove('error'));};
+      window.resetForm=function(){['fType','fDate','fParticipants','fContenu','fDuree','fResultat','fRemarques'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});['grpType','grpDate','grpParticipants','grpContenu','grpDuree','grpResultat'].forEach(id=>document.getElementById(id).classList.remove('error'));selectedParticipants.clear();renderUnitsTags();};
       function renderArchives(){
         const tb=document.getElementById('archivesBody');const list=allFormations.sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||''));
         document.getElementById('archiveCount').textContent=list.length+' FORMATION'+(list.length>1?'S':'');
@@ -182,12 +213,12 @@
       onAuthStateChanged(auth, async(user)=>{
         if(!user){document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';return;}
         try{const s=await getDoc(doc(db,'users',user.uid));if(!s.exists()){document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';return;}const ud=s.data();if(!ud.approved){document.getElementById('loading').style.display='none';document.getElementById('notApproved').style.display='block';return;}
-        currentUser={matricule:ud.matricule||'???',nom_steam:ud.nom_steam||'',division:''};let ui=null;try{const u=await ghLoadUnits();ui=u.find(x=>x.matricule===currentUser.matricule)||null;}catch(_){}
+        currentUser={matricule:ud.matricule||'???',nom_steam:ud.nom_steam||'',division:''};let ui=null;try{const u=await ghLoadUnits();allUnitsData=u||[];ui=u.find(x=>x.matricule===currentUser.matricule)||null;}catch(_){}
         const rang=ui?(ui.rang||''):'';const isHG=rang==='Ofc'||rang==='Cmd';const isFormateur=ui?(ui.formateur||false):false;currentUser.division=ui?(ui.division||''):'';
         if(!isFormateur&&!isHG){document.getElementById('loading').style.display='none';document.getElementById('noAccess').style.display='block';return;}
         document.getElementById('userIdentification').textContent='Identification : '+[rang,currentUser.division,currentUser.matricule].filter(Boolean).join(' ');document.getElementById('userAvatar').textContent=currentUser.matricule.substring(0,3);
         document.getElementById('fDate').value=new Date().toISOString().substring(0,10);
-        document.getElementById('loading').style.display='none';document.getElementById('mainContent').style.display='block';
+        document.getElementById('loading').style.display='none';document.getElementById('mainContent').style.display='block';filterUnitsDropdown();
         try{allFormations=await ghLoadFormations();}catch(_){allFormations=[];}
         }catch(e){console.error(e);document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';}
       });

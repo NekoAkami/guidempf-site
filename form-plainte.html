@@ -128,6 +128,26 @@
         @keyframes spin-sync { to { transform: rotate(360deg); } }
         .sync-spinner { display: inline-block; animation: spin-sync 1s linear infinite; }
 
+        /* Sélection unités */
+        .units-selector { position: relative; }
+        .units-input-row { display: flex; align-items: center; gap: 0; }
+        .units-input-row input { flex: 1; border-radius: 2px 0 0 2px !important; }
+        .units-toggle-btn { padding: 0.5rem 0.6rem; background: rgba(231,76,60,0.12); border: 1px solid rgba(231,76,60,0.2); border-left: none; color: #e74c3c; cursor: pointer; font-size: 0.9rem; font-family: 'Share Tech Mono', monospace; border-radius: 0 2px 2px 0; transition: background 0.15s, border-color 0.15s; display: flex; align-items: center; justify-content: center; min-width: 32px; }
+        .units-toggle-btn:hover { background: rgba(231,76,60,0.25); border-color: #e74c3c; }
+        .units-toggle-btn.active { background: rgba(231,76,60,0.2); border-color: #e74c3c; }
+        .units-dropdown { display: none; position: absolute; left: 0; right: 0; top: 100%; background: #0a1628; border: 1px solid rgba(231,76,60,0.3); border-top: none; max-height: 200px; overflow-y: auto; z-index: 50; border-radius: 0 0 4px 4px; }
+        .units-dropdown.open { display: block; }
+        .units-dropdown-search { width: 100%; padding: 0.4rem 0.6rem; background: rgba(231,76,60,0.06); border: none; border-bottom: 1px solid rgba(231,76,60,0.15); color: var(--text-primary); font-family: 'Share Tech Mono', monospace; font-size: 0.78rem; outline: none; }
+        .units-dropdown-item { padding: 0.35rem 0.6rem; font-family: 'Share Tech Mono', monospace; font-size: 0.78rem; color: var(--text-primary); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: background 0.1s; }
+        .units-dropdown-item:hover { background: rgba(231,76,60,0.1); }
+        .units-dropdown-item.selected { background: rgba(231,76,60,0.15); }
+        .units-dropdown-item .unit-check { width: 14px; height: 14px; border: 1px solid rgba(231,76,60,0.4); border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: #e74c3c; flex-shrink: 0; }
+        .units-dropdown-item.selected .unit-check { background: rgba(231,76,60,0.2); border-color: #e74c3c; }
+        .units-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.4rem; }
+        .unit-tag { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.15rem 0.45rem; background: rgba(231,76,60,0.12); border: 1px solid rgba(231,76,60,0.25); border-radius: 2px; font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: #e74c3c; }
+        .unit-tag .remove-tag { cursor: pointer; color: #ff6666; font-size: 0.8rem; margin-left: 0.1rem; }
+        .unit-tag .remove-tag:hover { color: #ff4444; }
+
         #access-denied, #notApproved { display: none; text-align: center; padding: 3rem; }
     </style>
 </head>
@@ -193,8 +213,17 @@
 
                             <div class="form-group" id="grpCible">
                                 <label>MATRICULE DE L'UNITÉ VISÉE <span class="req">*</span></label>
-                                <input type="text" id="fCible" placeholder="Ex: 123" maxlength="3">
-                                <div class="hint">Le matricule (3 chiffres) de l'unité faisant l'objet de la plainte</div>
+                                <div class="units-selector" id="cibleSelectorWrapper">
+                                    <div class="units-input-row">
+                                        <input type="text" id="fCible" placeholder="Ex: 123" maxlength="3">
+                                        <button type="button" class="units-toggle-btn" id="cibleToggleBtn" onclick="toggleCibleDropdown()" title="Liste des unités">▼</button>
+                                    </div>
+                                    <div class="units-dropdown" id="cibleDropdown">
+                                        <input type="text" class="units-dropdown-search" id="cibleDropdownSearch" placeholder="Rechercher..." oninput="filterCibleDropdown()">
+                                        <div id="cibleDropdownList"></div>
+                                    </div>
+                                </div>
+                                <div class="hint">Saisissez le matricule ou utilisez ▼ pour sélectionner</div>
                                 <div class="error-msg" id="errCible"></div>
                             </div>
 
@@ -233,8 +262,18 @@
 
                             <div class="form-group">
                                 <label>TÉMOINS (MATRICULES)</label>
-                                <input type="text" id="fTemoins" placeholder="Ex: 456, 789">
-                                <div class="hint">Matricules des témoins séparés par des virgules (optionnel)</div>
+                                <div class="units-selector" id="temoinsSelectorWrapper">
+                                    <div class="units-input-row">
+                                        <input type="text" id="fTemoins" placeholder="Ex: 456, 789" onkeydown="onTemoinsInputKey(event)">
+                                        <button type="button" class="units-toggle-btn" id="temoinsToggleBtn" onclick="toggleTemoinsDropdown()" title="Liste des unités">▼</button>
+                                    </div>
+                                    <div class="units-dropdown" id="temoinsDropdown">
+                                        <input type="text" class="units-dropdown-search" id="temoinsDropdownSearch" placeholder="Rechercher une unité..." oninput="filterTemoinsDropdown()">
+                                        <div id="temoinsDropdownList"></div>
+                                    </div>
+                                    <div class="units-tags" id="temoinsTags"></div>
+                                </div>
+                                <div class="hint">Sélectionner les témoins via ▼ ou saisissez les matricules séparés par des virgules (optionnel)</div>
                             </div>
 
                             <div class="form-group">
@@ -290,10 +329,30 @@
       import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
       import { loadComplaints as ghLoadComplaints, addComplaint as ghAddComplaint, loadUnits as ghLoadUnits, onSyncStatus } from './assets/js/github-data.js';
 
-      let currentUser = null, allComplaints = [];
+      let currentUser = null, allComplaints = [], allUnitsData = [], selectedTemoins = new Set();
 
       function showAlert(t, type='success') { const e=document.getElementById('alertMsg'); e.style.display='block'; e.className='alert-msg '+type; e.textContent=t; setTimeout(()=>e.style.display='none',6000); }
       function fmtDate(d) { if(!d)return'-'; const p=d.split('-'); return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:d; }
+
+      /* === Dropdown Cible (sélection unique) === */
+      window.toggleCibleDropdown=function(){const dd=document.getElementById('cibleDropdown'),btn=document.getElementById('cibleToggleBtn');if(dd.classList.contains('open')){dd.classList.remove('open');btn.classList.remove('active');btn.textContent='▼';}else{dd.classList.add('open');btn.classList.add('active');btn.textContent='▲';document.getElementById('cibleDropdownSearch').value='';filterCibleDropdown();document.getElementById('cibleDropdownSearch').focus();}};
+      window.filterCibleDropdown=function(){const q=(document.getElementById('cibleDropdownSearch')?.value||'').toLowerCase();const list=document.getElementById('cibleDropdownList');if(!list)return;const cur=document.getElementById('fCible').value.trim();const filtered=allUnitsData.filter(u=>`${u.matricule} ${u.nom_steam||''} ${u.division||''} ${u.rang||''}`.toLowerCase().includes(q));list.innerHTML=filtered.length?filtered.map(u=>{const sel=u.matricule===cur?' selected':'';const divL=u.division?` <span style="color:var(--text-muted);font-size:0.7rem;">[${u.division}]</span>`:'';
+        return`<div class="units-dropdown-item${sel}" onclick="selectCible('${u.matricule}')"><span>${u.matricule} — ${u.nom_steam||'Inconnu'}${divL}</span></div>`;}).join(''):'<div style="padding:0.5rem;color:var(--text-muted);font-size:0.78rem;text-align:center;">Aucune unité trouvée</div>';};
+      window.selectCible=function(mat){document.getElementById('fCible').value=mat;toggleCibleDropdown();};
+
+      /* === Dropdown Témoins (sélection multiple) === */
+      window.toggleTemoinsDropdown=function(){const dd=document.getElementById('temoinsDropdown'),btn=document.getElementById('temoinsToggleBtn');if(dd.classList.contains('open')){dd.classList.remove('open');btn.classList.remove('active');btn.textContent='▼';}else{dd.classList.add('open');btn.classList.add('active');btn.textContent='▲';document.getElementById('temoinsDropdownSearch').value='';filterTemoinsDropdown();document.getElementById('temoinsDropdownSearch').focus();}};
+      window.filterTemoinsDropdown=function(){const q=(document.getElementById('temoinsDropdownSearch')?.value||'').toLowerCase();const list=document.getElementById('temoinsDropdownList');if(!list)return;const filtered=allUnitsData.filter(u=>`${u.matricule} ${u.nom_steam||''} ${u.division||''} ${u.rang||''}`.toLowerCase().includes(q));list.innerHTML=filtered.length?filtered.map(u=>{const sel=selectedTemoins.has(u.matricule)?' selected':'';const chk=selectedTemoins.has(u.matricule)?'✓':'';const divL=u.division?` <span style="color:var(--text-muted);font-size:0.7rem;">[${u.division}]</span>`:'';
+        return`<div class="units-dropdown-item${sel}" onclick="toggleTemoinSelection('${u.matricule}')"><span class="unit-check">${chk}</span><span>${u.matricule} — ${u.nom_steam||'Inconnu'}${divL}</span></div>`;}).join(''):'<div style="padding:0.5rem;color:var(--text-muted);font-size:0.78rem;text-align:center;">Aucune unité trouvée</div>';};
+      window.toggleTemoinSelection=function(mat){if(selectedTemoins.has(mat))selectedTemoins.delete(mat);else selectedTemoins.add(mat);renderTemoinsTags();filterTemoinsDropdown();syncTemoinsInput();};
+      window.removeTemoinTag=function(mat){selectedTemoins.delete(mat);renderTemoinsTags();filterTemoinsDropdown();syncTemoinsInput();};
+      function renderTemoinsTags(){const c=document.getElementById('temoinsTags');if(!selectedTemoins.size){c.innerHTML='';return;}c.innerHTML=Array.from(selectedTemoins).map(mat=>{const u=allUnitsData.find(x=>x.matricule===mat);const label=u?`${mat} (${u.nom_steam||'?'})`:mat;return`<span class="unit-tag">${label}<span class="remove-tag" onclick="removeTemoinTag('${mat}')">&times;</span></span>`;}).join('');}
+      function syncTemoinsInput(){document.getElementById('fTemoins').value=Array.from(selectedTemoins).join(', ');}
+      window.onTemoinsInputKey=function(e){if(e.key==='Enter'){e.preventDefault();parseManualTemoins();}};
+      function parseManualTemoins(){const raw=document.getElementById('fTemoins').value;const mats=raw.split(/[,;\s]+/).map(s=>s.trim()).filter(Boolean);mats.forEach(m=>{if(m)selectedTemoins.add(m);});syncTemoinsInput();renderTemoinsTags();filterTemoinsDropdown();}
+
+      /* Fermer les dropdowns au clic extérieur */
+      document.addEventListener('click',function(e){[{w:'cibleSelectorWrapper',dd:'cibleDropdown',btn:'cibleToggleBtn'},{w:'temoinsSelectorWrapper',dd:'temoinsDropdown',btn:'temoinsToggleBtn'}].forEach(cfg=>{const w=document.getElementById(cfg.w);if(w&&!w.contains(e.target)){const dd=document.getElementById(cfg.dd),btn=document.getElementById(cfg.btn);if(dd&&dd.classList.contains('open')){dd.classList.remove('open');btn.classList.remove('active');btn.textContent='▼';}}});});
 
       { const i=document.createElement('div');i.id='syncIndicator';i.className='sync-indicator hidden';document.body.appendChild(i);let t=null;
         onSyncStatus(s=>{clearTimeout(t);if(s==='syncing'){i.innerHTML='<span class="sync-spinner">⟳</span> Synchronisation...';i.className='sync-indicator syncing';}else if(s==='synced'){i.innerHTML='✓ Synchronisé';i.className='sync-indicator synced';t=setTimeout(()=>i.className='sync-indicator hidden',2500);}else{i.innerHTML='⚠ Erreur sync';i.className='sync-indicator error';t=setTimeout(()=>i.className='sync-indicator hidden',6000);}});
@@ -304,6 +363,8 @@
         let ok=true;
         ['grpCible','grpCategorie','grpDate','grpDescription'].forEach(id=>document.getElementById(id).classList.remove('error'));
 
+        // Parse témoins manuels
+        parseManualTemoins();
         const cible = document.getElementById('fCible').value.trim();
         if (!cible) { document.getElementById('grpCible').classList.add('error'); document.getElementById('errCible').textContent='Matricule requis'; ok=false; }
         const categorie = document.getElementById('fCategorie').value;
@@ -345,6 +406,7 @@
       window.resetForm = function() {
         ['fCible','fCategorie','fDateIncident','fLieu','fDescription','fTemoins','fPreuves'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
         ['grpCible','grpCategorie','grpDate','grpDescription'].forEach(id=>document.getElementById(id).classList.remove('error'));
+        selectedTemoins.clear();renderTemoinsTags();
       };
 
       function renderMyPlaintes() {
@@ -373,13 +435,14 @@
           const ud=s.data();
           if(!ud.approved){document.getElementById('loading').style.display='none';document.getElementById('notApproved').style.display='block';return;}
           currentUser={matricule:ud.matricule||'???',nom_steam:ud.nom_steam||''};
-          let ui=null;try{const u=await ghLoadUnits();ui=u.find(x=>x.matricule===currentUser.matricule)||null;}catch(_){}
+          let ui=null;try{const u=await ghLoadUnits();allUnitsData=u||[];ui=u.find(x=>x.matricule===currentUser.matricule)||null;}catch(_){}
           const rg=ui?(ui.rang||''):'';
           const dv=ui?(ui.division||''):'';
           document.getElementById('userIdentification').textContent='Identification : '+[rg,dv,currentUser.matricule].filter(Boolean).join(' ');
           document.getElementById('userAvatar').textContent=currentUser.matricule.substring(0,3);
           document.getElementById('loading').style.display='none';
           document.getElementById('mainContent').style.display='block';
+          filterCibleDropdown();filterTemoinsDropdown();
           try{allComplaints=await ghLoadComplaints();}catch(_){allComplaints=[];}
           renderMyPlaintes();
         }catch(e){console.error(e);document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';}

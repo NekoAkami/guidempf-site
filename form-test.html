@@ -79,6 +79,19 @@
         .sync-indicator.hidden { opacity: 0; }
         @keyframes spin-sync { to { transform: rotate(360deg); } }
         .sync-spinner { display: inline-block; animation: spin-sync 1s linear infinite; }
+        /* Sélection unité */
+        .units-selector { position: relative; }
+        .units-input-row { display: flex; align-items: center; gap: 0; }
+        .units-input-row input { flex: 1; border-radius: 2px 0 0 2px !important; }
+        .units-toggle-btn { padding: 0.5rem 0.6rem; background: rgba(0,170,255,0.12); border: 1px solid rgba(0,170,255,0.2); border-left: none; color: var(--accent-cyan); cursor: pointer; font-size: 0.9rem; font-family: 'Share Tech Mono', monospace; border-radius: 0 2px 2px 0; transition: background 0.15s, border-color 0.15s; display: flex; align-items: center; justify-content: center; min-width: 32px; }
+        .units-toggle-btn:hover { background: rgba(0,170,255,0.25); border-color: var(--accent-cyan); }
+        .units-toggle-btn.active { background: rgba(0,170,255,0.2); border-color: var(--accent-cyan); }
+        .units-dropdown { display: none; position: absolute; left: 0; right: 0; top: 100%; background: #0a1628; border: 1px solid rgba(0,170,255,0.3); border-top: none; max-height: 200px; overflow-y: auto; z-index: 50; border-radius: 0 0 4px 4px; }
+        .units-dropdown.open { display: block; }
+        .units-dropdown-search { width: 100%; padding: 0.4rem 0.6rem; background: rgba(0,170,255,0.06); border: none; border-bottom: 1px solid rgba(0,170,255,0.15); color: var(--text-primary); font-family: 'Share Tech Mono', monospace; font-size: 0.78rem; outline: none; }
+        .units-dropdown-item { padding: 0.35rem 0.6rem; font-family: 'Share Tech Mono', monospace; font-size: 0.78rem; color: var(--text-primary); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: background 0.1s; }
+        .units-dropdown-item:hover { background: rgba(0,170,255,0.1); }
+        .units-dropdown-item.selected { background: rgba(0,170,255,0.15); }
         #access-denied, #notApproved, #noAccess { display: none; text-align: center; padding: 3rem; }
     </style>
 </head>
@@ -120,7 +133,7 @@
                             <div class="combine-header"><h2>📝 ÉVALUATION D'UNITÉ</h2><span class="header-code">FORM-04</span></div>
                             <div class="combine-body">
                                 <div class="row-2">
-                                    <div class="form-group" id="grpMatricule"><label>MATRICULE DE L'UNITÉ TESTÉE <span class="req">*</span></label><input type="text" id="fMatricule" placeholder="Ex: 123" maxlength="3" pattern="\d{3}"><div class="hint">3 chiffres — XX - 0YY</div><div class="error-msg" id="errMatricule"></div></div>
+                                    <div class="form-group" id="grpMatricule"><label>MATRICULE DE L'UNITÉ TESTÉE <span class="req">*</span></label><div class="units-selector" id="unitsSelectorWrapper"><div class="units-input-row"><input type="text" id="fMatricule" placeholder="Ex: 123" maxlength="3" pattern="\d{3}"><button type="button" class="units-toggle-btn" id="unitsToggleBtn" onclick="toggleUnitsDropdown()" title="Liste des unités">▼</button></div><div class="units-dropdown" id="unitsDropdown"><input type="text" class="units-dropdown-search" id="unitsDropdownSearch" placeholder="Rechercher..." oninput="filterUnitsDropdown()"><div id="unitsDropdownList"></div></div></div><div class="hint">Saisissez le matricule ou utilisez ▼ pour sélectionner</div><div class="error-msg" id="errMatricule"></div></div>
                                     <div class="form-group" id="grpGrade"><label>GRADE ACTUEL <span class="req">*</span></label><select id="fGrade"><option value="">— Sélectionner —</option><option value="RCT">RCT (Recrue)</option><option value=".05">.05</option><option value=".04">.04</option><option value=".03">.03</option><option value="STB">STB</option><option value=".02">.02</option><option value=".01">.01</option><option value="DvL">DvL</option><option value="STBE">STBE</option><option value="CABAL">CABAL</option><option value="Ofc">Ofc</option><option value="Cmd">Cmd</option></select><div class="error-msg" id="errGrade"></div></div>
                                 </div>
                                 <div class="section-divider">▸ RÉSULTATS — La note la plus basse est 1, la meilleure est 4</div>
@@ -164,7 +177,7 @@
       import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
       import { loadUnits as ghLoadUnits, loadUnitTests as ghLoadUnitTests, addUnitTest as ghAddUnitTest, addReport as ghAddReport, onSyncStatus } from './assets/js/github-data.js';
 
-      let currentUser = null, allTests = [], ratings = {};
+      let currentUser = null, allTests = [], ratings = {}, allUnitsData = [];
       function showAlert(t, type='success') { const e=document.getElementById('alertMsg'); e.style.display='block'; e.className='alert-msg '+type; e.textContent=t; setTimeout(()=>e.style.display='none',6000); }
       function fmtDate(d) { if(!d)return'-'; const p=d.split('-'); return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:d; }
       function getAccreditation(r) { if(r==='RCT')return'Recrue';if(['.05','.04','.03','STB'].includes(r))return'MPF';if(['.02','.01','DvL','STBE','CABAL'].includes(r))return'MPEF';if(['Ofc','Cmd'].includes(r))return'HautGradé';return''; }
@@ -179,6 +192,31 @@
       window.selectRating = function(field, value) {
         ratings[field]=value;
         document.querySelectorAll(`.rating-scale[data-field="${field}"] .rating-option`).forEach(el=>{el.classList.toggle('selected',parseInt(el.dataset.value)===value);});
+      };
+      /* === Dropdown sélection unité === */
+      window.toggleUnitsDropdown = function() {
+        const dd=document.getElementById('unitsDropdown'),btn=document.getElementById('unitsToggleBtn');
+        if(dd.classList.contains('open')){dd.classList.remove('open');btn.classList.remove('active');btn.textContent='▼';}
+        else{dd.classList.add('open');btn.classList.add('active');btn.textContent='▲';document.getElementById('unitsDropdownSearch').value='';filterUnitsDropdown();document.getElementById('unitsDropdownSearch').focus();}
+      };
+      document.addEventListener('click',function(e){const w=document.getElementById('unitsSelectorWrapper');if(w&&!w.contains(e.target)){const dd=document.getElementById('unitsDropdown'),btn=document.getElementById('unitsToggleBtn');if(dd&&dd.classList.contains('open')){dd.classList.remove('open');btn.classList.remove('active');btn.textContent='▼';}}});
+      window.filterUnitsDropdown = function() {
+        const q=(document.getElementById('unitsDropdownSearch')?.value||'').toLowerCase();
+        const list=document.getElementById('unitsDropdownList');if(!list)return;
+        const cur=document.getElementById('fMatricule').value.trim();
+        const filtered=allUnitsData.filter(u=>`${u.matricule} ${u.nom_steam||''} ${u.division||''} ${u.rang||''}`.toLowerCase().includes(q));
+        list.innerHTML=filtered.length?filtered.map(u=>{
+          const sel=u.matricule===cur?' selected':'';
+          const divL=u.division?` <span style="color:var(--text-muted);font-size:0.7rem;">[${u.division}]</span>`:'';
+          const rangL=u.rang?` <span style="color:var(--accent-cyan);font-size:0.7rem;">${u.rang}</span>`:'';
+          return`<div class="units-dropdown-item${sel}" onclick="selectUnit('${u.matricule}')"><span>${u.matricule} — ${u.nom_steam||'Inconnu'}${rangL}${divL}</span></div>`;
+        }).join(''):'<div style="padding:0.5rem;color:var(--text-muted);font-size:0.78rem;text-align:center;">Aucune unité trouvée</div>';
+      };
+      window.selectUnit = function(mat) {
+        document.getElementById('fMatricule').value=mat;
+        const u=allUnitsData.find(x=>x.matricule===mat);
+        if(u&&u.rang){const gs=document.getElementById('fGrade');for(let o of gs.options){if(o.value===u.rang){gs.value=u.rang;break;}}}
+        toggleUnitsDropdown();
       };
       window.submitTest = async function() {
         if(!currentUser){showAlert('Erreur: utilisateur non identifié','error');return;}
@@ -226,12 +264,12 @@
       onAuthStateChanged(auth, async(user) => {
         if(!user){document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';return;}
         try{const s=await getDoc(doc(db,'users',user.uid));if(!s.exists()){document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';return;}const ud=s.data();if(!ud.approved){document.getElementById('loading').style.display='none';document.getElementById('notApproved').style.display='block';return;}
-        currentUser={matricule:ud.matricule||'???',nom_steam:ud.nom_steam||'',division:''};let ui=null;try{const u=await ghLoadUnits();ui=u.find(x=>x.matricule===currentUser.matricule)||null;}catch(_){}
+        currentUser={matricule:ud.matricule||'???',nom_steam:ud.nom_steam||'',division:''};let ui=null;try{const u=await ghLoadUnits();allUnitsData=u||[];ui=u.find(x=>x.matricule===currentUser.matricule)||null;}catch(_){}
         const rang=ui?(ui.rang||''):'';const isHG=rang==='Ofc'||rang==='Cmd';const isFormateur=ui?(ui.formateur||false):false;const acc=getAccreditation(rang);currentUser.division=ui?(ui.division||''):'';
         if(!isFormateur&&!isHG){document.getElementById('loading').style.display='none';document.getElementById('noAccess').style.display='block';return;}
         const dv=!isHG&&ui?(ui.division||''):'';document.getElementById('userIdentification').textContent='Identification : '+[rang,dv,currentUser.matricule].filter(Boolean).join(' ');document.getElementById('userAvatar').textContent=currentUser.matricule.substring(0,3);
         if(acc){let l='Accréditation : '+acc;if(isFormateur)l+=' — '+((acc==='MPF'||acc==='Recrue')?'Unité Formatrice MPF':'Unité Formatrice MPEF');document.getElementById('userAccreditation').textContent=l;}
-        document.getElementById('loading').style.display='none';document.getElementById('mainContent').style.display='block';
+        document.getElementById('loading').style.display='none';document.getElementById('mainContent').style.display='block';filterUnitsDropdown();
         try{allTests=await ghLoadUnitTests();}catch(_){allTests=[];}
         }catch(e){console.error(e);document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';}
       });
