@@ -155,6 +155,100 @@
 
                     </div>
 
+                    <!-- Annonces Dispatch -->
+                    <div style="margin-top: 2rem;">
+                        <div style="text-align: center; margin-bottom: 1.5rem;">
+                            <h3 style="font-family: 'Orbitron', sans-serif; color: var(--accent-cyan); font-size: 1rem; letter-spacing: 2px; text-transform: uppercase;">📢 ANNONCES DISPATCH</h3>
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.3rem;">Formulaires d'annonces et de gestion civile</p>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                            <a href="worker-announcement.html" class="dispatch-announce-btn">
+                                <span class="announce-icon">👷</span>
+                                <span class="announce-label">Worker Announcement</span>
+                            </a>
+                            <a href="ration-announcement.html" class="dispatch-announce-btn">
+                                <span class="announce-icon">🍞</span>
+                                <span class="announce-label">Ration Announcement</span>
+                            </a>
+                            <a href="suspended-rations.html" class="dispatch-announce-btn">
+                                <span class="announce-icon">🚫</span>
+                                <span class="announce-label">Suspended Rations</span>
+                            </a>
+                            <a href="social-infraction.html" class="dispatch-announce-btn">
+                                <span class="announce-icon">⚠️</span>
+                                <span class="announce-label">Social Infraction</span>
+                            </a>
+                            <a href="judgement-waiver.html" class="dispatch-announce-btn">
+                                <span class="announce-icon">⚖️</span>
+                                <span class="announce-label">Judgement Waiver</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <style>
+                        .dispatch-announce-btn {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            gap: 0.6rem;
+                            padding: 1.2rem 0.8rem;
+                            background: linear-gradient(180deg, rgba(0, 170, 255, 0.08) 0%, rgba(0, 170, 255, 0.02) 100%);
+                            border: 1px solid rgba(0, 170, 255, 0.2);
+                            border-radius: 8px;
+                            text-decoration: none;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                            position: relative;
+                            overflow: hidden;
+                            animation: announceFloat 3s ease-in-out infinite;
+                        }
+
+                        .dispatch-announce-btn:nth-child(2) { animation-delay: 0.4s; }
+                        .dispatch-announce-btn:nth-child(3) { animation-delay: 0.8s; }
+                        .dispatch-announce-btn:nth-child(4) { animation-delay: 1.2s; }
+                        .dispatch-announce-btn:nth-child(5) { animation-delay: 1.6s; }
+
+                        @keyframes announceFloat {
+                            0%, 100% { transform: translateY(0); box-shadow: 0 2px 10px rgba(0, 170, 255, 0.1); }
+                            50% { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0, 170, 255, 0.2); }
+                        }
+
+                        .dispatch-announce-btn::before {
+                            content: '';
+                            position: absolute;
+                            top: 0; left: -100%;
+                            width: 100%; height: 100%;
+                            background: linear-gradient(90deg, transparent, rgba(0, 170, 255, 0.1), transparent);
+                            transition: left 0.5s ease;
+                        }
+
+                        .dispatch-announce-btn:hover::before {
+                            left: 100%;
+                        }
+
+                        .dispatch-announce-btn:hover {
+                            border-color: var(--accent-cyan);
+                            background: linear-gradient(180deg, rgba(0, 170, 255, 0.15) 0%, rgba(0, 170, 255, 0.05) 100%);
+                            transform: translateY(-6px) !important;
+                            box-shadow: 0 10px 30px rgba(0, 170, 255, 0.3), 0 0 15px rgba(0, 170, 255, 0.1) !important;
+                            animation: none;
+                        }
+
+                        .announce-icon {
+                            font-size: 1.8rem;
+                        }
+
+                        .announce-label {
+                            font-family: 'Share Tech Mono', monospace;
+                            font-size: 0.75rem;
+                            color: var(--accent-cyan);
+                            text-align: center;
+                            font-weight: 600;
+                            letter-spacing: 0.5px;
+                            text-transform: uppercase;
+                        }
+                    </style>
+
                     <!-- Lien Codex -->
                     <div style="margin-top: 2rem; padding: 1.2rem; background: linear-gradient(135deg, rgba(66, 135, 245, 0.1), rgba(50, 205, 50, 0.05)); border-radius: 8px; text-align: center; border: 2px solid #4287f5;">
                         <div style="font-size: 1.1rem; color: var(--accent-cyan); font-weight: 700; margin-bottom: 0.5rem;">📘 GUIDE COMPLET DES CODES RADIO</div>

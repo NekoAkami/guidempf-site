@@ -411,12 +411,7 @@ class GlobalNavigation {
                     url: 'activite.html',
                     dropdown: [
                         { label: 'Tableaux Milice', url: 'activite-tableaux.html' },
-                        { label: 'Activité Milice', url: 'activite-milice.html' },
-                        { label: 'Worker Announcement', url: 'worker-announcement.html' },
-                        { label: 'Ration Announcement', url: 'ration-announcement.html' },
-                        { label: 'Suspended Rations', url: 'suspended-rations.html' },
-                        { label: 'Social Infraction', url: 'social-infraction.html' },
-                        { label: 'Judgement Waiver', url: 'judgement-waiver.html' }
+                        { label: 'Activité Milice', url: 'activite-milice.html' }
                     ]
                 },
                 {
