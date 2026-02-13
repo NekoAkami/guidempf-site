@@ -2,6 +2,32 @@
 // NAVIGATION GLOBALE - MPF COMBINE TERMINAL
 // ========================================
 
+// --- Anti-FOUT : preconnect + masquer body jusqu'au chargement des polices ---
+(function() {
+    // Preconnect pour accélérer le chargement des polices Google
+    ['https://fonts.googleapis.com', 'https://fonts.gstatic.com'].forEach(function(href) {
+        if (!document.querySelector('link[href="' + href + '"]')) {
+            var l = document.createElement('link');
+            l.rel = 'preconnect';
+            l.href = href;
+            if (href.includes('gstatic')) l.crossOrigin = 'anonymous';
+            document.head.appendChild(l);
+        }
+    });
+    // Afficher le body dès que les polices sont chargées (ou timeout 1.5s de sécurité)
+    function showBody() {
+        document.body.classList.add('fonts-ready');
+    }
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(showBody);
+    } else {
+        // Fallback pour navigateurs sans FontFaceSet API
+        showBody();
+    }
+    // Timeout de sécurité : si les polices ne chargent pas en 1.5s, on affiche quand même
+    setTimeout(showBody, 1500);
+})();
+
 class GlobalNavigation {
     constructor() {
         this.init();
