@@ -441,7 +441,7 @@ class GlobalNavigation {
                 label: 'RAPPORTS',
                 url: 'rapports.html',
                 dropdown: [
-                    { label: 'Tous les Rapports', url: 'rapports.html' },
+                    { label: 'Rapports', url: 'rapports.html' },
                     { label: 'Rapports Divisionnaires', url: 'rapports-divisionnaires.html' }
                 ]
             },
