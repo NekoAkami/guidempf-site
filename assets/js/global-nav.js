@@ -402,7 +402,6 @@ class GlobalNavigation {
                     ]
                 },
                 { label: 'SCANNER', url: 'scanner.html' },
-                { label: 'VIEWTIME', url: 'viewtime.html' },
                 { label: 'CARTE', url: 'carte.html' },
                 { label: 'À PROPOS', url: 'about.html' }
             ],
@@ -452,6 +451,7 @@ class GlobalNavigation {
                     ]
                 },
                 { label: 'PAYES', url: 'payes.html' },
+                { label: 'VIEWTIME', url: 'viewtime.html' },
                 { label: 'RADIO & MDP', url: 'radio.html' },
                 { label: 'ABSENCES', url: 'declaration-absence.html' },
                 { label: 'LIENS', url: 'liens.html' }
