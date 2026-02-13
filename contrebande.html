@@ -39,6 +39,17 @@
                 </div>
 
                 <div class="combine-body">
+                    <!-- Barre de recherche contrebande -->
+                    <div style="margin-bottom: 1.2rem;">
+                        <div style="position: relative;">
+                            <input type="text" id="cnb-filter" placeholder="Rechercher un item de contrebande... ex: arme, radio, ration..." 
+                                   style="width:100%;padding:0.6rem 1rem 0.6rem 2.4rem;background:rgba(0,170,255,0.05);border:1px solid rgba(0,170,255,0.3);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.85rem;outline:none;border-radius:4px;transition:border-color 0.3s;"
+                                   autocomplete="off">
+                            <span style="position:absolute;left:0.8rem;top:50%;transform:translateY(-50%);color:var(--accent-cyan);font-size:0.9rem;">&#128269;</span>
+                        </div>
+                        <div id="cnb-count" style="margin-top:0.4rem;font-size:0.75rem;color:var(--text-muted);font-family:'Share Tech Mono',monospace;"></div>
+                    </div>
+
                     <!-- Grille Ultra-Compacte 3 Niveaux -->
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0;">
                         
@@ -173,5 +184,49 @@
     <script src="assets/js/global-nav.js"></script>
     <script src="assets/js/interactive-system.js"></script>
     <script src="assets/js/combine-animations.js"></script>
+    <script>
+    (function() {
+        function initCnbFilter() {
+            const input = document.getElementById('cnb-filter');
+            const countDiv = document.getElementById('cnb-count');
+            if (!input) return;
+            const allItems = document.querySelectorAll('.card-content li');
+            const cards = document.querySelectorAll('.info-card');
+            const total = allItems.length;
+
+            function normalize(s) {
+                return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+            }
+
+            function filter() {
+                const q = normalize(input.value);
+                let visible = 0;
+                if (!q) {
+                    allItems.forEach(el => { el.style.display = ''; el.style.opacity = '1'; });
+                    cards.forEach(c => { c.style.display = ''; });
+                    countDiv.textContent = '';
+                    return;
+                }
+                const terms = q.split(/\s+/).filter(t => t.length > 0);
+                cards.forEach(card => {
+                    let cardVisible = 0;
+                    card.querySelectorAll('li').forEach(li => {
+                        const text = normalize(li.textContent);
+                        const match = terms.every(t => text.includes(t));
+                        li.style.display = match ? '' : 'none';
+                        li.style.opacity = match ? '1' : '0';
+                        if (match) cardVisible++;
+                    });
+                    card.style.display = cardVisible > 0 ? '' : 'none';
+                    visible += cardVisible;
+                });
+                countDiv.textContent = visible === 0 ? 'Aucun item trouvé.' : visible + ' / ' + total + ' items';
+            }
+            input.addEventListener('input', filter);
+        }
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initCnbFilter);
+        else initCnbFilter();
+    })();
+    </script>
 </body>
 </html>

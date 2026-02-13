@@ -42,7 +42,7 @@
 
                 <div style="text-align: center; margin: 1.5rem 0; padding: 1rem; background: rgba(0, 170, 255, 0.02); border: 1px solid rgba(0, 170, 255, 0.08);">
                     <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7;">
-                        Le systeme de <strong style="color: var(--accent-cyan);">Loyalisme</strong> organise la societe en fonction des <strong style="color: var(--text-primary);">Points de Loyaute (PL)</strong>. Chaque niveau offre des privileges specifiques et determine le statut social du citoyen.
+                        Le système de <strong style="color: var(--accent-cyan);">Loyalisme</strong> organise la societe en fonction des <strong style="color: var(--text-primary);">Points de Loyaute (PL)</strong>. Chaque niveau offre des privilèges specifiques et détermine le statut social du citoyen.
                     </p>
                 </div>
 
@@ -212,7 +212,7 @@
                             <ul>
                                 <li>Logement dans le CCH 4</li>
                                 <li>Ouvrir un commerce</li>
-                                <li>Malette autorisee</li>
+                                <li>Mallette autorisée</li>
                                 <li>Courrier a l'Administrateur</li>
                                 <li>Ration de niveau 1</li>
                                 <li>Costume court</li>
@@ -412,7 +412,7 @@
                 </div>
 
                 <div class="combine-footer">
-                    [REF: LOYALTY-PYRAMID-v4.0 // SYSTEME INTERACTIF ACTIF]
+                    [REF: LOYALTY-PYRAMID-v4.0 // SYSTÈME INTERACTIF ACTIF]
                 </div>
             </div>
         </div>
@@ -465,14 +465,31 @@
                         btn.style.color = '#000';
                     }
 
-                    // Filter cards
+                    // Filter cards with smooth transitions
                     cards.forEach(card => {
-                        card.style.display = (filter === 'all' || card.dataset.category === filter) ? '' : 'none';
+                        const show = (filter === 'all' || card.dataset.category === filter);
+                        card.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+                        if (show) {
+                            card.style.display = '';
+                            requestAnimationFrame(() => { card.style.opacity = '1'; card.style.transform = 'scale(1)'; });
+                        } else {
+                            card.style.opacity = '0';
+                            card.style.transform = 'scale(0.95)';
+                            setTimeout(() => { if (!show) card.style.display = 'none'; }, 250);
+                        }
                     });
 
-                    // Filter dividers
+                    // Filter dividers with smooth transitions
                     dividers.forEach(div => {
-                        div.style.display = (filter === 'all' || div.dataset.category === filter) ? '' : 'none';
+                        const show = (filter === 'all' || div.dataset.category === filter);
+                        div.style.transition = 'opacity 0.2s ease';
+                        if (show) {
+                            div.style.display = '';
+                            requestAnimationFrame(() => { div.style.opacity = '1'; });
+                        } else {
+                            div.style.opacity = '0';
+                            setTimeout(() => { if (!show) div.style.display = 'none'; }, 200);
+                        }
                     });
                 });
             });

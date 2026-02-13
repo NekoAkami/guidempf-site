@@ -322,7 +322,7 @@
 
       function getWeekReports() {
         const w = getWeekBounds();
-        return allReports.filter(r => (r.type_rapport || 'unite') === 'unite' && r.created_at >= w.start && r.created_at <= w.end);
+        return allReports.filter(r => (r.type_rapport || 'unité') === 'unité' && r.created_at >= w.start && r.created_at <= w.end);
       }
 
       function getWeekEarnings() {

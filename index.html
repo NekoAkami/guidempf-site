@@ -36,7 +36,7 @@
         <div class="container">
 
             <!-- Hero Section - Combine Nexus Briefing -->
-            <section class="combine-terminal-wrapper" style="margin-top: 1.5rem; border-left: 3px solid var(--accent-cyan);">
+            <section class="combine-terminal-wrapper hero-animate" style="margin-top: 1.5rem; border-left: 3px solid var(--accent-cyan);">
                 <div class="combine-header">
                     <h2 class="glitch-text" data-text="METROPOLICE FORCE">METROPOLICE FORCE</h2>
                     <span class="header-code">NEXUS // DOCUMENTATION CENTRALE</span>
@@ -45,7 +45,7 @@
                 <div style="padding: 1.5rem;">
                     <div style="display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;">
                         <div style="flex-shrink: 0; text-align: center;">
-                            <img src="assets/images/milice-logo-blue.png" alt="Milice Combine" style="width: 140px; height: auto; opacity: 0.9; filter: drop-shadow(0 0 10px rgba(0,170,255,0.3));">
+                            <img src="assets/images/milice-logo-blue.png" alt="Milice Combine" class="hero-logo" style="width: 140px; height: auto; opacity: 0.9; filter: drop-shadow(0 0 10px rgba(0,170,255,0.3));">
                         </div>
                         
                         <div style="flex: 1; min-width: 280px;">
@@ -161,7 +161,7 @@
                         <p style="color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5; margin: 0;">Codes, lois et documents officiels de la Combine.</p>
                     </a>
 
-                    <a href="procedures-generales.html" class="doc-card" style="background: var(--bg-card); border: 1px solid rgba(0, 204, 102, 0.15); padding: 1.1rem; text-decoration: none; display: block;">
+                    <a href="procedures.html" class="doc-card" style="background: var(--bg-card); border: 1px solid rgba(0, 204, 102, 0.15); padding: 1.1rem; text-decoration: none; display: block;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
                             <h3 style="font-family: 'Rajdhani', sans-serif; font-size: 1rem; color: var(--accent-green); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin: 0;">Procédures</h3>
                             <span class="status-dot online"></span>
@@ -273,7 +273,7 @@
         }
         .doc-card {
             position: relative;
-            transition: border-color 0.15s ease, background 0.15s ease;
+            transition: border-color 0.15s ease, background 0.15s ease, transform 0.2s ease, box-shadow 0.2s ease;
         }
         .doc-card::before {
             content: '';
@@ -287,9 +287,14 @@
         .doc-card:hover {
             border-color: rgba(0, 170, 255, 0.35) !important;
             background: var(--bg-card-hover) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 170, 255, 0.08);
         }
         .doc-card:hover::before {
             opacity: 0.4;
+        }
+        .doc-card:active {
+            transform: translateY(0);
         }
         #site-search:focus {
             border-color: var(--accent-cyan);
@@ -310,6 +315,22 @@
             font-size: 0.7rem;
             color: var(--text-muted);
             margin-left: 0.5rem;
+        }
+        /* Hero entry animation */
+        .hero-animate {
+            animation: heroSlideIn 0.6s ease-out both;
+        }
+        .hero-animate .hero-logo {
+            animation: heroLogoGlow 1.2s ease-out 0.3s both;
+        }
+        @keyframes heroSlideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes heroLogoGlow {
+            0% { filter: drop-shadow(0 0 0px rgba(0,170,255,0)); opacity: 0.5; }
+            50% { filter: drop-shadow(0 0 20px rgba(0,170,255,0.6)); opacity: 1; }
+            100% { filter: drop-shadow(0 0 10px rgba(0,170,255,0.3)); opacity: 0.9; }
         }
     </style>
 

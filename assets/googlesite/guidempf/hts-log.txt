@@ -1,0 +1,54 @@
+HTTrack3.49-2+htsswf+htsjava launched on Fri, 13 Feb 2026 04:10:01 at https://sites.google.com/view/guidempf/ +*[name].+sites.google.com/view/guidempf/*/* +*[name].+*.googleusercontent.com/*/* -*[name].-*.docs.google.com/*/* +*[name].-*.google.com/forms/*/* +*[name].-*.youtube.com/*/* +*[name].-*/*
+(winhttrack -qiC2%Ps2u1%s%uN0%I0p3DaK0H0%kf2A25000%f#f -F "Mozilla/4.5 (compatible; HTTrack 3.0x; Windows 98)" -%F "<!-- Mirrored from %s%s by HTTrack Website Copier/3.x [XR&CO'2014], %s -->" -%l "fr, en, *" https://sites.google.com/view/guidempf/ -O1 "F:\Mes Sites Web\guidempf" +*[name].+sites.google.com/view/guidempf/*/* +*[name].+*.googleusercontent.com/*/* -*[name].-*.docs.google.com/*/* +*[name].-*.google.com/forms/*/* +*[name].-*.youtube.com/*/* +*[name].-*/* )
+
+Information, Warnings and Errors reported for this mirror:
+note:	the hts-log.txt file, and hts-cache folder, may contain sensitive information,
+	such as username/password authentication for websites mirrored in this project
+	do not share these files/folders if you want these information to remain private
+
+04:10:46	Error: 	"Not Found" (404) at link https://sites.google.com/view/guidempf/POST (from https://sites.google.com/view/guidempf/)
+04:10:48	Error: 	"Not Found" (404) at link https://sites.google.com/view/guidempf/_/ss/ (from https://sites.google.com/view/guidempf/)
+04:11:41	Warning: 	HTML file (35330 bytes) retransferred due to lack of cache: https://sites.google.com/view/guidempf/activité/_/ss/
+04:11:42	Warning: 	HTML file (35347 bytes) retransferred due to lack of cache: https://sites.google.com/view/guidempf/cours-théoriques/_/ss/
+04:11:57	Warning: 	HTML file (35375 bytes) retransferred due to lack of cache: https://sites.google.com/view/guidempf/procédure-généales/_/ss/
+04:11:59	Error: 	"Not Found" (404) at link https://sites.google.com/view/guidempf/"https://docs.google.com/forms/d/e/1FAIpQLScZWBTDALrTfCuQK22t8wgJNPN8rZfW8rCrhkb_TebtIHm_8g/viewform" (from https://sites.google.com/view/guidempf/activité)
+04:11:59	Error: 	"Not Found" (404) at link https://sites.google.com/view/guidempf/"https://docs.google.com/forms/d/e/1FAIpQLSer-BzLy5Pld4mNA5GqGUmoQi8LnvDHh0ki0AlC5qJBwMvSjA/viewform" (from https://sites.google.com/view/guidempf/activité)
+04:11:59	Error: 	"Not Found" (404) at link https://sites.google.com/view/guidempf/"https://docs.google.com/forms/d/e/1FAIpQLSdbFBWhuiu6tGY2VYQuKtUo8dSx8B3aiiGsIsZuJfA51eqhbg/viewform" (from https://sites.google.com/view/guidempf/activité)
+04:11:59	Error: 	"Not Found" (404) at link https://sites.google.com/view/guidempf/"https://sites.google.com/view/guidempf/liens-utiles?authuser=0%22 (from https://sites.google.com/view/guidempf/activité)
+04:11:59	Error: 	"Not Found" (404) at link https://sites.google.com/view/guidempf/"https://docs.google.com/forms/d/e/1FAIpQLSfLJ28omVQ3etJD-okrgi5WeBLdxswoep2We9ADAHch4WHY8g/viewform" (from https://sites.google.com/view/guidempf/activité)
+04:11:59	Error: 	"Not Found" (404) at link https://sites.google.com/view/guidempf/activité/POST (from https://sites.google.com/view/guidempf/activité/tableaux-milice)
+04:11:59	Warning: 	Retry after error -4 (Interrupted transfer) at link https://sites.google.com/view/guidempf/activité/_/ss/ (from https://sites.google.com/view/guidempf/activité/tableaux-milice)
+04:11:59	Warning: 	HTML file (35330 bytes) retransferred due to lack of cache: https://sites.google.com/view/guidempf/activité/_/ss/
+04:11:59	Error: 	"Not Found" (404) at link https://sites.google.com/view/guidempf/cours-théoriques/POST (from https://sites.google.com/view/guidempf/cours-théoriques/rct)
+04:11:59	Warning: 	Retry after error -4 (Interrupted transfer) at link https://sites.google.com/view/guidempf/cours-théoriques/_/ss/ (from https://sites.google.com/view/guidempf/cours-théoriques/rct)
+04:11:59	Warning: 	HTML file (35347 bytes) retransferred due to lack of cache: https://sites.google.com/view/guidempf/cours-théoriques/_/ss/
+04:11:59	Error: 	"Not Found" (404) at link https://sites.google.com/view/guidempf/cours-théoriques/"https://sites.google.com/view/guidempf/guide/sociostatus?authuser=0%22 (from https://sites.google.com/view/guidempf/cours-théoriques/rct)
+04:11:59	Error: 	"Not Found" (404) at link https://sites.google.com/view/guidempf/cours-théoriques/"https://sites.google.com/view/guidempf/codex?authuser=0%22 (from https://sites.google.com/view/guidempf/cours-théoriques/rct)
+04:11:59	Error: 	"Not Found" (404) at link https://sites.google.com/view/guidempf/cours-théoriques/"https://sites.google.com/view/guidempf/guide/dispatch-hautparleur?authuser=0%22 (from https://sites.google.com/view/guidempf/cours-théoriques/03)
+04:11:59	Error: 	"Not Found" (404) at link https://sites.google.com/view/guidempf/"https://imgur.com/9KBxDGe.jpg" (from https://sites.google.com/view/guidempf/contrebande)
+04:11:59	Error: 	"Not Found" (404) at link https://sites.google.com/view/guidempf/"https://imgur.com/n1WO2IN.jpg" (from https://sites.google.com/view/guidempf/contrebande)
+04:11:59	Error: 	"Not Found" (404) at link https://sites.google.com/view/guidempf/"https://imgur.com/PdRiPeB.jpg" (from https://sites.google.com/view/guidempf/contrebande)
+04:11:59	Error: 	"Not Found" (404) at link https://sites.google.com/view/guidempf/"https://docs.google.com/spreadsheets/d/1WFhD2f9TRAPWpqfr_dqJ4Q7gu_QrkWqynOktHdLfQEk/edit?usp=drivesdk%22 (from https://sites.google.com/view/guidempf/liens-utiles)
+04:11:59	Error: 	"Not Found" (404) at link https://sites.google.com/view/guidempf/"https://forms.gle/99Hz5aPQX2JVxFzr9" (from https://sites.google.com/view/guidempf/liens-utiles)
+04:11:59	Error: 	"Not Found" (404) at link https://sites.google.com/view/guidempf/"https://docs.google.com/forms/d/e/1FAIpQLSdbFBWhuiu6tGY2VYQuKtUo8dSx8B3aiiGsIsZuJfA51eqhbg/viewform?usp=dialog%22 (from https://sites.google.com/view/guidempf/liens-utiles)
+04:11:59	Error: 	"Not Found" (404) at link https://sites.google.com/view/guidempf/guide/POST (from https://sites.google.com/view/guidempf/guide/dispatch-hautparleur)
+04:11:59	Error: 	"Not Found" (404) at link https://sites.google.com/view/guidempf/guide/_/ss/ (from https://sites.google.com/view/guidempf/guide/dispatch-hautparleur)
+04:11:59	Error: 	"Not Found" (404) at link https://sites.google.com/view/guidempf/guide/"https://sites.google.com/view/helixexogen/accueil?authuser=0%22 (from https://sites.google.com/view/guidempf/guide/divisions)
+04:11:59	Error: 	"Not Found" (404) at link https://sites.google.com/view/guidempf/guide/" (from https://sites.google.com/view/guidempf/guide/divisions)
+04:11:59	Error: 	"Not Found" (404) at link https://sites.google.com/view/guidempf/procédure-généales/POST (from https://sites.google.com/view/guidempf/procédure-généales/conscription)
+04:11:59	Warning: 	Retry after error -4 (Interrupted transfer) at link https://sites.google.com/view/guidempf/procédure-généales/_/ss/ (from https://sites.google.com/view/guidempf/procédure-généales/conscription)
+04:11:59	Warning: 	HTML file (35375 bytes) retransferred due to lack of cache: https://sites.google.com/view/guidempf/procédure-généales/_/ss/
+04:12:17	Error: 	"Not Found" (404) at link https://sites.google.com/view/guidempf/cwu/POST (from https://sites.google.com/view/guidempf/cwu/procedure-cwu-mpf)
+04:12:18	Error: 	"Not Found" (404) at link https://sites.google.com/view/guidempf/cwu/_/ss/ (from https://sites.google.com/view/guidempf/cwu/procedure-cwu-mpf)
+04:12:18	Warning: 	Retry after error -4 (Interrupted transfer) at link https://sites.google.com/view/guidempf/activité/_/ss/ (from https://sites.google.com/view/guidempf/activité/tableaux-milice)
+04:12:18	Warning: 	HTML file (35330 bytes) retransferred due to lack of cache: https://sites.google.com/view/guidempf/activité/_/ss/
+04:12:18	Warning: 	Retry after error -4 (Interrupted transfer) at link https://sites.google.com/view/guidempf/cours-théoriques/_/ss/ (from https://sites.google.com/view/guidempf/cours-théoriques/rct)
+04:12:18	Warning: 	HTML file (35347 bytes) retransferred due to lack of cache: https://sites.google.com/view/guidempf/cours-théoriques/_/ss/
+04:12:18	Warning: 	Retry after error -4 (Interrupted transfer) at link https://sites.google.com/view/guidempf/procédure-généales/_/ss/ (from https://sites.google.com/view/guidempf/procédure-généales/conscription)
+04:12:18	Warning: 	HTML file (35375 bytes) retransferred due to lack of cache: https://sites.google.com/view/guidempf/procédure-généales/_/ss/
+04:12:18	Error: 	"Interrupted transfer" (-4) after 2 retries at link https://sites.google.com/view/guidempf/activité/_/ss/ (from https://sites.google.com/view/guidempf/activité/tableaux-milice)
+04:12:18	Error: 	"Interrupted transfer" (-4) after 2 retries at link https://sites.google.com/view/guidempf/cours-théoriques/_/ss/ (from https://sites.google.com/view/guidempf/cours-théoriques/rct)
+04:12:18	Error: 	"Interrupted transfer" (-4) after 2 retries at link https://sites.google.com/view/guidempf/procédure-généales/_/ss/ (from https://sites.google.com/view/guidempf/procédure-généales/conscription)
+
+HTTrack Website Copier/3.49-2 mirror complete in 2 minutes 17 seconds : 71 links scanned, 36 files written (7820162 bytes overall), 37 files updated [4195801 bytes received at 30626 bytes/sec], 12248270 bytes transferred using HTTP compression in 62 files, ratio 19%
+(28 errors, 15 warnings, 0 messages)

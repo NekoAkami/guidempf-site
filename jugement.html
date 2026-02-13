@@ -114,6 +114,17 @@
                 </div>
 
                 <div class="combine-body">
+                    <!-- Recherche de verdicts -->
+                    <div style="margin-bottom: 1rem;">
+                        <div style="position: relative;">
+                            <input type="text" id="verdict-search" placeholder="Rechercher un verdict ou infraction... ex: vol, arme, meurtre..."
+                                   style="width:100%;padding:0.6rem 1rem 0.6rem 2.4rem;background:rgba(0,170,255,0.05);border:1px solid rgba(0,170,255,0.3);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.85rem;outline:none;border-radius:4px;transition:border-color 0.3s;"
+                                   autocomplete="off">
+                            <span style="position:absolute;left:0.8rem;top:50%;transform:translateY(-50%);color:var(--accent-cyan);font-size:0.9rem;">&#128269;</span>
+                        </div>
+                        <div id="verdict-count" style="margin-top:0.4rem;font-size:0.75rem;color:var(--text-muted);font-family:'Share Tech Mono',monospace;"></div>
+                    </div>
+
                     <!-- Boutons de Filtrage -->
                     <div style="display: flex; gap: 1rem; justify-content: center; margin: 1.5rem 0 2rem; flex-wrap: wrap;">
                         <button class="verdict-filter-btn active" data-filter="all" style="padding: 0.8rem 2rem; background: var(--accent-cyan); color: #000; border: 2px solid var(--accent-cyan); border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; font-family: 'Share Tech Mono', monospace;">
@@ -341,58 +352,74 @@
     <script src="assets/js/interactive-system.js"></script>
     <script src="assets/js/combine-animations.js"></script>
     <script>
-        // Filtrage des verdicts
         document.addEventListener('DOMContentLoaded', () => {
             const verdictFilterButtons = document.querySelectorAll('.verdict-filter-btn');
             const verdictCards = document.querySelectorAll('#verdicts-grid .info-card');
+            const searchInput = document.getElementById('verdict-search');
+            const countDiv = document.getElementById('verdict-count');
+            let activeFilter = 'all';
 
-        verdictFilterButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Retirer la classe active de tous les boutons
-                verdictFilterButtons.forEach(b => {
-                    b.classList.remove('active');
-                    if (b.dataset.filter === 'all') {
-                        b.style.background = 'rgba(0, 212, 255, 0.2)';
-                    } else if (b.dataset.filter === 'minor') {
-                        b.style.background = 'rgba(46, 204, 113, 0.2)';
-                    } else if (b.dataset.filter === 'serious') {
-                        b.style.background = 'rgba(243, 156, 18, 0.2)';
-                    } else if (b.dataset.filter === 'critical') {
-                        b.style.background = 'rgba(231, 76, 60, 0.2)';
+            function normalize(s) {
+                return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+            }
+
+            function applyFilters() {
+                const q = normalize(searchInput ? searchInput.value : '');
+                const terms = q ? q.split(/\s+/).filter(t => t.length > 0) : [];
+                let visible = 0;
+
+                verdictCards.forEach(card => {
+                    const categoryMatch = activeFilter === 'all' || card.dataset.category === activeFilter;
+                    let textMatch = true;
+                    if (terms.length > 0) {
+                        const text = normalize(card.textContent);
+                        textMatch = terms.every(t => text.includes(t));
+                    }
+                    const show = categoryMatch && textMatch;
+                    card.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+                    if (show) {
+                        card.style.display = '';
+                        requestAnimationFrame(() => { card.style.opacity = '1'; card.style.transform = 'scale(1)'; });
+                        visible++;
+                    } else {
+                        card.style.opacity = '0';
+                        card.style.transform = 'scale(0.95)';
+                        setTimeout(() => { if (!show) card.style.display = 'none'; }, 250);
                     }
                 });
 
-                // Ajouter la classe active au bouton cliqué
-                btn.classList.add('active');
-                if (btn.dataset.filter === 'all') {
-                    btn.style.background = 'var(--accent-cyan)';
-                    btn.style.color = '#000';
-                } else if (btn.dataset.filter === 'minor') {
-                    btn.style.background = '#2ecc71';
-                    btn.style.color = '#000';
-                } else if (btn.dataset.filter === 'serious') {
-                    btn.style.background = '#f39c12';
-                    btn.style.color = '#000';
-                } else if (btn.dataset.filter === 'critical') {
-                    btn.style.background = '#e74c3c';
-                    btn.style.color = '#fff';
-                }
-
-                // Filtrer les cartes
-                const filter = btn.dataset.filter;
-                verdictCards.forEach(card => {
-                    if (filter === 'all') {
-                        card.style.display = '';
+                if (countDiv) {
+                    if (terms.length > 0 || activeFilter !== 'all') {
+                        countDiv.textContent = visible === 0 ? 'Aucun verdict trouvé.' : visible + ' / ' + verdictCards.length + ' verdicts';
                     } else {
-                        if (card.dataset.category === filter) {
-                            card.style.display = '';
-                        } else {
-                            card.style.display = 'none';
-                        }
+                        countDiv.textContent = '';
                     }
+                }
+            }
+
+            verdictFilterButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    verdictFilterButtons.forEach(b => {
+                        b.classList.remove('active');
+                        const f = b.dataset.filter;
+                        if (f === 'all') { b.style.background = 'rgba(0, 212, 255, 0.2)'; b.style.color = ''; }
+                        else if (f === 'minor') { b.style.background = 'rgba(46, 204, 113, 0.2)'; b.style.color = '#2ecc71'; }
+                        else if (f === 'serious') { b.style.background = 'rgba(243, 156, 18, 0.2)'; b.style.color = '#f39c12'; }
+                        else if (f === 'critical') { b.style.background = 'rgba(231, 76, 60, 0.2)'; b.style.color = '#e74c3c'; }
+                    });
+                    btn.classList.add('active');
+                    const f = btn.dataset.filter;
+                    if (f === 'all') { btn.style.background = 'var(--accent-cyan)'; btn.style.color = '#000'; }
+                    else if (f === 'minor') { btn.style.background = '#2ecc71'; btn.style.color = '#000'; }
+                    else if (f === 'serious') { btn.style.background = '#f39c12'; btn.style.color = '#000'; }
+                    else if (f === 'critical') { btn.style.background = '#e74c3c'; btn.style.color = '#fff'; }
+
+                    activeFilter = f;
+                    applyFilters();
                 });
             });
-        });
+
+            if (searchInput) searchInput.addEventListener('input', applyFilters);
         });
     </script>
 </body>

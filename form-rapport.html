@@ -274,7 +274,7 @@
                                 <label>TYPE DE RAPPORT <span class="req">*</span></label>
                                 <div style="display:flex;gap:1.5rem;align-items:center;">
                                   <label style="display:flex;align-items:center;gap:0.4rem;">
-                                    <input type="radio" name="typeRapport" id="rapportUnite" value="unite" checked>
+                                    <input type="radio" name="typeRapport" id="rapportUnite" value="unité" checked>
                                     Rapport unité
                                   </label>
                                   <label style="display:flex;align-items:center;gap:0.4rem;">
@@ -699,11 +699,11 @@
           matricule: currentUser.matricule, nom_steam: currentUser.nom_steam||'',
           type: typeVal === 'Fouille' ? document.getElementById('fSousFouille').value : (typeVal === 'Conscription' ? document.getElementById('fSousConscription').value + ' (Conscription)' : (typeVal === 'Session de travail' ? document.getElementById('fSessionTravail').value + ' (Session de travail)' : typeVal)),
           secteur: document.getElementById('fSecteur').value.trim(),
-          unites: document.getElementById('fUnites').value.trim(),
+          unités: document.getElementById('fUnites').value.trim(),
           resume: document.getElementById('fResume').value.trim(),
           notes: document.getElementById('fNotes').value.trim(),
           created_at: new Date().toISOString().substring(0,10),
-          type_rapport: document.querySelector('input[name="typeRapport"]:checked')?.value || 'unite',
+          type_rapport: document.querySelector('input[name="typeRapport"]:checked')?.value || 'unité',
           division: currentUser.division || ''
         };
         // Ajouter nb citoyens si distribution ration

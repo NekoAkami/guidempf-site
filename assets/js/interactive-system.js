@@ -20,6 +20,10 @@ class InteractiveSystem {
         this.setupCardAnimations();
         this.setupScanlines();
         this.setupTooltips();
+        this.setupScrollReveal();
+        this.setupBackToTop();
+        this.setupPageEntry();
+        this.setupKeyboardShortcuts();
     }
 
     // ==================== SYSTÈME DE TABS ====================
@@ -177,6 +181,76 @@ class InteractiveSystem {
             });
         });
     }
+
+    // ==================== SCROLL REVEAL AUTO ====================
+    setupScrollReveal() {
+        const selectors = '.info-card, .combine-terminal-wrapper, .doc-card, .org-box, .section-divider, .code-grid, .accordion-section';
+        const elements = document.querySelectorAll(selectors);
+        if (elements.length === 0) return;
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('sr-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+        elements.forEach((el, i) => {
+            const delay = Math.min(i * 0.06, 0.5);
+            el.classList.add('sr-init');
+            el.style.transitionDelay = `${delay}s`;
+            observer.observe(el);
+        });
+    }
+
+    // ==================== BACK TO TOP ====================
+    setupBackToTop() {
+        const btn = document.createElement('button');
+        btn.className = 'back-to-top';
+        btn.setAttribute('aria-label', 'Retour en haut');
+        btn.innerHTML = '▲';
+        document.body.appendChild(btn);
+
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    btn.classList.toggle('visible', window.scrollY > 400);
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }, { passive: true });
+
+        btn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    // ==================== PAGE ENTRY ====================
+    setupPageEntry() {
+        const main = document.querySelector('main');
+        if (main) main.classList.add('page-entry');
+    }
+
+    // ==================== KEYBOARD SHORTCUTS ====================
+    setupKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '/' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
+                const search = document.querySelector('#siteSearch, #site-search, #codex-filter, [type="search"], .search-input');
+                if (search) {
+                    e.preventDefault();
+                    search.focus();
+                    search.select();
+                }
+            }
+            if (e.key === 'Escape' && ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+                document.activeElement.blur();
+            }
+        });
+    }
 }
 
 // ==================== UTILITAIRES ====================
@@ -255,14 +329,15 @@ class ScrollReveal {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('revealed');
+                    observer.unobserve(entry.target);
                 }
             });
         }, this.options);
 
-        this.elements.forEach(el => {
+        this.elements.forEach((el, i) => {
             el.style.opacity = '0';
-            el.style.transform = 'translateY(30px)';
-            el.style.transition = 'all 0.6s ease';
+            el.style.transform = 'translateY(25px)';
+            el.style.transition = `opacity 0.5s ease ${i * 0.07}s, transform 0.5s ease ${i * 0.07}s`;
             observer.observe(el);
         });
     }
@@ -274,6 +349,68 @@ style.textContent = `
     .revealed {
         opacity: 1 !important;
         transform: translateY(0) !important;
+    }
+    /* Scroll Reveal Init */
+    .sr-init {
+        opacity: 0;
+        transform: translateY(25px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .sr-visible {
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+    }
+    /* Back to Top Button */
+    .back-to-top {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 44px;
+        height: 44px;
+        background: rgba(4, 10, 20, 0.92);
+        border: 1px solid rgba(0, 170, 255, 0.3);
+        color: var(--accent-cyan, #0af);
+        font-size: 1.3rem;
+        cursor: pointer;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(12px);
+        transition: opacity 0.3s, visibility 0.3s, transform 0.3s, background 0.2s, border-color 0.2s;
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+    }
+    .back-to-top.visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+    .back-to-top:hover {
+        background: rgba(0, 170, 255, 0.15);
+        border-color: var(--accent-cyan, #0af);
+        transform: translateY(-2px);
+    }
+    /* Page Entry */
+    .page-entry {
+        animation: pageSlideIn 0.45s ease-out both;
+    }
+    @keyframes pageSlideIn {
+        from { opacity: 0; transform: translateY(18px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    /* Smooth filter item transitions */
+    .filter-animate {
+        transition: opacity 0.25s ease, transform 0.25s ease !important;
+    }
+    .filter-hidden {
+        opacity: 0 !important;
+        transform: scale(0.95) !important;
+        pointer-events: none;
+        position: absolute !important;
+        visibility: hidden;
     }
 `;
 document.head.appendChild(style);

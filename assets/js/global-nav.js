@@ -347,15 +347,17 @@ class GlobalNavigation {
                 label: 'GUIDE',
                 url: 'guide.html',
                 dropdown: [
-                    { label: 'Divisions MPF', url: 'divisions.html' },
-                    { label: 'Dispatch & Haut-parleur', url: 'guide-dispatch.html' },
                     { label: 'Terminologie', url: 'guide-terminologie.html' },
                     { label: 'Respect & Salutations', url: 'guide-respect.html' },
-                    { label: 'Code Vestimentaire', url: 'guide-vestimentaire.html' },
                     { label: 'Commandement', url: 'guide-commandement.html' },
-                    { label: 'Breches de Protocoles', url: 'guide-breches.html' },
-                    { label: 'Formations Complementaires', url: 'guide-formations.html' },
-                    { label: 'Sociostatus', url: 'guide-sociostatus.html' }
+                    { label: 'Dispatch & Haut-parleur', url: 'guide-dispatch.html' },
+                    { label: 'Code Vestimentaire', url: 'guide-vestimentaire.html' },
+                    { label: 'Formations Tactiques', url: 'guide-formations.html' },
+                    { label: 'Sociostatus', url: 'guide-sociostatus.html' },
+                    { label: 'Brèches & Sanctions', url: 'guide-breches.html' },
+                    { label: 'Équipement', url: 'equipment.html' },
+                    { label: 'Tactique', url: 'tactics.html' },
+                    { label: 'Unités & Grades', url: 'units.html' }
                 ]
             },
             {
@@ -385,18 +387,18 @@ class GlobalNavigation {
                 url: 'procedures.html',
                 dropdown: [
                     { label: 'Declarations MPF', url: 'declarations.html' },
-                    { label: 'Test de Loyaute', url: 'test-loyaute.html' },
+                    { label: 'Test de Loyauté', url: 'test-loyaute.html' },
                     { label: 'Conscription', url: 'procedure-conscription.html' },
-                    { label: 'Incarceration', url: 'procedure-incarceration.html' },
+                    { label: 'Incarcération', url: 'procedure-incarceration.html' },
                     { label: 'Dispatch Administrateur', url: 'procedure-dispatch-admin.html' },
-                    { label: 'Code 7 Escouade', url: 'procedure-code7.html' }
+                    { label: 'Code 7 & Escouade', url: 'procedure-code7.html' }
                 ]
             },
             {
                 label: 'CWU',
                 url: 'cwu.html',
                 dropdown: [
-                    { label: 'Procedure CWU-MPF', url: 'cwu-procedure.html' }
+                    { label: 'Procédure CWU-MPF', url: 'cwu-procedure.html' }
                 ]
             },
             {
@@ -404,7 +406,7 @@ class GlobalNavigation {
                 url: 'formulaires.html',
                 dropdown: [
                     { label: 'Rapport', url: 'form-rapport.html' },
-                    { label: 'Dépense et Gain', url: 'form-depot.html' },
+                    { label: 'Dépense & Gain', url: 'form-depot.html' },
                     { label: 'Test', url: 'form-test.html' },
                     { label: 'Formation', url: 'form-formation.html' }
                 ]
@@ -422,7 +424,8 @@ class GlobalNavigation {
             { label: 'VIEWTIME', url: 'viewtime.html' },
             { label: 'ABSENCES', url: 'declaration-absence.html' },
             { label: 'CARTE', url: 'carte.html' },
-            { label: 'LIENS', url: 'liens.html' }
+            { label: 'LIENS', url: 'liens.html' },
+            { label: 'À PROPOS', url: 'about.html' }
         ];
     }
 

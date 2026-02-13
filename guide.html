@@ -42,6 +42,10 @@
                     <p style="font-size: 0.92rem; color: var(--text-primary); line-height: 1.7; margin-bottom: 1rem;">
                         Ensemble des directives, protocoles et références destinés au personnel de la <strong style="color: var(--accent-cyan);">Metropolice Force</strong>. Chaque agent est tenu de maîtriser l'intégralité de ces manuels.
                     </p>
+                    <div style="display: flex; gap: 0.8rem; justify-content: center; margin-bottom: 0.5rem;">
+                        <button id="guide-expand-all" style="padding: 0.5rem 1.4rem; background: rgba(0,170,255,0.06); border: 1px solid rgba(0,170,255,0.2); color: var(--accent-cyan); font-family: 'Orbitron', sans-serif; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; cursor: pointer; transition: all 0.15s ease;">📂 Tout Ouvrir</button>
+                        <button id="guide-collapse-all" style="padding: 0.5rem 1.4rem; background: rgba(0,170,255,0.06); border: 1px solid rgba(0,170,255,0.2); color: var(--accent-cyan); font-family: 'Orbitron', sans-serif; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; cursor: pointer; transition: all 0.15s ease;">📁 Tout Fermer</button>
+                    </div>
                 </div>
 
                 <!-- Sections accordéon -->
@@ -157,5 +161,36 @@
     <script src="assets/js/interactive-system.js"></script>
     <script src="assets/js/combine-animations.js"></script>
     <script src="assets/js/accordion.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const expandBtn = document.getElementById('guide-expand-all');
+        const collapseBtn = document.getElementById('guide-collapse-all');
+        if (!expandBtn || !collapseBtn) return;
+
+        expandBtn.addEventListener('click', () => {
+            document.querySelectorAll('.accordion-section').forEach(section => {
+                const header = section.querySelector('.accordion-header');
+                const content = section.querySelector('.accordion-content');
+                if (header && content) {
+                    header.setAttribute('aria-expanded', 'true');
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    section.classList.add('active');
+                }
+            });
+        });
+
+        collapseBtn.addEventListener('click', () => {
+            document.querySelectorAll('.accordion-section').forEach(section => {
+                const header = section.querySelector('.accordion-header');
+                const content = section.querySelector('.accordion-content');
+                if (header && content) {
+                    header.setAttribute('aria-expanded', 'false');
+                    content.style.maxHeight = '0px';
+                    section.classList.remove('active');
+                }
+            });
+        });
+    });
+    </script>
 </body>
 </html>

@@ -231,7 +231,7 @@
         const week = getWeekBounds();
         const month = today.substring(0, 7);
         return allReports.filter(r => {
-          if ((r.type_rapport || 'unite') !== 'unite') return false; // Uniquement rapports unité
+          if ((r.type_rapport || 'unité') !== 'unité') return false; // Uniquement rapports unité
           if (currentPeriod === 'today' && r.created_at !== today) return false;
           if (currentPeriod === 'week' && (r.created_at < week.start || r.created_at > week.end)) return false;
           if (currentPeriod === 'month' && !r.created_at?.startsWith(month)) return false;
