@@ -615,6 +615,8 @@
           document.getElementById('loading').style.display = 'none';
           document.getElementById('adminContent').style.display = 'block';
           await loadUsers();
+          // Auto-refresh toutes les 30 secondes
+          setInterval(() => loadUsers(), 30000);
         } catch (err) {
           console.error('Admin auth error:', err);
           document.getElementById('loading').innerHTML = '<p style="color:#ff4444;">Erreur: ' + err.message + '</p>';
