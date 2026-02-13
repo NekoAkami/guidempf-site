@@ -265,66 +265,73 @@
         </div>
     </main>
 
-    <!-- Bouton flottant pour ouvrir le panneau Paliers -->
+    <!-- Bouton flottant Paliers -->
     <button id="paliersToggle" onclick="document.getElementById('paliersPanel').classList.toggle('open'); this.classList.toggle('active');" style="
         position: fixed; left: 0; top: 50%; transform: translateY(-50%); z-index: 1100;
-        writing-mode: vertical-rl; text-orientation: mixed;
-        background: rgba(4, 12, 22, 0.95); color: #00aaff; border: 1px solid rgba(0, 170, 255, 0.3); border-left: none;
-        padding: 0.8rem 0.4rem; font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; font-weight: 700;
-        letter-spacing: 0.1em; cursor: pointer; border-radius: 0 4px 4px 0;
-        transition: all 0.2s; backdrop-filter: blur(8px);
-    ">⚖ PALIERS</button>
+        background: linear-gradient(180deg, #0a1a2e 0%, #061222 100%);
+        border: 2px solid rgba(0, 170, 255, 0.5); border-left: none;
+        border-radius: 0 10px 10px 0;
+        padding: 1rem 0.6rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 3px 0 15px rgba(0, 170, 255, 0.3), 0 0 20px rgba(0, 170, 255, 0.1);
+        animation: paliersGlow 2s ease-in-out infinite;
+    ">
+        <span style="display: block; font-size: 1.4rem; margin-bottom: 0.5rem;">⚖️</span>
+        <span style="writing-mode: vertical-rl; text-orientation: mixed; font-family: 'Share Tech Mono', monospace; font-size: 0.7rem; font-weight: 700; color: #00aaff; letter-spacing: 0.15em; text-transform: uppercase;">PALIERS</span>
+    </button>
 
     <!-- Panneau latéral Paliers des Verdicts -->
     <div id="paliersPanel" style="
         position: fixed; left: 0; top: 0; bottom: 0; width: 280px; z-index: 1099;
-        background: rgba(4, 12, 22, 0.98); border-right: 1px solid rgba(0, 170, 255, 0.2);
-        backdrop-filter: blur(12px); box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
-        transform: translateX(-100%); transition: transform 0.25s ease;
+        background: linear-gradient(180deg, rgba(4, 12, 22, 0.99) 0%, rgba(2, 8, 16, 0.99) 100%);
+        border-right: 2px solid rgba(0, 170, 255, 0.3);
+        backdrop-filter: blur(15px); box-shadow: 5px 0 25px rgba(0, 0, 0, 0.6);
+        transform: translateX(-100%); transition: transform 0.3s ease;
         overflow-y: auto; padding: 0;
     ">
-        <div style="padding: 0.8rem; border-bottom: 1px solid rgba(0, 170, 255, 0.15); display: flex; align-items: center; justify-content: space-between;">
-            <span style="font-family: 'Orbitron', sans-serif; font-size: 0.7rem; font-weight: 700; color: #00aaff; letter-spacing: 0.05em;">PALIERS DES VERDICTS</span>
-            <button onclick="document.getElementById('paliersPanel').classList.remove('open'); document.getElementById('paliersToggle').classList.remove('active');" style="background: none; border: 1px solid rgba(0, 170, 255, 0.3); color: #00aaff; cursor: pointer; font-size: 0.7rem; padding: 0.2rem 0.5rem; font-family: 'Share Tech Mono', monospace;">✕</button>
+        <div style="padding: 1rem; border-bottom: 1px solid rgba(0, 170, 255, 0.2); display: flex; align-items: center; justify-content: space-between; background: rgba(0, 170, 255, 0.05);">
+            <span style="font-family: 'Orbitron', sans-serif; font-size: 0.65rem; font-weight: 700; color: #00aaff; letter-spacing: 1.5px; text-transform: uppercase;">⚖️ Paliers des Verdicts</span>
+            <button onclick="document.getElementById('paliersPanel').classList.remove('open'); document.getElementById('paliersToggle').classList.remove('active');" style="background: none; border: 1px solid rgba(0, 170, 255, 0.3); color: #00aaff; cursor: pointer; font-size: 0.75rem; padding: 0.2rem 0.5rem; font-family: 'Share Tech Mono', monospace; border-radius: 3px;">✕</button>
         </div>
 
         <div style="padding: 0;">
-            <div style="display: grid; grid-template-columns: 50px 1fr; border-bottom: 1px solid rgba(0, 212, 255, 0.1);">
-                <div style="background: rgba(0, 0, 0, 0.4); padding: 0.5rem; display: flex; align-items: center; justify-content: center; border-right: 1px solid rgba(0, 212, 255, 0.1);">
+            <div style="display: grid; grid-template-columns: 55px 1fr; border-bottom: 1px solid rgba(0, 212, 255, 0.08);">
+                <div style="background: rgba(0, 0, 0, 0.4); padding: 0.7rem 0.5rem; display: flex; align-items: center; justify-content: center; border-right: 1px solid rgba(0, 212, 255, 0.1);">
                     <span style="font-family: 'Orbitron'; font-size: 0.75rem; font-weight: 700; color: var(--accent-cyan);">RCT</span>
                 </div>
-                <div style="padding: 0.5rem 0.6rem;">
+                <div style="padding: 0.7rem 0.6rem;">
                     <span style="font-size: 0.7rem; color: var(--text-muted); font-style: italic;">AUCUN VERDICT</span>
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 50px 1fr; border-bottom: 1px solid rgba(0, 212, 255, 0.1);">
-                <div style="background: rgba(0, 0, 0, 0.4); padding: 0.5rem; display: flex; align-items: center; justify-content: center; border-right: 1px solid rgba(0, 212, 255, 0.1);">
+            <div style="display: grid; grid-template-columns: 55px 1fr; border-bottom: 1px solid rgba(0, 212, 255, 0.08);">
+                <div style="background: rgba(0, 0, 0, 0.4); padding: 0.7rem 0.5rem; display: flex; align-items: center; justify-content: center; border-right: 1px solid rgba(0, 212, 255, 0.1);">
                     <span style="font-family: 'Orbitron'; font-size: 0.75rem; font-weight: 700; color: var(--accent-cyan);">05</span>
                 </div>
-                <div style="padding: 0.5rem 0.6rem;">
+                <div style="padding: 0.7rem 0.6rem;">
                     <span style="font-size: 0.75rem; color: var(--text-primary); font-weight: 600;">V1, V2, V3</span>
-                    <div style="font-size: 0.65rem; color: var(--text-muted);">Délits mineurs</div>
+                    <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 0.2rem;">Délits mineurs</div>
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 50px 1fr; border-bottom: 1px solid rgba(0, 212, 255, 0.1);">
-                <div style="background: rgba(0, 0, 0, 0.4); padding: 0.5rem; display: flex; align-items: center; justify-content: center; border-right: 1px solid rgba(0, 212, 255, 0.1);">
+            <div style="display: grid; grid-template-columns: 55px 1fr; border-bottom: 1px solid rgba(0, 212, 255, 0.08);">
+                <div style="background: rgba(0, 0, 0, 0.4); padding: 0.7rem 0.5rem; display: flex; align-items: center; justify-content: center; border-right: 1px solid rgba(0, 212, 255, 0.1);">
                     <span style="font-family: 'Orbitron'; font-size: 0.75rem; font-weight: 700; color: var(--accent-cyan);">04</span>
                 </div>
-                <div style="padding: 0.5rem 0.6rem;">
+                <div style="padding: 0.7rem 0.6rem;">
                     <span style="font-size: 0.75rem; color: var(--text-primary); font-weight: 600;">V1 à V5</span>
                     <div style="font-size: 0.6rem; color: #ff9999; margin-top: 0.2rem;">⚠ Relocalisation si -31 PL</div>
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 50px 1fr;">
-                <div style="background: rgba(0, 0, 0, 0.4); padding: 0.5rem; display: flex; align-items: center; justify-content: center; border-right: 1px solid rgba(0, 212, 255, 0.1);">
+            <div style="display: grid; grid-template-columns: 55px 1fr;">
+                <div style="background: rgba(0, 0, 0, 0.4); padding: 0.7rem 0.5rem; display: flex; align-items: center; justify-content: center; border-right: 1px solid rgba(0, 212, 255, 0.1);">
                     <span style="font-family: 'Orbitron'; font-size: 0.75rem; font-weight: 700; color: #00ff88;">03+</span>
                 </div>
-                <div style="padding: 0.5rem 0.6rem;">
+                <div style="padding: 0.7rem 0.6rem;">
                     <span style="font-size: 0.75rem; color: #00ff88; font-weight: 700;">TOUS (V1-V7)</span>
-                    <div style="font-size: 0.65rem; color: var(--text-muted);">+ amputation</div>
+                    <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 0.2rem;">+ amputation</div>
                 </div>
             </div>
         </div>
@@ -332,7 +339,18 @@
 
     <style>
         #paliersPanel.open { transform: translateX(0); }
-        #paliersToggle.active { left: 280px; }
+        #paliersToggle.active { left: 280px; border-color: #00aaff; animation: none; }
+        #paliersToggle:hover {
+            background: linear-gradient(180deg, #0d2240 0%, #091830 100%);
+            border-color: #00aaff;
+            box-shadow: 5px 0 25px rgba(0, 170, 255, 0.5), 0 0 30px rgba(0, 170, 255, 0.2);
+            transform: translateY(-50%) translateX(3px);
+        }
+        #paliersToggle.active:hover { transform: translateY(-50%); }
+        @keyframes paliersGlow {
+            0%, 100% { box-shadow: 3px 0 15px rgba(0, 170, 255, 0.3), 0 0 20px rgba(0, 170, 255, 0.1); }
+            50% { box-shadow: 3px 0 20px rgba(0, 170, 255, 0.5), 0 0 30px rgba(0, 170, 255, 0.2); }
+        }
     </style>
 
     <script src="assets/js/global-nav.js"></script>
