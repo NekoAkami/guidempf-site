@@ -422,6 +422,19 @@ async function deleteEarning(docId) {
   return await deleteFromSubCollection('earnings', docId);
 }
 
+// ========== TESTS DE LOYAUTÉ (sous-collection) ==========
+async function loadLoyaltyTests() {
+  return await readSubCollection('loyalty_tests', 'created_at', 'desc');
+}
+
+async function addLoyaltyTest(test) {
+  return await addToSubCollection('loyalty_tests', test);
+}
+
+async function deleteLoyaltyTest(docId) {
+  return await deleteFromSubCollection('loyalty_tests', docId);
+}
+
 // ========== EXPORT ==========
 export {
   readJsonFile, writeJsonFile, onSyncStatus,
@@ -434,5 +447,6 @@ export {
   loadPayrollConfig, savePayrollConfig,
   loadPayrollArchives, addPayrollArchive, updatePayrollArchive, deletePayrollArchive,
   loadEarnings, addEarning, deleteEarning,
+  loadLoyaltyTests, addLoyaltyTest, deleteLoyaltyTest,
   GITHUB_OWNER, GITHUB_REPO
 };

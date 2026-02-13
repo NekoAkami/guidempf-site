@@ -11,6 +11,19 @@
     <link rel="stylesheet" href="assets/css/interactive-system.css">
     <link rel="stylesheet" href="assets/css/combine-animations.css">
     <style>
+        /* TABS */
+        .tabs-bar { display: flex; gap: 0; margin-top: 1.5rem; }
+        .tab-btn {
+            font-family: 'Orbitron', sans-serif; font-size: 0.72rem; letter-spacing: 2px; padding: 0.7rem 1.5rem;
+            background: rgba(0,0,0,0.3); border: 1px solid rgba(0,170,255,0.1); border-bottom: none;
+            color: var(--text-muted); cursor: pointer; transition: all 0.3s; border-radius: 6px 6px 0 0;
+        }
+        .tab-btn:hover { background: rgba(0,170,255,0.05); color: var(--text-secondary); }
+        .tab-btn.active { background: rgba(0,170,255,0.08); border-color: rgba(0,170,255,0.25); color: var(--accent-cyan); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* FORM */
         .proto-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 0.8rem 0; }
         @media (max-width: 768px) { .proto-grid { grid-template-columns: 1fr; } }
         .result-box { padding: 0.8rem; border-radius: 4px; }
@@ -84,15 +97,68 @@
             color: var(--accent-cyan); font-family: 'Share Tech Mono', monospace; font-size: 0.85rem;
             text-align: center; border-radius: 3px; outline: none;
         }
-        .copy-btn {
+        .submit-btn {
             display: block; width: 100%; margin-top: 1.2rem; padding: 0.8rem; font-family: 'Orbitron', sans-serif;
-            font-size: 0.8rem; letter-spacing: 3px; background: rgba(0,170,255,0.1); border: 1px solid rgba(0,170,255,0.3);
+            font-size: 0.8rem; letter-spacing: 3px; background: rgba(0,200,80,0.1); border: 1px solid rgba(0,200,80,0.3);
+            color: #00cc55; cursor: pointer; border-radius: 4px; transition: all 0.3s;
+        }
+        .submit-btn:hover { background: rgba(0,200,80,0.2); border-color: rgba(0,200,80,0.5); }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .copy-btn {
+            display: block; width: 100%; margin-top: 0.5rem; padding: 0.6rem; font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem; letter-spacing: 2px; background: rgba(0,170,255,0.06); border: 1px solid rgba(0,170,255,0.15);
             color: var(--accent-cyan); cursor: pointer; border-radius: 4px; transition: all 0.3s;
         }
-        .copy-btn:hover { background: rgba(0,170,255,0.2); border-color: rgba(0,170,255,0.5); }
+        .copy-btn:hover { background: rgba(0,170,255,0.15); border-color: rgba(0,170,255,0.3); }
         .result-type { margin-bottom: 0.4rem; padding: 0.5rem 0.6rem; background: rgba(0,0,0,0.15); border-radius: 3px; border-left: 2px solid rgba(0,170,255,0.2); }
         .result-type p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
         .result-type strong { color: var(--text-primary); }
+
+        /* ARCHIVES */
+        .archive-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin-top: 0.8rem; }
+        .archive-table th {
+            font-family: 'Share Tech Mono', monospace; font-size: 0.68rem; color: var(--accent-cyan);
+            letter-spacing: 1px; padding: 0.5rem 0.6rem; border-bottom: 1px solid rgba(0,170,255,0.15);
+            text-align: left; white-space: nowrap;
+        }
+        .archive-table td { padding: 0.5rem 0.6rem; border-bottom: 1px solid rgba(0,170,255,0.05); color: var(--text-muted); }
+        .archive-table tr:hover td { background: rgba(0,170,255,0.03); }
+        .badge-result { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; padding: 0.15rem 0.5rem; border-radius: 2px; letter-spacing: 1px; }
+        .badge-success { background: rgba(0,200,80,0.12); color: #00cc55; border: 1px solid rgba(0,200,80,0.3); }
+        .badge-failure { background: rgba(255,60,60,0.12); color: #ff4444; border: 1px solid rgba(255,60,60,0.3); }
+        .badge-pending { background: rgba(255,200,0,0.12); color: #ffc800; border: 1px solid rgba(255,200,0,0.3); }
+        .btn-detail {
+            font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; padding: 0.2rem 0.5rem;
+            background: rgba(0,170,255,0.08); border: 1px solid rgba(0,170,255,0.2); color: var(--accent-cyan);
+            cursor: pointer; border-radius: 3px; transition: all 0.2s;
+        }
+        .btn-detail:hover { background: rgba(0,170,255,0.15); }
+        .btn-delete-test {
+            font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; padding: 0.2rem 0.5rem;
+            background: rgba(255,60,60,0.08); border: 1px solid rgba(255,60,60,0.2); color: #ff4444;
+            cursor: pointer; border-radius: 3px; transition: all 0.2s; margin-left: 0.3rem;
+        }
+        .btn-delete-test:hover { background: rgba(255,60,60,0.15); }
+        .detail-modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000;
+            align-items: center; justify-content: center;
+        }
+        .detail-modal.show { display: flex; }
+        .detail-modal-content {
+            background: #0a1628; border: 1px solid rgba(0,170,255,0.2); border-radius: 6px;
+            max-width: 700px; width: 90%; max-height: 80vh; overflow-y: auto; padding: 1.5rem;
+        }
+        .detail-modal-content h3 { font-family: 'Orbitron', sans-serif; font-size: 0.85rem; color: var(--accent-cyan); margin-bottom: 1rem; }
+        .detail-row { display: flex; justify-content: space-between; padding: 0.3rem 0; border-bottom: 1px solid rgba(0,170,255,0.05); font-size: 0.78rem; }
+        .detail-row .lbl { color: var(--text-muted); }
+        .detail-row .val { color: var(--text-primary); }
+        .close-modal {
+            float: right; font-size: 1.2rem; color: var(--text-muted); cursor: pointer; background: none;
+            border: none; font-family: inherit;
+        }
+        .close-modal:hover { color: var(--text-primary); }
+        .empty-archive { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.8rem; }
+        .archive-count { font-family: 'Share Tech Mono', monospace; font-size: 0.68rem; color: var(--text-muted); }
     </style>
 </head>
 <body>
@@ -115,325 +181,407 @@
 
     <main>
         <div class="container">
-            <!-- PROTOCOLE -->
-            <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;">
-                <div class="combine-header">
-                    <h2>PROTOCOLE : TEST DE LOYAUTÉ</h2>
-                    <span class="header-code">RP / RRG.04</span>
+            <!-- ONGLETS -->
+            <div class="tabs-bar">
+                <button class="tab-btn active" onclick="switchTab('form')">TEST DE LOYAUTÉ</button>
+                <button class="tab-btn" onclick="switchTab('archives')">ARCHIVES</button>
+            </div>
+
+            <!-- ==================== TAB 1: FORMULAIRE ==================== -->
+            <div id="tab-form" class="tab-content active">
+                <!-- PROTOCOLE -->
+                <div class="combine-terminal-wrapper" style="border-radius: 0 6px 6px 6px;">
+                    <div class="combine-header">
+                        <h2>PROTOCOLE : TEST DE LOYAUTÉ</h2>
+                        <span class="header-code">RP / RRG.04</span>
+                    </div>
+                    <div class="combine-body">
+                        <div style="text-align:center;padding:0.6rem;background:rgba(255,60,60,0.05);border:1px solid rgba(255,60,60,0.15);border-radius:4px;margin-bottom:1rem;">
+                            <p style="font-size:0.82rem;color:#ff4444;font-weight:700;letter-spacing:2px;">⚠ HABILITATION REQUISE : UNITÉ 04 MINIMUM ⚠</p>
+                        </div>
+
+                        <div style="padding:0.6rem 0.8rem;background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.1);border-radius:4px;margin-bottom:1rem;">
+                            <p style="font-size:0.72rem;color:var(--accent-cyan);font-weight:700;letter-spacing:2px;margin-bottom:0.3rem;">DÉCLENCHEUR :</p>
+                            <p style="font-size:0.8rem;color:var(--text-muted);line-height:1.5;">Le protocole s'applique lorsqu'un <strong style="color:var(--text-primary);">Loyaliste de Rang 1</strong> ou un <strong style="color:var(--text-primary);">membre de la CWU</strong> reçoit une quantité excessive de verdicts.</p>
+                        </div>
+
+                        <div class="proto-grid">
+                            <div class="result-box result-success">
+                                <h4 style="color:#00cc55;">» RÉSULTAT : SUCCÈS</h4>
+                                <p>L'individu a prouvé sa fidélité aux valeurs de l'Union.</p>
+                                <p style="margin-top:0.3rem;"><strong style="color:#00cc55;">ACTION :</strong> Libération immédiate du sujet.</p>
+                            </div>
+                            <div class="result-box result-fail">
+                                <h4 style="color:#ff4444;">» RÉSULTAT : ÉCHEC</h4>
+                                <p>La milice interprétera une défaillance potentielle.</p>
+                                <p style="margin-top:0.3rem;"><strong style="color:#ff4444;">SANCTION IMMÉDIATE :</strong> Verdict Niveau 5 > Destitution de tous les grades [Retour statut Citoyen]</p>
+                                <p style="margin-top:0.3rem;font-size:0.72rem;color:#ffc800;">⚠ NOTE : L'échec ne signifie pas une mise à mort automatique.</p>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:0.8rem;">
+                            <div class="result-type"><p><strong>RÉSULTAT Anti-Citoyen/Citoyen :</strong> Rédiger un rapport + Verdict 5</p></div>
+                            <div class="result-type"><p><strong>RÉSULTAT LOYALISTE/CWU :</strong> Rédiger un rapport + transmettre au supérieur CWU/Administrateur pour évaluation</p></div>
+                            <div class="result-type"><p><strong>RÉSULTAT CWU :</strong> Rédiger rapport + transmettre aux Supérieurs PC → Superviseur → Administrateur</p></div>
+                        </div>
+
+                        <div class="warn-box" style="margin-top:1rem;">
+                            <p><strong>⚠ AVERTISSEMENT :</strong> Ce formulaire est un outil RP. Toute falsification ou utilisation abusive sera sanctionnée par le commandement.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="combine-body">
-                    <div style="text-align:center;padding:0.6rem;background:rgba(255,60,60,0.05);border:1px solid rgba(255,60,60,0.15);border-radius:4px;margin-bottom:1rem;">
-                        <p style="font-size:0.82rem;color:#ff4444;font-weight:700;letter-spacing:2px;">⚠ HABILITATION REQUISE : UNITÉ 04 MINIMUM ⚠</p>
-                    </div>
 
-                    <div style="padding:0.6rem 0.8rem;background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.1);border-radius:4px;margin-bottom:1rem;">
-                        <p style="font-size:0.72rem;color:var(--accent-cyan);font-weight:700;letter-spacing:2px;margin-bottom:0.3rem;">DÉCLENCHEUR :</p>
-                        <p style="font-size:0.8rem;color:var(--text-muted);line-height:1.5;">Le protocole s'applique lorsqu'un <strong style="color:var(--text-primary);">Loyaliste de Rang 1</strong> ou un <strong style="color:var(--text-primary);">membre de la CWU</strong> reçoit une quantité excessive de verdicts.</p>
+                <!-- FORMULAIRE -->
+                <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;" id="loyaltyForm">
+                    <div class="combine-header">
+                        <h2>FORMULAIRE DE LOYAUTÉ STANDARDISÉ</h2>
+                        <span class="header-code">ÉVALUATION COMPLÈTE</span>
                     </div>
+                    <div class="combine-body">
 
-                    <div class="proto-grid">
-                        <div class="result-box result-success">
-                            <h4 style="color:#00cc55;">» RÉSULTAT : SUCCÈS</h4>
-                            <p>L'individu a prouvé sa fidélité aux valeurs de l'Union.</p>
-                            <p style="margin-top:0.3rem;"><strong style="color:#00cc55;">ACTION :</strong> Libération immédiate du sujet.</p>
+                        <!-- IDENTIFICATION -->
+                        <div class="form-section">
+                            <p class="section-title">/// IDENTIFICATION SUJET</p>
+                            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.6rem;">
+                                <div class="form-field">
+                                    <label>NOM / MATRICULE</label>
+                                    <input type="text" id="subjectName" placeholder="Nom complet...">
+                                </div>
+                                <div class="form-field">
+                                    <label>CID DU SUJET</label>
+                                    <input type="text" id="subjectCID" placeholder="CID...">
+                                </div>
+                                <div class="form-field">
+                                    <label>CITOYEN</label>
+                                    <select id="subjectType">
+                                        <option value="">-- Sélectionner --</option>
+                                        <option value="Anti-Citoyen">Anti-Citoyen</option>
+                                        <option value="Citoyen">Citoyen</option>
+                                        <option value="Loyaliste">Loyaliste</option>
+                                        <option value="CWU">CWU</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
-                        <div class="result-box result-fail">
-                            <h4 style="color:#ff4444;">» RÉSULTAT : ÉCHEC</h4>
-                            <p>La milice interprétera une défaillance potentielle.</p>
-                            <p style="margin-top:0.3rem;"><strong style="color:#ff4444;">SANCTION IMMÉDIATE :</strong> Verdict Niveau 5 > Destitution de tous les grades [Retour statut Citoyen]</p>
-                            <p style="margin-top:0.3rem;font-size:0.72rem;color:#ffc800;">⚠ NOTE : L'échec ne signifie pas une mise à mort automatique.</p>
-                        </div>
-                    </div>
 
-                    <!-- Résultats par type -->
-                    <div style="margin-top:0.8rem;">
-                        <div class="result-type">
-                            <p><strong>RÉSULTAT Anti-Citoyen/Citoyen :</strong> Rédiger un rapport + Verdict 5</p>
-                        </div>
-                        <div class="result-type">
-                            <p><strong>RÉSULTAT LOYALISTE/CWU :</strong> Rédiger un rapport + transmettre au supérieur CWU/Administrateur pour évaluation</p>
-                        </div>
-                        <div class="result-type">
-                            <p><strong>RÉSULTAT CWU :</strong> Rédiger rapport + transmettre aux Supérieurs PC → Superviseur → Administrateur</p>
-                        </div>
-                    </div>
+                        <!-- SECTION 1: QCM -->
+                        <div class="form-section">
+                            <p class="section-title">/// 1. ÉCHELLE DE CONFORMITÉ (QCM)</p>
 
-                    <div class="warn-box" style="margin-top:1rem;">
-                        <p><strong>⚠ AVERTISSEMENT :</strong> Ce formulaire est un outil RP. Toute falsification ou utilisation abusive sera sanctionnée par le commandement.</p>
+                            <div class="likert-q">
+                                <p><strong>Q1 :</strong> Ressentez-vous de la nostalgie pour l'époque pré-Union ?</p>
+                                <div class="likert-options">
+                                    <label><input type="radio" name="q1" value="0"><span>Jamais (0)</span></label>
+                                    <label><input type="radio" name="q1" value="1"><span>Rarement (1)</span></label>
+                                    <label><input type="radio" name="q1" value="2"><span>Parfois (2)</span></label>
+                                    <label><input type="radio" name="q1" value="3"><span>Souvent (3)</span></label>
+                                    <label><input type="radio" name="q1" value="4"><span>Toujours (4)</span></label>
+                                </div>
+                            </div>
+                            <div class="likert-q">
+                                <p><strong>Q2 :</strong> Jugez-vous les mesures de rationnement suffisantes et justes ?</p>
+                                <div class="likert-options">
+                                    <label><input type="radio" name="q2" value="0"><span>Jamais (0)</span></label>
+                                    <label><input type="radio" name="q2" value="1"><span>Rarement (1)</span></label>
+                                    <label><input type="radio" name="q2" value="2"><span>Parfois (2)</span></label>
+                                    <label><input type="radio" name="q2" value="3"><span>Souvent (3)</span></label>
+                                    <label><input type="radio" name="q2" value="4"><span>Toujours (4)</span></label>
+                                </div>
+                            </div>
+                            <div class="likert-q">
+                                <p><strong>Q3 :</strong> Signaleriez-vous un membre de votre entourage pour une infraction mineure ?</p>
+                                <div class="likert-options">
+                                    <label><input type="radio" name="q3" value="0"><span>Jamais (0)</span></label>
+                                    <label><input type="radio" name="q3" value="1"><span>Rarement (1)</span></label>
+                                    <label><input type="radio" name="q3" value="2"><span>Parfois (2)</span></label>
+                                    <label><input type="radio" name="q3" value="3"><span>Souvent (3)</span></label>
+                                    <label><input type="radio" name="q3" value="4"><span>Toujours (4)</span></label>
+                                </div>
+                            </div>
+                            <div class="likert-q">
+                                <p><strong>Q4 :</strong> Pensez-vous que la Protection Civile agit pleinement pour votre sécurité ?</p>
+                                <div class="likert-options">
+                                    <label><input type="radio" name="q4" value="0"><span>Jamais (0)</span></label>
+                                    <label><input type="radio" name="q4" value="1"><span>Rarement (1)</span></label>
+                                    <label><input type="radio" name="q4" value="2"><span>Parfois (2)</span></label>
+                                    <label><input type="radio" name="q4" value="3"><span>Souvent (3)</span></label>
+                                    <label><input type="radio" name="q4" value="4"><span>Toujours (4)</span></label>
+                                </div>
+                            </div>
+                            <div class="likert-q">
+                                <p><strong>Q5 :</strong> Le Champ de Suppression est-il nécessaire pour pacifier nos territoires ?</p>
+                                <div class="likert-options">
+                                    <label><input type="radio" name="q5" value="0"><span>Jamais (0)</span></label>
+                                    <label><input type="radio" name="q5" value="1"><span>Rarement (1)</span></label>
+                                    <label><input type="radio" name="q5" value="2"><span>Parfois (2)</span></label>
+                                    <label><input type="radio" name="q5" value="3"><span>Souvent (3)</span></label>
+                                    <label><input type="radio" name="q5" value="4"><span>Toujours (4)</span></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 2: SÉMANTIQUE -->
+                        <div class="form-section">
+                            <p class="section-title">/// 2. ANALYSE SÉMANTIQUE</p>
+
+                            <div class="sem-q">
+                                <p class="q-text"><strong>Q6 [Oral] :</strong> Comment décririez-vous la Cité 17 ?</p>
+                                <p class="expected">Attendu : <strong class="good">Place, Sécurité, Devoir</strong> // Déviant : <strong class="bad">Liberté, Ami, Joie, Haine</strong></p>
+                                <div class="conform-btns">
+                                    <button type="button" class="btn-nonconforme" onclick="toggleConform(this,'q6')">NON-CONFORME</button>
+                                    <button type="button" class="btn-conforme" onclick="toggleConform(this,'q6')">CONFORME</button>
+                                </div>
+                                <input type="hidden" id="q6" value="">
+                            </div>
+                            <div class="sem-q">
+                                <p class="q-text"><strong>Q7 [Oral] :</strong> Que représente pour vous la Protection Civile ?</p>
+                                <p class="expected">Attendu : <strong class="good">Sécurité, Protection</strong> // Déviant : <strong class="bad">Peur, Abus, Oppression</strong><br><span style="color:#00cc55;font-size:0.65rem;">(Mention de Bienveilleur : CONFORME [+2])</span></p>
+                                <div class="conform-btns">
+                                    <button type="button" class="btn-nonconforme" onclick="toggleConform(this,'q7')">NON-CONFORME</button>
+                                    <button type="button" class="btn-conforme" onclick="toggleConform(this,'q7')">CONFORME</button>
+                                </div>
+                                <input type="hidden" id="q7" value="">
+                            </div>
+                            <div class="sem-q">
+                                <p class="q-text"><strong>Q8 :</strong> Que pensez-vous de ceux qui vivent hors des murs ?</p>
+                                <p class="expected">Attendu : <strong class="good">Menace, Dangereux, Hostile</strong> // Déviant : <strong class="bad">Liberté, Espoir, Meilleur</strong></p>
+                                <div class="conform-btns">
+                                    <button type="button" class="btn-nonconforme" onclick="toggleConform(this,'q8')">NON-CONFORME</button>
+                                    <button type="button" class="btn-conforme" onclick="toggleConform(this,'q8')">CONFORME</button>
+                                </div>
+                                <input type="hidden" id="q8" value="">
+                            </div>
+                            <div class="sem-q">
+                                <p class="q-text"><strong>Q9 :</strong> Quelle est la plus grande menace pour notre société ?</p>
+                                <p class="expected">Attendu : <strong class="good">Résistance, Contestation, Désobéissance</strong> // Déviant : <strong class="bad">Faim, Ration, Restriction</strong></p>
+                                <div class="conform-btns">
+                                    <button type="button" class="btn-nonconforme" onclick="toggleConform(this,'q9')">NON-CONFORME</button>
+                                    <button type="button" class="btn-conforme" onclick="toggleConform(this,'q9')">CONFORME</button>
+                                </div>
+                                <input type="hidden" id="q9" value="">
+                            </div>
+                        </div>
+
+                        <!-- SECTION 3: STRESS -->
+                        <div class="form-section">
+                            <p class="section-title">/// 3. MISES EN SITUATION (STRESS)</p>
+
+                            <div class="stress-q">
+                                <p class="q-text"><strong>Q10 :</strong> Le test de la "Confiance aveugle"</p>
+                                <p class="context">Ordre : Face au mur ! Activer Microphone ! Demander "Baissez-vous ?"</p>
+                                <div class="stress-result">
+                                    <button type="button" class="btn-fail" onclick="toggleStress(this,'q10')">A FUIS / FAIT (X)</button>
+                                    <button type="button" class="btn-pass" onclick="toggleStress(this,'q10')">CALME / NON RÉACTION (+4)</button>
+                                </div>
+                                <input type="hidden" id="q10" value="">
+                            </div>
+                            <div class="stress-q">
+                                <p class="q-text"><strong>Q11 :</strong> Le dilemme de la ration</p>
+                                <p class="context">Contexte : "Notre Nation ne vous a-t-elle pas donné de quoi survivre ?"</p>
+                                <div class="stress-result">
+                                    <button type="button" class="btn-fail" onclick="toggleStress(this,'q11')">AGITÉ / S'ÉNERVE FORT (X)</button>
+                                    <button type="button" class="btn-pass" onclick="toggleStress(this,'q11')">SOUMIS / OFFRE (ÉMOTION) (+4)</button>
+                                </div>
+                                <input type="hidden" id="q11" value="">
+                            </div>
+                            <div class="stress-q">
+                                <p class="q-text"><strong>Q12 :</strong> Le piège de l'obéissance auditive</p>
+                                <p class="context">Ordre : Ne parlez pas. Puis brèche verbale → réponse vs silence</p>
+                                <div class="stress-result">
+                                    <button type="button" class="btn-fail" onclick="toggleStress(this,'q12')">PARLE POUR RIEN (ÉCHEC) (X)</button>
+                                    <button type="button" class="btn-pass" onclick="toggleStress(this,'q12')">OBÉISSANCE STRICTE (RÉUSSITE) (+4)</button>
+                                </div>
+                                <input type="hidden" id="q12" value="">
+                            </div>
+                        </div>
+
+                        <!-- RÉSULTAT GLOBAL -->
+                        <div class="form-section">
+                            <p class="section-title">/// RÉSULTAT GLOBAL</p>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
+                                <div class="form-field">
+                                    <label>VERDICT FINAL</label>
+                                    <select id="verdictFinal">
+                                        <option value="">-- Sélectionner --</option>
+                                        <option value="SUCCÈS">SUCCÈS — Libération</option>
+                                        <option value="ÉCHEC">ÉCHEC — Verdict 5 / Destitution</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MATRICE DE CALCUL -->
+                        <div class="form-section">
+                            <p class="section-title">/// MATRICE DE CALCUL</p>
+                            <div class="matrix-grid">
+                                <div class="matrix-box" style="background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.12);">
+                                    <h4 style="color:var(--accent-cyan);">/// CONFORMITÉ IDÉOLOGIQUE</h4>
+                                    <p style="font-size:0.68rem;color:var(--text-muted);margin-bottom:0.4rem;">/10 Likert / Sémantique</p>
+                                    <div class="score-range"><span style="color:#00cc55;">08-10</span><span style="color:#00cc55;">OPTIMAL</span></div>
+                                    <div class="score-range"><span style="color:#ffc800;">05-08</span><span style="color:#ffc800;">INSTABLE</span></div>
+                                    <div class="score-range"><span style="color:#ff4444;">00-05</span><span style="color:#ff4444;">CRITIQUE</span></div>
+                                    <div class="score-input">
+                                        <span>→</span>
+                                        <input type="number" id="scoreIdeol" min="0" max="10" placeholder="0">
+                                        <span>/ 10</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-box" style="background:rgba(255,200,0,0.04);border:1px solid rgba(255,200,0,0.12);">
+                                    <h4 style="color:#ffc800;">/// RÉFLEXES & STRESS</h4>
+                                    <p style="font-size:0.68rem;color:var(--text-muted);margin-bottom:0.4rem;">/12 Peur en situation</p>
+                                    <div class="score-range"><span style="color:#00cc55;">12-12</span><span style="color:#00cc55;">SÛRE</span></div>
+                                    <div class="score-range"><span style="color:#ffc800;">08-08</span><span style="color:#ffc800;">MOYEN</span></div>
+                                    <div class="score-range"><span style="color:#ff4444;">00-08</span><span style="color:#ff4444;">FLOU</span></div>
+                                    <div class="score-input">
+                                        <span>→</span>
+                                        <input type="number" id="scoreStress" min="0" max="12" placeholder="0">
+                                        <span>/ 12</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Zone détails -->
+                        <div class="form-field" style="margin-top:0.8rem;">
+                            <label>DÉTAILS SUPPLÉMENTAIRES DU QUESTIONNAIRE</label>
+                            <textarea id="extraDetails" rows="4" placeholder="Détailler les réponses orales, observations comportementales..."></textarea>
+                        </div>
+
+                        <!-- BOUTONS -->
+                        <button class="submit-btn" id="btnSubmitTest">⟩ SOUMETTRE LE TEST DE LOYAUTÉ</button>
+                        <button class="copy-btn" id="btnCopy">COPIER LE RAPPORT</button>
+                        <p id="submitStatus" style="text-align:center;font-size:0.72rem;margin-top:0.4rem;display:none;"></p>
                     </div>
                 </div>
             </div>
 
-            <!-- FORMULAIRE DE LOYAUTÉ STANDARDISÉ -->
-            <div class="combine-terminal-wrapper" style="margin-top: 1.5rem;" id="loyaltyForm">
-                <div class="combine-header">
-                    <h2>FORMULAIRE DE LOYAUTÉ STANDARDISÉ</h2>
-                    <span class="header-code">ÉVALUATION COMPLÈTE</span>
-                </div>
-                <div class="combine-body">
-
-                    <!-- IDENTIFICATION -->
-                    <div class="form-section">
-                        <p class="section-title">/// IDENTIFICATION SUJET</p>
-                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.6rem;">
-                            <div class="form-field">
-                                <label>NOM / MATRICULE</label>
-                                <input type="text" id="subjectName" placeholder="Nom complet...">
-                            </div>
-                            <div class="form-field">
-                                <label>CID DU SUJET</label>
-                                <input type="text" id="subjectCID" placeholder="CID...">
-                            </div>
-                            <div class="form-field">
-                                <label>CITOYEN</label>
-                                <select id="subjectType">
-                                    <option value="">-- Sélectionner --</option>
-                                    <option value="Anti-Citoyen">Anti-Citoyen</option>
-                                    <option value="Citoyen">Citoyen</option>
-                                    <option value="Loyaliste">Loyaliste</option>
-                                    <option value="CWU">CWU</option>
-                                </select>
-                            </div>
-                        </div>
+            <!-- ==================== TAB 2: ARCHIVES ==================== -->
+            <div id="tab-archives" class="tab-content">
+                <div class="combine-terminal-wrapper" style="border-radius: 0 6px 6px 6px;">
+                    <div class="combine-header">
+                        <h2>ARCHIVES — TESTS DE LOYAUTÉ</h2>
+                        <span class="header-code archive-count" id="archiveCount">0 TEST(S)</span>
                     </div>
-
-                    <!-- SECTION 1: ÉCHELLE DE CONFORMITÉ QCM -->
-                    <div class="form-section">
-                        <p class="section-title">/// 1. ÉCHELLE DE CONFORMITÉ (QCM)</p>
-
-                        <div class="likert-q">
-                            <p><strong>Q1 :</strong> Ressentez-vous de la nostalgie pour l'époque pré-Union ?</p>
-                            <div class="likert-options">
-                                <label><input type="radio" name="q1" value="0"><span>Jamais (0)</span></label>
-                                <label><input type="radio" name="q1" value="1"><span>Rarement (1)</span></label>
-                                <label><input type="radio" name="q1" value="2"><span>Parfois (2)</span></label>
-                                <label><input type="radio" name="q1" value="3"><span>Souvent (3)</span></label>
-                                <label><input type="radio" name="q1" value="4"><span>Toujours (4)</span></label>
-                            </div>
+                    <div class="combine-body">
+                        <p style="font-size:0.75rem;color:var(--text-muted);font-family:'Share Tech Mono',monospace;margin-bottom:0.8rem;">
+                            ARCHIVES // HISTORIQUE_TESTS_LOYAUTÉ<br>
+                            ► CHARGEMENT: REGISTRE_COMPLET
+                        </p>
+                        <div id="archiveList">
+                            <div class="empty-archive">Chargement des archives...</div>
                         </div>
-
-                        <div class="likert-q">
-                            <p><strong>Q2 :</strong> Jugez-vous les mesures de rationnement suffisantes et justes ?</p>
-                            <div class="likert-options">
-                                <label><input type="radio" name="q2" value="0"><span>Jamais (0)</span></label>
-                                <label><input type="radio" name="q2" value="1"><span>Rarement (1)</span></label>
-                                <label><input type="radio" name="q2" value="2"><span>Parfois (2)</span></label>
-                                <label><input type="radio" name="q2" value="3"><span>Souvent (3)</span></label>
-                                <label><input type="radio" name="q2" value="4"><span>Toujours (4)</span></label>
-                            </div>
-                        </div>
-
-                        <div class="likert-q">
-                            <p><strong>Q3 :</strong> Signaleriez-vous un membre de votre entourage pour une infraction mineure ?</p>
-                            <div class="likert-options">
-                                <label><input type="radio" name="q3" value="0"><span>Jamais (0)</span></label>
-                                <label><input type="radio" name="q3" value="1"><span>Rarement (1)</span></label>
-                                <label><input type="radio" name="q3" value="2"><span>Parfois (2)</span></label>
-                                <label><input type="radio" name="q3" value="3"><span>Souvent (3)</span></label>
-                                <label><input type="radio" name="q3" value="4"><span>Toujours (4)</span></label>
-                            </div>
-                        </div>
-
-                        <div class="likert-q">
-                            <p><strong>Q4 :</strong> Pensez-vous que la Protection Civile agit pleinement pour votre sécurité ?</p>
-                            <div class="likert-options">
-                                <label><input type="radio" name="q4" value="0"><span>Jamais (0)</span></label>
-                                <label><input type="radio" name="q4" value="1"><span>Rarement (1)</span></label>
-                                <label><input type="radio" name="q4" value="2"><span>Parfois (2)</span></label>
-                                <label><input type="radio" name="q4" value="3"><span>Souvent (3)</span></label>
-                                <label><input type="radio" name="q4" value="4"><span>Toujours (4)</span></label>
-                            </div>
-                        </div>
-
-                        <div class="likert-q">
-                            <p><strong>Q5 :</strong> Le Champ de Suppression est-il nécessaire pour pacifier nos territoires ?</p>
-                            <div class="likert-options">
-                                <label><input type="radio" name="q5" value="0"><span>Jamais (0)</span></label>
-                                <label><input type="radio" name="q5" value="1"><span>Rarement (1)</span></label>
-                                <label><input type="radio" name="q5" value="2"><span>Parfois (2)</span></label>
-                                <label><input type="radio" name="q5" value="3"><span>Souvent (3)</span></label>
-                                <label><input type="radio" name="q5" value="4"><span>Toujours (4)</span></label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- SECTION 2: ANALYSE SÉMANTIQUE -->
-                    <div class="form-section">
-                        <p class="section-title">/// 2. ANALYSE SÉMANTIQUE</p>
-
-                        <div class="sem-q">
-                            <p class="q-text"><strong>Q6 [Oral] :</strong> Comment décririez-vous la Cité 17 ?</p>
-                            <p class="expected">Attendu : <strong class="good">Place, Sécurité, Devoir</strong> // Déviant : <strong class="bad">Liberté, Ami, Joie, Haine</strong></p>
-                            <div class="conform-btns">
-                                <button class="btn-nonconforme" onclick="toggleConform(this,'q6')">NON-CONFORME</button>
-                                <button class="btn-conforme" onclick="toggleConform(this,'q6')">CONFORME</button>
-                            </div>
-                            <input type="hidden" id="q6" value="">
-                        </div>
-
-                        <div class="sem-q">
-                            <p class="q-text"><strong>Q7 [Oral] :</strong> Que représente pour vous la Protection Civile ?</p>
-                            <p class="expected">Attendu : <strong class="good">Sécurité, Protection</strong> // Déviant : <strong class="bad">Peur, Abus, Oppression</strong><br><span style="color:#00cc55;font-size:0.65rem;">(Mention de Bienveilleur : CONFORME [+2])</span></p>
-                            <div class="conform-btns">
-                                <button class="btn-nonconforme" onclick="toggleConform(this,'q7')">NON-CONFORME</button>
-                                <button class="btn-conforme" onclick="toggleConform(this,'q7')">CONFORME</button>
-                            </div>
-                            <input type="hidden" id="q7" value="">
-                        </div>
-
-                        <div class="sem-q">
-                            <p class="q-text"><strong>Q8 :</strong> Que pensez-vous de ceux qui vivent hors des murs ?</p>
-                            <p class="expected">Attendu : <strong class="good">Menace, Dangereux, Hostile</strong> // Déviant : <strong class="bad">Liberté, Espoir, Meilleur</strong></p>
-                            <div class="conform-btns">
-                                <button class="btn-nonconforme" onclick="toggleConform(this,'q8')">NON-CONFORME</button>
-                                <button class="btn-conforme" onclick="toggleConform(this,'q8')">CONFORME</button>
-                            </div>
-                            <input type="hidden" id="q8" value="">
-                        </div>
-
-                        <div class="sem-q">
-                            <p class="q-text"><strong>Q9 :</strong> Quelle est la plus grande menace pour notre société ?</p>
-                            <p class="expected">Attendu : <strong class="good">Résistance, Contestation, Désobéissance</strong> // Déviant : <strong class="bad">Faim, Ration, Restriction</strong></p>
-                            <div class="conform-btns">
-                                <button class="btn-nonconforme" onclick="toggleConform(this,'q9')">NON-CONFORME</button>
-                                <button class="btn-conforme" onclick="toggleConform(this,'q9')">CONFORME</button>
-                            </div>
-                            <input type="hidden" id="q9" value="">
-                        </div>
-                    </div>
-
-                    <!-- SECTION 3: MISES EN SITUATION (STRESS) -->
-                    <div class="form-section">
-                        <p class="section-title">/// 3. MISES EN SITUATION (STRESS)</p>
-
-                        <div class="stress-q">
-                            <p class="q-text"><strong>Q10 :</strong> Le test de la "Confiance aveugle"</p>
-                            <p class="context">Ordre : Face au mur ! Activer Microphone ! Demander "Baissez-vous ?"</p>
-                            <div class="stress-result">
-                                <button class="btn-fail" onclick="toggleStress(this,'q10')">A FUIS / FAIT (X)</button>
-                                <button class="btn-pass" onclick="toggleStress(this,'q10')">CALME / NON RÉACTION (+4)</button>
-                            </div>
-                            <input type="hidden" id="q10" value="">
-                        </div>
-
-                        <div class="stress-q">
-                            <p class="q-text"><strong>Q11 :</strong> Le dilemme de la ration</p>
-                            <p class="context">Contexte : "Notre Nation ne vous a-t-elle pas donné de quoi survivre ?"</p>
-                            <div class="stress-result">
-                                <button class="btn-fail" onclick="toggleStress(this,'q11')">AGITÉ / S'ÉNERVE FORT (X)</button>
-                                <button class="btn-pass" onclick="toggleStress(this,'q11')">SOUMIS / OFFRE (ÉMOTION) (+4)</button>
-                            </div>
-                            <input type="hidden" id="q11" value="">
-                        </div>
-
-                        <div class="stress-q">
-                            <p class="q-text"><strong>Q12 :</strong> Le piège de l'obéissance auditive</p>
-                            <p class="context">Ordre : Ne parlez pas. Puis brèche verbale → réponse vs silence</p>
-                            <div class="stress-result">
-                                <button class="btn-fail" onclick="toggleStress(this,'q12')">PARLE POUR RIEN (ÉCHEC) (X)</button>
-                                <button class="btn-pass" onclick="toggleStress(this,'q12')">OBÉISSANCE STRICTE (RÉUSSITE) (+4)</button>
-                            </div>
-                            <input type="hidden" id="q12" value="">
-                        </div>
-                    </div>
-
-                    <!-- MATRICE DE CALCUL -->
-                    <div class="form-section">
-                        <p class="section-title">/// MATRICE DE CALCUL</p>
-                        <div class="matrix-grid">
-                            <div class="matrix-box" style="background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.12);">
-                                <h4 style="color:var(--accent-cyan);">/// CONFORMITÉ IDÉOLOGIQUE</h4>
-                                <p style="font-size:0.68rem;color:var(--text-muted);margin-bottom:0.4rem;">/10 Likert / Sémantique</p>
-                                <div class="score-range"><span style="color:#00cc55;">08-10</span><span style="color:#00cc55;">OPTIMAL</span></div>
-                                <div class="score-range"><span style="color:#ffc800;">05-08</span><span style="color:#ffc800;">INSTABLE</span></div>
-                                <div class="score-range"><span style="color:#ff4444;">00-05</span><span style="color:#ff4444;">CRITIQUE</span></div>
-                                <div class="score-input">
-                                    <span>→</span>
-                                    <input type="number" id="scoreIdeol" min="0" max="10" placeholder="0">
-                                    <span>/ 10</span>
-                                </div>
-                            </div>
-                            <div class="matrix-box" style="background:rgba(255,200,0,0.04);border:1px solid rgba(255,200,0,0.12);">
-                                <h4 style="color:#ffc800;">/// RÉFLEXES & STRESS</h4>
-                                <p style="font-size:0.68rem;color:var(--text-muted);margin-bottom:0.4rem;">/12 Peur en situation</p>
-                                <div class="score-range"><span style="color:#00cc55;">12-12</span><span style="color:#00cc55;">SÛRE</span></div>
-                                <div class="score-range"><span style="color:#ffc800;">08-08</span><span style="color:#ffc800;">MOYEN</span></div>
-                                <div class="score-range"><span style="color:#ff4444;">00-08</span><span style="color:#ff4444;">FLOU</span></div>
-                                <div class="score-input">
-                                    <span>→</span>
-                                    <input type="number" id="scoreStress" min="0" max="12" placeholder="0">
-                                    <span>/ 12</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- BOUTON COPIER -->
-                    <button class="copy-btn" onclick="copyReport()">COPIER LE RAPPORT</button>
-                    <p id="copyStatus" style="text-align:center;font-size:0.72rem;color:#00cc55;margin-top:0.4rem;display:none;">✓ Rapport copié dans le presse-papiers</p>
-
-                    <div style="margin-top:0.8rem;padding:0.5rem;background:rgba(0,170,255,0.03);border-radius:4px;">
-                        <p style="font-size:0.7rem;color:var(--text-muted);text-align:center;">En bas, tous détailler le questionnaire.</p>
-                    </div>
-
-                    <!-- Zone de texte pour détails -->
-                    <div class="form-field" style="margin-top:0.6rem;">
-                        <label>DÉTAILS SUPPLÉMENTAIRES DU QUESTIONNAIRE</label>
-                        <textarea id="extraDetails" rows="5" placeholder="Détailler les réponses orales, observations comportementales..."></textarea>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- MODAL DÉTAIL -->
+    <div class="detail-modal" id="detailModal">
+        <div class="detail-modal-content" id="detailContent"></div>
+    </div>
+
     <script src="assets/js/global-nav.js"></script>
     <script src="assets/js/interactive-system.js"></script>
     <script src="assets/js/combine-animations.js"></script>
-    <script>
-        function toggleConform(btn, qId) {
+
+    <script type="module">
+        import { requireAuth } from './assets/js/auth.js';
+        import { loadLoyaltyTests, addLoyaltyTest, deleteLoyaltyTest, addReport } from './assets/js/github-data.js';
+
+        let currentUser = null;
+        let allTests = [];
+
+        // ===== AUTH =====
+        try {
+            currentUser = await requireAuth(false);
+        } catch(e) { /* non connecté = lecture seule */ }
+
+        // ===== TABS =====
+        window.switchTab = function(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            document.querySelector(`.tab-btn[onclick="switchTab('${tab}')"]`).classList.add('active');
+            if (tab === 'archives') loadArchives();
+        };
+
+        // ===== FORM HELPERS =====
+        window.toggleConform = function(btn, qId) {
             const container = btn.parentElement;
             container.querySelectorAll('button').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             document.getElementById(qId).value = btn.classList.contains('btn-conforme') ? 'CONFORME' : 'NON-CONFORME';
-        }
+        };
 
-        function toggleStress(btn, qId) {
+        window.toggleStress = function(btn, qId) {
             const container = btn.parentElement;
             container.querySelectorAll('button').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             document.getElementById(qId).value = btn.classList.contains('btn-pass') ? 'RÉUSSITE' : 'ÉCHEC';
-        }
+        };
 
-        function copyReport() {
-            const name = document.getElementById('subjectName').value || 'N/A';
-            const cid = document.getElementById('subjectCID').value || 'N/A';
-            const type = document.getElementById('subjectType').value || 'N/A';
+        // ===== GATHER FORM DATA =====
+        function gatherFormData() {
+            const name = document.getElementById('subjectName').value.trim();
+            const cid = document.getElementById('subjectCID').value.trim();
+            const type = document.getElementById('subjectType').value;
+            const verdict = document.getElementById('verdictFinal').value;
 
-            let qcmLines = '';
+            if (!name || !cid || !type) return null;
+
+            const qcm = {};
+            const labels = ['Jamais','Rarement','Parfois','Souvent','Toujours'];
             for (let i = 1; i <= 5; i++) {
                 const sel = document.querySelector(`input[name="q${i}"]:checked`);
-                const labels = ['Jamais','Rarement','Parfois','Souvent','Toujours'];
-                qcmLines += `Q${i}: ${sel ? labels[parseInt(sel.value)] + ' (' + sel.value + ')' : 'Non répondu'}\n`;
+                qcm['q' + i] = sel ? { label: labels[parseInt(sel.value)], value: parseInt(sel.value) } : null;
             }
 
-            let semLines = '';
+            const semantique = {};
             for (let i = 6; i <= 9; i++) {
-                semLines += `Q${i}: ${document.getElementById('q'+i).value || 'Non évalué'}\n`;
+                semantique['q' + i] = document.getElementById('q' + i).value || '';
             }
 
-            let stressLines = '';
+            const stress = {};
             for (let i = 10; i <= 12; i++) {
-                stressLines += `Q${i}: ${document.getElementById('q'+i).value || 'Non évalué'}\n`;
+                stress['q' + i] = document.getElementById('q' + i).value || '';
             }
 
-            const scoreI = document.getElementById('scoreIdeol').value || '?';
-            const scoreS = document.getElementById('scoreStress').value || '?';
-            const details = document.getElementById('extraDetails').value || '';
+            return {
+                sujet_nom: name,
+                sujet_cid: cid,
+                sujet_type: type,
+                qcm,
+                semantique,
+                stress,
+                score_ideologique: parseInt(document.getElementById('scoreIdeol').value) || 0,
+                score_stress: parseInt(document.getElementById('scoreStress').value) || 0,
+                verdict: verdict || 'NON DÉTERMINÉ',
+                details: document.getElementById('extraDetails').value.trim(),
+                matricule: currentUser?.matricule || '???',
+                nom_steam: currentUser?.nom_steam || 'Inconnu',
+                created_at: new Date().toISOString().slice(0, 10)
+            };
+        }
 
-            const report = `═══ RAPPORT DE LOYAUTÉ STANDARDISÉ ═══
-SUJET: ${name}
-CID: ${cid}
-TYPE: ${type}
+        // ===== BUILD TEXT REPORT =====
+        function buildTextReport(data) {
+            if (!data) return '';
+            let qcmLines = '';
+            for (let i = 1; i <= 5; i++) {
+                const q = data.qcm['q'+i];
+                qcmLines += `Q${i}: ${q ? q.label + ' (' + q.value + ')' : 'Non répondu'}\n`;
+            }
+            let semLines = '';
+            for (let i = 6; i <= 9; i++) semLines += `Q${i}: ${data.semantique['q'+i] || 'Non évalué'}\n`;
+            let stressLines = '';
+            for (let i = 10; i <= 12; i++) stressLines += `Q${i}: ${data.stress['q'+i] || 'Non évalué'}\n`;
+
+            return `═══ RAPPORT DE LOYAUTÉ STANDARDISÉ ═══
+SUJET: ${data.sujet_nom}
+CID: ${data.sujet_cid}
+TYPE: ${data.sujet_type}
+ÉVALUATEUR: ${data.nom_steam} (${data.matricule})
 
 ── SECTION 1: CONFORMITÉ QCM ──
 ${qcmLines}
@@ -442,19 +590,196 @@ ${semLines}
 ── SECTION 3: STRESS ──
 ${stressLines}
 ── MATRICE DE CALCUL ──
-Conformité Idéologique: ${scoreI}/10
-Réflexes & Stress: ${scoreS}/12
+Conformité Idéologique: ${data.score_ideologique}/10
+Réflexes & Stress: ${data.score_stress}/12
+
+── VERDICT: ${data.verdict} ──
 
 ── DÉTAILS ──
-${details}
+${data.details || '(aucun)'}
 ═══════════════════════════════════`;
-
-            navigator.clipboard.writeText(report).then(() => {
-                const status = document.getElementById('copyStatus');
-                status.style.display = 'block';
-                setTimeout(() => { status.style.display = 'none'; }, 3000);
-            });
         }
+
+        // ===== SHOW STATUS =====
+        function showStatus(msg, color) {
+            const el = document.getElementById('submitStatus');
+            el.textContent = msg;
+            el.style.color = color;
+            el.style.display = 'block';
+            setTimeout(() => { el.style.display = 'none'; }, 4000);
+        }
+
+        // ===== SUBMIT =====
+        document.getElementById('btnSubmitTest').addEventListener('click', async () => {
+            if (!currentUser) { showStatus('⚠ Vous devez être connecté pour soumettre.', '#ff4444'); return; }
+
+            const data = gatherFormData();
+            if (!data) { showStatus('⚠ Remplissez au minimum : Nom, CID et Type du sujet.', '#ff4444'); return; }
+            if (!data.verdict || data.verdict === 'NON DÉTERMINÉ') { showStatus('⚠ Sélectionnez le verdict final.', '#ff4444'); return; }
+
+            const btn = document.getElementById('btnSubmitTest');
+            btn.disabled = true;
+            btn.textContent = 'ENVOI EN COURS...';
+
+            try {
+                // 1. Sauvegarder dans la sous-collection loyalty_tests
+                await addLoyaltyTest(data);
+
+                // 2. Créer aussi un rapport standard pour qu'il apparaisse dans les rapports
+                const rapport = {
+                    matricule: data.matricule,
+                    nom_steam: data.nom_steam,
+                    type: 'Test de loyauté',
+                    secteur: 'Nexus',
+                    unités: data.matricule,
+                    resume: `Test de loyauté sur ${data.sujet_nom} (CID: ${data.sujet_cid}, ${data.sujet_type}) — Verdict: ${data.verdict} — Idéologique: ${data.score_ideologique}/10, Stress: ${data.score_stress}/12`,
+                    notes: data.details,
+                    created_at: data.created_at,
+                    type_rapport: 'unité'
+                };
+                await addReport(rapport);
+
+                showStatus('✓ Test de loyauté soumis et rapport créé avec succès !', '#00cc55');
+                resetForm();
+            } catch (e) {
+                console.error(e);
+                showStatus('✗ Erreur lors de la soumission : ' + e.message, '#ff4444');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '⟩ SOUMETTRE LE TEST DE LOYAUTÉ';
+            }
+        });
+
+        // ===== COPY =====
+        document.getElementById('btnCopy').addEventListener('click', () => {
+            const data = gatherFormData();
+            if (!data) { showStatus('⚠ Remplissez le formulaire avant de copier.', '#ff4444'); return; }
+            const report = buildTextReport(data);
+            navigator.clipboard.writeText(report).then(() => {
+                showStatus('✓ Rapport copié dans le presse-papiers', '#00cc55');
+            });
+        });
+
+        // ===== RESET FORM =====
+        function resetForm() {
+            document.getElementById('subjectName').value = '';
+            document.getElementById('subjectCID').value = '';
+            document.getElementById('subjectType').value = '';
+            document.getElementById('verdictFinal').value = '';
+            document.getElementById('scoreIdeol').value = '';
+            document.getElementById('scoreStress').value = '';
+            document.getElementById('extraDetails').value = '';
+            for (let i = 1; i <= 5; i++) {
+                const checked = document.querySelector(`input[name="q${i}"]:checked`);
+                if (checked) checked.checked = false;
+            }
+            for (let i = 6; i <= 12; i++) document.getElementById('q' + i).value = '';
+            document.querySelectorAll('.conform-btns button, .stress-result button').forEach(b => b.classList.remove('active'));
+        }
+
+        // ===== ARCHIVES =====
+        async function loadArchives() {
+            const container = document.getElementById('archiveList');
+            try {
+                allTests = await loadLoyaltyTests();
+                document.getElementById('archiveCount').textContent = allTests.length + ' TEST(S)';
+
+                if (!allTests.length) {
+                    container.innerHTML = '<div class="empty-archive">Aucun test de loyauté archivé.</div>';
+                    return;
+                }
+
+                let html = `<table class="archive-table">
+                    <thead><tr>
+                        <th>DATE</th><th>ÉVALUATEUR</th><th>SUJET</th><th>CID</th><th>TYPE</th><th>SCORES</th><th>VERDICT</th><th>ACTIONS</th>
+                    </tr></thead><tbody>`;
+
+                for (const t of allTests) {
+                    const verdictClass = t.verdict === 'SUCCÈS' ? 'badge-success' : t.verdict === 'ÉCHEC' ? 'badge-failure' : 'badge-pending';
+                    html += `<tr>
+                        <td>${t.created_at || '—'}</td>
+                        <td>${t.nom_steam || '?'} (${t.matricule || '?'})</td>
+                        <td>${t.sujet_nom || '?'}</td>
+                        <td>${t.sujet_cid || '?'}</td>
+                        <td>${t.sujet_type || '?'}</td>
+                        <td style="white-space:nowrap;">${t.score_ideologique ?? '?'}/10 · ${t.score_stress ?? '?'}/12</td>
+                        <td><span class="badge-result ${verdictClass}">${t.verdict || '?'}</span></td>
+                        <td style="white-space:nowrap;">
+                            <button class="btn-detail" onclick="viewDetail('${t.id}')">Détails</button>
+                            ${currentUser?.is_admin ? `<button class="btn-delete-test" onclick="deleteTest('${t.id}')">✕</button>` : ''}
+                        </td>
+                    </tr>`;
+                }
+                html += '</tbody></table>';
+                container.innerHTML = html;
+            } catch(e) {
+                container.innerHTML = '<div class="empty-archive" style="color:#ff4444;">Erreur de chargement : ' + e.message + '</div>';
+            }
+        }
+
+        // ===== VIEW DETAIL =====
+        window.viewDetail = function(id) {
+            const t = allTests.find(x => x.id === id);
+            if (!t) return;
+            const labels = ['Jamais','Rarement','Parfois','Souvent','Toujours'];
+            let html = `<button class="close-modal" onclick="closeDetail()">✕</button>`;
+            html += `<h3>TEST DE LOYAUTÉ — ${t.sujet_nom}</h3>`;
+            html += `<div class="detail-row"><span class="lbl">Date</span><span class="val">${t.created_at}</span></div>`;
+            html += `<div class="detail-row"><span class="lbl">Évaluateur</span><span class="val">${t.nom_steam} (${t.matricule})</span></div>`;
+            html += `<div class="detail-row"><span class="lbl">Sujet</span><span class="val">${t.sujet_nom} — CID: ${t.sujet_cid}</span></div>`;
+            html += `<div class="detail-row"><span class="lbl">Type</span><span class="val">${t.sujet_type}</span></div>`;
+            html += `<p style="font-size:0.72rem;color:var(--accent-cyan);margin-top:0.8rem;letter-spacing:1px;">/// QCM</p>`;
+            const qLabels = [
+                'Nostalgie pré-Union',
+                'Rationnement juste',
+                'Signaler entourage',
+                'PC agit pour sécurité',
+                'Champ de Suppression'
+            ];
+            for (let i = 1; i <= 5; i++) {
+                const q = t.qcm?.['q'+i];
+                html += `<div class="detail-row"><span class="lbl">Q${i}: ${qLabels[i-1]}</span><span class="val">${q ? q.label + ' (' + q.value + ')' : '—'}</span></div>`;
+            }
+            html += `<p style="font-size:0.72rem;color:#b43cff;margin-top:0.8rem;letter-spacing:1px;">/// SÉMANTIQUE</p>`;
+            const semLabels = ['Décrire Cité 17','Protection Civile','Hors des murs','Plus grande menace'];
+            for (let i = 6; i <= 9; i++) {
+                html += `<div class="detail-row"><span class="lbl">Q${i}: ${semLabels[i-6]}</span><span class="val">${t.semantique?.['q'+i] || '—'}</span></div>`;
+            }
+            html += `<p style="font-size:0.72rem;color:#ffc800;margin-top:0.8rem;letter-spacing:1px;">/// STRESS</p>`;
+            const strLabels = ['Confiance aveugle','Dilemme ration','Obéissance auditive'];
+            for (let i = 10; i <= 12; i++) {
+                html += `<div class="detail-row"><span class="lbl">Q${i}: ${strLabels[i-10]}</span><span class="val">${t.stress?.['q'+i] || '—'}</span></div>`;
+            }
+            html += `<p style="font-size:0.72rem;color:var(--accent-cyan);margin-top:0.8rem;letter-spacing:1px;">/// SCORES</p>`;
+            html += `<div class="detail-row"><span class="lbl">Conformité Idéologique</span><span class="val">${t.score_ideologique}/10</span></div>`;
+            html += `<div class="detail-row"><span class="lbl">Réflexes & Stress</span><span class="val">${t.score_stress}/12</span></div>`;
+            const vc = t.verdict === 'SUCCÈS' ? '#00cc55' : '#ff4444';
+            html += `<div class="detail-row" style="margin-top:0.5rem;border-top:1px solid rgba(0,170,255,0.15);padding-top:0.5rem;"><span class="lbl" style="font-weight:700;">VERDICT</span><span class="val" style="color:${vc};font-weight:700;">${t.verdict}</span></div>`;
+            if (t.details) {
+                html += `<p style="font-size:0.72rem;color:var(--text-muted);margin-top:0.8rem;letter-spacing:1px;">/// DÉTAILS</p>`;
+                html += `<p style="font-size:0.78rem;color:var(--text-muted);white-space:pre-wrap;background:rgba(0,0,0,0.2);padding:0.5rem;border-radius:3px;">${t.details}</p>`;
+            }
+            document.getElementById('detailContent').innerHTML = html;
+            document.getElementById('detailModal').classList.add('show');
+        };
+
+        window.closeDetail = function() {
+            document.getElementById('detailModal').classList.remove('show');
+        };
+        document.getElementById('detailModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('detailModal')) closeDetail();
+        });
+
+        // ===== DELETE =====
+        window.deleteTest = async function(id) {
+            if (!confirm('Supprimer ce test de loyauté ?')) return;
+            try {
+                await deleteLoyaltyTest(id);
+                await loadArchives();
+            } catch(e) {
+                alert('Erreur : ' + e.message);
+            }
+        };
     </script>
 </body>
 </html>
