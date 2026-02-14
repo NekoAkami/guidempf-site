@@ -34,6 +34,23 @@ class GlobalNavigation {
     }
 
     async init() {
+        // Embed mode: skip all nav/header rendering when loaded inside an iframe
+        if (new URLSearchParams(window.location.search).has('embed')) {
+            document.documentElement.classList.add('embed-mode');
+            // Inject CSS to hide nav, header, search, floating panels
+            const embedCSS = document.createElement('style');
+            embedCSS.textContent = `
+                .embed-mode .site-header, .embed-mode header, .embed-mode .main-nav,
+                .embed-mode .search-container, .embed-mode .gp-floating-panel,
+                .embed-mode .gp-collapsed-tab, .embed-mode .back-button-container {
+                    display: none !important;
+                }
+                .embed-mode body, .embed-mode .container { padding-top: 0 !important; margin-top: 0 !important; }
+            `;
+            document.head.appendChild(embedCSS);
+            return; // Skip navigation entirely
+        }
+
         this.basePath = this.getBasePath();
         this.navOverride = null;
         this.injectFavicon();
@@ -111,23 +128,17 @@ class GlobalNavigation {
 
     _ensureRequiredPages(data) {
         let injected = false;
-        // Required pages that must exist in the RAPPORTS dropdown
-        const requiredInRapports = [
-            { label: 'Formation & Recrutement', url: 'formation-recrutement.html' }
-        ];
-        // Find or create RAPPORTS dropdown in row2
-        let rapportsItem = (data.row2 || []).find(item => item.label === 'RAPPORTS' || item.url === 'rapports.html');
-        if (rapportsItem) {
-            if (!rapportsItem.dropdown) rapportsItem.dropdown = [];
-            const existingUrls = new Set(rapportsItem.dropdown.map(d => d.url));
-            requiredInRapports.forEach(req => {
-                if (!existingUrls.has(req.url)) {
-                    rapportsItem.dropdown.push(req);
-                    injected = true;
-                }
-            });
+        // Ensure FORMATION & RECRUTEMENT exists as standalone in row2
+        const row2Urls = new Set((data.row2 || []).map(item => item.url));
+        if (!row2Urls.has('formation-recrutement.html')) {
+            data.row2.push({ label: 'FORMATION & RECRUTEMENT', url: 'formation-recrutement.html' });
+            injected = true;
         }
-        // (removed standalone RECRUTEMENT — now part of formation-recrutement.html)
+        // Remove Formation & Recrutement from RAPPORTS dropdown if present
+        let rapportsItem = (data.row2 || []).find(item => item.label === 'RAPPORTS' || item.url === 'rapports.html');
+        if (rapportsItem && rapportsItem.dropdown) {
+            rapportsItem.dropdown = rapportsItem.dropdown.filter(d => d.url !== 'formation-recrutement.html');
+        }
         return injected;
     }
 
@@ -854,8 +865,7 @@ class GlobalNavigation {
                     url: 'rapports.html',
                     dropdown: [
                         { label: 'Rapports', url: 'rapports.html' },
-                        { label: 'Rapports Divisionnaires', url: 'rapports-divisionnaires.html' },
-                        { label: 'Formation & Recrutement', url: 'formation-recrutement.html' }
+                        { label: 'Rapports Divisionnaires', url: 'rapports-divisionnaires.html' }
                     ]
                 },
                 { label: 'PAYES', url: 'payes.html' },
@@ -863,6 +873,7 @@ class GlobalNavigation {
                 { label: 'RADIO & MDP', url: 'radio.html' },
                 { label: 'ABSENCES', url: 'declaration-absence.html' },
                 { label: 'LIENS', url: 'liens.html' },
+                { label: 'FORMATION & RECRUTEMENT', url: 'formation-recrutement.html' },
             ]
         };
     }
