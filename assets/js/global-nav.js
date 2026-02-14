@@ -113,10 +113,7 @@ class GlobalNavigation {
         let injected = false;
         // Required pages that must exist in the RAPPORTS dropdown
         const requiredInRapports = [
-            { label: 'Formations', url: 'formations.html' },
-            { label: 'Tableau Formations', url: 'tableau-formations.html' },
-            { label: 'Information Milice', url: 'info-milice.html' },
-            { label: 'Recrutement', url: 'recrutement.html' }
+            { label: 'Formation & Recrutement', url: 'formation-recrutement.html' }
         ];
         // Find or create RAPPORTS dropdown in row2
         let rapportsItem = (data.row2 || []).find(item => item.label === 'RAPPORTS' || item.url === 'rapports.html');
@@ -130,12 +127,7 @@ class GlobalNavigation {
                 }
             });
         }
-        // Ensure RECRUTEMENT exists as standalone in row2
-        const row2Urls = new Set((data.row2 || []).map(item => item.url));
-        if (!row2Urls.has('recrutement.html')) {
-            data.row2.push({ label: 'RECRUTEMENT', url: 'recrutement.html' });
-            injected = true;
-        }
+        // (removed standalone RECRUTEMENT — now part of formation-recrutement.html)
         return injected;
     }
 
@@ -863,10 +855,7 @@ class GlobalNavigation {
                     dropdown: [
                         { label: 'Rapports', url: 'rapports.html' },
                         { label: 'Rapports Divisionnaires', url: 'rapports-divisionnaires.html' },
-                        { label: 'Formations', url: 'formations.html' },
-                        { label: 'Tableau Formations', url: 'tableau-formations.html' },
-                        { label: 'Information Milice', url: 'info-milice.html' },
-                        { label: 'Recrutement', url: 'recrutement.html' }
+                        { label: 'Formation & Recrutement', url: 'formation-recrutement.html' }
                     ]
                 },
                 { label: 'PAYES', url: 'payes.html' },
@@ -874,7 +863,6 @@ class GlobalNavigation {
                 { label: 'RADIO & MDP', url: 'radio.html' },
                 { label: 'ABSENCES', url: 'declaration-absence.html' },
                 { label: 'LIENS', url: 'liens.html' },
-                { label: 'RECRUTEMENT', url: 'recrutement.html' }
             ]
         };
     }
