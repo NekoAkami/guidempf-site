@@ -54,6 +54,25 @@
         .unit-card .unit-count{font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--text-muted);}
         .unit-card .unit-name{font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--text-primary);}
         .unit-card .unit-formations-list{font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--text-muted);margin-top:0.3rem;}
+        /* Tests HG */
+        .tests-table{width:100%;border-collapse:collapse;font-size:0.8rem;}
+        .tests-table th{text-align:left;padding:0.5rem 0.4rem;color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;font-size:0.68rem;letter-spacing:1px;border-bottom:2px solid rgba(0,170,255,0.2);user-select:none;}
+        .tests-table td{padding:0.4rem;color:var(--text-primary);border-bottom:1px solid rgba(0,170,255,0.06);font-family:'Share Tech Mono',monospace;vertical-align:middle;}
+        .tests-table tr:hover{background:rgba(0,170,255,0.03);cursor:pointer;}
+        .status-badge{display:inline-block;padding:0.1rem 0.4rem;border-radius:2px;font-size:0.68rem;font-weight:700;}
+        .status-badge.validated{background:rgba(0,200,80,0.15);color:#00cc55;border:1px solid rgba(0,200,80,0.3);}
+        .status-badge.pending{background:rgba(255,200,0,0.15);color:#ffc800;border:1px solid rgba(255,200,0,0.3);}
+        .status-badge.rejected{background:rgba(255,60,60,0.15);color:#ff4444;border:1px solid rgba(255,60,60,0.3);}
+        .avg-score{font-family:'Orbitron',sans-serif;font-weight:700;}
+        .hg-actions{display:flex;gap:0.4rem;}
+        .hg-btn{padding:0.2rem 0.5rem;font-family:'Share Tech Mono',monospace;font-size:0.7rem;cursor:pointer;border-radius:2px;border:1px solid;transition:all 0.15s;}
+        .hg-btn.validate{background:rgba(0,200,80,0.1);border-color:rgba(0,200,80,0.3);color:#00cc55;}
+        .hg-btn.validate:hover{background:rgba(0,200,80,0.2);}
+        .hg-btn.reject{background:rgba(255,60,60,0.1);border-color:rgba(255,60,60,0.3);color:#ff4444;}
+        .hg-btn.reject:hover{background:rgba(255,60,60,0.2);}
+        .hg-section{display:none;}
+        .delete-form-btn{padding:0.4rem 1rem;border:1px solid rgba(255,60,60,0.3);background:rgba(255,60,60,0.08);color:#ff4444;font-family:'Share Tech Mono',monospace;font-size:0.8rem;cursor:pointer;border-radius:3px;transition:all 0.15s;}
+        .delete-form-btn:hover{background:rgba(255,60,60,0.2);}
     </style>
 </head>
 <body>
@@ -111,6 +130,38 @@
                         </div>
                     </div>
 
+                    <!-- Tableau Tests HG -->
+                    <div class="hg-section" id="hgTestsSection">
+                        <div class="combine-terminal-wrapper">
+                            <div class="combine-header"><h2>📊 TESTS DES UNITÉS — VALIDATION</h2><span class="header-code" id="testCount">0</span></div>
+                            <div class="combine-body">
+                                <div class="filter-bar">
+                                    <input type="text" id="testSearchInput" placeholder="Rechercher par matricule, évaluateur, statut..." autocomplete="off">
+                                    <select id="filterTestStatus">
+                                        <option value="">Tous les statuts</option>
+                                        <option value="en_attente">En attente</option>
+                                        <option value="valide">Validé</option>
+                                        <option value="rejete">Rejeté</option>
+                                    </select>
+                                </div>
+                                <div class="table-scroll">
+                                    <table class="tests-table">
+                                        <thead><tr>
+                                            <th>DATE</th>
+                                            <th>UNITÉ</th>
+                                            <th>GRADE</th>
+                                            <th>MOYENNE</th>
+                                            <th>ÉVALUATEUR</th>
+                                            <th>STATUT</th>
+                                            <th>ACTIONS</th>
+                                        </tr></thead>
+                                        <tbody id="testsBody"><tr><td colspan="7" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Formations par unité -->
                     <div class="unit-formations-section">
                         <div class="combine-terminal-wrapper">
@@ -135,10 +186,11 @@
       import { auth, db } from './assets/js/auth.js';
       import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
       import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-      import { loadFormations, loadUnits } from './assets/js/github-data.js';
+      import { loadFormations, loadUnits, loadUnitTests, updateUnitTest, deleteFormation as ghDeleteFormation, updateFormation as ghUpdateFormation } from './assets/js/github-data.js';
 
-      let allFormations = [], allUnits = [];
+      let allFormations = [], allUnits = [], allTests = [];
       let sortField = 'date', sortDir = 'desc';
+      let currentUserData = null, isHG = false, isAdmin = false;
 
       function fmtDate(d) {
         if (!d) return '-';
@@ -239,6 +291,7 @@
         const f = allFormations.find(x => x._id === id);
         if (!f) return;
         const rc = f.resultat === 'Réussi' ? '#00cc55' : (f.resultat === 'Échoué' ? '#ff4444' : '#ffc800');
+        const canDelete = isHG || isAdmin || (currentUserData && f.formateur_matricule === currentUserData.matricule);
         const o = document.createElement('div');
         o.className = 'detail-overlay';
         o.innerHTML = `<div class="detail-box">
@@ -250,6 +303,112 @@
           <div class="detail-row"><span class="detail-label">RÉSULTAT</span><span class="detail-value" style="color:${rc};font-weight:700;">${f.resultat || '-'}</span></div>
           <div class="detail-row"><span class="detail-label">CONTENU</span><span class="detail-value">${f.contenu || '-'}</span></div>
           ${f.remarques ? `<div class="detail-row"><span class="detail-label">REMARQUES</span><span class="detail-value">${f.remarques}</span></div>` : ''}
+          <div style="display:flex;gap:0.5rem;margin-top:1rem;justify-content:flex-end;">
+            ${canDelete ? `<button class="delete-form-btn" onclick="deleteFormationEntry('${f._id}')">✗ SUPPRIMER</button>` : ''}
+            <button class="close-btn" style="margin:0;" onclick="this.closest('.detail-overlay').remove()">FERMER</button>
+          </div>
+        </div>`;
+        document.body.appendChild(o);
+        o.addEventListener('click', e => { if (e.target === o) o.remove(); });
+      };
+
+      // ========== DELETE FORMATION ==========
+      window.deleteFormationEntry = async function(docId) {
+        if (!confirm('Supprimer cette formation ? Cette action est irréversible.')) return;
+        try {
+          await ghDeleteFormation(docId);
+          allFormations = allFormations.filter(f => f._id !== docId);
+          updateStats();
+          renderTable();
+          renderUnitCards();
+          document.querySelectorAll('.detail-overlay').forEach(o => o.remove());
+        } catch (e) {
+          alert('Erreur suppression: ' + e.message);
+        }
+      };
+
+      // ========== TESTS HG TABLE ==========
+      function renderTests() {
+        const search = (document.getElementById('testSearchInput').value || '').toLowerCase();
+        const statusFilter = document.getElementById('filterTestStatus').value;
+
+        let filtered = allTests.filter(t => {
+          if (statusFilter && t.statut !== statusFilter) return false;
+          if (search) {
+            const haystack = `${t.unite_matricule||''} ${t.unite_grade||''} ${t.evaluateur_matricule||''} ${t.evaluateur_nom||''} ${t.statut||''}`.toLowerCase();
+            if (!haystack.includes(search)) return false;
+          }
+          return true;
+        });
+
+        filtered.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+
+        document.getElementById('testCount').textContent = `${filtered.length} / ${allTests.length} TEST${allTests.length > 1 ? 'S' : ''}`;
+
+        const tbody = document.getElementById('testsBody');
+        if (!filtered.length) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:2rem;">Aucun test trouvé</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = filtered.map(t => {
+          const sc = t.statut === 'valide' ? 'validated' : (t.statut === 'rejete' ? 'rejected' : 'pending');
+          const sl = t.statut === 'valide' ? 'VALIDÉ' : (t.statut === 'rejete' ? 'REJETÉ' : 'EN ATTENTE');
+          const ac = t.moyenne >= 3 ? '#00cc55' : (t.moyenne >= 2 ? '#ffc800' : '#ff4444');
+          const uName = getUnitName(t.unite_matricule);
+          const actions = t.statut === 'en_attente' 
+            ? `<div class="hg-actions"><button class="hg-btn validate" onclick="event.stopPropagation();validateTest('${t._id}','valide')">✓ VALIDER</button><button class="hg-btn reject" onclick="event.stopPropagation();validateTest('${t._id}','rejete')">✗ REJETER</button></div>`
+            : `<span style="font-size:0.7rem;color:var(--text-muted);">—</span>`;
+          return `<tr onclick="showTestDetail('${t._id}')">
+            <td style="white-space:nowrap;">${fmtDate(t.created_at)}</td>
+            <td>${t.unite_matricule || '-'} <span style="color:var(--text-muted);font-size:0.72rem;">${uName !== t.unite_matricule ? '(' + uName + ')' : ''}</span></td>
+            <td>${t.unite_grade || '-'}</td>
+            <td><span class="avg-score" style="color:${ac}">${t.moyenne}/4</span></td>
+            <td>${t.evaluateur_matricule || '-'}</td>
+            <td><span class="status-badge ${sc}">${sl}</span></td>
+            <td>${actions}</td>
+          </tr>`;
+        }).join('');
+      }
+
+      window.validateTest = async function(testId, newStatus) {
+        const t = allTests.find(x => x._id === testId);
+        if (!t) return;
+        const label = newStatus === 'valide' ? 'valider' : 'rejeter';
+        if (!confirm(`Voulez-vous ${label} ce test de l'unité ${t.unite_matricule} ?`)) return;
+        try {
+          t.statut = newStatus;
+          t.validated_by = currentUserData ? currentUserData.matricule : '';
+          t.validated_at = new Date().toISOString().substring(0, 10);
+          await updateUnitTest(t._id, t);
+          renderTests();
+        } catch (e) {
+          alert('Erreur: ' + e.message);
+        }
+      };
+
+      window.showTestDetail = function(id) {
+        const t = allTests.find(x => x._id === id);
+        if (!t) return;
+        const o = document.createElement('div');
+        o.className = 'detail-overlay';
+        const ac = t.moyenne >= 3 ? '#00cc55' : (t.moyenne >= 2 ? '#ffc800' : '#ff4444');
+        const sc = t.statut === 'valide' ? '✓ VALIDÉ' : (t.statut === 'rejete' ? '✗ REJETÉ' : '⏳ EN ATTENTE');
+        o.innerHTML = `<div class="detail-box">
+          <h3>TEST — ${t.unite_matricule} (${t.unite_grade || '-'})</h3>
+          <div class="detail-row"><span class="detail-label">DATE</span><span class="detail-value">${fmtDate(t.created_at)}</span></div>
+          <div class="detail-row"><span class="detail-label">ÉVALUATEUR</span><span class="detail-value">${t.evaluateur_matricule || '-'} (${t.evaluateur_nom || '-'})</span></div>
+          <div class="detail-row"><span class="detail-label">SALUTS</span><span class="detail-value">${t.note_saluts}/4</span></div>
+          <div class="detail-row"><span class="detail-label">SOCIOSTATUS</span><span class="detail-value">${t.note_sociostatus}/4</span></div>
+          <div class="detail-row"><span class="detail-label">VERDICTS</span><span class="detail-value">${t.note_verdicts}/4</span></div>
+          <div class="detail-row"><span class="detail-label">PROCÉDURES</span><span class="detail-value">${t.note_procedures}/4</span></div>
+          <div class="detail-row"><span class="detail-label">MOYENNE</span><span class="detail-value" style="font-weight:700;color:${ac}">${t.moyenne}/4</span></div>
+          <div class="detail-row"><span class="detail-label">FORMATION ARME</span><span class="detail-value">${t.formation_armement || '-'}</span></div>
+          <div class="detail-row"><span class="detail-label">CODES COMPLET</span><span class="detail-value">${t.codes_complet || '-'}${t.codes_complet === 'Non' ? ' ⚠ ERREUR MAJEURE' : ''}</span></div>
+          <div class="detail-row"><span class="detail-label">EN RÉFORME</span><span class="detail-value">${t.reforme || '-'}</span></div>
+          ${t.commentaires ? `<div class="detail-row"><span class="detail-label">COMMENTAIRES</span><span class="detail-value">${t.commentaires}</span></div>` : ''}
+          <div class="detail-row"><span class="detail-label">STATUT</span><span class="detail-value">${sc}</span></div>
+          ${t.validated_by ? `<div class="detail-row"><span class="detail-label">VALIDÉ PAR</span><span class="detail-value">${t.validated_by} — ${fmtDate(t.validated_at)}</span></div>` : ''}
           <button class="close-btn" onclick="this.closest('.detail-overlay').remove()">FERMER</button>
         </div>`;
         document.body.appendChild(o);
@@ -325,6 +484,8 @@
       document.getElementById('filterType').addEventListener('change', renderTable);
       document.getElementById('filterResult').addEventListener('change', renderTable);
       document.getElementById('unitSearchInput').addEventListener('input', renderUnitCards);
+      document.getElementById('testSearchInput').addEventListener('input', renderTests);
+      document.getElementById('filterTestStatus').addEventListener('change', renderTests);
 
       // ========== AUTH ==========
       onAuthStateChanged(auth, async (user) => {
@@ -344,7 +505,20 @@
           document.getElementById('loading').style.display = 'none';
           document.getElementById('mainContent').style.display = 'block';
 
+          // Detect HG & Admin
+          const userData = s.data();
+          isAdmin = !!userData.is_admin;
+          currentUserData = { matricule: userData.matricule || '', nom_steam: userData.nom_steam || '' };
           try { [allFormations, allUnits] = await Promise.all([loadFormations(), loadUnits()]); } catch (_) { allFormations = []; allUnits = []; }
+          const myUnit = allUnits.find(u => u.matricule === currentUserData.matricule);
+          isHG = myUnit && (myUnit.rang === 'Ofc' || myUnit.rang === 'Cmd');
+
+          // Load tests for HG
+          if (isHG) {
+            document.getElementById('hgTestsSection').style.display = 'block';
+            try { allTests = await loadUnitTests(); } catch (_) { allTests = []; }
+            renderTests();
+          }
 
           updateStats();
           populateFilters();

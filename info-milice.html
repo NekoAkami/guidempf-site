@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Information Milice - MPF Documentation</title>
+    <link rel="stylesheet" href="assets/css/bundle.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        .milice-info-wrapper{max-width:1300px;margin:0 auto;}
+
+        /* Stats */
+        .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0.8rem;margin-bottom:1.5rem;}
+        .stat-box{padding:0.8rem;text-align:center;background:rgba(0,170,255,0.03);border:1px solid rgba(0,170,255,0.1);border-radius:4px;}
+        .stat-box .stat-number{font-family:'Orbitron',sans-serif;font-size:1.3rem;color:var(--accent-cyan);font-weight:700;}
+        .stat-box .stat-label{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--text-muted);letter-spacing:1px;margin-top:0.2rem;}
+        .stat-box.green .stat-number{color:#00cc55;}
+        .stat-box.green{border-color:rgba(0,204,102,0.15);}
+        .stat-box.yellow .stat-number{color:#ffc800;}
+        .stat-box.yellow{border-color:rgba(255,200,0,0.15);}
+        .stat-box.red .stat-number{color:#ff4444;}
+        .stat-box.red{border-color:rgba(255,68,68,0.15);}
+
+        /* Tabs */
+        .info-tabs{display:flex;gap:0;margin-bottom:1.5rem;border-bottom:2px solid rgba(0,170,255,0.15);flex-wrap:wrap;}
+        .info-tab{padding:0.5rem 1rem;font-family:'Orbitron',sans-serif;font-size:0.72rem;color:var(--text-muted);background:transparent;border:none;cursor:pointer;letter-spacing:1px;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.2s;}
+        .info-tab:hover{color:var(--accent-cyan);}
+        .info-tab.active{color:var(--accent-cyan);border-bottom-color:var(--accent-cyan);font-weight:700;}
+        .info-panel{display:none;}
+        .info-panel.active{display:block;}
+
+        /* Filter bar */
+        .filter-bar{display:flex;gap:0.8rem;flex-wrap:wrap;margin-bottom:1rem;align-items:center;}
+        .filter-bar input{flex:1;min-width:200px;padding:0.45rem 0.7rem;background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.2);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.8rem;outline:none;border-radius:2px;}
+        .filter-bar input:focus{border-color:var(--accent-cyan);}
+        .filter-bar select{padding:0.45rem 0.7rem;background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.2);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.8rem;outline:none;border-radius:2px;cursor:pointer;}
+        .filter-bar select option{background:#0a1628;}
+
+        /* Tables */
+        .info-table{width:100%;border-collapse:collapse;font-size:0.8rem;}
+        .info-table th{text-align:left;padding:0.5rem 0.4rem;color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;font-size:0.68rem;letter-spacing:1px;border-bottom:2px solid rgba(0,170,255,0.2);cursor:pointer;user-select:none;white-space:nowrap;}
+        .info-table th:hover{color:#fff;}
+        .info-table td{padding:0.4rem;color:var(--text-primary);border-bottom:1px solid rgba(0,170,255,0.06);font-family:'Share Tech Mono',monospace;vertical-align:middle;}
+        .info-table tr:hover{background:rgba(0,170,255,0.03);cursor:pointer;}
+
+        .table-scroll{overflow-x:auto;}
+
+        /* Badges */
+        .rang-badge{display:inline-block;padding:0.1rem 0.4rem;border-radius:2px;font-size:0.72rem;font-weight:700;}
+        .rang-rct{color:#888;border:1px solid rgba(136,136,136,0.3);}
+        .rang-bas{color:var(--text-primary);border:1px solid rgba(0,170,255,0.2);}
+        .rang-mid{color:var(--accent-cyan);border:1px solid rgba(0,170,255,0.4);}
+        .rang-05{color:#ff8800;border:1px solid rgba(255,136,0,0.4);}
+        .rang-hg{color:#ff4444;border:1px solid rgba(255,68,68,0.4);}
+        .rang-cmd{color:#fff;border:1px solid rgba(255,255,255,0.5);background:rgba(255,255,255,0.05);}
+        .div-badge{display:inline-block;padding:0.1rem 0.4rem;border-radius:2px;font-size:0.68rem;background:rgba(0,170,255,0.08);border:1px solid rgba(0,170,255,0.15);color:var(--text-muted);}
+        .formateur-badge{display:inline-block;padding:0.1rem 0.3rem;border-radius:2px;font-size:0.62rem;background:rgba(0,200,80,0.1);border:1px solid rgba(0,200,80,0.3);color:#00cc55;}
+        .result-badge{display:inline-block;padding:0.1rem 0.4rem;border-radius:2px;font-size:0.72rem;font-weight:700;}
+        .result-ok{color:#00cc55;border:1px solid rgba(0,200,80,0.3);background:rgba(0,200,80,0.08);}
+        .result-review{color:#ffc800;border:1px solid rgba(255,200,0,0.3);background:rgba(255,200,0,0.08);}
+        .result-fail{color:#ff4444;border:1px solid rgba(255,68,68,0.3);background:rgba(255,68,68,0.08);}
+        .type-badge{display:inline-block;padding:0.1rem 0.4rem;border-radius:2px;font-size:0.68rem;background:rgba(0,170,255,0.08);border:1px solid rgba(0,170,255,0.15);color:var(--text-muted);}
+        .status-badge{display:inline-block;padding:0.1rem 0.4rem;border-radius:2px;font-size:0.68rem;font-weight:700;}
+        .status-badge.validated{background:rgba(0,200,80,0.15);color:#00cc55;border:1px solid rgba(0,200,80,0.3);}
+        .status-badge.pending{background:rgba(255,200,0,0.15);color:#ffc800;border:1px solid rgba(255,200,0,0.3);}
+        .status-badge.rejected{background:rgba(255,60,60,0.15);color:#ff4444;border:1px solid rgba(255,60,60,0.3);}
+        .avg-score{font-family:'Orbitron',sans-serif;font-weight:700;}
+
+        /* Unit detail card (expanded) */
+        .unit-detail-card{background:rgba(0,170,255,0.02);border:1px solid rgba(0,170,255,0.12);border-left:3px solid rgba(0,170,255,0.3);padding:1rem;margin-bottom:0.8rem;border-radius:3px;}
+        .unit-detail-card .ud-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;cursor:pointer;}
+        .unit-detail-card .ud-mat{font-family:'Orbitron',sans-serif;font-size:0.9rem;color:var(--accent-cyan);font-weight:700;}
+        .unit-detail-card .ud-name{font-family:'Share Tech Mono',monospace;font-size:0.82rem;color:var(--text-primary);margin-left:0.5rem;}
+        .unit-detail-card .ud-badges{display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;}
+        .unit-detail-card .ud-section{margin-top:0.5rem;padding:0.5rem 0;border-top:1px solid rgba(0,170,255,0.08);}
+        .unit-detail-card .ud-section-title{font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--accent-cyan);letter-spacing:1px;margin-bottom:0.4rem;}
+        .ud-formation-item{display:flex;gap:0.8rem;padding:0.25rem 0;font-family:'Share Tech Mono',monospace;font-size:0.75rem;}
+        .ud-formation-item .fd-date{color:var(--text-muted);min-width:70px;}
+        .ud-formation-item .fd-type{color:var(--text-primary);min-width:120px;}
+        .ud-test-item{display:flex;gap:0.8rem;padding:0.25rem 0;font-family:'Share Tech Mono',monospace;font-size:0.75rem;}
+        .ud-test-item .td-date{color:var(--text-muted);min-width:70px;}
+        .ud-empty{color:var(--text-muted);font-family:'Share Tech Mono',monospace;font-size:0.72rem;font-style:italic;padding:0.3rem 0;}
+
+        /* Division info cards */
+        .div-info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem;margin-bottom:1.5rem;}
+        .div-info-card{padding:1rem;border-radius:4px;transition:all 0.15s;cursor:pointer;}
+        .div-info-card:hover{transform:translateY(-2px);}
+        .div-info-card h3{font-family:'Orbitron',sans-serif;font-size:0.95rem;margin-bottom:0.5rem;}
+        .div-info-card .div-desc{font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:var(--text-secondary);line-height:1.5;}
+        .div-info-card .div-meta{font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--text-muted);margin-top:0.5rem;}
+        .div-info-card .div-meta span{margin-right:1rem;}
+        .div-members-list{margin-top:0.8rem;}
+        .div-members-list .member-row{display:flex;align-items:center;gap:0.5rem;padding:0.2rem 0;font-family:'Share Tech Mono',monospace;font-size:0.75rem;}
+
+        /* Detail overlay */
+        .detail-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.75);z-index:1000;display:flex;align-items:center;justify-content:center;}
+        .detail-box{background:#0a1628;border:1px solid rgba(0,170,255,0.2);padding:1.5rem;border-radius:6px;max-width:650px;width:90%;max-height:80vh;overflow-y:auto;}
+        .detail-box h3{color:var(--accent-cyan);font-family:'Orbitron',sans-serif;font-size:0.9rem;margin-bottom:1rem;}
+        .detail-box .detail-row{display:flex;gap:0.5rem;margin-bottom:0.5rem;font-family:'Share Tech Mono',monospace;font-size:0.82rem;}
+        .detail-box .detail-label{color:var(--text-muted);min-width:150px;}
+        .detail-box .detail-value{color:var(--text-primary);flex:1;}
+        .detail-box .close-btn{margin-top:1rem;padding:0.4rem 1rem;border:1px solid rgba(0,170,255,0.2);background:rgba(0,170,255,0.05);color:#fff;font-family:'Share Tech Mono',monospace;font-size:0.8rem;cursor:pointer;border-radius:3px;display:block;margin-left:auto;}
+
+        #access-denied,#notApproved{display:none;text-align:center;padding:3rem;}
+    </style>
+</head>
+<body>
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <div><h1 class="logo">MPF</h1><p class="logo-subtitle">Information Milice</p></div>
+                </div>
+                <div id="authBtn" class="header-auth"></div>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <div id="loading" style="text-align:center;padding:3rem;"><p style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;">CHARGEMENT...</p></div>
+            <div id="access-denied"><h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">CONNEXION REQUISE</h2><a href="login.html" style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;display:inline-block;margin-top:1rem;">→ SE CONNECTER</a></div>
+            <div id="notApproved"><h2 style="color:#ffaa00;font-family:'Orbitron',sans-serif;">EN ATTENTE D'APPROBATION</h2></div>
+            <div id="mainContent" style="display:none;">
+                <div class="milice-info-wrapper">
+                    <!-- Stats -->
+                    <div class="stats-row">
+                        <div class="stat-box"><div class="stat-number" id="statUnits">0</div><div class="stat-label">UNITÉS TOTAL</div></div>
+                        <div class="stat-box"><div class="stat-number" id="statDivisions">0</div><div class="stat-label">DIVISIONS</div></div>
+                        <div class="stat-box green"><div class="stat-number" id="statFormations">0</div><div class="stat-label">FORMATIONS</div></div>
+                        <div class="stat-box yellow"><div class="stat-number" id="statTests">0</div><div class="stat-label">TESTS</div></div>
+                        <div class="stat-box"><div class="stat-number" id="statFormateurs">0</div><div class="stat-label">FORMATEURS</div></div>
+                        <div class="stat-box"><div class="stat-number" id="statHG">0</div><div class="stat-label">HAUT-GRADÉS</div></div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="info-tabs">
+                        <button class="info-tab active" onclick="switchInfoTab('units')">👤 TOUTES LES UNITÉS</button>
+                        <button class="info-tab" onclick="switchInfoTab('formations')">🎓 FORMATIONS</button>
+                        <button class="info-tab" onclick="switchInfoTab('tests')">📝 TESTS</button>
+                        <button class="info-tab" onclick="switchInfoTab('divisions')">🏢 DIVISIONS</button>
+                        <button class="info-tab" onclick="switchInfoTab('fiches')">📋 FICHES UNITÉS</button>
+                    </div>
+
+                    <!-- Panel: Toutes les unités -->
+                    <div id="panelUnits" class="info-panel active">
+                        <div class="combine-terminal-wrapper">
+                            <div class="combine-header"><h2>👤 RÉPERTOIRE COMPLET DES UNITÉS</h2><span class="header-code" id="unitCountLabel">0</span></div>
+                            <div class="combine-body">
+                                <div class="filter-bar">
+                                    <input type="text" id="unitSearch" placeholder="Rechercher par matricule, nom, division, grade..." autocomplete="off">
+                                    <select id="unitFilterDiv"><option value="">Toutes divisions</option></select>
+                                    <select id="unitFilterRang"><option value="">Tous grades</option></select>
+                                </div>
+                                <div class="table-scroll">
+                                    <table class="info-table">
+                                        <thead><tr>
+                                            <th onclick="sortUnits('matricule')">MATRICULE</th>
+                                            <th onclick="sortUnits('nom_steam')">NOM STEAM</th>
+                                            <th onclick="sortUnits('rang')">GRADE</th>
+                                            <th onclick="sortUnits('division')">DIVISION</th>
+                                            <th>FORMATIONS</th>
+                                            <th>TESTS</th>
+                                            <th>INFOS</th>
+                                        </tr></thead>
+                                        <tbody id="unitsBody"><tr><td colspan="7" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel: Formations -->
+                    <div id="panelFormations" class="info-panel">
+                        <div class="combine-terminal-wrapper">
+                            <div class="combine-header"><h2>🎓 TOUTES LES FORMATIONS</h2><span class="header-code" id="formCountLabel">0</span></div>
+                            <div class="combine-body">
+                                <div class="filter-bar">
+                                    <input type="text" id="formSearch" placeholder="Rechercher..." autocomplete="off">
+                                    <select id="formFilterType"><option value="">Tous les types</option></select>
+                                    <select id="formFilterResult"><option value="">Tous résultats</option><option value="Réussi">Réussi</option><option value="À revoir">À revoir</option><option value="Échoué">Échoué</option></select>
+                                </div>
+                                <div class="table-scroll">
+                                    <table class="info-table">
+                                        <thead><tr>
+                                            <th>DATE</th>
+                                            <th>TYPE</th>
+                                            <th>FORMATEUR</th>
+                                            <th>PARTICIPANTS</th>
+                                            <th>DURÉE</th>
+                                            <th>RÉSULTAT</th>
+                                        </tr></thead>
+                                        <tbody id="formationsBody"><tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel: Tests -->
+                    <div id="panelTests" class="info-panel">
+                        <div class="combine-terminal-wrapper">
+                            <div class="combine-header"><h2>📝 TOUS LES TESTS D'UNITÉ</h2><span class="header-code" id="testCountLabel">0</span></div>
+                            <div class="combine-body">
+                                <div class="filter-bar">
+                                    <input type="text" id="testSearch" placeholder="Rechercher..." autocomplete="off">
+                                    <select id="testFilterStatus"><option value="">Tous statuts</option><option value="en_attente">En attente</option><option value="valide">Validé</option><option value="rejete">Rejeté</option></select>
+                                </div>
+                                <div class="table-scroll">
+                                    <table class="info-table">
+                                        <thead><tr>
+                                            <th>DATE</th>
+                                            <th>UNITÉ</th>
+                                            <th>GRADE</th>
+                                            <th>SALUTS</th>
+                                            <th>SOCIO</th>
+                                            <th>VERDICTS</th>
+                                            <th>PROCÉD.</th>
+                                            <th>MOYENNE</th>
+                                            <th>ÉVALUATEUR</th>
+                                            <th>STATUT</th>
+                                        </tr></thead>
+                                        <tbody id="testsBody"><tr><td colspan="10" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel: Divisions -->
+                    <div id="panelDivisions" class="info-panel">
+                        <div class="combine-terminal-wrapper">
+                            <div class="combine-header"><h2>🏢 DIVISIONS SPÉCIALISÉES</h2><span class="header-code">7 DIVISIONS</span></div>
+                            <div class="combine-body">
+                                <div class="div-info-grid" id="divisionsGrid"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel: Fiches Unités (détail par unité avec formations + tests) -->
+                    <div id="panelFiches" class="info-panel">
+                        <div class="combine-terminal-wrapper">
+                            <div class="combine-header"><h2>📋 FICHES DÉTAILLÉES PAR UNITÉ</h2><span class="header-code" id="ficheCountLabel">0</span></div>
+                            <div class="combine-body">
+                                <div class="filter-bar">
+                                    <input type="text" id="ficheSearch" placeholder="Rechercher une unité..." autocomplete="off">
+                                    <select id="ficheFilterDiv"><option value="">Toutes divisions</option></select>
+                                </div>
+                                <div id="fichesContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script type="module" src="assets/js/auth.js"></script>
+    <script src="assets/js/global-nav.js?v=20260214" defer></script>
+    <script src="assets/js/interactive-system.js" defer></script>
+    <script src="assets/js/combine-animations.js" defer></script>
+    <script type="module">
+      import { auth, db } from './assets/js/auth.js';
+      import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+      import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+      import { loadFormations, loadUnits, loadUnitTests } from './assets/js/github-data.js';
+
+      let allUnits = [], allFormations = [], allTests = [];
+      let unitSortField = 'matricule', unitSortDir = 'asc';
+      const RANK_ORDER = ['RCT','.05','.04','.03','STB','.02','.01','DvL','STBE','CABAL','Ofc','Cmd'];
+
+      const DIVISIONS_DATA = [
+        { code:'HELIX', icon:'⚕️', color:'#32cd32', tag:'MÉDICAL', desc:'Médical, Biologique & Recherche — Soins médicaux, interventions bio-chimiques, recherche. Équipement : Combinaison Hazmat, kit médical avancé.' },
+        { code:'RAZOR', icon:'⚔️', color:'#999999', tag:'INTERVENTION', desc:'Intervention Tactique & Combat — Neutralisation de menaces, opérations à haut risque. Équipement : Armement lourd, kevlar renforcé.' },
+        { code:'JURY', icon:'⚖️', color:'#e74c3c', tag:'JUSTICE', desc:'Justice & Jugement — Verdicts, procès et application des sentences. Spécialisation : Droit Combine, jugements, arbitrage.' },
+        { code:'EXOGEN', icon:'🔬', color:'#00bfa5', tag:'RECHERCHE', desc:'Recherche & Expérimentation — Technologies avancées et projets classifiés. R&D, prototypes, analyse de données.' },
+        { code:'GRID', icon:'🛡️', color:'#ffa500', tag:'PROTECTION', desc:'Protection Dispatch & Sécurité Infrastructure — Sécurisation Dispatch, protection systèmes critiques. Armure renforcée.' },
+        { code:'ZONE', icon:'🗺️', color:'#4488ff', tag:'TERRITOIRE', desc:'Contrôle Territorial & Patrouilles — Surveillance des secteurs et maintien de l\'ordre. Cartographie, contrôle de périmètre.' },
+        { code:'SPECTRE', icon:'👁️', color:'#aaaaaa', tag:'RENSEIGNEMENT', desc:'Renseignement & Opérations Spéciales — Infiltration, surveillance et missions classifiées. Technologie avancée.' }
+      ];
+
+      function fmtDate(d) { if (!d) return '-'; const p = d.split('-'); return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : d; }
+      function getRangClass(r) {
+        if (r === 'RCT') return 'rang-rct';
+        if (r === '.05' || r === '.04') return 'rang-bas';
+        if (r === '.03' || r === 'STB' || r === '.02' || r === '.01') return 'rang-mid';
+        if (r === 'DvL' || r === 'STBE' || r === 'CABAL') return 'rang-05';
+        if (r === 'Ofc') return 'rang-hg';
+        if (r === 'Cmd') return 'rang-cmd';
+        return 'rang-bas';
+      }
+      function resultBadge(r) {
+        if (r === 'Réussi') return '<span class="result-badge result-ok">RÉUSSI</span>';
+        if (r === 'À revoir') return '<span class="result-badge result-review">À REVOIR</span>';
+        if (r === 'Échoué') return '<span class="result-badge result-fail">ÉCHOUÉ</span>';
+        return r || '-';
+      }
+      function getUnitName(mat) { const u = allUnits.find(x => x.matricule === mat); return u ? u.nom_steam || mat : mat; }
+
+      // ========== TAB SWITCHING ==========
+      window.switchInfoTab = function(tab) {
+        document.querySelectorAll('.info-tab').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.info-panel').forEach(p => p.classList.remove('active'));
+        const tabs = ['units','formations','tests','divisions','fiches'];
+        const idx = tabs.indexOf(tab);
+        if (idx >= 0) {
+          document.querySelectorAll('.info-tab')[idx].classList.add('active');
+          document.getElementById('panel' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+        }
+      };
+
+      // ========== STATS ==========
+      function updateStats() {
+        document.getElementById('statUnits').textContent = allUnits.length;
+        const divs = new Set(allUnits.map(u => u.division).filter(Boolean));
+        document.getElementById('statDivisions').textContent = divs.size;
+        document.getElementById('statFormations').textContent = allFormations.length;
+        document.getElementById('statTests').textContent = allTests.length;
+        document.getElementById('statFormateurs').textContent = allUnits.filter(u => u.formateur).length;
+        document.getElementById('statHG').textContent = allUnits.filter(u => u.rang === 'Ofc' || u.rang === 'Cmd').length;
+      }
+
+      // ========== UNITS TABLE ==========
+      function getFormationsForUnit(mat) {
+        return allFormations.filter(f => {
+          const participants = f.participants || (f.participants_str ? f.participants_str.split(',').map(s => s.trim()) : []);
+          return participants.includes(mat);
+        });
+      }
+      function getTestsForUnit(mat) {
+        return allTests.filter(t => t.unite_matricule === mat);
+      }
+
+      function populateUnitFilters() {
+        const divs = new Set(), rangs = new Set();
+        allUnits.forEach(u => { if (u.division) divs.add(u.division); if (u.rang) rangs.add(u.rang); });
+        const dSel = document.getElementById('unitFilterDiv');
+        [...divs].sort().forEach(d => { const o = document.createElement('option'); o.value = d; o.textContent = d; dSel.appendChild(o); });
+        const rSel = document.getElementById('unitFilterRang');
+        RANK_ORDER.filter(r => rangs.has(r)).forEach(r => { const o = document.createElement('option'); o.value = r; o.textContent = r; rSel.appendChild(o); });
+        // Copy to fiche filter
+        const fSel = document.getElementById('ficheFilterDiv');
+        [...divs].sort().forEach(d => { const o = document.createElement('option'); o.value = d; o.textContent = d; fSel.appendChild(o); });
+      }
+
+      function populateFormationFilters() {
+        const types = [...new Set(allFormations.map(f => f.type).filter(Boolean))].sort();
+        const sel = document.getElementById('formFilterType');
+        sel.innerHTML = '<option value="">Tous les types</option>' + types.map(t => `<option value="${t}">${t}</option>`).join('');
+      }
+
+      window.sortUnits = function(field) {
+        if (unitSortField === field) unitSortDir = unitSortDir === 'asc' ? 'desc' : 'asc';
+        else { unitSortField = field; unitSortDir = field === 'rang' ? 'desc' : 'asc'; }
+        renderUnitsTable();
+      };
+
+      function renderUnitsTable() {
+        const q = (document.getElementById('unitSearch').value || '').toLowerCase();
+        const fDiv = document.getElementById('unitFilterDiv').value;
+        const fRang = document.getElementById('unitFilterRang').value;
+
+        let list = allUnits.filter(u => {
+          if (fDiv && u.division !== fDiv) return false;
+          if (fRang && u.rang !== fRang) return false;
+          if (q) { const txt = `${u.matricule||''} ${u.nom_steam||''} ${u.division||''} ${u.rang||''}`.toLowerCase(); if (!txt.includes(q)) return false; }
+          return true;
+        });
+
+        list.sort((a, b) => {
+          if (unitSortField === 'rang') {
+            const ia = RANK_ORDER.indexOf(a.rang || ''); const ib = RANK_ORDER.indexOf(b.rang || '');
+            return unitSortDir === 'asc' ? ia - ib : ib - ia;
+          }
+          const va = (a[unitSortField] || '').toString().toLowerCase();
+          const vb = (b[unitSortField] || '').toString().toLowerCase();
+          return unitSortDir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+        });
+
+        document.getElementById('unitCountLabel').textContent = list.length + ' UNITÉ' + (list.length > 1 ? 'S' : '');
+
+        const tb = document.getElementById('unitsBody');
+        if (!list.length) { tb.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);">Aucune unité</td></tr>'; return; }
+
+        tb.innerHTML = list.map(u => {
+          const formations = getFormationsForUnit(u.matricule);
+          const tests = getTestsForUnit(u.matricule);
+          const fReussi = formations.filter(f => f.resultat === 'Réussi').length;
+          const tValide = tests.filter(t => t.statut === 'valide').length;
+          const infos = [];
+          if (u.formateur) infos.push('<span class="formateur-badge">FORMATEUR</span>');
+          return `<tr onclick="showUnitFiche('${u.matricule}')">
+            <td style="font-weight:700;">${u.matricule || '-'}</td>
+            <td>${u.nom_steam || '-'}</td>
+            <td><span class="rang-badge ${getRangClass(u.rang)}">${u.rang || '-'}</span></td>
+            <td>${u.division ? `<span class="div-badge">${u.division}</span>` : '-'}</td>
+            <td><span style="color:#00cc55">${fReussi}</span>/<span>${formations.length}</span></td>
+            <td><span style="color:#00cc55">${tValide}</span>/<span>${tests.length}</span></td>
+            <td>${infos.join(' ') || '-'}</td>
+          </tr>`;
+        }).join('');
+      }
+
+      // ========== FORMATIONS TABLE ==========
+      function renderFormationsTable() {
+        const q = (document.getElementById('formSearch').value || '').toLowerCase();
+        const fType = document.getElementById('formFilterType').value;
+        const fResult = document.getElementById('formFilterResult').value;
+
+        let list = allFormations.filter(f => {
+          if (fType && f.type !== fType) return false;
+          if (fResult && f.resultat !== fResult) return false;
+          if (q) {
+            const h = `${f.formateur_matricule||''} ${f.formateur_nom||''} ${f.type||''} ${f.participants_str||''} ${f.contenu||''}`.toLowerCase();
+            if (!h.includes(q)) return false;
+          }
+          return true;
+        });
+        list.sort((a, b) => (b.date_formation || b.created_at || '').localeCompare(a.date_formation || a.created_at || ''));
+
+        document.getElementById('formCountLabel').textContent = `${list.length} / ${allFormations.length} FORMATION${allFormations.length > 1 ? 'S' : ''}`;
+
+        const tb = document.getElementById('formationsBody');
+        if (!list.length) { tb.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:2rem;">Aucune formation</td></tr>'; return; }
+
+        tb.innerHTML = list.map(f => {
+          const partDisplay = (f.participants_str || f.participants?.join(', ') || '-');
+          const partShort = partDisplay.length > 30 ? partDisplay.substring(0, 30) + '...' : partDisplay;
+          return `<tr onclick="showFormationDetail('${f._id}')">
+            <td style="white-space:nowrap;">${fmtDate(f.date_formation || f.created_at)}</td>
+            <td><span class="type-badge">${f.type || '-'}</span></td>
+            <td>${f.formateur_matricule || '-'} <span style="color:var(--text-muted);font-size:0.72rem;">${f.formateur_nom ? '(' + f.formateur_nom + ')' : ''}</span></td>
+            <td style="font-size:0.75rem;">${partShort}</td>
+            <td>${f.duree || '-'} min</td>
+            <td>${resultBadge(f.resultat)}</td>
+          </tr>`;
+        }).join('');
+      }
+
+      // ========== TESTS TABLE ==========
+      function renderTestsTable() {
+        const q = (document.getElementById('testSearch').value || '').toLowerCase();
+        const fStatus = document.getElementById('testFilterStatus').value;
+
+        let list = allTests.filter(t => {
+          if (fStatus && t.statut !== fStatus) return false;
+          if (q) {
+            const h = `${t.unite_matricule||''} ${t.unite_grade||''} ${t.evaluateur_matricule||''} ${t.evaluateur_nom||''}`.toLowerCase();
+            if (!h.includes(q)) return false;
+          }
+          return true;
+        });
+        list.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+
+        document.getElementById('testCountLabel').textContent = `${list.length} / ${allTests.length} TEST${allTests.length > 1 ? 'S' : ''}`;
+
+        const tb = document.getElementById('testsBody');
+        if (!list.length) { tb.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--text-muted);padding:2rem;">Aucun test</td></tr>'; return; }
+
+        tb.innerHTML = list.map(t => {
+          const sc = t.statut === 'valide' ? 'validated' : (t.statut === 'rejete' ? 'rejected' : 'pending');
+          const sl = t.statut === 'valide' ? 'VALIDÉ' : (t.statut === 'rejete' ? 'REJETÉ' : 'EN ATTENTE');
+          const ac = t.moyenne >= 3 ? '#00cc55' : (t.moyenne >= 2 ? '#ffc800' : '#ff4444');
+          const uName = getUnitName(t.unite_matricule);
+          return `<tr onclick="showTestDetail('${t._id}')">
+            <td style="white-space:nowrap;">${fmtDate(t.created_at)}</td>
+            <td>${t.unite_matricule || '-'} <span style="color:var(--text-muted);font-size:0.72rem;">${uName !== t.unite_matricule ? '(' + uName + ')' : ''}</span></td>
+            <td>${t.unite_grade || '-'}</td>
+            <td>${t.note_saluts || '-'}/4</td>
+            <td>${t.note_sociostatus || '-'}/4</td>
+            <td>${t.note_verdicts || '-'}/4</td>
+            <td>${t.note_procedures || '-'}/4</td>
+            <td><span class="avg-score" style="color:${ac}">${t.moyenne}/4</span></td>
+            <td>${t.evaluateur_matricule || '-'}</td>
+            <td><span class="status-badge ${sc}">${sl}</span></td>
+          </tr>`;
+        }).join('');
+      }
+
+      // ========== DIVISIONS PANEL ==========
+      function renderDivisions() {
+        const grid = document.getElementById('divisionsGrid');
+        grid.innerHTML = DIVISIONS_DATA.map(d => {
+          const members = allUnits.filter(u => u.division === d.code);
+          const formations = allFormations.filter(f => f.type && f.type.toLowerCase().includes(d.code.toLowerCase()));
+          return `<div class="div-info-card" style="background:rgba(${hexToRgb(d.color)},0.03);border:1px solid rgba(${hexToRgb(d.color)},0.2);border-left:4px solid ${d.color};" onclick="showDivisionDetail('${d.code}')">
+            <h3 style="color:${d.color};">${d.icon} ${d.code} <span style="font-size:0.65rem;font-weight:400;color:var(--text-muted);">${d.tag}</span></h3>
+            <div class="div-desc">${d.desc}</div>
+            <div class="div-meta">
+              <span>👤 ${members.length} membres</span>
+              <span>🎓 ${formations.length} formations</span>
+              <span>📝 Accès: Grade 05+</span>
+            </div>
+            <div class="div-members-list">
+              ${members.slice(0, 5).map(m => `<div class="member-row"><span class="rang-badge ${getRangClass(m.rang)}" style="font-size:0.65rem;">${m.rang}</span> <span style="color:var(--accent-cyan);font-weight:700;">${m.matricule}</span> ${m.nom_steam || ''}</div>`).join('')}
+              ${members.length > 5 ? `<div class="member-row" style="color:var(--text-muted);font-style:italic;">... et ${members.length - 5} autres</div>` : ''}
+            </div>
+          </div>`;
+        }).join('');
+      }
+
+      function hexToRgb(hex) {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `${r},${g},${b}`;
+      }
+
+      // ========== FICHES UNITÉS ==========
+      function renderFiches() {
+        const q = (document.getElementById('ficheSearch').value || '').toLowerCase();
+        const fDiv = document.getElementById('ficheFilterDiv').value;
+
+        let units = allUnits.filter(u => {
+          if (fDiv && u.division !== fDiv) return false;
+          if (q) { const txt = `${u.matricule||''} ${u.nom_steam||''} ${u.division||''} ${u.rang||''}`.toLowerCase(); if (!txt.includes(q)) return false; }
+          return true;
+        });
+
+        units.sort((a, b) => {
+          const ia = RANK_ORDER.indexOf(a.rang || ''); const ib = RANK_ORDER.indexOf(b.rang || '');
+          if (ia !== ib) return ib - ia;
+          return (a.matricule || '').localeCompare(b.matricule || '');
+        });
+
+        document.getElementById('ficheCountLabel').textContent = units.length + ' UNITÉ' + (units.length > 1 ? 'S' : '');
+
+        const container = document.getElementById('fichesContainer');
+        if (!units.length) { container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-muted);font-family:\'Share Tech Mono\',monospace;">Aucune unité</div>'; return; }
+
+        container.innerHTML = units.map(u => {
+          const formations = getFormationsForUnit(u.matricule);
+          const tests = getTestsForUnit(u.matricule);
+          const fReussi = formations.filter(f => f.resultat === 'Réussi').length;
+          const tValide = tests.filter(t => t.statut === 'valide').length;
+
+          const formHTML = formations.length > 0
+            ? formations.sort((a, b) => (b.date_formation || b.created_at || '').localeCompare(a.date_formation || a.created_at || '')).slice(0, 10).map(f => {
+                const rc = f.resultat === 'Réussi' ? '#00cc55' : (f.resultat === 'Échoué' ? '#ff4444' : '#ffc800');
+                return `<div class="ud-formation-item"><span class="fd-date">${fmtDate(f.date_formation || f.created_at)}</span><span class="fd-type">${f.type || '?'}</span><span style="color:${rc};font-weight:700;">${f.resultat || '?'}</span><span style="color:var(--text-muted);font-size:0.68rem;margin-left:auto;">${f.formateur_matricule || ''}</span></div>`;
+              }).join('') + (formations.length > 10 ? `<div style="color:var(--accent-cyan);font-size:0.7rem;">... et ${formations.length - 10} autres</div>` : '')
+            : '<div class="ud-empty">Aucune formation enregistrée</div>';
+
+          const testHTML = tests.length > 0
+            ? tests.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || '')).slice(0, 5).map(t => {
+                const ac = t.moyenne >= 3 ? '#00cc55' : (t.moyenne >= 2 ? '#ffc800' : '#ff4444');
+                const sl = t.statut === 'valide' ? '✓' : (t.statut === 'rejete' ? '✗' : '⏳');
+                return `<div class="ud-test-item"><span class="td-date">${fmtDate(t.created_at)}</span><span style="color:${ac};font-weight:700;">${t.moyenne}/4</span><span>${sl}</span><span style="color:var(--text-muted);font-size:0.68rem;margin-left:auto;">${t.evaluateur_matricule || ''}</span></div>`;
+              }).join('') + (tests.length > 5 ? `<div style="color:var(--accent-cyan);font-size:0.7rem;">... et ${tests.length - 5} autres</div>` : '')
+            : '<div class="ud-empty">Aucun test enregistré</div>';
+
+          const divColor = DIVISIONS_DATA.find(d => d.code === u.division)?.color || 'rgba(0,170,255,0.3)';
+
+          return `<div class="unit-detail-card" style="border-left-color:${divColor};">
+            <div class="ud-header" onclick="this.closest('.unit-detail-card').classList.toggle('expanded')">
+              <div>
+                <span class="ud-mat">${u.matricule}</span>
+                <span class="ud-name">${u.nom_steam || '-'}</span>
+              </div>
+              <div class="ud-badges">
+                <span class="rang-badge ${getRangClass(u.rang)}">${u.rang || '-'}</span>
+                ${u.division ? `<span class="div-badge">${u.division}</span>` : ''}
+                ${u.formateur ? '<span class="formateur-badge">FORMATEUR</span>' : ''}
+                <span style="font-size:0.68rem;color:var(--text-muted);font-family:'Share Tech Mono',monospace;">🎓${fReussi}/${formations.length} 📝${tValide}/${tests.length}</span>
+              </div>
+            </div>
+            <div class="ud-section">
+              <div class="ud-section-title">🎓 FORMATIONS (${formations.length})</div>
+              ${formHTML}
+            </div>
+            <div class="ud-section">
+              <div class="ud-section-title">📝 TESTS (${tests.length})</div>
+              ${testHTML}
+            </div>
+          </div>`;
+        }).join('');
+      }
+
+      // ========== DETAIL OVERLAYS ==========
+      window.showFormationDetail = function(id) {
+        const f = allFormations.find(x => x._id === id);
+        if (!f) return;
+        const rc = f.resultat === 'Réussi' ? '#00cc55' : (f.resultat === 'Échoué' ? '#ff4444' : '#ffc800');
+        const o = document.createElement('div');
+        o.className = 'detail-overlay';
+        o.innerHTML = `<div class="detail-box">
+          <h3>FORMATION — ${f.type || '-'}</h3>
+          <div class="detail-row"><span class="detail-label">DATE</span><span class="detail-value">${fmtDate(f.date_formation || f.created_at)}</span></div>
+          <div class="detail-row"><span class="detail-label">FORMATEUR</span><span class="detail-value">${f.formateur_matricule || '-'} (${f.formateur_nom || '-'})</span></div>
+          <div class="detail-row"><span class="detail-label">PARTICIPANTS</span><span class="detail-value">${f.participants_str || f.participants?.join(', ') || '-'}</span></div>
+          <div class="detail-row"><span class="detail-label">DURÉE</span><span class="detail-value">${f.duree || '-'} min</span></div>
+          <div class="detail-row"><span class="detail-label">RÉSULTAT</span><span class="detail-value" style="color:${rc};font-weight:700;">${f.resultat || '-'}</span></div>
+          <div class="detail-row"><span class="detail-label">CONTENU</span><span class="detail-value">${f.contenu || '-'}</span></div>
+          ${f.remarques ? `<div class="detail-row"><span class="detail-label">REMARQUES</span><span class="detail-value">${f.remarques}</span></div>` : ''}
+          <button class="close-btn" onclick="this.closest('.detail-overlay').remove()">FERMER</button>
+        </div>`;
+        document.body.appendChild(o);
+        o.addEventListener('click', e => { if (e.target === o) o.remove(); });
+      };
+
+      window.showTestDetail = function(id) {
+        const t = allTests.find(x => x._id === id);
+        if (!t) return;
+        const o = document.createElement('div');
+        o.className = 'detail-overlay';
+        const ac = t.moyenne >= 3 ? '#00cc55' : (t.moyenne >= 2 ? '#ffc800' : '#ff4444');
+        const sc = t.statut === 'valide' ? '✓ VALIDÉ' : (t.statut === 'rejete' ? '✗ REJETÉ' : '⏳ EN ATTENTE');
+        o.innerHTML = `<div class="detail-box">
+          <h3>TEST — ${t.unite_matricule} (${t.unite_grade || '-'})</h3>
+          <div class="detail-row"><span class="detail-label">DATE</span><span class="detail-value">${fmtDate(t.created_at)}</span></div>
+          <div class="detail-row"><span class="detail-label">ÉVALUATEUR</span><span class="detail-value">${t.evaluateur_matricule || '-'} (${t.evaluateur_nom || '-'})</span></div>
+          <div class="detail-row"><span class="detail-label">SALUTS</span><span class="detail-value">${t.note_saluts}/4</span></div>
+          <div class="detail-row"><span class="detail-label">SOCIOSTATUS</span><span class="detail-value">${t.note_sociostatus}/4</span></div>
+          <div class="detail-row"><span class="detail-label">VERDICTS</span><span class="detail-value">${t.note_verdicts}/4</span></div>
+          <div class="detail-row"><span class="detail-label">PROCÉDURES</span><span class="detail-value">${t.note_procedures}/4</span></div>
+          <div class="detail-row"><span class="detail-label">MOYENNE</span><span class="detail-value" style="font-weight:700;color:${ac}">${t.moyenne}/4</span></div>
+          <div class="detail-row"><span class="detail-label">FORMATION ARME</span><span class="detail-value">${t.formation_armement || '-'}</span></div>
+          <div class="detail-row"><span class="detail-label">CODES COMPLET</span><span class="detail-value">${t.codes_complet || '-'}${t.codes_complet === 'Non' ? ' ⚠ ERREUR MAJEURE' : ''}</span></div>
+          <div class="detail-row"><span class="detail-label">EN RÉFORME</span><span class="detail-value">${t.reforme || '-'}</span></div>
+          ${t.commentaires ? `<div class="detail-row"><span class="detail-label">COMMENTAIRES</span><span class="detail-value">${t.commentaires}</span></div>` : ''}
+          <div class="detail-row"><span class="detail-label">STATUT</span><span class="detail-value">${sc}</span></div>
+          ${t.validated_by ? `<div class="detail-row"><span class="detail-label">VALIDÉ PAR</span><span class="detail-value">${t.validated_by} — ${fmtDate(t.validated_at)}</span></div>` : ''}
+          <button class="close-btn" onclick="this.closest('.detail-overlay').remove()">FERMER</button>
+        </div>`;
+        document.body.appendChild(o);
+        o.addEventListener('click', e => { if (e.target === o) o.remove(); });
+      };
+
+      window.showUnitFiche = function(mat) {
+        const u = allUnits.find(x => x.matricule === mat);
+        if (!u) return;
+        const formations = getFormationsForUnit(mat);
+        const tests = getTestsForUnit(mat);
+        const fReussi = formations.filter(f => f.resultat === 'Réussi').length;
+        const tValide = tests.filter(t => t.statut === 'valide').length;
+        const divInfo = DIVISIONS_DATA.find(d => d.code === u.division);
+        const designation = `MPF-${u.division || '??'}.${u.rang || '??'}-${u.matricule || '???'}`;
+
+        const formList = formations.sort((a, b) => (b.date_formation || b.created_at || '').localeCompare(a.date_formation || a.created_at || '')).map(f => {
+          const rc = f.resultat === 'Réussi' ? '#00cc55' : (f.resultat === 'Échoué' ? '#ff4444' : '#ffc800');
+          return `<div style="display:flex;gap:0.5rem;padding:0.2rem 0;font-size:0.78rem;"><span style="color:var(--text-muted);min-width:70px;">${fmtDate(f.date_formation || f.created_at)}</span><span style="min-width:110px;">${f.type || '?'}</span><span style="color:${rc};font-weight:700;">${f.resultat || '?'}</span><span style="color:var(--text-muted);margin-left:auto;">${f.formateur_matricule || ''}</span></div>`;
+        }).join('');
+
+        const testList = tests.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || '')).map(t => {
+          const ac = t.moyenne >= 3 ? '#00cc55' : (t.moyenne >= 2 ? '#ffc800' : '#ff4444');
+          const sl = t.statut === 'valide' ? '✓ VALIDÉ' : (t.statut === 'rejete' ? '✗ REJETÉ' : '⏳ EN ATTENTE');
+          return `<div style="display:flex;gap:0.5rem;padding:0.2rem 0;font-size:0.78rem;"><span style="color:var(--text-muted);min-width:70px;">${fmtDate(t.created_at)}</span><span style="color:${ac};font-weight:700;min-width:50px;">${t.moyenne}/4</span><span>${sl}</span><span style="color:var(--text-muted);margin-left:auto;">${t.evaluateur_matricule || ''}</span></div>`;
+        }).join('');
+
+        const o = document.createElement('div');
+        o.className = 'detail-overlay';
+        o.innerHTML = `<div class="detail-box">
+          <h3>${designation}</h3>
+          <div class="detail-row"><span class="detail-label">MATRICULE</span><span class="detail-value" style="font-weight:700;color:var(--accent-cyan);">${u.matricule || '-'}</span></div>
+          <div class="detail-row"><span class="detail-label">NOM STEAM</span><span class="detail-value">${u.nom_steam || '-'}</span></div>
+          <div class="detail-row"><span class="detail-label">GRADE</span><span class="detail-value"><span class="rang-badge ${getRangClass(u.rang)}">${u.rang || '-'}</span></span></div>
+          <div class="detail-row"><span class="detail-label">DIVISION</span><span class="detail-value">${u.division || '-'}${divInfo ? ` — ${divInfo.tag}` : ''}</span></div>
+          <div class="detail-row"><span class="detail-label">STEAMID64</span><span class="detail-value" style="font-size:0.72rem;">${u.steamid64 || '-'}</span></div>
+          <div class="detail-row"><span class="detail-label">FORMATEUR</span><span class="detail-value">${u.formateur ? '<span class="formateur-badge">OUI</span>' : 'Non'}</span></div>
+          <div style="border-top:1px solid rgba(0,170,255,0.1);margin-top:0.8rem;padding-top:0.5rem;">
+            <div style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;font-size:0.72rem;letter-spacing:1px;margin-bottom:0.3rem;">🎓 FORMATIONS (${formations.length}) — <span style="color:#00cc55">${fReussi} réussies</span></div>
+            ${formList || '<div style="color:var(--text-muted);font-size:0.75rem;font-style:italic;">Aucune formation</div>'}
+          </div>
+          <div style="border-top:1px solid rgba(0,170,255,0.1);margin-top:0.5rem;padding-top:0.5rem;">
+            <div style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;font-size:0.72rem;letter-spacing:1px;margin-bottom:0.3rem;">📝 TESTS (${tests.length}) — <span style="color:#00cc55">${tValide} validés</span></div>
+            ${testList || '<div style="color:var(--text-muted);font-size:0.75rem;font-style:italic;">Aucun test</div>'}
+          </div>
+          <button class="close-btn" onclick="this.closest('.detail-overlay').remove()">FERMER</button>
+        </div>`;
+        document.body.appendChild(o);
+        o.addEventListener('click', e => { if (e.target === o) o.remove(); });
+      };
+
+      window.showDivisionDetail = function(code) {
+        const d = DIVISIONS_DATA.find(x => x.code === code);
+        if (!d) return;
+        const members = allUnits.filter(u => u.division === code).sort((a, b) => {
+          const ia = RANK_ORDER.indexOf(a.rang || ''); const ib = RANK_ORDER.indexOf(b.rang || '');
+          return ib - ia;
+        });
+        const formations = allFormations.filter(f => {
+          const participants = f.participants || (f.participants_str ? f.participants_str.split(',').map(s => s.trim()) : []);
+          return participants.some(p => members.find(m => m.matricule === p));
+        });
+
+        const membersList = members.map(m => {
+          const mForms = getFormationsForUnit(m.matricule);
+          const mTests = getTestsForUnit(m.matricule);
+          return `<div style="display:flex;gap:0.5rem;padding:0.3rem 0;font-size:0.78rem;align-items:center;">
+            <span class="rang-badge ${getRangClass(m.rang)}" style="font-size:0.65rem;">${m.rang}</span>
+            <span style="color:var(--accent-cyan);font-weight:700;min-width:40px;">${m.matricule}</span>
+            <span style="flex:1;">${m.nom_steam || '-'}</span>
+            <span style="color:var(--text-muted);font-size:0.68rem;">🎓${mForms.length} 📝${mTests.length}</span>
+          </div>`;
+        }).join('');
+
+        const o = document.createElement('div');
+        o.className = 'detail-overlay';
+        o.innerHTML = `<div class="detail-box">
+          <h3 style="color:${d.color};">${d.icon} ${d.code} — ${d.tag}</h3>
+          <div class="detail-row"><span class="detail-label">DESCRIPTION</span><span class="detail-value">${d.desc}</span></div>
+          <div class="detail-row"><span class="detail-label">MEMBRES</span><span class="detail-value">${members.length} unités</span></div>
+          <div class="detail-row"><span class="detail-label">FORMATIONS</span><span class="detail-value">${formations.length} formations associées</span></div>
+          <div style="border-top:1px solid rgba(0,170,255,0.1);margin-top:0.8rem;padding-top:0.5rem;">
+            <div style="color:${d.color};font-family:'Share Tech Mono',monospace;font-size:0.72rem;letter-spacing:1px;margin-bottom:0.3rem;">👤 MEMBRES (${members.length})</div>
+            ${membersList || '<div style="color:var(--text-muted);font-size:0.75rem;font-style:italic;">Aucun membre</div>'}
+          </div>
+          <button class="close-btn" onclick="this.closest('.detail-overlay').remove()">FERMER</button>
+        </div>`;
+        document.body.appendChild(o);
+        o.addEventListener('click', e => { if (e.target === o) o.remove(); });
+      };
+
+      // ========== EVENT LISTENERS ==========
+      document.getElementById('unitSearch').addEventListener('input', renderUnitsTable);
+      document.getElementById('unitFilterDiv').addEventListener('change', renderUnitsTable);
+      document.getElementById('unitFilterRang').addEventListener('change', renderUnitsTable);
+      document.getElementById('formSearch').addEventListener('input', renderFormationsTable);
+      document.getElementById('formFilterType').addEventListener('change', renderFormationsTable);
+      document.getElementById('formFilterResult').addEventListener('change', renderFormationsTable);
+      document.getElementById('testSearch').addEventListener('input', renderTestsTable);
+      document.getElementById('testFilterStatus').addEventListener('change', renderTestsTable);
+      document.getElementById('ficheSearch').addEventListener('input', renderFiches);
+      document.getElementById('ficheFilterDiv').addEventListener('change', renderFiches);
+
+      // ========== AUTH ==========
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('access-denied').style.display = 'block';
+          return;
+        }
+        try {
+          const s = await getDoc(doc(db, 'users', user.uid));
+          if (!s.exists() || !s.data().approved) {
+            document.getElementById('loading').style.display = 'none';
+            if (!s.exists()) document.getElementById('access-denied').style.display = 'block';
+            else document.getElementById('notApproved').style.display = 'block';
+            return;
+          }
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('mainContent').style.display = 'block';
+
+          try {
+            [allUnits, allFormations, allTests] = await Promise.all([loadUnits(), loadFormations(), loadUnitTests()]);
+          } catch (_) {
+            allUnits = []; allFormations = []; allTests = [];
+          }
+
+          updateStats();
+          populateUnitFilters();
+          populateFormationFilters();
+          renderUnitsTable();
+          renderFormationsTable();
+          renderTestsTable();
+          renderDivisions();
+          renderFiches();
+        } catch (e) {
+          console.error(e);
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('access-denied').style.display = 'block';
+        }
+      });
+    </script>
+</body>
+</html>

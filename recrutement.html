@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recrutement & Blacklist - MPF Documentation</title>
+    <link rel="stylesheet" href="assets/css/bundle.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        .recruit-wrapper{max-width:1200px;margin:0 auto;}
+        .tab-bar{display:flex;gap:0;margin-bottom:1.5rem;border-bottom:2px solid rgba(0,170,255,0.15);}
+        .tab-btn{padding:0.6rem 1.5rem;font-family:'Orbitron',sans-serif;font-size:0.75rem;color:var(--text-muted);background:transparent;border:none;cursor:pointer;letter-spacing:1px;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.2s;}
+        .tab-btn:hover{color:var(--accent-cyan);}
+        .tab-btn.active{color:var(--accent-cyan);border-bottom-color:var(--accent-cyan);font-weight:700;}
+        .tab-content{display:none;}
+        .tab-content.active{display:block;}
+
+        /* Stats */
+        .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0.8rem;margin-bottom:1.5rem;}
+        .stat-box{padding:0.8rem;text-align:center;background:rgba(0,170,255,0.03);border:1px solid rgba(0,170,255,0.1);border-radius:4px;}
+        .stat-box .stat-number{font-family:'Orbitron',sans-serif;font-size:1.3rem;color:var(--accent-cyan);font-weight:700;}
+        .stat-box .stat-label{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--text-muted);letter-spacing:1px;margin-top:0.2rem;}
+        .stat-box.green .stat-number{color:#00cc55;}
+        .stat-box.green{border-color:rgba(0,204,102,0.15);}
+        .stat-box.red .stat-number{color:#ff4444;}
+        .stat-box.red{border-color:rgba(255,68,68,0.15);}
+        .stat-box.yellow .stat-number{color:#ffc800;}
+        .stat-box.yellow{border-color:rgba(255,200,0,0.15);}
+
+        /* Filter */
+        .filter-bar{display:flex;gap:0.8rem;flex-wrap:wrap;margin-bottom:1rem;align-items:center;}
+        .filter-bar input,.filter-bar select{padding:0.45rem 0.7rem;background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.2);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.8rem;outline:none;border-radius:2px;}
+        .filter-bar input{flex:1;min-width:200px;}
+        .filter-bar input:focus,.filter-bar select:focus{border-color:var(--accent-cyan);}
+        .filter-bar select option{background:#0a1628;}
+
+        /* Table */
+        .data-table{width:100%;border-collapse:collapse;font-size:0.8rem;}
+        .data-table th{text-align:left;padding:0.5rem 0.4rem;color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;font-size:0.68rem;letter-spacing:1px;border-bottom:2px solid rgba(0,170,255,0.2);cursor:pointer;user-select:none;white-space:nowrap;}
+        .data-table th:hover{color:#fff;}
+        .data-table td{padding:0.4rem;color:var(--text-primary);border-bottom:1px solid rgba(0,170,255,0.06);font-family:'Share Tech Mono',monospace;vertical-align:middle;}
+        .data-table tr:hover{background:rgba(0,170,255,0.03);cursor:pointer;}
+
+        /* Badges */
+        .status-badge{display:inline-block;padding:0.1rem 0.4rem;border-radius:2px;font-size:0.68rem;font-weight:700;}
+        .status-badge.accepted{background:rgba(0,200,80,0.15);color:#00cc55;border:1px solid rgba(0,200,80,0.3);}
+        .status-badge.pending{background:rgba(255,200,0,0.15);color:#ffc800;border:1px solid rgba(255,200,0,0.3);}
+        .status-badge.refused{background:rgba(255,60,60,0.15);color:#ff4444;border:1px solid rgba(255,60,60,0.3);}
+        .status-badge.blacklisted{background:rgba(255,60,60,0.15);color:#ff4444;border:1px solid rgba(255,60,60,0.3);}
+
+        /* Overlay */
+        .detail-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.75);z-index:1000;display:flex;align-items:center;justify-content:center;}
+        .detail-box{background:#0a1628;border:1px solid rgba(0,170,255,0.2);padding:1.5rem;border-radius:6px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;}
+        .detail-box h3{color:var(--accent-cyan);font-family:'Orbitron',sans-serif;font-size:0.9rem;margin-bottom:1rem;}
+        .detail-box .detail-row{display:flex;gap:0.5rem;margin-bottom:0.5rem;font-family:'Share Tech Mono',monospace;font-size:0.82rem;}
+        .detail-box .detail-label{color:var(--text-muted);min-width:150px;}
+        .detail-box .detail-value{color:var(--text-primary);flex:1;}
+
+        /* Buttons */
+        .btn-action{padding:0.5rem 1.2rem;font-family:'Share Tech Mono',monospace;font-size:0.8rem;cursor:pointer;border:1px solid rgba(0,170,255,0.4);background:rgba(0,170,255,0.1);color:var(--accent-cyan);border-radius:3px;transition:all 0.15s;letter-spacing:0.5px;}
+        .btn-action:hover{background:rgba(0,170,255,0.2);border-color:var(--accent-cyan);}
+        .btn-action.primary{background:rgba(0,170,255,0.2);border-color:var(--accent-cyan);font-weight:700;}
+        .btn-action.primary:hover{background:rgba(0,170,255,0.35);}
+        .btn-action:disabled{opacity:0.4;cursor:not-allowed;}
+        .btn-delete{padding:0.2rem 0.5rem;font-family:'Share Tech Mono',monospace;font-size:0.7rem;cursor:pointer;border-radius:2px;border:1px solid rgba(255,60,60,0.3);background:rgba(255,60,60,0.1);color:#ff4444;transition:all 0.15s;}
+        .btn-delete:hover{background:rgba(255,60,60,0.2);}
+        .close-btn{padding:0.4rem 1rem;border:1px solid rgba(0,170,255,0.2);background:rgba(0,170,255,0.05);color:#fff;font-family:'Share Tech Mono',monospace;font-size:0.8rem;cursor:pointer;border-radius:3px;}
+
+        /* Form modal */
+        .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.75);z-index:1001;display:none;align-items:center;justify-content:center;}
+        .modal-overlay.open{display:flex;}
+        .modal{background:#0a1628;border:1px solid rgba(0,170,255,0.3);padding:1.5rem;border-radius:6px;max-width:550px;width:90%;max-height:85vh;overflow-y:auto;}
+        .modal h3{color:var(--accent-cyan);font-family:'Orbitron',sans-serif;font-size:0.85rem;margin-bottom:1rem;}
+        .modal label{display:block;font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--text-muted);letter-spacing:1px;margin-bottom:0.3rem;margin-top:0.8rem;}
+        .modal input,.modal textarea,.modal select{width:100%;padding:0.5rem 0.7rem;background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.2);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.82rem;outline:none;border-radius:2px;box-sizing:border-box;}
+        .modal input:focus,.modal textarea:focus,.modal select:focus{border-color:var(--accent-cyan);}
+        .modal select option{background:#0a1628;}
+        .modal textarea{resize:vertical;min-height:60px;}
+        .modal .modal-actions{display:flex;gap:0.5rem;margin-top:1.2rem;justify-content:flex-end;}
+        .req{color:#ff4444;}
+
+        /* Alert */
+        .alert-msg{padding:0.6rem 1rem;border-radius:3px;margin-bottom:1rem;font-size:0.8rem;font-family:'Share Tech Mono',monospace;display:none;}
+        .alert-msg.success{display:block;background:rgba(0,200,80,0.08);border:1px solid rgba(0,200,80,0.3);color:#00cc55;}
+        .alert-msg.error{display:block;background:rgba(255,60,60,0.1);border:1px solid rgba(255,60,60,0.3);color:#ff4444;}
+
+        #access-denied,#notApproved{display:none;text-align:center;padding:3rem;}
+
+        .hg-section{display:none;}
+    </style>
+</head>
+<body>
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <div><h1 class="logo">MPF</h1><p class="logo-subtitle">Recrutement & Blacklist</p></div>
+                </div>
+                <div id="authBtn" class="header-auth"></div>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <div id="loading" style="text-align:center;padding:3rem;"><p style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;">CHARGEMENT...</p></div>
+            <div id="access-denied"><h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">CONNEXION REQUISE</h2><a href="login.html" style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;display:inline-block;margin-top:1rem;">→ SE CONNECTER</a></div>
+            <div id="notApproved"><h2 style="color:#ffaa00;font-family:'Orbitron',sans-serif;">EN ATTENTE D'APPROBATION</h2></div>
+
+            <div id="mainContent" style="display:none;">
+                <div class="recruit-wrapper">
+                    <div id="alertMsg" class="alert-msg"></div>
+
+                    <!-- Tabs -->
+                    <div class="tab-bar">
+                        <button class="tab-btn active" onclick="switchTab('recruits')">RECRUTEMENTS</button>
+                        <button class="tab-btn" onclick="switchTab('blacklist')">BLACKLIST</button>
+                    </div>
+
+                    <!-- ===================== TAB: RECRUTEMENTS ===================== -->
+                    <div id="tabRecruits" class="tab-content active">
+
+                        <!-- Stats -->
+                        <div class="stats-row">
+                            <div class="stat-box"><div class="stat-number" id="statRecTotal">0</div><div class="stat-label">TOTAL RECRUES</div></div>
+                            <div class="stat-box green"><div class="stat-number" id="statRecAccepted">0</div><div class="stat-label">ACCEPTÉES</div></div>
+                            <div class="stat-box yellow"><div class="stat-number" id="statRecPending">0</div><div class="stat-label">EN ATTENTE</div></div>
+                            <div class="stat-box red"><div class="stat-number" id="statRecRefused">0</div><div class="stat-label">REFUSÉES</div></div>
+                        </div>
+
+                        <div class="combine-terminal-wrapper animate-fadeInUp">
+                            <div class="combine-header">
+                                <h2>REGISTRE DES RECRUTEMENTS</h2>
+                                <span class="header-code" id="recCountLabel">0</span>
+                            </div>
+                            <div class="combine-body">
+                                <div class="filter-bar">
+                                    <input type="text" id="recSearch" placeholder="Rechercher pseudo, SteamID, recruteur..." oninput="renderRecruits()">
+                                    <select id="recFilterStatus" onchange="renderRecruits()">
+                                        <option value="">Tous statuts</option>
+                                        <option value="en_attente">En attente</option>
+                                        <option value="accepte">Accepté</option>
+                                        <option value="refuse">Refusé</option>
+                                    </select>
+                                    <button class="btn-action primary hg-only" onclick="openRecModal()" style="display:none;">+ AJOUTER</button>
+                                </div>
+                                <div style="overflow-x:auto;">
+                                    <table class="data-table">
+                                        <thead><tr>
+                                            <th>DATE</th>
+                                            <th>PSEUDO</th>
+                                            <th>STEAMID</th>
+                                            <th>RECRUTEUR</th>
+                                            <th>STATUT</th>
+                                            <th>ACTIONS</th>
+                                        </tr></thead>
+                                        <tbody id="recBody"><tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===================== TAB: BLACKLIST ===================== -->
+                    <div id="tabBlacklist" class="tab-content">
+
+                        <!-- Stats -->
+                        <div class="stats-row">
+                            <div class="stat-box red"><div class="stat-number" id="statBlTotal">0</div><div class="stat-label">TOTAL BLACKLISTÉS</div></div>
+                        </div>
+
+                        <div class="combine-terminal-wrapper animate-fadeInUp">
+                            <div class="combine-header">
+                                <h2>⛔ BLACKLIST</h2>
+                                <span class="header-code" id="blCountLabel">0</span>
+                            </div>
+                            <div class="combine-body">
+                                <div class="filter-bar">
+                                    <input type="text" id="blSearch" placeholder="Rechercher pseudo, SteamID, raison..." oninput="renderBlacklist()">
+                                    <button class="btn-action primary hg-only" onclick="openBlModal()" style="display:none;">+ AJOUTER</button>
+                                </div>
+                                <div style="overflow-x:auto;">
+                                    <table class="data-table">
+                                        <thead><tr>
+                                            <th>DATE</th>
+                                            <th>PSEUDO</th>
+                                            <th>STEAMID</th>
+                                            <th>DISCORD</th>
+                                            <th>RAISON</th>
+                                            <th>AJOUTÉ PAR</th>
+                                            <th>ACTIONS</th>
+                                        </tr></thead>
+                                        <tbody id="blBody"><tr><td colspan="7" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal: Ajouter Recrutement -->
+    <div id="recModal" class="modal-overlay">
+        <div class="modal">
+            <h3 id="recModalTitle">AJOUTER UN RECRUTEMENT</h3>
+            <input type="hidden" id="recEditId">
+            <label>PSEUDO / NOM STEAM <span class="req">*</span></label>
+            <input type="text" id="recPseudo" placeholder="Ex: yellowaitc">
+            <label>STEAMID64</label>
+            <input type="text" id="recSteamId" placeholder="Ex: 76561198414645840">
+            <label>DISCORD</label>
+            <input type="text" id="recDiscord" placeholder="Ex: pseudo#1234">
+            <label>RECRUTEUR (MATRICULE)</label>
+            <input type="text" id="recRecruteur" placeholder="Ex: 230">
+            <label>STATUT</label>
+            <select id="recStatut">
+                <option value="en_attente">En attente</option>
+                <option value="accepte">Accepté</option>
+                <option value="refuse">Refusé</option>
+            </select>
+            <label>NOTES</label>
+            <textarea id="recNotes" rows="3" placeholder="Notes sur le recrutement (optionnel)"></textarea>
+            <div class="modal-actions">
+                <button class="btn-action" onclick="closeRecModal()">ANNULER</button>
+                <button class="btn-action primary" id="recSubmitBtn" onclick="submitRecruitment()">⟩ ENREGISTRER</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Ajouter Blacklist -->
+    <div id="blModal" class="modal-overlay">
+        <div class="modal">
+            <h3 id="blModalTitle">AJOUTER À LA BLACKLIST</h3>
+            <input type="hidden" id="blEditId">
+            <label>PSEUDO / NOM STEAM <span class="req">*</span></label>
+            <input type="text" id="blPseudo" placeholder="Ex: yellowaitc">
+            <label>STEAMID64</label>
+            <input type="text" id="blSteamId" placeholder="Ex: 76561198414645840">
+            <label>DISCORD</label>
+            <input type="text" id="blDiscord" placeholder="Ex: pseudo#1234">
+            <label>RAISON <span class="req">*</span></label>
+            <textarea id="blRaison" rows="3" placeholder="Raison du blacklist..."></textarea>
+            <label>NOTES</label>
+            <textarea id="blNotes" rows="2" placeholder="Détails supplémentaires (optionnel)"></textarea>
+            <div class="modal-actions">
+                <button class="btn-action" onclick="closeBlModal()">ANNULER</button>
+                <button class="btn-action primary" id="blSubmitBtn" onclick="submitBlacklist()">⟩ ENREGISTRER</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="assets/js/auth.js"></script>
+    <script src="assets/js/global-nav.js?v=20260214" defer></script>
+    <script src="assets/js/interactive-system.js" defer></script>
+    <script src="assets/js/combine-animations.js" defer></script>
+    <script type="module">
+      import { auth, db } from './assets/js/auth.js';
+      import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+      import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+      import {
+        loadUnits,
+        loadRecruitments, addRecruitment, deleteRecruitment, updateRecruitment,
+        loadBlacklist, addBlacklistEntry, deleteBlacklistEntry, updateBlacklistEntry,
+        onSyncStatus
+      } from './assets/js/github-data.js';
+
+      let allRecruits = [], allBlacklist = [], allUnits = [];
+      let currentUserData = null, isHG = false, isAdmin = false;
+
+      function fmtDate(d) {
+        if (!d) return '-';
+        const p = d.split('-');
+        return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : d;
+      }
+
+      function showAlert(t, type = 'success') {
+        const e = document.getElementById('alertMsg');
+        e.style.display = 'block';
+        e.className = 'alert-msg ' + type;
+        e.textContent = t;
+        setTimeout(() => e.style.display = 'none', 5000);
+      }
+
+      // Sync indicator
+      {
+        const i = document.createElement('div');
+        i.id = 'syncIndicator';
+        i.className = 'sync-indicator hidden';
+        i.style.cssText = 'position:fixed;bottom:1rem;right:1rem;padding:0.4rem 0.8rem;border-radius:3px;font-family:"Share Tech Mono",monospace;font-size:0.72rem;z-index:999;transition:all 0.3s;pointer-events:none;opacity:0;';
+        document.body.appendChild(i);
+        let t = null;
+        onSyncStatus(s => {
+          clearTimeout(t);
+          if (s === 'syncing') { i.innerHTML = '<span style="display:inline-block;animation:spin 1s linear infinite;">⟳</span> Synchronisation...'; i.style.opacity = '1'; i.style.background = 'rgba(255,200,0,0.15)'; i.style.border = '1px solid rgba(255,200,0,0.4)'; i.style.color = '#ffc800'; }
+          else if (s === 'synced') { i.innerHTML = '✓ Synchronisé'; i.style.opacity = '1'; i.style.background = 'rgba(0,200,80,0.15)'; i.style.border = '1px solid rgba(0,200,80,0.4)'; i.style.color = '#00cc55'; t = setTimeout(() => i.style.opacity = '0', 2500); }
+          else { i.innerHTML = '⚠ Erreur sync'; i.style.opacity = '1'; i.style.background = 'rgba(255,60,60,0.15)'; i.style.border = '1px solid rgba(255,60,60,0.4)'; i.style.color = '#ff4444'; t = setTimeout(() => i.style.opacity = '0', 6000); }
+        });
+      }
+
+      // ========== TABS ==========
+      window.switchTab = function(tab) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        if (tab === 'recruits') {
+          document.querySelectorAll('.tab-btn')[0].classList.add('active');
+          document.getElementById('tabRecruits').classList.add('active');
+        } else {
+          document.querySelectorAll('.tab-btn')[1].classList.add('active');
+          document.getElementById('tabBlacklist').classList.add('active');
+        }
+      };
+
+      // ========== RECRUTEMENTS ==========
+      function updateRecStats() {
+        document.getElementById('statRecTotal').textContent = allRecruits.length;
+        document.getElementById('statRecAccepted').textContent = allRecruits.filter(r => r.statut === 'accepte').length;
+        document.getElementById('statRecPending').textContent = allRecruits.filter(r => r.statut === 'en_attente').length;
+        document.getElementById('statRecRefused').textContent = allRecruits.filter(r => r.statut === 'refuse').length;
+      }
+
+      window.renderRecruits = function() {
+        const q = (document.getElementById('recSearch').value || '').toLowerCase();
+        const statusF = document.getElementById('recFilterStatus').value;
+
+        let filtered = allRecruits.filter(r => {
+          if (statusF && r.statut !== statusF) return false;
+          if (q) {
+            const hay = `${r.pseudo||''} ${r.steamid||''} ${r.discord||''} ${r.recruteur||''} ${r.notes||''}`.toLowerCase();
+            if (!hay.includes(q)) return false;
+          }
+          return true;
+        });
+
+        filtered.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+
+        document.getElementById('recCountLabel').textContent = `${filtered.length} / ${allRecruits.length}`;
+
+        const tb = document.getElementById('recBody');
+        if (!filtered.length) {
+          tb.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:2rem;">Aucun recrutement trouvé</td></tr>';
+          return;
+        }
+
+        const canManage = isHG || isAdmin;
+        tb.innerHTML = filtered.map(r => {
+          const sc = r.statut === 'accepte' ? 'accepted' : (r.statut === 'refuse' ? 'refused' : 'pending');
+          const sl = r.statut === 'accepte' ? 'ACCEPTÉ' : (r.statut === 'refuse' ? 'REFUSÉ' : 'EN ATTENTE');
+          const actions = canManage
+            ? `<div style="display:flex;gap:0.3rem;">
+                <button class="btn-delete" onclick="event.stopPropagation();editRecruitment('${r._id}')" style="color:var(--accent-cyan);border-color:rgba(0,170,255,0.3);background:rgba(0,170,255,0.08);" title="Modifier">✎</button>
+                <button class="btn-delete" onclick="event.stopPropagation();deleteRec('${r._id}')" title="Supprimer">✗</button>
+               </div>`
+            : '<span style="color:var(--text-muted);font-size:0.7rem;">—</span>';
+          return `<tr onclick="showRecDetail('${r._id}')">
+            <td style="white-space:nowrap;font-size:0.75rem;">${fmtDate(r.created_at)}</td>
+            <td>${r.pseudo || '-'}</td>
+            <td style="font-size:0.72rem;color:var(--text-muted);">${r.steamid || '-'}</td>
+            <td>${r.recruteur || '-'}</td>
+            <td><span class="status-badge ${sc}">${sl}</span></td>
+            <td>${actions}</td>
+          </tr>`;
+        }).join('');
+      };
+
+      window.showRecDetail = function(id) {
+        const r = allRecruits.find(x => x._id === id);
+        if (!r) return;
+        const sc = r.statut === 'accepte' ? '✓ ACCEPTÉ' : (r.statut === 'refuse' ? '✗ REFUSÉ' : '⏳ EN ATTENTE');
+        const sColor = r.statut === 'accepte' ? '#00cc55' : (r.statut === 'refuse' ? '#ff4444' : '#ffc800');
+        // Check blacklist
+        const bl = allBlacklist.find(b => (b.steamid && r.steamid && b.steamid === r.steamid) || (b.pseudo && r.pseudo && b.pseudo.toLowerCase() === r.pseudo.toLowerCase()));
+        const blWarn = bl ? `<div style="margin-top:0.8rem;padding:0.5rem;background:rgba(255,60,60,0.1);border:1px solid rgba(255,60,60,0.3);border-radius:3px;font-family:'Share Tech Mono',monospace;font-size:0.78rem;color:#ff4444;">⚠ CETTE PERSONNE EST BLACKLISTÉE : ${bl.raison || 'N/A'}</div>` : '';
+        const o = document.createElement('div');
+        o.className = 'detail-overlay';
+        o.innerHTML = `<div class="detail-box">
+          <h3>RECRUTEMENT — ${r.pseudo || '?'}</h3>
+          <div class="detail-row"><span class="detail-label">DATE</span><span class="detail-value">${fmtDate(r.created_at)}</span></div>
+          <div class="detail-row"><span class="detail-label">PSEUDO</span><span class="detail-value">${r.pseudo || '-'}</span></div>
+          <div class="detail-row"><span class="detail-label">STEAMID</span><span class="detail-value">${r.steamid || '-'}</span></div>
+          <div class="detail-row"><span class="detail-label">DISCORD</span><span class="detail-value">${r.discord || '-'}</span></div>
+          <div class="detail-row"><span class="detail-label">RECRUTEUR</span><span class="detail-value">${r.recruteur || '-'}</span></div>
+          <div class="detail-row"><span class="detail-label">STATUT</span><span class="detail-value" style="color:${sColor};font-weight:700;">${sc}</span></div>
+          ${r.notes ? `<div class="detail-row"><span class="detail-label">NOTES</span><span class="detail-value">${r.notes}</span></div>` : ''}
+          ${blWarn}
+          <div style="display:flex;gap:0.5rem;margin-top:1rem;justify-content:flex-end;">
+            <button class="close-btn" onclick="this.closest('.detail-overlay').remove()">FERMER</button>
+          </div>
+        </div>`;
+        document.body.appendChild(o);
+        o.addEventListener('click', e => { if (e.target === o) o.remove(); });
+      };
+
+      // ========== RECRUTEMENT MODAL ==========
+      window.openRecModal = function(editData) {
+        document.getElementById('recEditId').value = editData ? editData._id : '';
+        document.getElementById('recModalTitle').textContent = editData ? 'MODIFIER LE RECRUTEMENT' : 'AJOUTER UN RECRUTEMENT';
+        document.getElementById('recPseudo').value = editData ? editData.pseudo || '' : '';
+        document.getElementById('recSteamId').value = editData ? editData.steamid || '' : '';
+        document.getElementById('recDiscord').value = editData ? editData.discord || '' : '';
+        document.getElementById('recRecruteur').value = editData ? editData.recruteur || '' : (currentUserData ? currentUserData.matricule : '');
+        document.getElementById('recStatut').value = editData ? editData.statut || 'en_attente' : 'en_attente';
+        document.getElementById('recNotes').value = editData ? editData.notes || '' : '';
+        document.getElementById('recModal').classList.add('open');
+      };
+
+      window.closeRecModal = function() {
+        document.getElementById('recModal').classList.remove('open');
+      };
+
+      window.editRecruitment = function(id) {
+        const r = allRecruits.find(x => x._id === id);
+        if (r) openRecModal(r);
+      };
+
+      window.submitRecruitment = async function() {
+        const pseudo = document.getElementById('recPseudo').value.trim();
+        if (!pseudo) { showAlert('Le pseudo est requis.', 'error'); return; }
+
+        const entry = {
+          pseudo,
+          steamid: document.getElementById('recSteamId').value.trim(),
+          discord: document.getElementById('recDiscord').value.trim(),
+          recruteur: document.getElementById('recRecruteur').value.trim(),
+          statut: document.getElementById('recStatut').value,
+          notes: document.getElementById('recNotes').value.trim(),
+          created_at: new Date().toISOString().substring(0, 10),
+          added_by: currentUserData ? currentUserData.matricule : ''
+        };
+
+        const editId = document.getElementById('recEditId').value;
+        const btn = document.getElementById('recSubmitBtn');
+        btn.disabled = true; btn.textContent = '⏳ ENVOI...';
+
+        try {
+          if (editId) {
+            // Keep original date
+            const orig = allRecruits.find(x => x._id === editId);
+            if (orig) entry.created_at = orig.created_at;
+            entry.updated_at = new Date().toISOString().substring(0, 10);
+            await updateRecruitment(editId, entry);
+            const idx = allRecruits.findIndex(x => x._id === editId);
+            if (idx >= 0) allRecruits[idx] = { ...entry, _id: editId };
+            showAlert('✓ Recrutement modifié.');
+          } else {
+            const saved = await addRecruitment(entry);
+            allRecruits.push(saved);
+            showAlert('✓ Recrutement ajouté.');
+          }
+          closeRecModal();
+          updateRecStats();
+          renderRecruits();
+        } catch (e) {
+          showAlert('✗ Erreur: ' + e.message, 'error');
+        } finally {
+          btn.disabled = false; btn.textContent = '⟩ ENREGISTRER';
+        }
+      };
+
+      window.deleteRec = async function(id) {
+        if (!confirm('Supprimer ce recrutement ? Cette action est irréversible.')) return;
+        try {
+          await deleteRecruitment(id);
+          allRecruits = allRecruits.filter(r => r._id !== id);
+          updateRecStats();
+          renderRecruits();
+          showAlert('✓ Recrutement supprimé.');
+        } catch (e) {
+          showAlert('✗ Erreur: ' + e.message, 'error');
+        }
+      };
+
+      // ========== BLACKLIST ==========
+      function updateBlStats() {
+        document.getElementById('statBlTotal').textContent = allBlacklist.length;
+      }
+
+      window.renderBlacklist = function() {
+        const q = (document.getElementById('blSearch').value || '').toLowerCase();
+
+        let filtered = allBlacklist.filter(b => {
+          if (q) {
+            const hay = `${b.pseudo||''} ${b.steamid||''} ${b.discord||''} ${b.raison||''} ${b.notes||''} ${b.added_by||''}`.toLowerCase();
+            if (!hay.includes(q)) return false;
+          }
+          return true;
+        });
+
+        filtered.sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+
+        document.getElementById('blCountLabel').textContent = `${filtered.length} / ${allBlacklist.length}`;
+
+        const tb = document.getElementById('blBody');
+        if (!filtered.length) {
+          tb.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:2rem;">Aucune entrée blacklist</td></tr>';
+          return;
+        }
+
+        const canManage = isHG || isAdmin;
+        tb.innerHTML = filtered.map(b => {
+          const raisonShort = (b.raison || '-').length > 40 ? b.raison.substring(0, 40) + '...' : (b.raison || '-');
+          const actions = canManage
+            ? `<div style="display:flex;gap:0.3rem;">
+                <button class="btn-delete" onclick="event.stopPropagation();editBlacklist('${b._id}')" style="color:var(--accent-cyan);border-color:rgba(0,170,255,0.3);background:rgba(0,170,255,0.08);" title="Modifier">✎</button>
+                <button class="btn-delete" onclick="event.stopPropagation();deleteBl('${b._id}')" title="Supprimer">✗</button>
+               </div>`
+            : '<span style="color:var(--text-muted);font-size:0.7rem;">—</span>';
+          return `<tr onclick="showBlDetail('${b._id}')">
+            <td style="white-space:nowrap;font-size:0.75rem;">${fmtDate(b.created_at)}</td>
+            <td style="color:#ff4444;font-weight:700;">${b.pseudo || '-'}</td>
+            <td style="font-size:0.72rem;color:var(--text-muted);">${b.steamid || '-'}</td>
+            <td style="font-size:0.75rem;">${b.discord || '-'}</td>
+            <td style="font-size:0.75rem;" title="${(b.raison||'').replace(/"/g,'&quot;')}">${raisonShort}</td>
+            <td style="font-size:0.75rem;">${b.added_by || '-'}</td>
+            <td>${actions}</td>
+          </tr>`;
+        }).join('');
+      };
+
+      window.showBlDetail = function(id) {
+        const b = allBlacklist.find(x => x._id === id);
+        if (!b) return;
+        const o = document.createElement('div');
+        o.className = 'detail-overlay';
+        o.innerHTML = `<div class="detail-box">
+          <h3 style="color:#ff4444;">⛔ BLACKLIST — ${b.pseudo || '?'}</h3>
+          <div class="detail-row"><span class="detail-label">DATE D'AJOUT</span><span class="detail-value">${fmtDate(b.created_at)}</span></div>
+          ${b.updated_at ? `<div class="detail-row"><span class="detail-label">DERNIÈRE MODIF.</span><span class="detail-value">${fmtDate(b.updated_at)}</span></div>` : ''}
+          <div class="detail-row"><span class="detail-label">PSEUDO</span><span class="detail-value" style="color:#ff4444;font-weight:700;">${b.pseudo || '-'}</span></div>
+          <div class="detail-row"><span class="detail-label">STEAMID</span><span class="detail-value">${b.steamid || '-'}</span></div>
+          <div class="detail-row"><span class="detail-label">DISCORD</span><span class="detail-value">${b.discord || '-'}</span></div>
+          <div class="detail-row"><span class="detail-label">RAISON</span><span class="detail-value" style="color:#ff4444;">${b.raison || '-'}</span></div>
+          ${b.notes ? `<div class="detail-row"><span class="detail-label">NOTES</span><span class="detail-value">${b.notes}</span></div>` : ''}
+          <div class="detail-row"><span class="detail-label">AJOUTÉ PAR</span><span class="detail-value">${b.added_by || '-'}</span></div>
+          <div style="display:flex;gap:0.5rem;margin-top:1rem;justify-content:flex-end;">
+            <button class="close-btn" onclick="this.closest('.detail-overlay').remove()">FERMER</button>
+          </div>
+        </div>`;
+        document.body.appendChild(o);
+        o.addEventListener('click', e => { if (e.target === o) o.remove(); });
+      };
+
+      // ========== BLACKLIST MODAL ==========
+      window.openBlModal = function(editData) {
+        document.getElementById('blEditId').value = editData ? editData._id : '';
+        document.getElementById('blModalTitle').textContent = editData ? 'MODIFIER BLACKLIST' : 'AJOUTER À LA BLACKLIST';
+        document.getElementById('blPseudo').value = editData ? editData.pseudo || '' : '';
+        document.getElementById('blSteamId').value = editData ? editData.steamid || '' : '';
+        document.getElementById('blDiscord').value = editData ? editData.discord || '' : '';
+        document.getElementById('blRaison').value = editData ? editData.raison || '' : '';
+        document.getElementById('blNotes').value = editData ? editData.notes || '' : '';
+        document.getElementById('blModal').classList.add('open');
+      };
+
+      window.closeBlModal = function() {
+        document.getElementById('blModal').classList.remove('open');
+      };
+
+      window.editBlacklist = function(id) {
+        const b = allBlacklist.find(x => x._id === id);
+        if (b) openBlModal(b);
+      };
+
+      window.submitBlacklist = async function() {
+        const pseudo = document.getElementById('blPseudo').value.trim();
+        const raison = document.getElementById('blRaison').value.trim();
+        if (!pseudo) { showAlert('Le pseudo est requis.', 'error'); return; }
+        if (!raison) { showAlert('La raison est requise.', 'error'); return; }
+
+        const entry = {
+          pseudo,
+          steamid: document.getElementById('blSteamId').value.trim(),
+          discord: document.getElementById('blDiscord').value.trim(),
+          raison,
+          notes: document.getElementById('blNotes').value.trim(),
+          created_at: new Date().toISOString().substring(0, 10),
+          added_by: currentUserData ? currentUserData.matricule : ''
+        };
+
+        const editId = document.getElementById('blEditId').value;
+        const btn = document.getElementById('blSubmitBtn');
+        btn.disabled = true; btn.textContent = '⏳ ENVOI...';
+
+        try {
+          if (editId) {
+            const orig = allBlacklist.find(x => x._id === editId);
+            if (orig) entry.created_at = orig.created_at;
+            entry.updated_at = new Date().toISOString().substring(0, 10);
+            await updateBlacklistEntry(editId, entry);
+            const idx = allBlacklist.findIndex(x => x._id === editId);
+            if (idx >= 0) allBlacklist[idx] = { ...entry, _id: editId };
+            showAlert('✓ Blacklist modifiée.');
+          } else {
+            const saved = await addBlacklistEntry(entry);
+            allBlacklist.push(saved);
+            showAlert('✓ Ajouté à la blacklist.');
+          }
+          closeBlModal();
+          updateBlStats();
+          renderBlacklist();
+        } catch (e) {
+          showAlert('✗ Erreur: ' + e.message, 'error');
+        } finally {
+          btn.disabled = false; btn.textContent = '⟩ ENREGISTRER';
+        }
+      };
+
+      window.deleteBl = async function(id) {
+        if (!confirm('Retirer cette personne de la blacklist ?')) return;
+        try {
+          await deleteBlacklistEntry(id);
+          allBlacklist = allBlacklist.filter(b => b._id !== id);
+          updateBlStats();
+          renderBlacklist();
+          showAlert('✓ Retiré de la blacklist.');
+        } catch (e) {
+          showAlert('✗ Erreur: ' + e.message, 'error');
+        }
+      };
+
+      // ========== AUTH ==========
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('access-denied').style.display = 'block';
+          return;
+        }
+        try {
+          const s = await getDoc(doc(db, 'users', user.uid));
+          if (!s.exists() || !s.data().approved) {
+            document.getElementById('loading').style.display = 'none';
+            if (!s.exists()) document.getElementById('access-denied').style.display = 'block';
+            else document.getElementById('notApproved').style.display = 'block';
+            return;
+          }
+
+          const userData = s.data();
+          isAdmin = !!userData.is_admin;
+          currentUserData = { matricule: userData.matricule || '', nom_steam: userData.nom_steam || '' };
+
+          try { allUnits = await loadUnits(); } catch (_) { allUnits = []; }
+          const myUnit = allUnits.find(u => u.matricule === currentUserData.matricule);
+          isHG = myUnit && (myUnit.rang === 'Ofc' || myUnit.rang === 'Cmd');
+
+          // Show add buttons for HG/admin
+          if (isHG || isAdmin) {
+            document.querySelectorAll('.hg-only').forEach(el => el.style.display = '');
+          }
+
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('mainContent').style.display = 'block';
+
+          // Load data
+          try { [allRecruits, allBlacklist] = await Promise.all([loadRecruitments(), loadBlacklist()]); } catch (_) { allRecruits = []; allBlacklist = []; }
+          updateRecStats();
+          updateBlStats();
+          renderRecruits();
+          renderBlacklist();
+
+        } catch (e) {
+          console.error(e);
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('access-denied').style.display = 'block';
+        }
+      });
+    </script>
+</body>
+</html>

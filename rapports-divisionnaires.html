@@ -350,7 +350,9 @@
           let units = []; try { units = await loadUnits(); } catch(_){}
           const ui = units.find(x => x.matricule === ud.matricule);
           const rg = ui ? (ui.rang || '') : '';
-          if (rg !== 'Ofc' && rg !== 'Cmd') {
+          const isAdmin = !!ud.is_admin;
+          const isHG = rg === 'Ofc' || rg === 'Cmd';
+          if (!isHG && !isAdmin) {
             document.getElementById('loading').style.display='none';
             document.getElementById('access-denied').style.display='block'; return;
           }

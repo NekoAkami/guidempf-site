@@ -516,6 +516,92 @@ async function updatePlanningEntry(docId, entry) {
   return await updateInSubCollection('planning', docId, entry);
 }
 
+// ========== BLACKLIST (sous-collection) ==========
+async function loadBlacklist() {
+  return await readSubCollection('blacklist', 'created_at', 'desc');
+}
+
+async function addBlacklistEntry(entry) {
+  return await addToSubCollection('blacklist', entry);
+}
+
+async function deleteBlacklistEntry(docId) {
+  return await deleteFromSubCollection('blacklist', docId);
+}
+
+async function updateBlacklistEntry(docId, entry) {
+  return await updateInSubCollection('blacklist', docId, entry);
+}
+
+// ========== RECRUTEMENT (sous-collection) ==========
+async function loadRecruitments() {
+  return await readSubCollection('recruitments', 'created_at', 'desc');
+}
+
+async function addRecruitment(entry) {
+  return await addToSubCollection('recruitments', entry);
+}
+
+async function deleteRecruitment(docId) {
+  return await deleteFromSubCollection('recruitments', docId);
+}
+
+async function updateRecruitment(docId, entry) {
+  return await updateInSubCollection('recruitments', docId, entry);
+}
+
+// ========== COMPETENCES (suivi des formations par unité) ==========
+async function loadCompetences() {
+  _checkRateLimit();
+  try {
+    const docRef = doc(db, FS_COLLECTION, 'competences');
+    const snap = await getDoc(docRef);
+    if (snap.exists()) return snap.data().units || {};
+    return {};
+  } catch (err) {
+    console.warn('[DataStore] loadCompetences failed:', err.message);
+    return {};
+  }
+}
+
+async function saveCompetences(unitsData) {
+  _checkRateLimit();
+  _pendingWrites++;
+  _notifySync('syncing');
+  try {
+    const docRef = doc(db, FS_COLLECTION, 'competences');
+    await setDoc(docRef, { units: unitsData, updated_at: new Date().toISOString() });
+    _pendingWrites--;
+    if (_pendingWrites === 0) _notifySync('synced');
+  } catch (err) {
+    _pendingWrites--;
+    if (_pendingWrites === 0) _notifySync('error');
+    throw err;
+  }
+}
+
+async function updateUnitCompetence(matricule, field, value) {
+  _checkRateLimit();
+  _pendingWrites++;
+  _notifySync('syncing');
+  try {
+    const docRef = doc(db, FS_COLLECTION, 'competences');
+    const snap = await getDoc(docRef);
+    const data = snap.exists() ? (snap.data().units || {}) : {};
+    if (!data[matricule]) data[matricule] = {};
+    data[matricule][field] = value;
+    data[matricule].updated_at = new Date().toISOString();
+    await setDoc(docRef, { units: data, updated_at: new Date().toISOString() });
+    _pendingWrites--;
+    if (_pendingWrites === 0) _notifySync('synced');
+    return data[matricule];
+  } catch (err) {
+    _pendingWrites--;
+    if (_pendingWrites === 0) _notifySync('error');
+    throw err;
+  }
+}
+
 // ========== EXPORT ==========
 export {
   readJsonFile, writeJsonFile, onSyncStatus,
@@ -534,5 +620,8 @@ export {
   loadFormations, addFormation, deleteFormation, updateFormation,
   loadPlanning, addPlanningEntry, deletePlanningEntry, updatePlanningEntry,
   loadFiredUnits, addFiredUnit, deleteFiredUnit,
+  loadBlacklist, addBlacklistEntry, deleteBlacklistEntry, updateBlacklistEntry,
+  loadRecruitments, addRecruitment, deleteRecruitment, updateRecruitment,
+  loadCompetences, saveCompetences, updateUnitCompetence,
   GITHUB_OWNER, GITHUB_REPO
 };

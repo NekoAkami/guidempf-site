@@ -65,6 +65,7 @@ class GlobalNavigation {
             if (cached) {
                 const parsed = JSON.parse(cached);
                 if (parsed.row1 && parsed.row2) {
+                    this._ensureRequiredPages(parsed);
                     this.navOverride = parsed;
                 }
             }
@@ -79,16 +80,25 @@ class GlobalNavigation {
             const db = authModule.db;
             if (!db) return;
 
-            const { doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+            const { doc, getDoc, setDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
             const snap = await getDoc(doc(db, 'config', 'navigation'));
             if (snap.exists()) {
                 const data = snap.data();
                 if (data.row1 && data.row2) {
+                    // Auto-inject missing required pages into Firestore nav
+                    const injected = this._ensureRequiredPages(data);
                     const changed = JSON.stringify(this.navOverride?.row1) !== JSON.stringify(data.row1)
                                  || JSON.stringify(this.navOverride?.row2) !== JSON.stringify(data.row2);
                     this.navOverride = data;
                     localStorage.setItem('mpf_nav_config', JSON.stringify(data));
                     localStorage.setItem('mpf_nav_config_ts', Date.now().toString());
+                    // If pages were injected, persist to Firestore
+                    if (injected) {
+                        try {
+                            data.updated_at = new Date().toISOString();
+                            await setDoc(doc(db, 'config', 'navigation'), data);
+                        } catch (_) {}
+                    }
                     // If nav config changed since cache, hot-reload the navigation
                     if (changed) this.refreshNavigation();
                 }
@@ -97,6 +107,36 @@ class GlobalNavigation {
             console.warn('Nav config refresh failed:', err.message);
             // En cas d'échec Firestore, garder le cache existant (ne pas réinitialiser)
         }
+    }
+
+    _ensureRequiredPages(data) {
+        let injected = false;
+        // Required pages that must exist in the RAPPORTS dropdown
+        const requiredInRapports = [
+            { label: 'Formations', url: 'formations.html' },
+            { label: 'Tableau Formations', url: 'tableau-formations.html' },
+            { label: 'Information Milice', url: 'info-milice.html' },
+            { label: 'Recrutement', url: 'recrutement.html' }
+        ];
+        // Find or create RAPPORTS dropdown in row2
+        let rapportsItem = (data.row2 || []).find(item => item.label === 'RAPPORTS' || item.url === 'rapports.html');
+        if (rapportsItem) {
+            if (!rapportsItem.dropdown) rapportsItem.dropdown = [];
+            const existingUrls = new Set(rapportsItem.dropdown.map(d => d.url));
+            requiredInRapports.forEach(req => {
+                if (!existingUrls.has(req.url)) {
+                    rapportsItem.dropdown.push(req);
+                    injected = true;
+                }
+            });
+        }
+        // Ensure RECRUTEMENT exists as standalone in row2
+        const row2Urls = new Set((data.row2 || []).map(item => item.url));
+        if (!row2Urls.has('recrutement.html')) {
+            data.row2.push({ label: 'RECRUTEMENT', url: 'recrutement.html' });
+            injected = true;
+        }
+        return injected;
     }
 
     // Hot-reload navigation without full page refresh
@@ -823,14 +863,18 @@ class GlobalNavigation {
                     dropdown: [
                         { label: 'Rapports', url: 'rapports.html' },
                         { label: 'Rapports Divisionnaires', url: 'rapports-divisionnaires.html' },
-                        { label: 'Formations', url: 'formations.html' }
+                        { label: 'Formations', url: 'formations.html' },
+                        { label: 'Tableau Formations', url: 'tableau-formations.html' },
+                        { label: 'Information Milice', url: 'info-milice.html' },
+                        { label: 'Recrutement', url: 'recrutement.html' }
                     ]
                 },
                 { label: 'PAYES', url: 'payes.html' },
                 { label: 'VIEWTIME', url: 'viewtime.html' },
                 { label: 'RADIO & MDP', url: 'radio.html' },
                 { label: 'ABSENCES', url: 'declaration-absence.html' },
-                { label: 'LIENS', url: 'liens.html' }
+                { label: 'LIENS', url: 'liens.html' },
+                { label: 'RECRUTEMENT', url: 'recrutement.html' }
             ]
         };
     }

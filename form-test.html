@@ -265,8 +265,8 @@
         if(!user){document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';return;}
         try{const s=await getDoc(doc(db,'users',user.uid));if(!s.exists()){document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';return;}const ud=s.data();if(!ud.approved){document.getElementById('loading').style.display='none';document.getElementById('notApproved').style.display='block';return;}
         currentUser={matricule:ud.matricule||'???',nom_steam:ud.nom_steam||'',division:''};let ui=null;try{const u=await ghLoadUnits();allUnitsData=u||[];ui=u.find(x=>x.matricule===currentUser.matricule)||null;}catch(_){}
-        const rang=ui?(ui.rang||''):'';const isHG=rang==='Ofc'||rang==='Cmd';const isFormateur=ui?(ui.formateur||false):false;const acc=getAccreditation(rang);currentUser.division=ui?(ui.division||''):'';
-        if(!isFormateur&&!isHG){document.getElementById('loading').style.display='none';document.getElementById('noAccess').style.display='block';return;}
+        const rang=ui?(ui.rang||''):'';const isHG=rang==='Ofc'||rang==='Cmd';const isFormateur=ui?(ui.formateur||false):false;const acc=getAccreditation(rang);currentUser.division=ui?(ui.division||''):'';const isAdmin=!!ud.is_admin;
+        if(!isFormateur&&!isHG&&!isAdmin){document.getElementById('loading').style.display='none';document.getElementById('noAccess').style.display='block';return;}
         const dv=!isHG&&ui?(ui.division||''):'';document.getElementById('userIdentification').textContent='Identification : '+[rang,dv,currentUser.matricule].filter(Boolean).join(' ');document.getElementById('userAvatar').textContent=currentUser.matricule.substring(0,3);
         if(acc){let l='Accréditation : '+acc;if(isFormateur)l+=' — '+((acc==='MPF'||acc==='Recrue')?'Unité Formatrice MPF':'Unité Formatrice MPEF');document.getElementById('userAccreditation').textContent=l;}
         document.getElementById('loading').style.display='none';document.getElementById('mainContent').style.display='block';filterUnitsDropdown();

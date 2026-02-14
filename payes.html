@@ -677,8 +677,9 @@
           const ui = units.find(x => x.matricule === currentUser.matricule);
           const rg = ui?(ui.rang||''):'';
           isHG = rg === 'Ofc' || rg === 'Cmd';
+          const isAdmin = !!ud.is_admin;
 
-          if (isHG) {
+          if (isHG || isAdmin) {
             document.getElementById('tabConfig').style.display = '';
             document.getElementById('hgPayActions').style.display = '';
             document.getElementById('hgPayActions').classList.add('visible');

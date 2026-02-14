@@ -257,9 +257,10 @@
           const ui = units.find(x => x.matricule === ud.matricule);
           const rg = ui?(ui.rang||''):'';
           const isHG = rg === 'Ofc' || rg === 'Cmd';
+          const isAdmin = !!ud.is_admin;
           const userDiv = ui?(ui.division||''):'';
-          // Accès : membre de la division OU haut-gradé
-          if (userDiv !== DIVISION && !isHG) {
+          // Accès : membre de la division OU haut-gradé OU admin
+          if (userDiv !== DIVISION && !isHG && !isAdmin) {
             document.getElementById('loading').style.display='none';
             document.getElementById('access-denied').style.display='block'; return;
           }

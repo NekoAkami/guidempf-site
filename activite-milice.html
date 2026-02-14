@@ -367,6 +367,8 @@
           const ui = units.find(x => x.matricule === ud.matricule);
           const rg = ui ? (ui.rang || '') : '';
           isHG = rg === 'Ofc' || rg === 'Cmd';
+          const isAdmin = !!ud.is_admin;
+          if (isAdmin) isHG = true;
           document.getElementById('loading').style.display='none';
           document.getElementById('mainContent').style.display='block';
           try { allReports = await loadReports(); } catch(_) { allReports = []; }

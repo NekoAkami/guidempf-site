@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi des Formations - MPF Documentation</title>
+    <link rel="stylesheet" href="assets/css/bundle.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        .matrix-wrapper{max-width:1600px;margin:0 auto;}
+
+        /* Stats */
+        .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:0.6rem;margin-bottom:1rem;}
+        .stat-box{padding:0.6rem;text-align:center;background:rgba(0,170,255,0.03);border:1px solid rgba(0,170,255,0.1);border-radius:4px;}
+        .stat-box .stat-number{font-family:'Orbitron',sans-serif;font-size:1.2rem;color:var(--accent-cyan);font-weight:700;}
+        .stat-box .stat-label{font-family:'Share Tech Mono',monospace;font-size:0.58rem;color:var(--text-muted);letter-spacing:1px;margin-top:0.15rem;}
+        .stat-box.green .stat-number{color:#00cc55;}
+        .stat-box.green{border-color:rgba(0,204,102,0.15);}
+
+        /* Filters */
+        .filter-bar{display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.8rem;align-items:center;}
+        .filter-bar input,.filter-bar select{padding:0.35rem 0.6rem;background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.2);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.75rem;outline:none;border-radius:2px;}
+        .filter-bar input{flex:1;min-width:180px;}
+        .filter-bar input:focus,.filter-bar select:focus{border-color:var(--accent-cyan);}
+        .filter-bar select option{background:#0a1628;}
+
+        /* Matrix table */
+        .matrix-scroll{overflow-x:auto;overflow-y:auto;max-height:75vh;position:relative;}
+        .matrix-table{width:100%;border-collapse:separate;border-spacing:0;font-size:0.72rem;min-width:1200px;}
+        .matrix-table thead{position:sticky;top:0;z-index:10;}
+        .matrix-table th{padding:0.35rem 0.25rem;color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;font-size:0.58rem;letter-spacing:0.3px;border-bottom:2px solid rgba(0,170,255,0.25);white-space:nowrap;text-align:center;background:#0a1628;text-transform:uppercase;}
+        .matrix-table th.frozen{position:sticky;z-index:11;background:#0a1628;}
+        .matrix-table th.col-rang{left:0;min-width:50px;text-align:center;}
+        .matrix-table th.col-div{left:50px;min-width:80px;}
+        .matrix-table th.col-mat{left:130px;min-width:70px;}
+        .matrix-table td{padding:0.2rem 0.15rem;color:var(--text-primary);border-bottom:1px solid rgba(0,170,255,0.05);font-family:'Share Tech Mono',monospace;vertical-align:middle;text-align:center;white-space:nowrap;}
+        .matrix-table tr:hover td{background:rgba(0,170,255,0.04);}
+        .matrix-table td.frozen{position:sticky;z-index:2;background:#0a1628;}
+        .matrix-table tr:hover td.frozen{background:rgba(0,170,255,0.04);}
+        .matrix-table td.col-rang{left:0;min-width:50px;border-right:none;}
+        .matrix-table td.col-div{left:50px;min-width:80px;border-right:none;}
+        .matrix-table td.col-mat{left:130px;min-width:70px;border-right:2px solid rgba(0,170,255,0.15);}
+
+        /* Rang colors */
+        .rang{font-family:'Orbitron',sans-serif;font-size:0.7rem;font-weight:700;padding:1px 6px;border-radius:2px;}
+        .rang-Cmd{color:#ffd700;background:rgba(255,215,0,0.1);}
+        .rang-Ofc{color:#ffbb00;background:rgba(255,187,0,0.1);}
+        .rang-CABAL{color:#e74c3c;background:rgba(231,76,60,0.1);}
+        .rang-STBE{color:#ff8800;background:rgba(255,136,0,0.1);}
+        .rang-DvL{color:#aa66ff;background:rgba(170,102,255,0.1);}
+        .rang-01{color:#cc44cc;background:rgba(204,68,204,0.1);}
+        .rang-02{color:#8888ee;background:rgba(136,136,238,0.1);}
+        .rang-STB{color:#00aacc;background:rgba(0,170,204,0.1);}
+        .rang-03{color:#0088dd;background:rgba(0,136,221,0.1);}
+        .rang-04{color:#0077cc;background:rgba(0,119,204,0.1);}
+        .rang-05{color:#006699;background:rgba(0,102,153,0.1);}
+        .rang-RCT{color:#888;background:rgba(136,136,136,0.1);}
+
+        /* Division badges */
+        .div-badge{font-size:0.6rem;padding:1px 5px;border-radius:2px;font-weight:700;display:inline-block;min-width:50px;text-align:center;}
+        .div-EXOGEN{color:#00ff88;background:rgba(0,255,136,0.12);border:1px solid rgba(0,255,136,0.3);}
+        .div-UNION{color:#aaa;background:rgba(170,170,170,0.08);border:1px solid rgba(170,170,170,0.2);}
+        .div-HELIX{color:#ff44ff;background:rgba(255,68,255,0.12);border:1px solid rgba(255,68,255,0.3);}
+        .div-RAZOR{color:#ff4444;background:rgba(255,68,68,0.12);border:1px solid rgba(255,68,68,0.3);}
+        .div-JURY{color:#ffaa00;background:rgba(255,170,0,0.12);border:1px solid rgba(255,170,0,0.3);}
+        .div-GRID{color:#44aaff;background:rgba(68,170,255,0.12);border:1px solid rgba(68,170,255,0.3);}
+        .div-ZONE{color:#44ff44;background:rgba(68,255,68,0.12);border:1px solid rgba(68,255,68,0.3);}
+        .div-SPECTRE{color:#aaaaff;background:rgba(170,170,255,0.12);border:1px solid rgba(170,170,255,0.3);}
+        .div-APEX{color:#ff8844;background:rgba(255,136,68,0.12);border:1px solid rgba(255,136,68,0.3);}
+        .div-JUDGE{color:#ffcc00;background:rgba(255,204,0,0.12);border:1px solid rgba(255,204,0,0.3);}
+        .div-MACE{color:#ff66aa;background:rgba(255,102,170,0.12);border:1px solid rgba(255,102,170,0.3);}
+        .div-DEFEN{color:#66ccaa;background:rgba(102,204,170,0.12);border:1px solid rgba(102,204,170,0.3);}
+
+        /* Checkboxes */
+        .skill-cb{width:16px;height:16px;cursor:pointer;accent-color:var(--accent-cyan);}
+        .skill-cb:disabled{cursor:default;opacity:0.5;}
+
+        /* Dropdowns in cells */
+        .cell-select{padding:1px 2px;background:rgba(0,170,255,0.06);border:1px solid rgba(0,170,255,0.15);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.65rem;outline:none;border-radius:2px;max-width:110px;cursor:pointer;}
+        .cell-select:disabled{opacity:0.5;cursor:default;}
+        .cell-select option{background:#0a1628;}
+
+        /* Percentage bar */
+        .pct-cell{position:relative;min-width:60px;}
+        .pct-bar{position:absolute;top:0;left:0;bottom:0;opacity:0.15;border-radius:2px;transition:width 0.3s;}
+        .pct-text{position:relative;z-index:1;font-weight:700;font-size:0.7rem;}
+
+        /* Saving indicator */
+        .save-indicator{position:fixed;bottom:1rem;right:1rem;padding:0.5rem 1rem;border-radius:4px;font-family:'Share Tech Mono',monospace;font-size:0.75rem;z-index:999;transition:opacity 0.3s;opacity:0;pointer-events:none;}
+        .save-indicator.visible{opacity:1;}
+        .save-indicator.saving{background:rgba(255,170,0,0.15);border:1px solid rgba(255,170,0,0.4);color:#ffaa00;}
+        .save-indicator.saved{background:rgba(0,200,80,0.15);border:1px solid rgba(0,200,80,0.4);color:#00cc55;}
+        .save-indicator.error{background:rgba(255,60,60,0.15);border:1px solid rgba(255,60,60,0.4);color:#ff4444;}
+
+        /* Header group colors */
+        .th-group-codes{border-top:2px solid rgba(0,170,255,0.4);}
+        .th-group-skills{border-top:2px solid rgba(0,200,80,0.4);}
+        .th-group-other{border-top:2px solid rgba(255,170,0,0.4);}
+
+        /* Sync button */
+        .btn-sync{padding:0.35rem 0.8rem;background:rgba(0,170,255,0.08);border:1px solid rgba(0,170,255,0.25);color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;font-size:0.7rem;cursor:pointer;border-radius:2px;transition:all 0.15s;}
+        .btn-sync:hover{background:rgba(0,170,255,0.15);border-color:var(--accent-cyan);}
+
+        #access-denied,#notApproved{display:none;text-align:center;padding:3rem;}
+
+        .col-help{cursor:help;border-bottom:1px dotted rgba(0,170,255,0.3);}
+
+        /* Alternating row bg */
+        .matrix-table tbody tr:nth-child(even) td{background:rgba(0,170,255,0.015);}
+        .matrix-table tbody tr:nth-child(even) td.frozen{background:rgba(5,15,30,1);}
+        .matrix-table tbody tr:hover td{background:rgba(0,170,255,0.05) !important;}
+    </style>
+</head>
+<body>
+    <div class="scanline-overlay"></div>
+    <div class="particles-bg"></div>
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">M</div>
+                    <div><h1 class="logo">MPF</h1><p class="logo-subtitle">Suivi des Formations</p></div>
+                </div>
+                <div id="authBtn" class="header-auth"></div>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <div id="loading" style="text-align:center;padding:3rem;"><p style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;">CHARGEMENT DES DONNÉES...</p></div>
+            <div id="access-denied"><h2 style="color:#ff4444;font-family:'Orbitron',sans-serif;">CONNEXION REQUISE</h2><a href="login.html" style="color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;display:inline-block;margin-top:1rem;">→ SE CONNECTER</a></div>
+            <div id="notApproved"><h2 style="color:#ffaa00;font-family:'Orbitron',sans-serif;">EN ATTENTE D'APPROBATION</h2></div>
+
+            <div id="mainContent" style="display:none;">
+                <div class="matrix-wrapper">
+
+                    <!-- Stats -->
+                    <div class="stats-row">
+                        <div class="stat-box"><div class="stat-number" id="statUnits">0</div><div class="stat-label">UNITÉS</div></div>
+                        <div class="stat-box"><div class="stat-number" id="statFormations">0</div><div class="stat-label">COMPÉTENCES VALIDÉES</div></div>
+                        <div class="stat-box green"><div class="stat-number" id="statComplete">0%</div><div class="stat-label">PROGRESSION MOY.</div></div>
+                    </div>
+
+                    <!-- Filters + Actions -->
+                    <div class="combine-terminal-wrapper animate-fadeInUp">
+                        <div class="combine-header">
+                            <h2>SUIVI DES UNITÉS — FORMATIONS</h2>
+                            <span class="header-code" id="matrixCount">0</span>
+                        </div>
+                        <div class="combine-body">
+                            <div class="filter-bar">
+                                <input type="text" id="searchInput" placeholder="Rechercher matricule, division..." oninput="renderMatrix()">
+                                <select id="filterDivision" onchange="renderMatrix()">
+                                    <option value="">Toutes divisions</option>
+                                </select>
+                                <select id="filterRang" onchange="renderMatrix()">
+                                    <option value="">Tous rangs</option>
+                                    <option value="Cmd">Cmd</option>
+                                    <option value="Ofc">Ofc</option>
+                                    <option value="CABAL">CABAL</option>
+                                    <option value="STBE">STBE</option>
+                                    <option value="DvL">DvL</option>
+                                    <option value=".01">.01</option>
+                                    <option value=".02">.02</option>
+                                    <option value="STB">STB</option>
+                                    <option value=".03">.03</option>
+                                    <option value=".04">.04</option>
+                                    <option value=".05">.05</option>
+                                    <option value="RCT">RCT</option>
+                                </select>
+                                <button class="btn-sync" id="btnSync" onclick="syncFromFormations()" style="display:none;" title="Importer les formations validées automatiquement dans le tableau">⟳ SYNC FORMATIONS</button>
+                            </div>
+
+                            <div class="matrix-scroll" id="matrixContainer">
+                                <p style="text-align:center;color:var(--text-muted);padding:2rem;font-family:'Share Tech Mono',monospace;">Chargement...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="save-indicator" id="saveIndicator"></div>
+
+    <script type="module" src="assets/js/auth.js"></script>
+    <script src="assets/js/global-nav.js?v=20260214" defer></script>
+    <script src="assets/js/interactive-system.js" defer></script>
+    <script src="assets/js/combine-animations.js" defer></script>
+    <script type="module">
+      import { auth, db } from './assets/js/auth.js';
+      import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+      import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+      import { loadFormations, loadUnits, loadCompetences, saveCompetences } from './assets/js/github-data.js';
+
+      // ===== COLONNES DU TABLEAU (reproduit le Google Sheets) =====
+      const COLUMNS = [
+        { key: 'theorique',        label: 'THÉORIQUE',      type: 'select', options: ['','Niveau RCT','Niveau 05+','Niveau 03+','Niveau 01+'], group: 'codes' },
+        { key: 'c10_50',           label: '10-50',          type: 'checkbox', group: 'codes' },
+        { key: 's08',              label: 'S08',            type: 'checkbox', group: 'codes' },
+        { key: 'c10_85s',          label: '10-85S',         type: 'checkbox', group: 'codes' },
+        { key: 'armements',        label: 'ARMEMENTS',      type: 'select', options: ['','Catégorie A','Catégorie A-B','Catégorie A-C','Catégorie A-D','Catégorie A-E','Catégorie A-F'], group: 'skills' },
+        { key: 'fouilles',         label: 'FOUILLES',       type: 'checkbox', group: 'skills' },
+        { key: 'prise_otage',      label: 'PRISE D\'OTAGE', type: 'select', options: ['N/A','Négociation','10-63o','Exempté'], group: 'skills' },
+        { key: 'c10_34',           label: '10-34',          type: 'checkbox', group: 'skills' },
+        { key: 'incendie',         label: 'INCENDIE',       type: 'checkbox', group: 'skills' },
+        { key: 'premier_secours',  label: '1ER SECOURS',    type: 'checkbox', group: 'skills' },
+        { key: 'dispatch',         label: 'DISPATCH',       type: 'checkbox', group: 'skills' },
+        { key: 's34',              label: 'S34',            type: 'checkbox', group: 'skills' },
+        { key: 'iedi_c4',          label: 'IEDI/C4',        type: 'checkbox', group: 'skills' },
+        { key: 'remplacement_memoire', label: 'REMPL. MÉMOIRE', type: 'pct', options: ['0%','25%','50%','70%','100%'], group: 'other' },
+        { key: 'ordre',            label: 'ORDRE',          type: 'text', group: 'other' }
+      ];
+
+      const RANG_ORDER = ['Cmd','Ofc','CABAL','STBE','DvL','.01','.02','STB','.03','.04','.05','RCT',''];
+      const CHECKBOX_COLS = COLUMNS.filter(c => c.type === 'checkbox');
+
+      let allUnits = [], allFormations = [], competenceData = {};
+      let canEdit = false, saveTimeout = null;
+
+      // ===== SAVE INDICATOR =====
+      function showSaveStatus(status) {
+        const el = document.getElementById('saveIndicator');
+        el.className = 'save-indicator visible ' + status;
+        el.textContent = status === 'saving' ? '⟳ Sauvegarde...' : (status === 'saved' ? '✓ Sauvegardé' : '✗ Erreur');
+        if (status !== 'saving') setTimeout(() => el.classList.remove('visible'), 2500);
+      }
+
+      // ===== DEBOUNCED SAVE =====
+      function scheduleSave() {
+        if (saveTimeout) clearTimeout(saveTimeout);
+        showSaveStatus('saving');
+        saveTimeout = setTimeout(async () => {
+          try {
+            await saveCompetences(competenceData);
+            showSaveStatus('saved');
+          } catch (e) {
+            console.error('Save error:', e);
+            showSaveStatus('error');
+          }
+        }, 800);
+      }
+
+      // ===== UPDATE CELL =====
+      window.updateCell = function(matricule, field, value) {
+        if (!canEdit) return;
+        if (!competenceData[matricule]) competenceData[matricule] = {};
+        competenceData[matricule][field] = value;
+        competenceData[matricule].updated_at = new Date().toISOString();
+        scheduleSave();
+        updateRowProgress(matricule);
+      };
+
+      window.updateCheckbox = function(matricule, field, el) {
+        if (!canEdit) return;
+        updateCell(matricule, field, el.checked);
+      };
+
+      // ===== ROW PROGRESS =====
+      function getRowProgress(matricule) {
+        const comp = competenceData[matricule] || {};
+        let done = 0, total = CHECKBOX_COLS.length + 2; // +2 = armements + theorique
+        CHECKBOX_COLS.forEach(c => { if (comp[c.key]) done++; });
+        if (comp.armements) done++;
+        if (comp.theorique) done++;
+        return Math.round((done / total) * 100);
+      }
+
+      function updateRowProgress(matricule) {
+        const el = document.getElementById('prog-' + CSS.escape(matricule));
+        if (!el) return;
+        const pct = getRowProgress(matricule);
+        el.textContent = pct + '%';
+        el.style.color = pct === 100 ? '#00cc55' : (pct >= 50 ? '#ffc800' : '#ff4444');
+        // Update pct bar in remplacement_memoire cell
+        const pctBar = document.getElementById('pctbar-' + CSS.escape(matricule));
+        if (pctBar) {
+          const v = parseInt(competenceData[matricule]?.remplacement_memoire || '0');
+          pctBar.style.width = v + '%';
+          pctBar.style.background = v === 100 ? '#00cc55' : (v >= 50 ? '#ffc800' : (v > 0 ? '#0088dd' : '#444'));
+        }
+      }
+
+      // ===== POPULATE FILTERS =====
+      function populateDivisionFilter() {
+        const divs = [...new Set(allUnits.map(u => u.division).filter(Boolean))].sort();
+        document.getElementById('filterDivision').innerHTML = '<option value="">Toutes divisions</option>' + divs.map(d => `<option value="${d}">${d}</option>`).join('');
+      }
+
+      // ===== RENDER FULL MATRIX =====
+      window.renderMatrix = function() {
+        const q = (document.getElementById('searchInput').value || '').toLowerCase();
+        const divFilter = document.getElementById('filterDivision').value;
+        const rangFilter = document.getElementById('filterRang').value;
+
+        let unitList = allUnits.map(u => ({ matricule: u.matricule, nom_steam: u.nom_steam || '', division: u.division || '', rang: u.rang || '' }));
+
+        unitList = unitList.filter(u => {
+          if (divFilter && u.division !== divFilter) return false;
+          if (rangFilter && u.rang !== rangFilter) return false;
+          if (q && !`${u.matricule} ${u.nom_steam} ${u.division} ${u.rang}`.toLowerCase().includes(q)) return false;
+          return true;
+        });
+
+        // Sort: rang order, then matricule
+        unitList.sort((a, b) => {
+          const ra = RANG_ORDER.indexOf(a.rang), rb = RANG_ORDER.indexOf(b.rang);
+          const ia = ra >= 0 ? ra : 99, ib = rb >= 0 ? rb : 99;
+          if (ia !== ib) return ia - ib;
+          return (a.matricule || '').localeCompare(b.matricule || '');
+        });
+
+        // Stats
+        document.getElementById('statUnits').textContent = unitList.length;
+        let totalValidated = 0, totalPct = 0;
+        unitList.forEach(u => {
+          const comp = competenceData[u.matricule] || {};
+          CHECKBOX_COLS.forEach(c => { if (comp[c.key]) totalValidated++; });
+          totalPct += getRowProgress(u.matricule);
+        });
+        document.getElementById('statFormations').textContent = totalValidated;
+        document.getElementById('statComplete').textContent = (unitList.length ? Math.round(totalPct / unitList.length) : 0) + '%';
+        document.getElementById('matrixCount').textContent = `${unitList.length} UNITÉ${unitList.length > 1 ? 'S' : ''}`;
+
+        const container = document.getElementById('matrixContainer');
+        if (!unitList.length) {
+          container.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:2rem;font-family:\'Share Tech Mono\',monospace;">Aucune unité trouvée</p>';
+          return;
+        }
+
+        // Build table
+        let html = '<table class="matrix-table"><thead><tr>';
+        html += '<th class="frozen col-rang">RANG</th>';
+        html += '<th class="frozen col-div">DIVISION</th>';
+        html += '<th class="frozen col-mat">MATRICULE</th>';
+        COLUMNS.forEach(c => {
+          const gc = c.group === 'codes' ? 'th-group-codes' : (c.group === 'skills' ? 'th-group-skills' : 'th-group-other');
+          html += `<th class="${gc}"><span class="col-help" title="${c.key}">${c.label}</span></th>`;
+        });
+        html += '<th class="th-group-other">PROGRESS.</th>';
+        html += '</tr></thead><tbody>';
+
+        unitList.forEach(u => {
+          const comp = competenceData[u.matricule] || {};
+          const rangCls = u.rang ? 'rang-' + u.rang.replace('.', '') : '';
+          const divCls = u.division ? 'div-' + u.division.toUpperCase() : '';
+          const m = u.matricule;
+          const me = m.replace(/'/g, "\\'");
+
+          html += '<tr>';
+          html += `<td class="frozen col-rang"><span class="rang ${rangCls}">${u.rang || '-'}</span></td>`;
+          html += `<td class="frozen col-div"><span class="div-badge ${divCls}">${u.division || 'N/A'}</span></td>`;
+          html += `<td class="frozen col-mat" style="font-family:'Orbitron',sans-serif;font-size:0.72rem;font-weight:700;color:var(--accent-cyan);">${m}</td>`;
+
+          COLUMNS.forEach(c => {
+            const val = comp[c.key];
+            if (c.type === 'checkbox') {
+              html += `<td><input type="checkbox" class="skill-cb" ${val ? 'checked' : ''} ${!canEdit ? 'disabled' : ''} onchange="updateCheckbox('${me}','${c.key}',this)"></td>`;
+            } else if (c.type === 'select') {
+              let opts = (c.options || []).map(o => `<option value="${o}" ${val === o ? 'selected' : ''}>${o || '—'}</option>`).join('');
+              html += `<td><select class="cell-select" ${!canEdit ? 'disabled' : ''} onchange="updateCell('${me}','${c.key}',this.value)">${opts}</select></td>`;
+            } else if (c.type === 'pct') {
+              const pctVal = val || '0%';
+              const pctNum = parseInt(pctVal) || 0;
+              const pctColor = pctNum === 100 ? '#00cc55' : (pctNum >= 50 ? '#ffc800' : (pctNum > 0 ? '#0088dd' : '#444'));
+              let opts = (c.options || []).map(o => `<option value="${o}" ${pctVal === o ? 'selected' : ''}>${o}</option>`).join('');
+              html += `<td class="pct-cell"><div class="pct-bar" id="pctbar-${m}" style="width:${pctNum}%;background:${pctColor};"></div><select class="cell-select" style="background:transparent;border:none;text-align:center;font-weight:700;color:${pctColor};" ${!canEdit ? 'disabled' : ''} onchange="updateCell('${me}','${c.key}',this.value);var p=parseInt(this.value)||0;var b=this.closest('td').querySelector('.pct-bar');b.style.width=p+'%';b.style.background=p===100?'#00cc55':(p>=50?'#ffc800':'#0088dd');">${opts}</select></td>`;
+            } else if (c.type === 'text') {
+              html += `<td><input type="number" min="0" max="20" value="${val || ''}" style="width:38px;background:transparent;border:1px solid rgba(0,170,255,0.1);color:var(--text-muted);font-family:'Orbitron',sans-serif;font-size:0.68rem;text-align:center;padding:2px;border-radius:2px;" ${!canEdit ? 'disabled' : ''} onchange="updateCell('${me}','${c.key}',this.value)"></td>`;
+            }
+          });
+
+          // Progress column
+          const pct = getRowProgress(m);
+          const pctColor = pct === 100 ? '#00cc55' : (pct >= 50 ? '#ffc800' : '#ff4444');
+          html += `<td><span id="prog-${m}" style="font-family:'Orbitron',sans-serif;font-size:0.68rem;font-weight:700;color:${pctColor};">${pct}%</span></td>`;
+          html += '</tr>';
+        });
+
+        html += '</tbody></table>';
+        container.innerHTML = html;
+      };
+
+      // ===== SYNC FROM VALIDATED FORMATIONS =====
+      window.syncFromFormations = async function() {
+        if (!confirm('Synchroniser les formations validées (Réussi) dans le tableau ?\nCela ne décochera rien, uniquement ajout.')) return;
+        let synced = 0;
+
+        allFormations.forEach(f => {
+          if (f.resultat !== 'Réussi') return;
+          const parts = f.participants || (f.participants_str ? f.participants_str.split(',').map(s => s.trim()) : []);
+          const type = (f.type || '').toLowerCase();
+
+          parts.forEach(mat => {
+            if (!mat) return;
+            if (!competenceData[mat]) competenceData[mat] = {};
+            const c = competenceData[mat];
+
+            if (type.includes('initiale') || type.includes('initial')) {
+              if (!c.c10_50) { c.c10_50 = true; synced++; }
+              if (!c.s08) { c.s08 = true; synced++; }
+            }
+            if (type.includes('armement') || type.includes('arme')) {
+              if (!c.armements) { c.armements = 'Catégorie A'; synced++; }
+              if (!c.fouilles) { c.fouilles = true; synced++; }
+            }
+            if (type.includes('avancée') || type.includes('avancee')) {
+              if (!c.c10_34) { c.c10_34 = true; synced++; }
+              if (!c.incendie) { c.incendie = true; synced++; }
+              if (!c.premier_secours) { c.premier_secours = true; synced++; }
+            }
+            if (type.includes('spécialisée') || type.includes('specialisee')) {
+              if (!c.dispatch) { c.dispatch = true; synced++; }
+              if (!c.iedi_c4) { c.iedi_c4 = true; synced++; }
+              if (!c.s34) { c.s34 = true; synced++; }
+            }
+          });
+        });
+
+        if (synced > 0) {
+          try { await saveCompetences(competenceData); showSaveStatus('saved'); }
+          catch (e) { showSaveStatus('error'); }
+        }
+        renderMatrix();
+        alert(`Synchronisation terminée : ${synced} compétence(s) ajoutée(s).`);
+      };
+
+      // ========== AUTH ==========
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('access-denied').style.display = 'block';
+          return;
+        }
+        try {
+          const s = await getDoc(doc(db, 'users', user.uid));
+          if (!s.exists() || !s.data().approved) {
+            document.getElementById('loading').style.display = 'none';
+            if (!s.exists()) document.getElementById('access-denied').style.display = 'block';
+            else document.getElementById('notApproved').style.display = 'block';
+            return;
+          }
+
+          const ud = s.data();
+          const isAdmin = !!ud.is_admin;
+
+          let units = [];
+          try { units = await loadUnits(); } catch(_) {}
+          allUnits = units;
+          const ui = units.find(x => x.matricule === ud.matricule);
+          const rg = ui ? (ui.rang || '') : '';
+          const isHG = rg === 'Ofc' || rg === 'Cmd';
+
+          canEdit = isHG || isAdmin;
+          if (canEdit) document.getElementById('btnSync').style.display = '';
+
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('mainContent').style.display = 'block';
+
+          // Load data
+          try {
+            const [formations, comp] = await Promise.all([loadFormations(), loadCompetences()]);
+            allFormations = formations || [];
+            competenceData = comp || {};
+          } catch (_) {
+            allFormations = []; competenceData = {};
+          }
+
+          populateDivisionFilter();
+          renderMatrix();
+
+        } catch (e) {
+          console.error(e);
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('access-denied').style.display = 'block';
+        }
+      });
+    </script>
+</body>
+</html>

@@ -477,6 +477,28 @@
         let accessConfig = { pages: {} };
         let accessHasChanges = false;
 
+        // Auto-inject missing required pages into nav config
+        function ensureRequiredPages(cfg) {
+            const requiredInRapports = [
+                { label: 'Formations', url: 'formations.html' },
+                { label: 'Tableau Formations', url: 'tableau-formations.html' },
+                { label: 'Information Milice', url: 'info-milice.html' },
+                { label: 'Recrutement', url: 'recrutement.html' }
+            ];
+            let rapportsItem = (cfg.row2 || []).find(item => item.label === 'RAPPORTS' || item.url === 'rapports.html');
+            if (rapportsItem) {
+                if (!rapportsItem.dropdown) rapportsItem.dropdown = [];
+                const existingUrls = new Set(rapportsItem.dropdown.map(d => d.url));
+                requiredInRapports.forEach(req => {
+                    if (!existingUrls.has(req.url)) rapportsItem.dropdown.push(req);
+                });
+            }
+            const row2Urls = new Set((cfg.row2 || []).map(item => item.url));
+            if (!row2Urls.has('recrutement.html')) {
+                cfg.row2.push({ label: 'RECRUTEMENT', url: 'recrutement.html' });
+            }
+        }
+
         // Default nav structure (mirrors global-nav.js getMenuStructure)
         function getDefaultNav() {
             return {
@@ -566,14 +588,19 @@
                         label: 'RAPPORTS', url: 'rapports.html',
                         dropdown: [
                             { label: 'Rapports', url: 'rapports.html' },
-                            { label: 'Rapports Divisionnaires', url: 'rapports-divisionnaires.html' }
+                            { label: 'Rapports Divisionnaires', url: 'rapports-divisionnaires.html' },
+                            { label: 'Formations', url: 'formations.html' },
+                            { label: 'Tableau Formations', url: 'tableau-formations.html' },
+                            { label: 'Information Milice', url: 'info-milice.html' },
+                            { label: 'Recrutement', url: 'recrutement.html' }
                         ]
                     },
                     { label: 'PAYES', url: 'payes.html' },
                     { label: 'VIEWTIME', url: 'viewtime.html' },
                     { label: 'RADIO & MDP', url: 'radio.html' },
                     { label: 'ABSENCES', url: 'declaration-absence.html' },
-                    { label: 'LIENS', url: 'liens.html' }
+                    { label: 'LIENS', url: 'liens.html' },
+                    { label: 'RECRUTEMENT', url: 'recrutement.html' }
                 ]
             };
         }
@@ -1021,6 +1048,7 @@
                         const data = navSnap.data();
                         if (data.row1 && data.row1.length > 0) {
                             navConfig = { row1: data.row1 || [], row2: data.row2 || [] };
+                            ensureRequiredPages(navConfig);
                             loadedFromFirestore = true;
                         } else {
                             navConfig = getDefaultNav();

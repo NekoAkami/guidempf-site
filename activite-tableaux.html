@@ -328,6 +328,8 @@
           const ui=units.find(x=>x.matricule===userMatricule);
           const rang=ui?(ui.rang||''):'';
           isHG=rang==='Ofc'||rang==='Cmd';
+          const isAdmin=!!ud.is_admin;
+          if(isAdmin)isHG=true;
           const rankOrder=['RCT','.05','.04','.03','STB','.02','.01','DvL','STBE','CABAL','Ofc','Cmd'];
           const ri=rankOrder.indexOf(rang);
           canEdit=isHG||ri>=2;
