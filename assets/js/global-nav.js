@@ -622,15 +622,30 @@ class GlobalNavigation {
         if (!container) return;
 
         try {
-            // Importer auth.js pour obtenir le db Firestore authentifié
+            // Importer auth.js pour obtenir le db et auth Firestore
             const authModule = await import(this.basePath + 'assets/js/auth.js');
             const db = authModule.db;
+            const authObj = authModule.auth;
             if (!db) {
                 container.innerHTML = '<div class="gp-no-events">Base de données non disponible</div>';
                 return;
             }
 
             const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+            const { onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
+
+            // Attendre que l'utilisateur soit authentifié avant de lire Firestore
+            const user = await new Promise((resolve) => {
+                const unsub = onAuthStateChanged(authObj, (u) => {
+                    unsub();
+                    resolve(u);
+                });
+            });
+
+            if (!user) {
+                container.innerHTML = '<div class="gp-no-events">Non connecté</div>';
+                return;
+            }
 
             const snap = await getDocs(collection(db, 'mpf_data', 'planning', 'items'));
             const entries = snap.docs.map(d => ({ ...d.data(), _id: d.id }));
