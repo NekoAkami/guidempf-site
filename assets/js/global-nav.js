@@ -439,7 +439,7 @@ class GlobalNavigation {
                 <div class="gp-resize-handle" id="gpTodayResize"></div>
                 <div class="gp-float-inner">
                     <div class="gp-float-header" id="gpTodayHeader">
-                        <h3>📋 PLANNING SEMAINE</h3>
+                        <h3>📋 PLANNING DU JOUR</h3>
                         <span class="gp-float-toggle" id="gpTodayToggle">►</span>
                     </div>
                     <div class="gp-float-body" id="gpTodayBody">
@@ -655,28 +655,16 @@ class GlobalNavigation {
             const now = new Date();
             const localDate = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
             const today = localDate(now);
-            const JOURS = ['DIM','LUN','MAR','MER','JEU','VEN','SAM'];
 
-            // Calculer les dates de la semaine (lundi → dimanche)
-            const day = now.getDay();
-            const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-            const monday = new Date(now); monday.setDate(diff); monday.setHours(0,0,0,0);
-            const weekDates = [];
-            for (let i = 0; i < 7; i++) {
-                const d = new Date(monday); d.setDate(monday.getDate() + i);
-                weekDates.push(localDate(d));
-            }
-
-            // Filtrer les entrées de la semaine
-            const weekEntries = entries.filter(e => weekDates.includes(e.date));
-            weekEntries.sort((a, b) => {
-                if (a.date !== b.date) return a.date.localeCompare(b.date);
+            // Filtrer les entrées du jour
+            const todayEntries = entries.filter(e => e.date === today);
+            todayEntries.sort((a, b) => {
                 const toMin = s => { const [h, m] = (s || '00:00').split(':').map(Number); return (h === 0 ? 24 : h) * 60 + m; };
                 return toMin(a.slot) - toMin(b.slot);
             });
 
-            if (weekEntries.length === 0) {
-                container.innerHTML = '<div class="gp-no-events">Aucun événement cette semaine</div>';
+            if (todayEntries.length === 0) {
+                container.innerHTML = '<div class="gp-no-events">Aucun événement aujourd\'hui</div>';
                 return;
             }
 
@@ -690,29 +678,14 @@ class GlobalNavigation {
                 return 'gp-type-autre';
             };
 
-            // Grouper par date
-            let html = '';
-            let lastDate = '';
-            weekEntries.forEach(e => {
-                if (e.date !== lastDate) {
-                    const d = new Date(e.date + 'T12:00:00');
-                    const jourNom = JOURS[d.getDay()];
-                    const jourNum = e.date.substring(8);
-                    const isToday = e.date === today;
-                    const isPast = e.date < today;
-                    html += `<div class="gp-day-separator${isToday ? ' gp-today' : ''}${isPast ? ' gp-past' : ''}">${jourNom} ${jourNum}${isToday ? ' — AUJOURD\'HUI' : ''}</div>`;
-                    lastDate = e.date;
-                }
+            container.innerHTML = todayEntries.map(e => {
                 const timeLabel = e.slot_end && e.slot_end !== e.slot ? `${e.slot}→${e.slot_end}` : e.slot;
-                const isPastEntry = e.date < today;
-                html += `<div class="gp-today-event ${getTypeClass(e.type)}${isPastEntry ? ' gp-evt-past' : ''}">
+                return `<div class="gp-today-event ${getTypeClass(e.type)}">
                     <span class="gp-ev-time">${timeLabel}</span>
                     <span class="gp-ev-type">${e.type}</span>
                     ${e.description ? `<span class="gp-ev-desc"> — ${e.description}</span>` : ''}
                 </div>`;
-            });
-
-            container.innerHTML = html;
+            }).join('');
 
         } catch (err) {
             console.warn('[MiniPlanning]', err);
