@@ -623,12 +623,37 @@ class GlobalNavigation {
         if (!container) return;
 
         try {
-            // Importer auth.js et attendre l'authentification
-            const authModule = await import(this.basePath + 'assets/js/auth.js');
-            const { onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
+            // Imports Firebase DIRECTS depuis le CDN (pas d'import local = pas de problème de chemin)
+            const [appMod, fsMod, authMod] = await Promise.all([
+                import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js'),
+                import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js'),
+                import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js')
+            ]);
 
+            const { getApp, initializeApp } = appMod;
+            const { getFirestore, collection, getDocs } = fsMod;
+            const { getAuth, onAuthStateChanged } = authMod;
+
+            // Récupérer l'app Firebase existante (initialisée par auth.js)
+            let app;
+            try { app = getApp(); } catch {
+                app = initializeApp({
+                    apiKey: 'AIzaSyDPs4x2EE1pyeQTC_V-Ze5uyZ8Rs2N8qF4',
+                    authDomain: 'guidempf.firebaseapp.com',
+                    projectId: 'guidempf',
+                    storageBucket: 'guidempf.firebasestorage.app',
+                    messagingSenderId: '806309770965',
+                    appId: '1:806309770965:web:3621f58bfb252446c1945c'
+                });
+            }
+
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+
+            // Attendre que l'utilisateur soit authentifié
             const user = await new Promise((resolve) => {
-                const unsub = onAuthStateChanged(authModule.auth, (u) => {
+                if (auth.currentUser) { resolve(auth.currentUser); return; }
+                const unsub = onAuthStateChanged(auth, (u) => {
                     unsub();
                     resolve(u);
                 });
@@ -639,9 +664,9 @@ class GlobalNavigation {
                 return;
             }
 
-            // Utiliser la même fonction loadPlanning que le planning complet (prouvée fonctionnelle)
-            const { loadPlanning } = await import(this.basePath + 'assets/js/github-data.js');
-            const entries = await loadPlanning();
+            // Lire directement la collection planning
+            const snap = await getDocs(collection(db, 'mpf_data', 'planning', 'items'));
+            const entries = snap.docs.map(d => ({ ...d.data(), _id: d.id }));
 
             const now = new Date();
             const localDate = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
