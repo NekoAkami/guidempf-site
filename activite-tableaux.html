@@ -23,9 +23,13 @@
         .planning-grid .day-header.today{background:rgba(0,170,255,0.15);color:#fff;}
         .planning-grid .time-header{padding:0.5rem 0.3rem;text-align:center;background:rgba(0,170,255,0.08);border-bottom:2px solid rgba(0,170,255,0.2);color:var(--accent-cyan);font-family:'Orbitron',sans-serif;font-size:0.65rem;letter-spacing:1px;font-weight:700;}
         .planning-grid .time-cell{padding:0.3rem;text-align:center;background:rgba(0,170,255,0.02);border-right:1px solid rgba(0,170,255,0.06);border-bottom:1px solid rgba(0,170,255,0.06);color:var(--text-muted);font-size:0.7rem;display:flex;align-items:center;justify-content:center;}
-        .planning-grid .slot-cell{padding:0.2rem;border-right:1px solid rgba(0,170,255,0.06);border-bottom:1px solid rgba(0,170,255,0.06);min-height:38px;cursor:pointer;transition:background 0.1s;position:relative;}
+        .planning-grid .slot-cell{padding:0.2rem;border-right:1px solid rgba(0,170,255,0.06);border-bottom:1px solid rgba(0,170,255,0.06);min-height:48px;cursor:pointer;transition:background 0.1s;position:relative;}
         .slot-cell:hover{background:rgba(0,170,255,0.06);}
-        .slot-entry{padding:0.15rem 0.3rem;border-radius:2px;font-size:0.62rem;margin-bottom:1px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.4;}
+        .slot-entry{padding:0.25rem 0.4rem;border-radius:3px;font-size:0.65rem;margin-bottom:2px;cursor:pointer;overflow:hidden;line-height:1.3;transition:transform 0.1s,box-shadow 0.15s;}
+        .slot-entry:hover{transform:scale(1.03);box-shadow:0 0 8px rgba(0,170,255,0.3);z-index:5;position:relative;}
+        .slot-entry .entry-time{font-size:0.58rem;opacity:0.8;margin-bottom:1px;letter-spacing:0.5px;}
+        .slot-entry .entry-type{font-weight:700;font-size:0.68rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .slot-entry .entry-who{font-size:0.55rem;opacity:0.7;margin-top:1px;}
         .slot-entry.type-formation{background:rgba(0,170,255,0.15);border-left:2px solid var(--accent-cyan);color:var(--accent-cyan);}
         .slot-entry.type-test{background:rgba(255,200,0,0.15);border-left:2px solid #ffc800;color:#ffc800;}
         .slot-entry.type-recrutement{background:rgba(0,200,80,0.15);border-left:2px solid #00cc55;color:#00cc55;}
@@ -199,8 +203,13 @@
             const bgEntries=cellEntries.filter(e=>e.slot_end&&e.slot_end!==e.slot&&e.slot!==slot);
             const bgClass=bgEntries.length>0?` style="background:${getBgForType(bgEntries[0].type)}"`:'';
             const entriesHtml=visibleEntries.map(e=>{
-              const span=e.slot_end&&e.slot_end!==e.slot?` [${e.slot}→${e.slot_end}]`:'';
-              return`<div class="slot-entry ${getTypeClass(e.type)}" onclick="event.stopPropagation();showEntryDetail('${e._id}')" title="${e.type}${span} — ${e.description||''} (${e.matricule})">${e.type.substring(0,4)} ${e.matricule||''}${span?'…':''}</div>`;
+              const hasRange=e.slot_end&&e.slot_end!==e.slot;
+              const timeLabel=hasRange?`${e.slot} → ${e.slot_end}`:e.slot;
+              return`<div class="slot-entry ${getTypeClass(e.type)}${hasRange?' multi-slot':''}" onclick="event.stopPropagation();showEntryDetail('${e._id}')" title="${e.type} — ${timeLabel}${e.description?' — '+e.description:''} (${e.matricule})">`+
+                `<div class="entry-time">${timeLabel}</div>`+
+                `<div class="entry-type">${e.type}</div>`+
+                (e.matricule?`<div class="entry-who">${e.matricule}</div>`:'')+
+              `</div>`;
             }).join('');
             const addBtn=canEdit?`<div class="slot-add" onclick="event.stopPropagation();openAddModal('${date}','${slot}')">+</div>`:'';
             html+=`<div class="slot-cell"${bgClass} onclick="openAddModal('${date}','${slot}')">${entriesHtml}${addBtn}</div>`;

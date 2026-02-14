@@ -26,6 +26,9 @@ const appCheck = initializeAppCheck(app, {
 // Export pour utilisation dans d'autres scripts
 export { app, auth, db };
 
+// Signal pour les scripts non-module (global-nav.js) que Firebase est prêt
+window._mpfDbReady = true;
+
 // Détection automatique du chemin de base (pour les sous-dossiers comme admin/)
 const _basePath = (() => {
     const s = document.querySelector('script[src*="auth.js"]');

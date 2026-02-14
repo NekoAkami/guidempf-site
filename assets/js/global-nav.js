@@ -621,6 +621,19 @@ class GlobalNavigation {
         const container = document.getElementById('gpTodayEvents');
         if (!container) return;
 
+        // Attendre que Firebase soit initialisé (auth.js module peut charger après global-nav defer)
+        const waitForFirebase = () => new Promise(resolve => {
+            let attempts = 0;
+            const check = () => {
+                attempts++;
+                // Vérifier si le module auth.js a exporté db (disponible globalement via le module cache)
+                if (window._mpfDbReady || attempts > 30) { resolve(); return; }
+                setTimeout(check, 200);
+            };
+            check();
+        });
+        await waitForFirebase();
+
         try {
             const ghData = await import(this.basePath + 'assets/js/github-data.js');
             const entries = await ghData.loadPlanning();
