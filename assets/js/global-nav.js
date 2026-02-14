@@ -289,7 +289,7 @@ class GlobalNavigation {
     getBasePath() {
         const navScript = document.querySelector('script[src*="global-nav.js"]');
         if (navScript) {
-            const src = navScript.getAttribute('src') || '';
+            const src = (navScript.getAttribute('src') || '').split('?')[0];
             return src.replace('assets/js/global-nav.js', '');
         }
         return '';
