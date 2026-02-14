@@ -625,7 +625,8 @@ class GlobalNavigation {
             const ghData = await import(this.basePath + 'assets/js/github-data.js');
             const entries = await ghData.loadPlanning();
 
-            const today = new Date().toISOString().substring(0, 10);
+            const now = new Date();
+            const today = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
             const todayEntries = entries.filter(e => e.date === today);
 
             // Sort by slot time
