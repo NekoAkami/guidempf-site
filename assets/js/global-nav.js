@@ -439,7 +439,7 @@ class GlobalNavigation {
                 <div class="gp-resize-handle" id="gpTodayResize"></div>
                 <div class="gp-float-inner">
                     <div class="gp-float-header" id="gpTodayHeader">
-                        <h3>📋 PLANNING DU JOUR</h3>
+                        <h3>📋 PLANNING SEMAINE</h3>
                         <span class="gp-float-toggle" id="gpTodayToggle">►</span>
                     </div>
                     <div class="gp-float-body" id="gpTodayBody">
@@ -459,10 +459,10 @@ class GlobalNavigation {
         const adjustTopPosition = () => {
             const nav = document.querySelector('.main-nav');
             const header = document.querySelector('.site-header');
-            let topOffset = 10; // margin below nav
+            let topOffset = 30; // margin below nav
             if (nav) topOffset += nav.getBoundingClientRect().bottom;
             else if (header) topOffset += header.getBoundingClientRect().bottom;
-            else topOffset = 120;
+            else topOffset = 150;
             // Apply to panels and tabs
             ['gpNotepadPanel','gpTodayPanel'].forEach(id => {
                 const el = document.getElementById(id);
@@ -621,35 +621,62 @@ class GlobalNavigation {
         const container = document.getElementById('gpTodayEvents');
         if (!container) return;
 
-        // Attendre que Firebase soit initialisé (auth.js module peut charger après global-nav defer)
+        // Attendre que Firebase soit initialisé
         const waitForFirebase = () => new Promise(resolve => {
             let attempts = 0;
             const check = () => {
                 attempts++;
-                // Vérifier si le module auth.js a exporté db (disponible globalement via le module cache)
-                if (window._mpfDbReady || attempts > 30) { resolve(); return; }
-                setTimeout(check, 200);
+                if (window._mpfDbReady || attempts > 50) { resolve(); return; }
+                setTimeout(check, 150);
             };
             check();
         });
         await waitForFirebase();
 
         try {
-            const ghData = await import(this.basePath + 'assets/js/github-data.js');
-            const entries = await ghData.loadPlanning();
+            // Import Firebase directement pour éviter les problèmes de chaîne d'imports
+            const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
+            const { getFirestore, collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+
+            // Récupérer l'app Firebase existante
+            const app = initializeApp({
+                apiKey: 'AIzaSyDPs4x2EE1pyeQTC_V-Ze5uyZ8Rs2N8qF4',
+                authDomain: 'guidempf.firebaseapp.com',
+                projectId: 'guidempf',
+                storageBucket: 'guidempf.firebasestorage.app',
+                messagingSenderId: '806309770965',
+                appId: '1:806309770965:web:3621f58bfb252446c1945c'
+            }, 'planning-reader');
+            const db = getFirestore(app);
+
+            const snap = await getDocs(collection(db, 'mpf_data', 'planning', 'items'));
+            const entries = snap.docs.map(d => ({ ...d.data(), _id: d.id }));
 
             const now = new Date();
-            const today = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
-            const todayEntries = entries.filter(e => e.date === today);
+            const localDate = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+            const today = localDate(now);
+            const JOURS = ['DIM','LUN','MAR','MER','JEU','VEN','SAM'];
 
-            // Sort by slot time
-            todayEntries.sort((a, b) => {
-                const toMin = s => { const [h, m] = s.split(':').map(Number); return (h === 0 ? 24 : h) * 60 + m; };
+            // Calculer les dates de la semaine (lundi → dimanche)
+            const day = now.getDay();
+            const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+            const monday = new Date(now); monday.setDate(diff); monday.setHours(0,0,0,0);
+            const weekDates = [];
+            for (let i = 0; i < 7; i++) {
+                const d = new Date(monday); d.setDate(monday.getDate() + i);
+                weekDates.push(localDate(d));
+            }
+
+            // Filtrer les entrées de la semaine
+            const weekEntries = entries.filter(e => weekDates.includes(e.date));
+            weekEntries.sort((a, b) => {
+                if (a.date !== b.date) return a.date.localeCompare(b.date);
+                const toMin = s => { const [h, m] = (s || '00:00').split(':').map(Number); return (h === 0 ? 24 : h) * 60 + m; };
                 return toMin(a.slot) - toMin(b.slot);
             });
 
-            if (todayEntries.length === 0) {
-                container.innerHTML = '<div class="gp-no-events">Aucun événement aujourd\'hui</div>';
+            if (weekEntries.length === 0) {
+                container.innerHTML = '<div class="gp-no-events">Aucun événement cette semaine</div>';
                 return;
             }
 
@@ -663,29 +690,33 @@ class GlobalNavigation {
                 return 'gp-type-autre';
             };
 
-            container.innerHTML = todayEntries.map(e => {
-                const timeLabel = e.slot_end && e.slot_end !== e.slot ? `${e.slot} → ${e.slot_end}` : e.slot;
-                return `<div class="gp-today-event ${getTypeClass(e.type)}">
-                    <div class="gp-ev-time">${timeLabel}</div>
-                    <div class="gp-ev-type">${e.type}</div>
-                    ${e.description ? `<div class="gp-ev-desc">${e.description}</div>` : ''}
-                    <div class="gp-ev-desc">Par: ${e.matricule || '?'}</div>
-                </div>`;
-            }).join('');
-
-            // Auto-expand if there are events today and user hasn't explicitly collapsed
-            if (localStorage.getItem('mpf_today_collapsed') !== '1') {
-                const panel = document.getElementById('gpTodayPanel');
-                if (panel) {
-                    panel.classList.remove('gp-collapsed');
-                    const toggle = document.getElementById('gpTodayToggle');
-                    if (toggle) toggle.textContent = '►';
-                    const tab = document.getElementById('gpTodayTab');
-                    if (tab) tab.classList.add('gp-tab-hidden');
+            // Grouper par date
+            let html = '';
+            let lastDate = '';
+            weekEntries.forEach(e => {
+                if (e.date !== lastDate) {
+                    const d = new Date(e.date + 'T12:00:00');
+                    const jourNom = JOURS[d.getDay()];
+                    const jourNum = e.date.substring(8);
+                    const isToday = e.date === today;
+                    const isPast = e.date < today;
+                    html += `<div class="gp-day-separator${isToday ? ' gp-today' : ''}${isPast ? ' gp-past' : ''}">${jourNom} ${jourNum}${isToday ? ' — AUJOURD\'HUI' : ''}</div>`;
+                    lastDate = e.date;
                 }
-            }
+                const timeLabel = e.slot_end && e.slot_end !== e.slot ? `${e.slot}→${e.slot_end}` : e.slot;
+                const isPastEntry = e.date < today;
+                html += `<div class="gp-today-event ${getTypeClass(e.type)}${isPastEntry ? ' gp-evt-past' : ''}">
+                    <span class="gp-ev-time">${timeLabel}</span>
+                    <span class="gp-ev-type">${e.type}</span>
+                    ${e.description ? `<span class="gp-ev-desc"> — ${e.description}</span>` : ''}
+                </div>`;
+            });
+
+            container.innerHTML = html;
+
         } catch (err) {
-            container.innerHTML = '<div class="gp-no-events">Données indisponibles</div>';
+            console.warn('[MiniPlanning]', err);
+            container.innerHTML = '<div class="gp-no-events">Erreur de chargement</div>';
         }
     }
 
