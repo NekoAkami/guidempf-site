@@ -1014,16 +1014,40 @@
                 document.getElementById('adminContent').style.display = 'block';
 
                 // Load existing nav config from Firestore
+                let loadedFromFirestore = false;
                 try {
                     const navSnap = await getDoc(doc(db, 'config', 'navigation'));
                     if (navSnap.exists()) {
                         const data = navSnap.data();
-                        navConfig = { row1: data.row1 || [], row2: data.row2 || [] };
+                        if (data.row1 && data.row1.length > 0) {
+                            navConfig = { row1: data.row1 || [], row2: data.row2 || [] };
+                            loadedFromFirestore = true;
+                        } else {
+                            navConfig = getDefaultNav();
+                            showMessage('ℹ Config Firestore vide — valeurs par défaut chargées', 'error');
+                        }
                     } else {
                         navConfig = getDefaultNav();
+                        showMessage('ℹ Aucune config sauvegardée — valeurs par défaut chargées', 'error');
                     }
-                } catch {
-                    navConfig = getDefaultNav();
+                } catch (err) {
+                    console.error('Erreur chargement nav config:', err);
+                    // Tenter le cache localStorage avant de tomber sur les défauts
+                    try {
+                        const cached = localStorage.getItem('mpf_nav_config');
+                        if (cached) {
+                            const parsed = JSON.parse(cached);
+                            if (parsed.row1 && parsed.row1.length > 0) {
+                                navConfig = { row1: parsed.row1, row2: parsed.row2 || [] };
+                                loadedFromFirestore = true;
+                                showMessage('⚠ Firestore inaccessible — config chargée depuis le cache local', 'error');
+                            }
+                        }
+                    } catch {}
+                    if (!loadedFromFirestore) {
+                        navConfig = getDefaultNav();
+                        showMessage('✗ Impossible de charger la config — valeurs par défaut (Erreur: ' + err.message + ')', 'error');
+                    }
                 }
                 renderEditor();
 

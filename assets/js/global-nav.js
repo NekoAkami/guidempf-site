@@ -62,8 +62,7 @@ class GlobalNavigation {
     loadNavConfigFromCache() {
         try {
             const cached = localStorage.getItem('mpf_nav_config');
-            const ts = parseInt(localStorage.getItem('mpf_nav_config_ts') || '0');
-            if (cached && Date.now() - ts < 10 * 60 * 1000) { // 10 min cache
+            if (cached) {
                 const parsed = JSON.parse(cached);
                 if (parsed.row1 && parsed.row2) {
                     this.navOverride = parsed;
@@ -96,6 +95,7 @@ class GlobalNavigation {
             }
         } catch (err) {
             console.warn('Nav config refresh failed:', err.message);
+            // En cas d'échec Firestore, garder le cache existant (ne pas réinitialiser)
         }
     }
 
