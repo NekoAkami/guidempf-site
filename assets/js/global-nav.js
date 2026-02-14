@@ -621,33 +621,16 @@ class GlobalNavigation {
         const container = document.getElementById('gpTodayEvents');
         if (!container) return;
 
-        // Attendre que Firebase soit initialisé
-        const waitForFirebase = () => new Promise(resolve => {
-            let attempts = 0;
-            const check = () => {
-                attempts++;
-                if (window._mpfDbReady || attempts > 50) { resolve(); return; }
-                setTimeout(check, 150);
-            };
-            check();
-        });
-        await waitForFirebase();
-
         try {
-            // Import Firebase directement pour éviter les problèmes de chaîne d'imports
-            const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
-            const { getFirestore, collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+            // Importer auth.js pour obtenir le db Firestore authentifié
+            const authModule = await import(this.basePath + 'assets/js/auth.js');
+            const db = authModule.db;
+            if (!db) {
+                container.innerHTML = '<div class="gp-no-events">Base de données non disponible</div>';
+                return;
+            }
 
-            // Récupérer l'app Firebase existante
-            const app = initializeApp({
-                apiKey: 'AIzaSyDPs4x2EE1pyeQTC_V-Ze5uyZ8Rs2N8qF4',
-                authDomain: 'guidempf.firebaseapp.com',
-                projectId: 'guidempf',
-                storageBucket: 'guidempf.firebasestorage.app',
-                messagingSenderId: '806309770965',
-                appId: '1:806309770965:web:3621f58bfb252446c1945c'
-            }, 'planning-reader');
-            const db = getFirestore(app);
+            const { collection, getDocs } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
 
             const snap = await getDocs(collection(db, 'mpf_data', 'planning', 'items'));
             const entries = snap.docs.map(d => ({ ...d.data(), _id: d.id }));
