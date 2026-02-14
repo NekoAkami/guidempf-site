@@ -290,9 +290,10 @@ class GlobalNavigation {
         const navScript = document.querySelector('script[src*="global-nav.js"]');
         if (navScript) {
             const src = (navScript.getAttribute('src') || '').split('?')[0];
-            return src.replace('assets/js/global-nav.js', '');
+            const base = src.replace('assets/js/global-nav.js', '');
+            return base || './';
         }
-        return '';
+        return './';
     }
 
     // Injecte le favicon sur toutes les pages
