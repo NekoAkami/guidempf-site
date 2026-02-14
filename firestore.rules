@@ -1,0 +1,89 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===== Fonctions helper =====
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isApproved() {
+      return isAuthenticated()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.approved == true;
+    }
+
+    function isAdmin() {
+      return isApproved()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.is_admin == true;
+    }
+
+    // ===== USERS =====
+    match /users/{userId} {
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      allow read: if isAdmin();
+      allow create: if isAuthenticated()
+        && request.auth.uid == userId
+        && request.resource.data.is_admin == false
+        && request.resource.data.approved == false;
+      allow update: if isAuthenticated()
+        && request.auth.uid == userId
+        && request.resource.data.is_admin == resource.data.is_admin
+        && request.resource.data.approved == resource.data.approved;
+      allow update: if isAdmin();
+      allow delete: if false;
+    }
+
+    // ===== MPF_DATA =====
+    match /mpf_data/{docId} {
+      allow read: if isApproved();
+
+      // Admin : document-level writes (units, playtime)
+      allow write: if isAdmin()
+        && docId in ['units', 'playtime', 'playtime_history'];
+
+      // Approved : document-level writes (compat + payroll config + competences)
+      allow write: if isApproved()
+        && docId in ['reports', 'absences', 'deposits', 'payroll_config', 'competences'];
+
+      // Sous-collections (rapports, plaintes, planning, payes, etc.)
+      match /items/{itemId} {
+        allow read: if isApproved();
+        allow create: if isApproved();
+        allow update: if isApproved();
+        allow delete: if isApproved();
+      }
+    }
+
+    // ===== CONFIG (navigation, maintenance) =====
+    match /config/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+
+      // Sous-collection logs maintenance
+      match /logs/{logId} {
+        allow read: if isAuthenticated();
+        allow create: if isAdmin();
+        allow delete: if isAdmin();
+      }
+    }
+
+    // ===== SETTINGS (radio, cwu) =====
+    match /settings/{settingId} {
+      allow read: if isApproved();
+      allow write: if isAdmin();
+    }
+
+    // ===== PRÉSENCE EN LIGNE =====
+    match /presence/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated()
+        && request.auth.uid == userId;
+    }
+
+    // ===== BLOQUER TOUT LE RESTE =====
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

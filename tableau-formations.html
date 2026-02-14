@@ -223,11 +223,11 @@
       let canEdit = false, saveTimeout = null;
 
       // ===== SAVE INDICATOR =====
-      function showSaveStatus(status) {
+      function showSaveStatus(status, errMsg) {
         const el = document.getElementById('saveIndicator');
         el.className = 'save-indicator visible ' + status;
-        el.textContent = status === 'saving' ? '⟳ Sauvegarde...' : (status === 'saved' ? '✓ Sauvegardé' : '✗ Erreur');
-        if (status !== 'saving') setTimeout(() => el.classList.remove('visible'), 2500);
+        el.textContent = status === 'saving' ? '⟳ Sauvegarde...' : (status === 'saved' ? '✓ Sauvegardé' : '✗ ' + (errMsg || 'Erreur'));
+        if (status !== 'saving') setTimeout(() => el.classList.remove('visible'), 4000);
       }
 
       // ===== DEBOUNCED SAVE =====
@@ -240,7 +240,7 @@
             showSaveStatus('saved');
           } catch (e) {
             console.error('Save error:', e);
-            showSaveStatus('error');
+            showSaveStatus('error', e.message || e.code || 'Erreur inconnue');
           }
         }, 800);
       }

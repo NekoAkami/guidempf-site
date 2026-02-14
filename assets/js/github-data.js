@@ -552,7 +552,6 @@ async function updateRecruitment(docId, entry) {
 
 // ========== COMPETENCES (suivi des formations par unité) ==========
 async function loadCompetences() {
-  _checkRateLimit();
   try {
     const docRef = doc(db, FS_COLLECTION, 'competences');
     const snap = await getDoc(docRef);
