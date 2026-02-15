@@ -31,7 +31,7 @@ service cloud.firestore {
         && request.resource.data.is_admin == resource.data.is_admin
         && request.resource.data.approved == resource.data.approved;
       allow update: if isAdmin();
-      allow delete: if false;
+      allow delete: if isAdmin();
     }
 
     // ===== MPF_DATA =====
