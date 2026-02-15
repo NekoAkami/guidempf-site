@@ -112,6 +112,11 @@
         .matrix-table tbody tr:nth-child(even) td{background:rgba(0,170,255,0.015);}
         .matrix-table tbody tr:nth-child(even) td.frozen{background:rgba(5,15,30,1);}
         .matrix-table tbody tr:hover td{background:rgba(0,170,255,0.05) !important;}
+
+        /* Section separator row */
+        .section-separator td{background:rgba(231,76,60,0.08) !important;border-top:2px solid rgba(231,76,60,0.3);border-bottom:1px solid rgba(231,76,60,0.15);padding:0.3rem 0.5rem;}
+        .section-separator td.frozen{background:rgba(231,76,60,0.08) !important;}
+        .section-separator .section-label{font-family:'Orbitron',sans-serif;font-size:0.62rem;font-weight:700;color:#e74c3c;letter-spacing:2px;text-transform:uppercase;}
     </style>
 </head>
 <body>
@@ -160,16 +165,17 @@
                                     <option value="">Tous rangs</option>
                                     <option value="Cmd">Cmd</option>
                                     <option value="Ofc">Ofc</option>
-                                    <option value="CABAL">CABAL</option>
-                                    <option value="STBE">STBE</option>
                                     <option value="DvL">DvL</option>
                                     <option value=".01">.01</option>
                                     <option value=".02">.02</option>
-                                    <option value="STB">STB</option>
                                     <option value=".03">.03</option>
                                     <option value=".04">.04</option>
                                     <option value=".05">.05</option>
                                     <option value="RCT">RCT</option>
+                                    <option disabled>── BIOTIQUE ──</option>
+                                    <option value="CABAL">CABAL</option>
+                                    <option value="STBE">STBE</option>
+                                    <option value="STB">STB</option>
                                 </select>
                                 <button class="btn-sync" id="btnSync" onclick="syncFromFormations()" style="display:none;" title="Importer les formations validées automatiquement dans le tableau">⟳ SYNC FORMATIONS</button>
                             </div>
@@ -214,7 +220,8 @@
         { key: 'remplacement_memoire', label: 'REMPL. MÉMOIRE', type: 'pct', options: ['0%','25%','50%','70%','100%'], group: 'other' }
       ];
 
-      const RANG_ORDER = ['Cmd','Ofc','CABAL','STBE','DvL','.01','.02','STB','.03','.04','.05','RCT',''];
+      const RANG_ORDER = ['Cmd','Ofc','DvL','.01','.02','.03','.04','.05','RCT','CABAL','STBE','STB',''];
+      const BIOTIQUE_RANGS = new Set(['CABAL','STBE','STB']);
       const CHECKBOX_COLS = COLUMNS.filter(c => c.type === 'checkbox');
 
       let allUnits = [], allFormations = [], competenceData = {};
@@ -344,7 +351,15 @@
         html += '<th class="th-group-other">PROGRESS.</th>';
         html += '</tr></thead><tbody>';
 
-        unitList.forEach(u => {
+        let sectionInserted = false;
+        unitList.forEach((u, idx) => {
+          // Insert BIOTIQUE separator before the first biotique rank
+          if (!sectionInserted && BIOTIQUE_RANGS.has(u.rang)) {
+            sectionInserted = true;
+            const totalCols = COLUMNS.length + 4; // rang + div + mat + columns + progress
+            html += `<tr class="section-separator"><td class="frozen col-rang"></td><td class="frozen col-div"><span class="section-label">⬤ BIOTIQUE</span></td><td class="frozen col-mat"></td><td colspan="${COLUMNS.length + 1}"></td></tr>`;
+          }
+
           const comp = competenceData[u.matricule] || {};
           const rangCls = u.rang ? 'rang-' + u.rang.replace('.', '') : '';
           const divCls = u.division ? 'div-' + u.division.toUpperCase() : '';
