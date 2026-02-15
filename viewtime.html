@@ -624,6 +624,76 @@
             margin-top: 0.4rem;
             justify-content: flex-end;
         }
+        /* All blames modal */
+        .all-blames-btn {
+            padding: 0.25rem 0.7rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            cursor: pointer;
+            border: 1px solid rgba(255, 140, 0, 0.2);
+            background: transparent;
+            color: rgba(255, 170, 0, 0.5);
+            border-radius: 2px;
+            transition: all 0.15s;
+            letter-spacing: 0.5px;
+        }
+        .all-blames-btn:hover {
+            background: rgba(255, 140, 0, 0.1);
+            color: #ffaa00;
+            border-color: rgba(255, 140, 0, 0.4);
+        }
+        .modal-wide {
+            max-width: 650px;
+        }
+        .all-blames-filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.6rem;
+            flex-wrap: wrap;
+        }
+        .all-blames-filters input,
+        .all-blames-filters select {
+            padding: 0.3rem 0.5rem;
+            background: rgba(0, 170, 255, 0.04);
+            border: 1px solid rgba(0, 170, 255, 0.15);
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem;
+            outline: none;
+            border-radius: 2px;
+            flex: 1;
+            min-width: 100px;
+        }
+        .all-blames-filters input:focus,
+        .all-blames-filters select:focus { border-color: var(--accent-cyan); }
+        .all-blames-list {
+            max-height: 55vh;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0,170,255,0.2) transparent;
+        }
+        .all-blame-row {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.35rem 0.4rem;
+            border-bottom: 1px solid rgba(0,170,255,0.05);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.72rem;
+            flex-wrap: wrap;
+        }
+        .all-blame-row:hover { background: rgba(0,170,255,0.03); }
+        .all-blame-row .abr-mat {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            min-width: 42px;
+        }
+        .all-blame-row .abr-info { flex: 1; min-width: 0; }
+        .all-blame-row .abr-reason { color: var(--text-primary); }
+        .all-blame-row .abr-meta { color: var(--text-muted); font-size: 0.6rem; }
+        .all-blame-row .abr-actions { display: flex; gap: 0.25rem; flex-shrink: 0; }
     </style>
 </head>
 <body>
@@ -687,10 +757,14 @@
                         <div class="number" id="statPause">0</div>
                         <div class="label">EN PAUSE</div>
                     </div>
-                    <div class="stat-box warn">
+                    <div class="stat-box warn" id="statBlamesBox" style="cursor:default;">
                         <div class="number" id="statBlames">0</div>
                         <div class="label">BLÂMES ACTIFS</div>
                     </div>
+                </div>
+                <!-- All blames button (HG only) -->
+                <div id="allBlamesBtnWrap" style="display:none;text-align:right;margin-bottom:0.5rem;">
+                    <button class="all-blames-btn" onclick="openAllBlamesModal()">Voir tous les blâmes</button>
                 </div>
 
                 <!-- Table -->
@@ -792,6 +866,30 @@
             </div>
             <div class="modal-actions">
                 <button class="btn-action" onclick="closeBlameModal()">FERMER</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Tous les blâmes (admin) -->
+    <div id="allBlamesModal" class="modal-overlay">
+        <div class="modal modal-wide">
+            <h3>TOUS LES BLÂMES</h3>
+            <div class="all-blames-filters">
+                <input type="text" id="abSearch" placeholder="Matricule..." autocomplete="off">
+                <select id="abTypeFilter">
+                    <option value="">Tous types</option>
+                    <option value="viewtime">Viewtime</option>
+                    <option value="manual">Manuel</option>
+                </select>
+                <select id="abStatusFilter">
+                    <option value="active">Actifs</option>
+                    <option value="expired">Expirés</option>
+                    <option value="">Tous</option>
+                </select>
+            </div>
+            <div id="allBlamesList" class="all-blames-list"></div>
+            <div class="modal-actions" style="margin-top:0.8rem;">
+                <button class="btn-action" onclick="closeAllBlamesModal()">FERMER</button>
             </div>
         </div>
     </div>
@@ -1130,6 +1228,137 @@
         document.getElementById('statBlames').textContent = totalActive;
       }
 
+      // ========== ALL BLAMES MODAL (admin, no confirm) ==========
+      let editingAllBlameId = null;
+
+      window.openAllBlamesModal = function() {
+        editingAllBlameId = null;
+        renderAllBlamesList();
+        document.getElementById('allBlamesModal').classList.add('visible');
+      };
+
+      window.closeAllBlamesModal = function() {
+        document.getElementById('allBlamesModal').classList.remove('visible');
+      };
+      document.getElementById('allBlamesModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('allBlamesModal')) closeAllBlamesModal();
+      });
+
+      function getFilteredAllBlames() {
+        const search = (document.getElementById('abSearch').value || '').trim().toLowerCase();
+        const typeF = document.getElementById('abTypeFilter').value;
+        const statusF = document.getElementById('abStatusFilter').value;
+        const now = new Date();
+        return allBlames.filter(b => {
+          if (search && !(b.matricule || '').toLowerCase().includes(search)) return false;
+          if (typeF && b.type !== typeF) return false;
+          if (statusF === 'active' && b.expires_at && new Date(b.expires_at) < now) return false;
+          if (statusF === 'expired' && (!b.expires_at || new Date(b.expires_at) >= now)) return false;
+          return true;
+        }).sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+      }
+
+      function renderAllBlamesList() {
+        const blames = getFilteredAllBlames();
+        const container = document.getElementById('allBlamesList');
+        const now = new Date();
+        if (blames.length === 0) {
+          container.innerHTML = '<p style="color:var(--text-muted);font-size:0.75rem;text-align:center;padding:1rem;">Aucun blâme</p>';
+          return;
+        }
+        container.innerHTML = blames.map(b => {
+          const isExpired = b.expires_at && new Date(b.expires_at) < now;
+          const typeTag = b.type === 'viewtime'
+            ? '<span class="blame-type-tag blame-type-viewtime">VT</span>'
+            : '<span class="blame-type-tag blame-type-manual">MAN</span>';
+          const dateStr = b.created_at ? new Date(b.created_at).toLocaleDateString('fr-FR') : '?';
+          const expStr = b.expires_at ? new Date(b.expires_at).toLocaleDateString('fr-FR') : '?';
+          const v = viewData.find(u => u.matricule === b.matricule);
+          const nom = v ? v.nom_steam : '';
+          const isEditing = editingAllBlameId === b._id;
+          const editForm = isEditing ? `<div class="blame-edit-form" style="width:100%;margin-top:0.3rem;" id="abEditForm_${b._id}">
+              <label>DATE CRÉATION</label>
+              <input type="date" id="abEditDate_${b._id}" value="${b.created_at ? b.created_at.substring(0, 10) : ''}">
+              <label>DATE EXPIRATION</label>
+              <input type="date" id="abEditExp_${b._id}" value="${b.expires_at ? b.expires_at.substring(0, 10) : ''}">
+              <div class="blame-edit-actions">
+                <button class="blame-action-btn edit" onclick="cancelAllBlameEdit()">Annuler</button>
+                <button class="blame-action-btn edit" style="background:rgba(0,170,255,0.15);font-weight:700;" onclick="saveAllBlameEdit('${b._id}')">Sauvegarder</button>
+              </div>
+            </div>` : '';
+          return `<div class="all-blame-row" style="${isExpired ? 'opacity:0.4;' : ''}">
+            <span class="abr-mat">${b.matricule || '?'}</span>
+            ${typeTag}
+            <div class="abr-info">
+              <span class="abr-reason">${b.raison || '-'}</span>
+              <div class="abr-meta">${nom ? nom + ' · ' : ''}${dateStr} → ${expStr}${isExpired ? ' · expiré' : ''} ${b.created_by ? '· ' + b.created_by : ''}</div>
+            </div>
+            <div class="abr-actions">
+              <button class="blame-action-btn edit" onclick="toggleAllBlameEdit('${b._id}')">Modifier</button>
+              <button class="blame-action-btn delete" onclick="removeBlameInstant('${b._id}')">Supprimer</button>
+            </div>
+            ${editForm}
+          </div>`;
+        }).join('');
+      }
+
+      // Filters
+      document.getElementById('abSearch').addEventListener('input', renderAllBlamesList);
+      document.getElementById('abTypeFilter').addEventListener('change', renderAllBlamesList);
+      document.getElementById('abStatusFilter').addEventListener('change', renderAllBlamesList);
+
+      window.toggleAllBlameEdit = function(docId) {
+        editingAllBlameId = editingAllBlameId === docId ? null : docId;
+        renderAllBlamesList();
+      };
+
+      window.cancelAllBlameEdit = function() {
+        editingAllBlameId = null;
+        renderAllBlamesList();
+      };
+
+      window.saveAllBlameEdit = async function(docId) {
+        const dateInput = document.getElementById('abEditDate_' + docId);
+        const expInput = document.getElementById('abEditExp_' + docId);
+        if (!dateInput || !expInput) return;
+        const newCreated = dateInput.value ? new Date(dateInput.value + 'T00:00:00').toISOString() : null;
+        const newExpires = expInput.value ? new Date(expInput.value + 'T23:59:59').toISOString() : null;
+        try {
+          const existing = allBlames.find(b => b._id === docId);
+          if (!existing) return;
+          const updated = { ...existing };
+          delete updated._id;
+          if (newCreated) updated.created_at = newCreated;
+          if (newExpires) updated.expires_at = newExpires;
+          await updateBlame(docId, updated);
+          const idx = allBlames.findIndex(b => b._id === docId);
+          if (idx !== -1) {
+            if (newCreated) allBlames[idx].created_at = newCreated;
+            if (newExpires) allBlames[idx].expires_at = newExpires;
+          }
+          editingAllBlameId = null;
+          renderAllBlamesList();
+          renderTable();
+          updateBlameStats();
+        } catch (err) {
+          alert('Erreur: ' + err.message);
+        }
+      };
+
+      // Delete without confirmation (only from all-blames modal)
+      window.removeBlameInstant = async function(docId) {
+        try {
+          await deleteBlame(docId);
+          allBlames = allBlames.filter(b => b._id !== docId);
+          renderAllBlamesList();
+          if (blameModalMatricule) renderBlameList(blameModalMatricule);
+          renderTable();
+          updateBlameStats();
+        } catch (err) {
+          alert('Erreur: ' + err.message);
+        }
+      };
+
       // ========== WEEKLY AUTO-CHECK ==========
       window.confirmWeeklyCheck = function() {
         const defautCount = viewData.filter(v => getComplianceStatus(v) === 'fail').length;
@@ -1276,6 +1505,11 @@
           document.getElementById('statAbsent').textContent = absCount;
           document.getElementById('statPause').textContent = pauseCount;
           updateBlameStats();
+
+          // Show HG controls
+          if (isHG) {
+            document.getElementById('allBlamesBtnWrap').style.display = 'block';
+          }
 
           // Show weekly check banner if HG and not already checked this week
           if (isHG) {
