@@ -476,6 +476,7 @@ class GlobalNavigation {
             <div class="gp-float gp-left gp-collapsed" id="gpNotepadPanel">
                 <div class="gp-resize-handle" id="gpNotepadResize"></div>
                 <div class="gp-float-inner">
+                    <div class="gp-vdrag-handle" id="gpNotepadVDrag" title="Glisser pour déplacer"></div>
                     <div class="gp-float-header" id="gpNotepadHeader">
                         <h3>📝 BLOC-NOTES</h3>
                         <span class="gp-float-toggle" id="gpNotepadToggle">◄</span>
@@ -487,6 +488,7 @@ class GlobalNavigation {
                             <button class="gp-notepad-clear" id="gpNotepadClear">🗑 EFFACER</button>
                         </div>
                     </div>
+                    <div class="gp-vresize-handle" id="gpNotepadVResize" title="Redimensionner"></div>
                 </div>
             </div>`;
 
@@ -495,6 +497,7 @@ class GlobalNavigation {
             <div class="gp-float gp-right gp-collapsed" id="gpTodayPanel">
                 <div class="gp-resize-handle" id="gpTodayResize"></div>
                 <div class="gp-float-inner">
+                    <div class="gp-vdrag-handle" id="gpTodayVDrag" title="Glisser pour déplacer"></div>
                     <div class="gp-float-header" id="gpTodayHeader">
                         <h3>📋 PLANNING DU JOUR</h3>
                         <span class="gp-float-toggle" id="gpTodayToggle">►</span>
@@ -503,6 +506,7 @@ class GlobalNavigation {
                         <div id="gpTodayEvents"><div class="gp-no-events">Chargement…</div></div>
                         <a href="${bp}activite-tableaux.html" class="gp-today-link">→ VOIR LE PLANNING COMPLET</a>
                     </div>
+                    <div class="gp-vresize-handle" id="gpTodayVResize" title="Redimensionner"></div>
                 </div>
             </div>`;
 
@@ -540,10 +544,11 @@ class GlobalNavigation {
             if (nav) topOffset += nav.getBoundingClientRect().bottom;
             else if (header) topOffset += header.getBoundingClientRect().bottom;
             else topOffset = 150;
-            // Apply to panels and tabs
+            // Apply to panels and tabs (respect custom positions)
             ['gpNotepadPanel','gpTodayPanel'].forEach(id => {
                 const el = document.getElementById(id);
-                if (el) { el.style.top = topOffset + 'px'; el.style.maxHeight = `calc(100vh - ${topOffset + 20}px)`; }
+                if (el && !el.dataset.customTop) { el.style.top = topOffset + 'px'; }
+                if (el && !el.dataset.customHeight) { el.style.maxHeight = `calc(100vh - ${topOffset + 20}px)`; }
             });
             // Online panel: position below notepad (unless user has custom position)
             const notepadEl = document.getElementById('gpNotepadPanel');
@@ -557,9 +562,12 @@ class GlobalNavigation {
                 const onlineTab = document.getElementById('gpOnlineTab');
                 if (onlineTab && !(onlineEl && onlineEl.dataset.customTop)) onlineTab.style.top = notepadBottom + 'px';
             }
-            ['gpNotepadTab','gpTodayTab'].forEach(id => {
+            ['gpNotepadTab','gpTodayTab'].forEach((id, i) => {
                 const el = document.getElementById(id);
-                if (el) el.style.top = topOffset + 'px';
+                const panelId = i === 0 ? 'gpNotepadPanel' : 'gpTodayPanel';
+                const panel = document.getElementById(panelId);
+                if (el && !(panel && panel.dataset.customTop)) el.style.top = topOffset + 'px';
+                else if (el && panel && panel.dataset.customTop) el.style.top = panel.style.top;
             });
         };
         // Run after layout settles
@@ -693,6 +701,97 @@ class GlobalNavigation {
         setupResize('gpNotepadResize', 'gpNotepadPanel', 'mpf_notepad_width', true);
         setupResize('gpOnlineResize', 'gpOnlinePanel', 'mpf_online_width', true);
         setupResize('gpTodayResize', 'gpTodayPanel', 'mpf_today_width', false);
+
+        // ---- Vertical drag (reposition) for all panels ----
+        const setupVDrag = (handleId, panelId, storageKey) => {
+            const handle = document.getElementById(handleId);
+            const panel = document.getElementById(panelId);
+            if (!handle || !panel) return;
+            handle.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                const startY = e.clientY;
+                const startTop = parseInt(panel.style.top) || panel.getBoundingClientRect().top;
+                const onMove = (ev) => {
+                    const newTop = Math.max(50, startTop + (ev.clientY - startY));
+                    panel.style.top = newTop + 'px';
+                    document.body.style.cursor = 'grab';
+                    document.body.style.userSelect = 'none';
+                };
+                const onUp = () => {
+                    panel.dataset.customTop = 'true';
+                    localStorage.setItem(storageKey, panel.style.top);
+                    document.body.style.cursor = '';
+                    document.body.style.userSelect = '';
+                    // Update corresponding tab position
+                    const tabId = panelId.replace('Panel', 'Tab');
+                    const tab = document.getElementById(tabId);
+                    if (tab) tab.style.top = panel.style.top;
+                    // Recalculate online panel if notepad moved
+                    if (panelId === 'gpNotepadPanel') requestAnimationFrame(() => requestAnimationFrame(adjustTopPosition));
+                    document.removeEventListener('mousemove', onMove);
+                    document.removeEventListener('mouseup', onUp);
+                };
+                document.addEventListener('mousemove', onMove);
+                document.addEventListener('mouseup', onUp);
+            });
+        };
+        setupVDrag('gpNotepadVDrag', 'gpNotepadPanel', 'mpf_notepad_top');
+        setupVDrag('gpTodayVDrag', 'gpTodayPanel', 'mpf_today_top');
+
+        // ---- Vertical resize (height) for all panels ----
+        const setupVResize = (handleId, panelId, storageKey) => {
+            const handle = document.getElementById(handleId);
+            const panel = document.getElementById(panelId);
+            if (!handle || !panel) return;
+            handle.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const startY = e.clientY;
+                const startH = panel.offsetHeight;
+                const onMove = (ev) => {
+                    const newH = Math.max(100, Math.min(window.innerHeight - 100, startH + (ev.clientY - startY)));
+                    panel.style.maxHeight = newH + 'px';
+                    panel.style.height = newH + 'px';
+                    document.body.style.cursor = 'ns-resize';
+                    document.body.style.userSelect = 'none';
+                };
+                const onUp = () => {
+                    panel.dataset.customHeight = 'true';
+                    localStorage.setItem(storageKey, panel.offsetHeight + '');
+                    document.body.style.cursor = '';
+                    document.body.style.userSelect = '';
+                    // Recalculate online panel if notepad resized
+                    if (panelId === 'gpNotepadPanel') requestAnimationFrame(() => requestAnimationFrame(adjustTopPosition));
+                    document.removeEventListener('mousemove', onMove);
+                    document.removeEventListener('mouseup', onUp);
+                };
+                document.addEventListener('mousemove', onMove);
+                document.addEventListener('mouseup', onUp);
+            });
+        };
+        setupVResize('gpNotepadVResize', 'gpNotepadPanel', 'mpf_notepad_height');
+        setupVResize('gpTodayVResize', 'gpTodayPanel', 'mpf_today_height');
+
+        // ---- Restore custom top/height for notepad & today ----
+        ['notepad','today'].forEach(key => {
+            const panel = document.getElementById(key === 'notepad' ? 'gpNotepadPanel' : 'gpTodayPanel');
+            const tab = document.getElementById(key === 'notepad' ? 'gpNotepadTab' : 'gpTodayTab');
+            const savedTop = localStorage.getItem('mpf_' + key + '_top');
+            const savedHeight = localStorage.getItem('mpf_' + key + '_height');
+            if (savedTop && panel) {
+                panel.style.top = savedTop;
+                panel.dataset.customTop = 'true';
+                if (tab) tab.style.top = savedTop;
+            }
+            if (savedHeight && panel) {
+                const h = parseInt(savedHeight);
+                if (h >= 100) {
+                    panel.style.maxHeight = h + 'px';
+                    panel.style.height = h + 'px';
+                    panel.dataset.customHeight = 'true';
+                }
+            }
+        });
 
         // ---- Bloc-notes logic (localStorage) ----
         const textarea = document.getElementById('gpNotepadText');
