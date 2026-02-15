@@ -22,7 +22,7 @@
         /* Iframe container */
         .fr-panel{display:none;width:100%;border:none;}
         .fr-panel.active{display:block;}
-        .fr-iframe{width:100%;border:none;min-height:calc(100vh - 200px);}
+        .fr-iframe{width:100%;border:none;min-height:400px;overflow:hidden;}
     </style>
 </head>
 <body>
@@ -52,16 +52,16 @@
 
                 <!-- Panels with iframes -->
                 <div id="panel-formations" class="fr-panel active">
-                    <iframe class="fr-iframe" id="iframe-formations" data-src="formations.html?embed=1"></iframe>
+                    <iframe class="fr-iframe" id="iframe-formations" data-src="formations.html?embed=1" scrolling="no"></iframe>
                 </div>
                 <div id="panel-tableau" class="fr-panel">
-                    <iframe class="fr-iframe" id="iframe-tableau" data-src="tableau-formations.html?embed=1"></iframe>
+                    <iframe class="fr-iframe" id="iframe-tableau" data-src="tableau-formations.html?embed=1" scrolling="no"></iframe>
                 </div>
                 <div id="panel-info" class="fr-panel">
-                    <iframe class="fr-iframe" id="iframe-info" data-src="info-milice.html?embed=1"></iframe>
+                    <iframe class="fr-iframe" id="iframe-info" data-src="info-milice.html?embed=1" scrolling="no"></iframe>
                 </div>
                 <div id="panel-recrutement" class="fr-panel">
-                    <iframe class="fr-iframe" id="iframe-recrutement" data-src="recrutement.html?embed=1"></iframe>
+                    <iframe class="fr-iframe" id="iframe-recrutement" data-src="recrutement.html?embed=1" scrolling="no"></iframe>
                 </div>
             </div>
         </div>

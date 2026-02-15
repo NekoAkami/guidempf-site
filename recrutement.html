@@ -670,6 +670,16 @@
           document.getElementById('access-denied').style.display = 'block';
         }
       });
+
+      // ===== EMBED AUTO-RESIZE =====
+      if (new URLSearchParams(window.location.search).has('embed')) {
+        function notifyParentHeight() {
+          window.parent.postMessage({ type: 'fr-resize', tab: 'recrutement', height: document.documentElement.scrollHeight }, '*');
+        }
+        const ro = new ResizeObserver(notifyParentHeight);
+        ro.observe(document.body);
+        setInterval(notifyParentHeight, 1000);
+      }
     </script>
 </body>
 </html>
