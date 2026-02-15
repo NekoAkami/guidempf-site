@@ -2,122 +2,12 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formation & Recrutement - MPF Documentation</title>
-    <link rel="stylesheet" href="assets/css/bundle.css">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <style>
-        .fr-wrapper{max-width:1600px;margin:0 auto;}
-
-        /* Tabs */
-        .fr-tabs{display:flex;gap:0;margin-bottom:0;border-bottom:2px solid rgba(0,170,255,0.15);flex-wrap:wrap;}
-        .fr-tab{padding:0.6rem 1.2rem;font-family:'Orbitron',sans-serif;font-size:0.72rem;color:var(--text-muted);background:transparent;border:none;cursor:pointer;letter-spacing:1px;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.2s;}
-        .fr-tab:hover{color:var(--accent-cyan);}
-        .fr-tab.active{color:var(--accent-cyan);border-bottom-color:var(--accent-cyan);font-weight:700;}
-
-        /* Iframe container */
-        .fr-panel{display:none;width:100%;border:none;}
-        .fr-panel.active{display:block;}
-        .fr-iframe{width:100%;border:none;min-height:400px;overflow:hidden;}
-    </style>
-</head>
-<body>
-    <div class="scanline-overlay"></div>
-    <div class="particles-bg"></div>
-    <header class="site-header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo-section">
-                    <div class="logo-icon">M</div>
-                    <div><h1 class="logo">MPF</h1><p class="logo-subtitle">Formation & Recrutement</p></div>
-                </div>
-                <div id="authBtn" class="header-auth"></div>
-            </div>
-        </div>
-    </header>
-    <main>
-        <div class="container">
-            <div class="fr-wrapper">
-                <!-- Tabs -->
-                <div class="fr-tabs">
-                    <button class="fr-tab active" data-tab="formations" onclick="switchFRTab('formations')">🎓 FORMATIONS</button>
-                    <button class="fr-tab" data-tab="tableau" onclick="switchFRTab('tableau')">📊 TABLEAU FORMATIONS</button>
-                    <button class="fr-tab" data-tab="info" onclick="switchFRTab('info')">📋 INFORMATION MILICE</button>
-                    <button class="fr-tab" data-tab="recrutement" onclick="switchFRTab('recrutement')">👤 RECRUTEMENT</button>
-                </div>
-
-                <!-- Panels with iframes -->
-                <div id="panel-formations" class="fr-panel active">
-                    <iframe class="fr-iframe" id="iframe-formations" data-src="formations.html?embed=1" scrolling="no"></iframe>
-                </div>
-                <div id="panel-tableau" class="fr-panel">
-                    <iframe class="fr-iframe" id="iframe-tableau" data-src="tableau-formations.html?embed=1" scrolling="no"></iframe>
-                </div>
-                <div id="panel-info" class="fr-panel">
-                    <iframe class="fr-iframe" id="iframe-info" data-src="info-milice.html?embed=1" scrolling="no"></iframe>
-                </div>
-                <div id="panel-recrutement" class="fr-panel">
-                    <iframe class="fr-iframe" id="iframe-recrutement" data-src="recrutement.html?embed=1" scrolling="no"></iframe>
-                </div>
-            </div>
-        </div>
-    </main>
-    <script type="module" src="assets/js/auth.js"></script>
-    <script src="assets/js/global-nav.js?v=20260214" defer></script>
-    <script src="assets/js/interactive-system.js" defer></script>
-    <script src="assets/js/combine-animations.js" defer></script>
     <script>
-        const loadedTabs = new Set();
-
-        function switchFRTab(tab) {
-            // Persist tab in URL hash and localStorage
-            history.replaceState(null, '', '#' + tab);
-            try { localStorage.setItem('mpf_fr_active_tab', tab); } catch(_) {}
-
-            // Update active tab button
-            document.querySelectorAll('.fr-tab').forEach(btn => btn.classList.remove('active'));
-            document.querySelector('.fr-tab[data-tab="' + tab + '"]').classList.add('active');
-
-            // Show/hide panels
-            document.querySelectorAll('.fr-panel').forEach(p => p.classList.remove('active'));
-            document.getElementById('panel-' + tab).classList.add('active');
-
-            // Lazy-load iframe only on first visit
-            const iframe = document.querySelector('#panel-' + tab + ' .fr-iframe');
-            if (iframe && !loadedTabs.has(tab)) {
-                iframe.src = iframe.dataset.src;
-                loadedTabs.add(tab);
-            }
-        }
-
-        // Auto-resize iframes to content height
-        window.addEventListener('message', function(e) {
-            if (e.data && e.data.type === 'fr-resize') {
-                const iframe = document.getElementById('iframe-' + e.data.tab);
-                if (iframe) iframe.style.height = e.data.height + 'px';
-            }
-        });
-
-        // Load the first tab on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check hash first, then localStorage, then default
-            const hash = window.location.hash.replace('#', '');
-            const validTabs = ['formations', 'tableau', 'info', 'recrutement'];
-            let startTab = 'formations';
-            if (validTabs.includes(hash)) {
-                startTab = hash;
-            } else {
-                try {
-                    const saved = localStorage.getItem('mpf_fr_active_tab');
-                    if (validTabs.includes(saved)) startTab = saved;
-                } catch(_) {}
-            }
-            switchFRTab(startTab);
-        });
+        // Redirect to formations.html — content is now on separate pages with sub-tabs
+        window.location.replace('formations.html');
     </script>
-</body>
+</head>
+<body></body>
 </html>

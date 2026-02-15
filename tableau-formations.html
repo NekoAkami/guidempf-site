@@ -30,7 +30,6 @@
 
         /* Matrix table */
         .matrix-scroll{overflow-x:auto;overflow-y:auto;max-height:75vh;position:relative;}
-        .embed-mode .matrix-scroll{max-height:none;overflow-y:visible;}
         .matrix-table{width:100%;border-collapse:separate;border-spacing:0;font-size:0.72rem;min-width:1200px;}
         .matrix-table thead{position:sticky;top:0;z-index:10;}
         .matrix-table th{padding:0.35rem 0.25rem;color:var(--accent-cyan);font-family:'Share Tech Mono',monospace;font-size:0.58rem;letter-spacing:0.3px;border-bottom:2px solid rgba(0,170,255,0.25);white-space:nowrap;text-align:center;background:#0a1628;text-transform:uppercase;}
@@ -195,6 +194,17 @@
 
     <script type="module" src="assets/js/auth.js"></script>
     <script src="assets/js/global-nav.js?v=20260214" defer></script>
+    <script defer>
+      document.addEventListener('DOMContentLoaded', function() {
+        if (new URLSearchParams(window.location.search).has('embed')) return;
+        createSubTabs([
+          { label: '🎓 FORMATIONS', url: 'formations.html' },
+          { label: '📊 TABLEAU FORMATIONS', url: 'tableau-formations.html' },
+          { label: '📋 INFORMATION MILICE', url: 'info-milice.html' },
+          { label: '👤 RECRUTEMENT', url: 'recrutement.html' }
+        ], 'tableau-formations.html');
+      });
+    </script>
     <script src="assets/js/interactive-system.js" defer></script>
     <script src="assets/js/combine-animations.js" defer></script>
     <script type="module">
@@ -496,18 +506,6 @@
           document.getElementById('access-denied').style.display = 'block';
         }
       });
-
-      // ===== EMBED AUTO-RESIZE =====
-      if (new URLSearchParams(window.location.search).has('embed')) {
-        document.documentElement.classList.add('embed-mode');
-        function notifyParentHeight() {
-          const h = document.documentElement.scrollHeight;
-          window.parent.postMessage({ type: 'fr-resize', tab: 'tableau', height: h }, '*');
-        }
-        const ro = new ResizeObserver(notifyParentHeight);
-        ro.observe(document.body);
-        setInterval(notifyParentHeight, 1000);
-      }
     </script>
 </body>
 </html>

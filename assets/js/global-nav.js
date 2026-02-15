@@ -130,14 +130,18 @@ class GlobalNavigation {
         let injected = false;
         // Ensure FORMATION & RECRUTEMENT exists as standalone in row2
         const row2Urls = new Set((data.row2 || []).map(item => item.url));
-        if (!row2Urls.has('formation-recrutement.html')) {
-            data.row2.push({ label: 'FORMATION & RECRUTEMENT', url: 'formation-recrutement.html' });
+        if (!row2Urls.has('formations.html') && !row2Urls.has('formation-recrutement.html')) {
+            data.row2.push({ label: 'FORMATION & RECRUTEMENT', url: 'formations.html' });
             injected = true;
         }
+        // Migrate old formation-recrutement.html to formations.html
+        (data.row2 || []).forEach(item => {
+            if (item.url === 'formation-recrutement.html') item.url = 'formations.html';
+        });
         // Remove Formation & Recrutement from RAPPORTS dropdown if present
         let rapportsItem = (data.row2 || []).find(item => item.label === 'RAPPORTS' || item.url === 'rapports.html');
         if (rapportsItem && rapportsItem.dropdown) {
-            rapportsItem.dropdown = rapportsItem.dropdown.filter(d => d.url !== 'formation-recrutement.html');
+            rapportsItem.dropdown = rapportsItem.dropdown.filter(d => d.url !== 'formation-recrutement.html' && d.url !== 'formations.html');
         }
         return injected;
     }
@@ -873,7 +877,7 @@ class GlobalNavigation {
                 { label: 'RADIO & MDP', url: 'radio.html' },
                 { label: 'ABSENCES', url: 'declaration-absence.html' },
                 { label: 'LIENS', url: 'liens.html' },
-                { label: 'FORMATION & RECRUTEMENT', url: 'formation-recrutement.html' },
+                { label: 'FORMATION & RECRUTEMENT', url: 'formations.html' },
             ]
         };
     }
@@ -931,11 +935,14 @@ class GlobalNavigation {
         const currentPage = path.split('/').pop() || 'index.html';
         const pathParts = path.split('/');
         const currentFull = pathParts.length > 2 ? pathParts.slice(-2).join('/') : currentPage;
+        // Sub-pages that should highlight "formations.html" nav link
+        const formationSubPages = new Set(['formations.html','tableau-formations.html','info-milice.html','recrutement.html']);
         const navLinks = document.querySelectorAll('.nav-link, .dropdown-link');
 
         navLinks.forEach(link => {
             const href = (link.getAttribute('href') || '').replace(this.basePath, '');
-            if (href === currentPage || href === currentFull) {
+            if (href === currentPage || href === currentFull ||
+                (href === 'formations.html' && formationSubPages.has(currentPage))) {
                 link.classList.add('active');
                 const parentItem = link.closest('.nav-item');
                 if (parentItem) {
