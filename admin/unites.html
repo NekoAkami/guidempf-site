@@ -891,6 +891,7 @@
             <td style="font-size:0.78rem;color:var(--text-muted);">${u.ordre || '-'}</td>
             <td style="font-size:0.72rem;color:var(--text-muted);">${u.date_entree || '-'}</td>
             <td class="action-cell">
+              <button class="btn-sm ${u.formateur ? 'success' : ''}" onclick="toggleFormateur('${safeMatricule}')" title="${u.formateur ? 'Retirer formateur' : 'Mettre formateur'}" style="font-size:0.62rem;font-weight:700;">F</button>
               <button class="btn-sm" onclick="editUnit('${safeMatricule}')" title="Modifier">✎</button>
               <button class="btn-sm warning" onclick="fireUnit('${safeMatricule}')" title="Virer">⊘</button>
               <button class="btn-sm danger" onclick="deleteUnit('${safeMatricule}')" title="Supprimer">✗</button>
@@ -1123,6 +1124,20 @@
           .catch(err => {
             showAlert('⚠ Sync échouée: ' + err.message, 'error');
           });
+      };
+
+      // ========== TOGGLE FORMATEUR ==========
+      window.toggleFormateur = async function(matricule) {
+        const idx = allUnits.findIndex(u => u.matricule === matricule);
+        if (idx === -1) { showAlert('Unité introuvable: ' + matricule, 'error'); return; }
+        const current = allUnits[idx].formateur || false;
+        allUnits[idx].formateur = !current;
+        allUnits[idx].updated_at = new Date().toISOString().substring(0, 10);
+        renderTable();
+        showAlert(`✓ ${matricule} — Formateur ${!current ? 'ACTIVÉ' : 'DÉSACTIVÉ'}`, 'success');
+        const toSave = allUnits.map(({ id, ...rest }) => rest);
+        ghSaveUnits(toSave, `${!current ? 'Ajout' : 'Retrait'} formateur ${matricule}`)
+          .catch(err => showAlert('⚠ Sync échouée: ' + err.message, 'error'));
       };
 
       // ========== FILTERS ==========
