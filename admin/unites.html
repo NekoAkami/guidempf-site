@@ -255,22 +255,57 @@
         .blame-1 { color: #ffaa00; }
         .blame-2 { background: rgba(255,100,0,0.2); color: #ff6600; border: 1px solid rgba(255,100,0,0.4); }
         .blame-3 { background: rgba(255,40,40,0.25); color: #ff2222; border: 1px solid rgba(255,40,40,0.5); animation: pulse-missing 1.5s ease-in-out infinite; }
-        .blame-add-btn {
+        .blame-manage-btn {
             padding: 0.12rem 0.35rem; font-size: 0.6rem;
             font-family: 'Share Tech Mono', monospace; cursor: pointer;
-            border: 1px solid rgba(255,140,0,0.3); background: rgba(255,140,0,0.08);
-            color: #ff8800; border-radius: 2px; transition: all 0.15s; margin-left: 3px;
+            border: 1px solid rgba(0,170,255,0.2); background: rgba(0,170,255,0.05);
+            color: rgba(0,170,255,0.6); border-radius: 2px; transition: all 0.15s; margin-left: 3px;
+            letter-spacing: 0.5px;
         }
-        .blame-add-btn:hover { background: rgba(255,140,0,0.2); }
-        .blame-list-modal { margin-top: 0.8rem; max-height: 200px; overflow-y: auto; }
+        .blame-manage-btn:hover { background: rgba(0,170,255,0.12); color: var(--accent-cyan); border-color: rgba(0,170,255,0.4); }
+        .blame-list-modal { margin-top: 0.8rem; max-height: 250px; overflow-y: auto; }
         .blame-list-item {
             display: flex; justify-content: space-between; align-items: center;
             padding: 0.4rem 0.5rem; border-bottom: 1px solid rgba(0,170,255,0.06);
-            font-size: 0.75rem; font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem; font-family: 'Share Tech Mono', monospace; flex-wrap: wrap;
         }
-        .blame-list-item .blame-info { flex: 1; }
+        .blame-list-item .blame-info { flex: 1; min-width: 0; }
         .blame-list-item .blame-reason { color: var(--text-primary); }
         .blame-list-item .blame-meta { color: var(--text-muted); font-size: 0.65rem; }
+        .blame-list-item .blame-actions { display: flex; gap: 0.3rem; flex-shrink: 0; margin-left: 0.4rem; }
+        .blame-action-btn {
+            padding: 0.15rem 0.4rem; font-size: 0.6rem;
+            font-family: 'Share Tech Mono', monospace; cursor: pointer;
+            border-radius: 2px; transition: all 0.15s; letter-spacing: 0.3px;
+        }
+        .blame-action-btn.edit {
+            border: 1px solid rgba(0,170,255,0.25); background: rgba(0,170,255,0.05);
+            color: rgba(0,170,255,0.7);
+        }
+        .blame-action-btn.edit:hover { background: rgba(0,170,255,0.15); color: var(--accent-cyan); }
+        .blame-action-btn.delete {
+            border: 1px solid rgba(255,60,60,0.2); background: rgba(255,60,60,0.05);
+            color: rgba(255,60,60,0.6);
+        }
+        .blame-action-btn.delete:hover { background: rgba(255,60,60,0.15); color: #ff4444; }
+        .blame-edit-form {
+            margin-top: 0.4rem; padding: 0.5rem; width: 100%;
+            background: rgba(0,170,255,0.03); border: 1px solid rgba(0,170,255,0.1); border-radius: 3px;
+        }
+        .blame-edit-form label {
+            display: block; font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem; color: var(--text-muted); letter-spacing: 0.5px;
+            margin-bottom: 0.15rem; margin-top: 0.4rem;
+        }
+        .blame-edit-form label:first-child { margin-top: 0; }
+        .blame-edit-form input {
+            width: 100%; padding: 0.3rem 0.5rem;
+            background: rgba(0,170,255,0.04); border: 1px solid rgba(0,170,255,0.15);
+            color: var(--text-primary); font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem; outline: none; border-radius: 2px;
+        }
+        .blame-edit-form input:focus { border-color: var(--accent-cyan); }
+        .blame-edit-actions { display: flex; gap: 0.3rem; margin-top: 0.4rem; justify-content: flex-end; }
         .blame-type-tag { font-size: 0.6rem; padding: 0.05rem 0.25rem; border-radius: 2px; font-weight: 700; margin-right: 4px; }
         .blame-type-viewtime { background: rgba(255,68,68,0.15); color: #ff4444; border: 1px solid rgba(255,68,68,0.3); }
         .blame-type-manual { background: rgba(255,170,0,0.15); color: #ffaa00; border: 1px solid rgba(255,170,0,0.3); }
@@ -749,7 +784,7 @@
         loadAbsences as ghLoadAbsences,
         addFiredUnit,
         onSyncStatus,
-        loadBlames, addBlame as ghAddBlame, deleteBlame as ghDeleteBlame
+        loadBlames, addBlame as ghAddBlame, deleteBlame as ghDeleteBlame, updateBlame as ghUpdateBlame
       } from '../assets/js/github-data.js';
 
       // ========== SYNC INDICATOR ==========
@@ -923,8 +958,8 @@
         else if (count === 1) badge = `<span class="blame-count-badge blame-1">${count}</span>`;
         else if (count === 2) badge = `<span class="blame-count-badge blame-2">${count} ⚠ RÉTRO</span>`;
         else badge = `<span class="blame-count-badge blame-3">${count} ⛔ EXCLU</span>`;
-        const addBtn = `<button class="blame-add-btn" onclick="event.stopPropagation();openBlameModal('${matricule}')" title="Gérer blâmes">+</button>`;
-        return `<div class="blame-dots">${dots}${badge}${addBtn}</div>`;
+        const manageBtn = `<button class="blame-manage-btn" onclick="event.stopPropagation();openBlameModal('${matricule}')" title="Gérer blâmes">⚙</button>`;
+        return `<div class="blame-dots">${dots}${badge}${manageBtn}</div>`;
       }
 
       window.openBlameModal = function(matricule) {
@@ -935,6 +970,8 @@
         renderBlameListModal(matricule);
         document.getElementById('blameModal').classList.add('visible');
       };
+
+      let editingBlameId = null;
 
       function renderBlameListModal(matricule) {
         const now = new Date();
@@ -951,12 +988,28 @@
             : '<span class="blame-type-tag blame-type-manual">MANUEL</span>';
           const dateStr = b.created_at ? new Date(b.created_at).toLocaleDateString('fr-FR') : '?';
           const expStr = b.expires_at ? new Date(b.expires_at).toLocaleDateString('fr-FR') : '?';
+          const actions = `<div class="blame-actions">
+              <button class="blame-action-btn edit" onclick="toggleEditBlame('${b._id}')">Modifier</button>
+              <button class="blame-action-btn delete" onclick="removeBlame('${b._id}')">Supprimer</button>
+            </div>`;
+          const isEditing = editingBlameId === b._id;
+          const editForm = isEditing ? `<div class="blame-edit-form" id="editForm_${b._id}">
+              <label>DATE CRÉATION</label>
+              <input type="date" id="editDate_${b._id}" value="${b.created_at ? b.created_at.substring(0, 10) : ''}">
+              <label>DATE EXPIRATION</label>
+              <input type="date" id="editExp_${b._id}" value="${b.expires_at ? b.expires_at.substring(0, 10) : ''}">
+              <div class="blame-edit-actions">
+                <button class="blame-action-btn edit" onclick="cancelEditBlame()">Annuler</button>
+                <button class="blame-action-btn edit" style="background:rgba(0,170,255,0.15);font-weight:700;" onclick="saveEditBlame('${b._id}')">Sauvegarder</button>
+              </div>
+            </div>` : '';
           return `<div class="blame-list-item" style="${isExpired ? 'opacity:0.4;' : ''}">
             <div class="blame-info">
               ${typeTag}<span class="blame-reason">${b.raison || '-'}</span>
               <div class="blame-meta">${dateStr} → expire ${expStr}${isExpired ? ' (EXPIRÉ)' : ''} ${b.created_by ? '— par ' + b.created_by : ''}</div>
             </div>
-            <button class="blame-add-btn" style="border-color:rgba(255,60,60,0.3);color:#ff4444;background:rgba(255,60,60,0.08);" onclick="removeBlame('${b._id}')">✗ Suppr.</button>
+            ${actions}
+            ${editForm}
           </div>`;
         }).join('');
       }
@@ -967,6 +1020,44 @@
       document.getElementById('blameModal').addEventListener('click', e => {
         if (e.target === document.getElementById('blameModal')) closeBlameModal();
       });
+
+      window.toggleEditBlame = function(docId) {
+        editingBlameId = editingBlameId === docId ? null : docId;
+        renderBlameListModal(blameModalMatricule);
+      };
+
+      window.cancelEditBlame = function() {
+        editingBlameId = null;
+        renderBlameListModal(blameModalMatricule);
+      };
+
+      window.saveEditBlame = async function(docId) {
+        const dateInput = document.getElementById('editDate_' + docId);
+        const expInput = document.getElementById('editExp_' + docId);
+        if (!dateInput || !expInput) return;
+        const newCreated = dateInput.value ? new Date(dateInput.value + 'T00:00:00').toISOString() : null;
+        const newExpires = expInput.value ? new Date(expInput.value + 'T23:59:59').toISOString() : null;
+        try {
+          const existing = allBlames.find(b => b._id === docId);
+          if (!existing) return;
+          const updated = { ...existing };
+          delete updated._id;
+          if (newCreated) updated.created_at = newCreated;
+          if (newExpires) updated.expires_at = newExpires;
+          await ghUpdateBlame(docId, updated);
+          const idx = allBlames.findIndex(b => b._id === docId);
+          if (idx !== -1) {
+            if (newCreated) allBlames[idx].created_at = newCreated;
+            if (newExpires) allBlames[idx].expires_at = newExpires;
+          }
+          editingBlameId = null;
+          renderBlameListModal(blameModalMatricule);
+          renderTable();
+          showAlert('✓ Blâme modifié', 'success');
+        } catch (err) {
+          showAlert('Erreur modification: ' + err.message, 'error');
+        }
+      };
 
       window.addManualBlame = async function() {
         const reason = document.getElementById('blameReason').value.trim();

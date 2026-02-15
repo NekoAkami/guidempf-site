@@ -383,54 +383,60 @@
         .blame-2 { background: rgba(255,100,0,0.2); color: #ff6600; border: 1px solid rgba(255,100,0,0.4); }
         .blame-3 { background: rgba(255,40,40,0.25); color: #ff2222; border: 1px solid rgba(255,40,40,0.5); animation: pulse-pause 1.5s ease-in-out infinite; }
 
-        .blame-add-btn {
-            padding: 0.15rem 0.4rem;
-            font-size: 0.65rem;
+        .blame-manage-btn {
+            padding: 0.12rem 0.35rem;
+            font-size: 0.6rem;
             font-family: 'Share Tech Mono', monospace;
             cursor: pointer;
-            border: 1px solid rgba(255, 140, 0, 0.3);
-            background: rgba(255, 140, 0, 0.08);
-            color: #ff8800;
+            border: 1px solid rgba(0, 170, 255, 0.2);
+            background: rgba(0, 170, 255, 0.05);
+            color: rgba(0, 170, 255, 0.6);
             border-radius: 2px;
             transition: all 0.15s;
             margin-left: 4px;
+            letter-spacing: 0.5px;
         }
-        .blame-add-btn:hover { background: rgba(255, 140, 0, 0.2); }
-        .blame-del-btn {
-            font-size: 0.55rem;
-            cursor: pointer;
-            color: #ff4444;
-            margin-left: 2px;
-            opacity: 0.6;
-            transition: opacity 0.15s;
+        .blame-manage-btn:hover {
+            background: rgba(0, 170, 255, 0.12);
+            color: var(--accent-cyan);
+            border-color: rgba(0, 170, 255, 0.4);
         }
-        .blame-del-btn:hover { opacity: 1; }
 
-        /* Admin weekly banner */
+        /* Admin weekly banner — discret */
         .weekly-check-banner {
-            background: rgba(255, 140, 0, 0.08);
-            border: 1px solid rgba(255, 140, 0, 0.3);
-            border-radius: 4px;
-            padding: 0.8rem 1.2rem;
-            margin-bottom: 1rem;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255, 140, 0, 0.12);
+            padding: 0.4rem 0.6rem;
+            margin-bottom: 0.6rem;
             font-family: 'Share Tech Mono', monospace;
-            font-size: 0.78rem;
-            color: #ffaa00;
+            font-size: 0.7rem;
+            color: rgba(255, 170, 0, 0.5);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 0.8rem;
-            flex-wrap: wrap;
+            gap: 0.6rem;
         }
-        .weekly-check-banner .btn-action {
-            padding: 0.4rem 1rem;
-            font-size: 0.75rem;
-            border-color: rgba(255, 140, 0, 0.5);
-            background: rgba(255, 140, 0, 0.15);
+        .weekly-check-banner .btn-weekly {
+            padding: 0.25rem 0.7rem;
+            font-size: 0.65rem;
+            font-family: 'Share Tech Mono', monospace;
+            border: 1px solid rgba(255, 140, 0, 0.2);
+            background: transparent;
+            color: rgba(255, 170, 0, 0.5);
+            cursor: pointer;
+            border-radius: 2px;
+            transition: all 0.15s;
+            letter-spacing: 0.5px;
+        }
+        .weekly-check-banner .btn-weekly:hover {
+            background: rgba(255, 140, 0, 0.1);
             color: #ffaa00;
+            border-color: rgba(255, 140, 0, 0.4);
         }
-        .weekly-check-banner .btn-action:hover {
-            background: rgba(255, 140, 0, 0.3);
+        .weekly-check-banner .btn-weekly:disabled {
+            opacity: 0.4;
+            cursor: default;
         }
 
         /* Blame modal */
@@ -549,6 +555,75 @@
             color: #ffaa00;
             border: 1px solid rgba(255,170,0,0.3);
         }
+        .blame-list-item .blame-actions {
+            display: flex;
+            gap: 0.3rem;
+            flex-shrink: 0;
+            margin-left: 0.4rem;
+        }
+        .blame-action-btn {
+            padding: 0.15rem 0.4rem;
+            font-size: 0.6rem;
+            font-family: 'Share Tech Mono', monospace;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: all 0.15s;
+            letter-spacing: 0.3px;
+        }
+        .blame-action-btn.edit {
+            border: 1px solid rgba(0, 170, 255, 0.25);
+            background: rgba(0, 170, 255, 0.05);
+            color: rgba(0, 170, 255, 0.7);
+        }
+        .blame-action-btn.edit:hover {
+            background: rgba(0, 170, 255, 0.15);
+            color: var(--accent-cyan);
+        }
+        .blame-action-btn.delete {
+            border: 1px solid rgba(255, 60, 60, 0.2);
+            background: rgba(255, 60, 60, 0.05);
+            color: rgba(255, 60, 60, 0.6);
+        }
+        .blame-action-btn.delete:hover {
+            background: rgba(255, 60, 60, 0.15);
+            color: #ff4444;
+        }
+        /* Blame edit inline form */
+        .blame-edit-form {
+            margin-top: 0.4rem;
+            padding: 0.5rem;
+            background: rgba(0, 170, 255, 0.03);
+            border: 1px solid rgba(0, 170, 255, 0.1);
+            border-radius: 3px;
+        }
+        .blame-edit-form label {
+            display: block;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            margin-bottom: 0.15rem;
+            margin-top: 0.4rem;
+        }
+        .blame-edit-form label:first-child { margin-top: 0; }
+        .blame-edit-form input {
+            width: 100%;
+            padding: 0.3rem 0.5rem;
+            background: rgba(0, 170, 255, 0.04);
+            border: 1px solid rgba(0, 170, 255, 0.15);
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.75rem;
+            outline: none;
+            border-radius: 2px;
+        }
+        .blame-edit-form input:focus { border-color: var(--accent-cyan); }
+        .blame-edit-actions {
+            display: flex;
+            gap: 0.3rem;
+            margin-top: 0.4rem;
+            justify-content: flex-end;
+        }
     </style>
 </head>
 <body>
@@ -586,11 +661,8 @@
 
                 <!-- Weekly blame check banner (admin/HG only, hidden by default) -->
                 <div id="weeklyCheckBanner" class="weekly-check-banner" style="display:none;">
-                    <div>
-                        ⚠ <strong>VÉRIFICATION HEBDOMADAIRE</strong> — Appliquer les blâmes viewtime pour les unités en défaut (<5h)
-                        <br><span id="weeklyCheckInfo" style="font-size:0.68rem;color:var(--text-muted);"></span>
-                    </div>
-                    <button class="btn-action warning" id="btnWeeklyCheck" onclick="runWeeklyBlameCheck()">⚡ APPLIQUER BLÂMES</button>
+                    <span><span id="weeklyCheckInfo" style="opacity:0.7;"></span></span>
+                    <button class="btn-weekly" id="btnWeeklyCheck" onclick="confirmWeeklyCheck()">Appliquer blâmes</button>
                 </div>
 
                 <!-- Stats -->
@@ -735,7 +807,7 @@
       import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
       import {
         loadUnits, loadPlaytimeHistory, loadAbsences, readJsonFile,
-        loadBlames, addBlame, deleteBlame, loadBlameConfig, saveBlameConfig
+        loadBlames, addBlame, deleteBlame, updateBlame, loadBlameConfig, saveBlameConfig
       } from './assets/js/github-data.js';
 
       // ========== STATE ==========
@@ -879,10 +951,9 @@
           const reason = (b.raison || 'Aucune raison').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
           const dateStr = b.created_at ? new Date(b.created_at).toLocaleDateString('fr-FR') : '?';
           const expStr = b.expires_at ? new Date(b.expires_at).toLocaleDateString('fr-FR') : '?';
-          const delBtn = isHG ? `<span class="blame-del-btn" onclick="event.stopPropagation();removeBlame('${b._id}')" title="Supprimer">✗</span>` : '';
           dots += `<span class="blame-dot ${typeClass}" onclick="event.stopPropagation();openBlameModal('${matricule}')">
             <span class="blame-tooltip">${b.type === 'viewtime' ? '⏱ VIEWTIME' : '📝 MANUEL'} — ${reason}<br>📅 ${dateStr} → expire ${expStr}</span>
-          </span>${delBtn}`;
+          </span>`;
         });
 
         // Badge count + color
@@ -897,9 +968,9 @@
           badge = `<span class="blame-count-badge blame-3">${count} ⛔ EXCLU</span>`;
         }
 
-        const addBtn = isHG ? `<button class="blame-add-btn" onclick="event.stopPropagation();openBlameModal('${matricule}')" title="Gérer blâmes">+</button>` : '';
+        const manageBtn = isHG ? `<button class="blame-manage-btn" onclick="event.stopPropagation();openBlameModal('${matricule}')" title="Gérer blâmes">⚙</button>` : '';
 
-        return `<div class="blame-dots">${dots}${badge}${addBtn}</div>`;
+        return `<div class="blame-dots">${dots}${badge}${manageBtn}</div>`;
       }
 
       // ========== BLAME MODAL ==========
@@ -916,6 +987,8 @@
         renderBlameList(matricule);
         document.getElementById('blameModal').classList.add('visible');
       };
+
+      let editingBlameId = null;
 
       function renderBlameList(matricule) {
         const now = new Date();
@@ -934,13 +1007,28 @@
             : '<span class="blame-type-tag blame-type-manual">MANUEL</span>';
           const dateStr = b.created_at ? new Date(b.created_at).toLocaleDateString('fr-FR') : '?';
           const expStr = b.expires_at ? new Date(b.expires_at).toLocaleDateString('fr-FR') : '?';
-          const delBtn = isHG ? `<button class="blame-add-btn" style="border-color:rgba(255,60,60,0.3);color:#ff4444;background:rgba(255,60,60,0.08);" onclick="removeBlame('${b._id}')">✗ Suppr.</button>` : '';
-          return `<div class="blame-list-item" style="${isExpired ? 'opacity:0.4;' : ''}">
-            <div class="blame-info">
+          const actions = isHG ? `<div class="blame-actions">
+              <button class="blame-action-btn edit" onclick="toggleEditBlame('${b._id}')">Modifier</button>
+              <button class="blame-action-btn delete" onclick="removeBlame('${b._id}')">Supprimer</button>
+            </div>` : '';
+          const isEditing = editingBlameId === b._id;
+          const editForm = isEditing ? `<div class="blame-edit-form" id="editForm_${b._id}">
+              <label>DATE CRÉATION</label>
+              <input type="date" id="editDate_${b._id}" value="${b.created_at ? b.created_at.substring(0, 10) : ''}">
+              <label>DATE EXPIRATION</label>
+              <input type="date" id="editExp_${b._id}" value="${b.expires_at ? b.expires_at.substring(0, 10) : ''}">
+              <div class="blame-edit-actions">
+                <button class="blame-action-btn edit" onclick="cancelEditBlame()">Annuler</button>
+                <button class="blame-action-btn edit" style="background:rgba(0,170,255,0.15);font-weight:700;" onclick="saveEditBlame('${b._id}')">Sauvegarder</button>
+              </div>
+            </div>` : '';
+          return `<div class="blame-list-item" style="${isExpired ? 'opacity:0.4;' : ''}flex-wrap:wrap;">
+            <div class="blame-info" style="flex:1;min-width:0;">
               ${typeTag}<span class="blame-reason">${b.raison || '-'}</span>
               <div class="blame-meta">${dateStr} → expire ${expStr}${isExpired ? ' (EXPIRÉ)' : ''} ${b.created_by ? '— par ' + b.created_by : ''}</div>
             </div>
-            ${delBtn}
+            ${actions}
+            ${editForm}
           </div>`;
         }).join('');
       }
@@ -951,6 +1039,47 @@
       document.getElementById('blameModal').addEventListener('click', (e) => {
         if (e.target === document.getElementById('blameModal')) closeBlameModal();
       });
+
+      window.toggleEditBlame = function(docId) {
+        editingBlameId = editingBlameId === docId ? null : docId;
+        renderBlameList(blameModalMatricule);
+      };
+
+      window.cancelEditBlame = function() {
+        editingBlameId = null;
+        renderBlameList(blameModalMatricule);
+      };
+
+      window.saveEditBlame = async function(docId) {
+        const dateInput = document.getElementById('editDate_' + docId);
+        const expInput = document.getElementById('editExp_' + docId);
+        if (!dateInput || !expInput) return;
+
+        const newCreated = dateInput.value ? new Date(dateInput.value + 'T00:00:00').toISOString() : null;
+        const newExpires = expInput.value ? new Date(expInput.value + 'T23:59:59').toISOString() : null;
+
+        try {
+          const existing = allBlames.find(b => b._id === docId);
+          if (!existing) return;
+          const updated = { ...existing };
+          delete updated._id;
+          if (newCreated) updated.created_at = newCreated;
+          if (newExpires) updated.expires_at = newExpires;
+          await updateBlame(docId, updated);
+          // Update local
+          const idx = allBlames.findIndex(b => b._id === docId);
+          if (idx !== -1) {
+            if (newCreated) allBlames[idx].created_at = newCreated;
+            if (newExpires) allBlames[idx].expires_at = newExpires;
+          }
+          editingBlameId = null;
+          renderBlameList(blameModalMatricule);
+          renderTable();
+          updateBlameStats();
+        } catch (err) {
+          alert('Erreur modification: ' + err.message);
+        }
+      };
 
       window.addManualBlame = async function() {
         const reason = document.getElementById('blameReason').value.trim();
@@ -1002,55 +1131,60 @@
       }
 
       // ========== WEEKLY AUTO-CHECK ==========
-      window.runWeeklyBlameCheck = async function() {
+      window.confirmWeeklyCheck = function() {
+        const defautCount = viewData.filter(v => getComplianceStatus(v) === 'fail').length;
+        if (!confirm(`Appliquer un blâme viewtime aux ${defautCount} unité(s) en défaut (<${MIN_HOURS}h) ?`)) return;
+        runWeeklyBlameCheck();
+      };
+
+      async function runWeeklyBlameCheck() {
         if (!isHG) return;
         const btn = document.getElementById('btnWeeklyCheck');
         btn.disabled = true;
-        btn.textContent = '⟳ EN COURS...';
+        btn.textContent = '...';
 
-        try {
-          const now = new Date();
-          const expiresAt = new Date(now);
-          expiresAt.setDate(expiresAt.getDate() + BLAME_EXPIRY_DAYS);
+        const now = new Date();
+        const expiresAt = new Date(now);
+        expiresAt.setDate(expiresAt.getDate() + BLAME_EXPIRY_DAYS);
 
-          let added = 0;
-          for (const v of viewData) {
-            // Skip exempt units
-            if (getComplianceStatus(v) !== 'fail') continue;
-
-            const blame = {
-              matricule: v.matricule,
-              raison: `Viewtime insuffisant : ${formatHoursText(v.hours)} (minimum ${MIN_HOURS}h)`,
-              type: 'viewtime',
-              created_at: now.toISOString(),
-              expires_at: expiresAt.toISOString(),
-              created_by: currentUserMatricule || 'AUTO',
-              week_label: document.getElementById('weekLabel').textContent
-            };
-
+        let added = 0;
+        let errors = 0;
+        for (const v of viewData) {
+          if (getComplianceStatus(v) !== 'fail') continue;
+          const blame = {
+            matricule: v.matricule,
+            raison: `Viewtime insuffisant : ${formatHoursText(v.hours)} (minimum ${MIN_HOURS}h)`,
+            type: 'viewtime',
+            created_at: now.toISOString(),
+            expires_at: expiresAt.toISOString(),
+            created_by: currentUserMatricule || 'AUTO',
+            week_label: document.getElementById('weekLabel').textContent
+          };
+          try {
             const saved = await addBlame(blame);
             allBlames.push(saved);
             added++;
+          } catch (_) {
+            errors++;
           }
+        }
 
-          // Save check timestamp
+        // Save check timestamp (separate try/catch)
+        try {
           const weekMondayStr = getWeekMonday(now).toISOString().substring(0, 10);
           await saveBlameConfig({ last_weekly_check: weekMondayStr });
+        } catch (_) {}
 
-          btn.textContent = `✓ ${added} BLÂMES APPLIQUÉS`;
-          btn.style.borderColor = 'rgba(0,200,80,0.5)';
-          btn.style.color = '#00cc55';
-          renderTable();
-          updateBlameStats();
+        btn.textContent = `✓ ${added} appliqué(s)`;
+        btn.style.color = '#00cc55';
+        btn.style.borderColor = 'rgba(0,200,80,0.3)';
+        renderTable();
+        updateBlameStats();
 
-          setTimeout(() => {
-            document.getElementById('weeklyCheckBanner').style.display = 'none';
-          }, 3000);
-        } catch (err) {
-          btn.textContent = '⚠ ERREUR: ' + err.message;
-          btn.disabled = false;
-        }
-      };
+        setTimeout(() => {
+          document.getElementById('weeklyCheckBanner').style.display = 'none';
+        }, 2500);
+      }
 
       // ========== CHECK AUTH FOR HG ==========
       async function checkIsHG(user) {
@@ -1153,7 +1287,7 @@
                 const banner = document.getElementById('weeklyCheckBanner');
                 banner.style.display = 'flex';
                 document.getElementById('weeklyCheckInfo').textContent =
-                  `${defautCount} unité(s) en défaut. Dernière vérification : ${lastCheck || 'jamais'}`;
+                  `${defautCount} en défaut · Dernière vérif. : ${lastCheck || 'jamais'}`;
               }
             } catch (_) {}
           }
