@@ -711,8 +711,11 @@ class GlobalNavigation {
                 e.preventDefault();
                 const startY = e.clientY;
                 const startTop = parseInt(panel.style.top) || panel.getBoundingClientRect().top;
+                const panelH = panel.offsetHeight || 200;
                 const onMove = (ev) => {
-                    const newTop = Math.max(50, startTop + (ev.clientY - startY));
+                    const minTop = 10;
+                    const maxTop = window.innerHeight - Math.min(60, panelH);
+                    const newTop = Math.max(minTop, Math.min(maxTop, startTop + (ev.clientY - startY)));
                     panel.style.top = newTop + 'px';
                     document.body.style.cursor = 'grab';
                     document.body.style.userSelect = 'none';
