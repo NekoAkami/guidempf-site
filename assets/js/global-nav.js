@@ -814,7 +814,8 @@ class GlobalNavigation {
                     dropdown: [
                         { label: 'Declarations MPF', url: 'declarations.html' },
                         { label: 'Test de Loyauté', url: 'test-loyaute.html' },
-                        { label: 'Conscription', url: 'procedure-conscription.html' },
+                        { label: 'Conscription', url: 'conscription.html' },
+                        { label: 'Proc. Conscription', url: 'procedure-conscription.html' },
                         { label: 'Incarcération', url: 'procedure-incarceration.html' },
                         { label: 'Code 7 & Escouade', url: 'procedure-code7.html' },
                         { label: 'Procédures Générales', url: 'procedures-generales.html' }
@@ -829,6 +830,7 @@ class GlobalNavigation {
                 },
                 { label: 'SCANNER', url: 'scanner.html' },
                 { label: 'CARTE', url: 'carte.html' },
+                { label: 'CONTACT', url: 'contact.html' },
                 { label: 'À PROPOS', url: 'about.html' }
             ],
             row2: [
@@ -877,7 +879,16 @@ class GlobalNavigation {
                 { label: 'RADIO & MDP', url: 'radio.html' },
                 { label: 'ABSENCES', url: 'declaration-absence.html' },
                 { label: 'LIENS', url: 'liens.html' },
-                { label: 'FORMATION & RECRUTEMENT', url: 'formations.html' },
+                {
+                    label: 'FORMATION & RECRUTEMENT',
+                    url: 'formations.html',
+                    dropdown: [
+                        { label: 'Formations', url: 'formations.html' },
+                        { label: 'Tableau Formations', url: 'tableau-formations.html' },
+                        { label: 'Information Milice', url: 'info-milice.html' },
+                        { label: 'Recrutement', url: 'recrutement.html' }
+                    ]
+                },
             ]
         };
     }
