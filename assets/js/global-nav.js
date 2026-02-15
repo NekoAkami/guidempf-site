@@ -128,10 +128,22 @@ class GlobalNavigation {
 
     _ensureRequiredPages(data) {
         let injected = false;
+        const _formDropdown = [
+            { label: 'Formations', url: 'formations.html' },
+            { label: 'Tableau Formations', url: 'tableau-formations.html' },
+            { label: 'Information Milice', url: 'info-milice.html' },
+            { label: 'Recrutement', url: 'recrutement.html' }
+        ];
         // Ensure FORMATION & RECRUTEMENT exists as standalone in row2
         const row2Urls = new Set((data.row2 || []).map(item => item.url));
         if (!row2Urls.has('formations.html') && !row2Urls.has('formation-recrutement.html')) {
-            data.row2.push({ label: 'FORMATION & RECRUTEMENT', url: 'formations.html' });
+            data.row2.push({ label: 'FORMATION & RECRUTEMENT', url: 'formations.html', dropdown: _formDropdown });
+            injected = true;
+        }
+        // Ensure dropdown items exist on Formation & Recrutement entry
+        const formItem = (data.row2 || []).find(item => item.url === 'formations.html' || item.url === 'formation-recrutement.html');
+        if (formItem && (!formItem.dropdown || formItem.dropdown.length === 0)) {
+            formItem.dropdown = _formDropdown;
             injected = true;
         }
         // Migrate old formation-recrutement.html to formations.html
@@ -494,11 +506,12 @@ class GlobalNavigation {
                 </div>
             </div>`;
 
-        // ---- Utilisateurs en ligne (left panel, below notepad, starts collapsed) ----
+        // ---- Utilisateurs en ligne (left panel, below notepad, starts collapsed, hidden until auth check) ----
         const onlineHTML = `
-            <div class="gp-float gp-left gp-collapsed gp-float-online" id="gpOnlinePanel">
+            <div class="gp-float gp-left gp-collapsed gp-float-online" id="gpOnlinePanel" style="display:none">
                 <div class="gp-resize-handle" id="gpOnlineResize"></div>
                 <div class="gp-float-inner">
+                    <div class="gp-vdrag-handle" id="gpOnlineVDrag" title="Glisser pour déplacer"></div>
                     <div class="gp-float-header" id="gpOnlineHeader">
                         <h3>👥 EN LIGNE <span class="gp-online-count" id="gpOnlineCount">0</span></h3>
                         <span class="gp-float-toggle" id="gpOnlineToggle">◄</span>
@@ -508,12 +521,13 @@ class GlobalNavigation {
                             <div class="gp-no-events">Chargement…</div>
                         </div>
                     </div>
+                    <div class="gp-vresize-handle" id="gpOnlineVResize" title="Redimensionner"></div>
                 </div>
             </div>`;
 
         // ---- Collapsed tabs (vertical text labels) ----
         const tabNotepadHTML = `<div class="gp-collapsed-tab gp-tab-left" id="gpNotepadTab"><span class="gp-tab-icon">📝</span><span class="gp-tab-label">BLOC-NOTES</span></div>`;
-        const tabOnlineHTML = `<div class="gp-collapsed-tab gp-tab-left gp-tab-online" id="gpOnlineTab"><span class="gp-tab-icon">👥</span><span class="gp-tab-label">EN LIGNE</span></div>`;
+        const tabOnlineHTML = `<div class="gp-collapsed-tab gp-tab-left gp-tab-online" id="gpOnlineTab" style="display:none"><span class="gp-tab-icon">👥</span><span class="gp-tab-label">EN LIGNE</span></div>`;
         const tabTodayHTML = `<div class="gp-collapsed-tab gp-tab-right" id="gpTodayTab"><span class="gp-tab-icon">📋</span><span class="gp-tab-label">PLANNING</span></div>`;
 
         document.body.insertAdjacentHTML('beforeend', notepadHTML + onlineHTML + todayHTML + tabNotepadHTML + tabOnlineHTML + tabTodayHTML);
@@ -531,14 +545,17 @@ class GlobalNavigation {
                 const el = document.getElementById(id);
                 if (el) { el.style.top = topOffset + 'px'; el.style.maxHeight = `calc(100vh - ${topOffset + 20}px)`; }
             });
-            // Online panel: position below notepad
+            // Online panel: position below notepad (unless user has custom position)
             const notepadEl = document.getElementById('gpNotepadPanel');
             if (notepadEl) {
                 const notepadBottom = notepadEl.getBoundingClientRect().bottom + 8;
                 const onlineEl = document.getElementById('gpOnlinePanel');
-                if (onlineEl) { onlineEl.style.top = notepadBottom + 'px'; onlineEl.style.maxHeight = `calc(100vh - ${notepadBottom + 20}px)`; }
+                if (onlineEl && !onlineEl.dataset.customTop) {
+                    onlineEl.style.top = notepadBottom + 'px';
+                    if (!onlineEl.dataset.customHeight) onlineEl.style.maxHeight = `calc(100vh - ${notepadBottom + 20}px)`;
+                }
                 const onlineTab = document.getElementById('gpOnlineTab');
-                if (onlineTab) onlineTab.style.top = notepadBottom + 'px';
+                if (onlineTab && !(onlineEl && onlineEl.dataset.customTop)) onlineTab.style.top = notepadBottom + 'px';
             }
             ['gpNotepadTab','gpTodayTab'].forEach(id => {
                 const el = document.getElementById(id);
@@ -580,9 +597,10 @@ class GlobalNavigation {
             const npCollapsed = notepadPanel.classList.contains('gp-collapsed');
             const tdCollapsed = todayPanel.classList.contains('gp-collapsed');
             const onCollapsed = onlinePanel.classList.contains('gp-collapsed');
+            const onlineHidden = onlinePanel.style.display === 'none';
             notepadTab.classList.toggle('gp-tab-hidden', !npCollapsed);
             todayTab.classList.toggle('gp-tab-hidden', !tdCollapsed);
-            onlineTab.classList.toggle('gp-tab-hidden', !onCollapsed);
+            onlineTab.classList.toggle('gp-tab-hidden', !onCollapsed || onlineHidden);
         };
 
         // ---- Toggle logic ----
@@ -804,9 +822,11 @@ class GlobalNavigation {
 
     // ===== SYSTÈME DE PRÉSENCE EN LIGNE =====
     async _initPresenceSystem() {
+        const onlinePanel = document.getElementById('gpOnlinePanel');
+        const onlineTab = document.getElementById('gpOnlineTab');
         const listEl = document.getElementById('gpOnlineList');
         const countEl = document.getElementById('gpOnlineCount');
-        if (!listEl) return;
+        if (!listEl || !onlinePanel) return;
 
         try {
             const [appMod, fsMod, authMod] = await Promise.all([
@@ -816,7 +836,7 @@ class GlobalNavigation {
             ]);
 
             const { getApp } = appMod;
-            const { getFirestore, collection, getDocs } = fsMod;
+            const { getFirestore, collection, getDocs, getDoc, doc } = fsMod;
             const { getAuth, onAuthStateChanged } = authMod;
 
             let app;
@@ -833,8 +853,115 @@ class GlobalNavigation {
             });
 
             if (!user) {
-                listEl.innerHTML = '<div class="gp-no-events">Non connecté</div>';
+                if (onlinePanel) onlinePanel.remove();
+                if (onlineTab) onlineTab.remove();
                 return;
+            }
+
+            // === Vérifier si l'utilisateur est admin ou HautGradé ===
+            let isAuthorized = false;
+            try {
+                const userSnap = await getDoc(doc(db, 'users', user.uid));
+                const userData = userSnap.exists() ? userSnap.data() : {};
+                const isAdmin = userData.is_admin === true;
+                let isHG = false;
+                const userMatricule = userData.matricule || '';
+                if (window._mpfLoadUnitsLive) {
+                    try {
+                        const units = await window._mpfLoadUnitsLive();
+                        const unit = units.find(u => u.matricule === userMatricule);
+                        if (unit && (unit.rang === 'Ofc' || unit.rang === 'Cmd')) isHG = true;
+                    } catch (_) {}
+                }
+                isAuthorized = isAdmin || isHG;
+            } catch (_) {}
+
+            if (!isAuthorized) {
+                // Retirer le panneau pour les utilisateurs non autorisés
+                if (onlinePanel) onlinePanel.remove();
+                if (onlineTab) onlineTab.remove();
+                return;
+            }
+
+            // === Afficher le panneau (utilisateur autorisé) ===
+            onlinePanel.style.display = '';
+            if (onlineTab) {
+                onlineTab.style.display = '';
+                if (onlinePanel.classList.contains('gp-collapsed')) {
+                    onlineTab.classList.remove('gp-tab-hidden');
+                } else {
+                    onlineTab.classList.add('gp-tab-hidden');
+                }
+            }
+
+            // === Restaurer position/taille personnalisées ===
+            const savedTop = localStorage.getItem('mpf_online_top');
+            if (savedTop) {
+                onlinePanel.style.top = savedTop;
+                onlinePanel.dataset.customTop = 'true';
+            }
+            const savedHeight = localStorage.getItem('mpf_online_height');
+            if (savedHeight) {
+                const h = parseInt(savedHeight);
+                if (h >= 100) {
+                    onlinePanel.style.maxHeight = h + 'px';
+                    onlinePanel.style.height = h + 'px';
+                    onlinePanel.dataset.customHeight = 'true';
+                }
+            }
+
+            // === Drag vertical (repositionner le panneau) ===
+            const vDragHandle = document.getElementById('gpOnlineVDrag');
+            if (vDragHandle) {
+                vDragHandle.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    const startY = e.clientY;
+                    const startTop = parseInt(onlinePanel.style.top) || onlinePanel.getBoundingClientRect().top;
+                    const onMove = (ev) => {
+                        const newTop = Math.max(50, startTop + (ev.clientY - startY));
+                        onlinePanel.style.top = newTop + 'px';
+                        document.body.style.cursor = 'grab';
+                        document.body.style.userSelect = 'none';
+                    };
+                    const onUp = () => {
+                        onlinePanel.dataset.customTop = 'true';
+                        localStorage.setItem('mpf_online_top', onlinePanel.style.top);
+                        document.body.style.cursor = '';
+                        document.body.style.userSelect = '';
+                        document.removeEventListener('mousemove', onMove);
+                        document.removeEventListener('mouseup', onUp);
+                    };
+                    document.addEventListener('mousemove', onMove);
+                    document.addEventListener('mouseup', onUp);
+                });
+            }
+
+            // === Resize vertical (changer la hauteur du panneau) ===
+            const vResizeHandle = document.getElementById('gpOnlineVResize');
+            if (vResizeHandle) {
+                vResizeHandle.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const startY = e.clientY;
+                    const startH = onlinePanel.offsetHeight;
+                    const onMove = (ev) => {
+                        const newH = Math.max(100, Math.min(window.innerHeight - 100, startH + (ev.clientY - startY)));
+                        onlinePanel.style.maxHeight = newH + 'px';
+                        onlinePanel.style.height = newH + 'px';
+                        document.body.style.cursor = 'ns-resize';
+                        document.body.style.userSelect = 'none';
+                    };
+                    const onUp = () => {
+                        onlinePanel.dataset.customHeight = 'true';
+                        localStorage.setItem('mpf_online_height', onlinePanel.offsetHeight + '');
+                        document.body.style.cursor = '';
+                        document.body.style.userSelect = '';
+                        document.removeEventListener('mousemove', onMove);
+                        document.removeEventListener('mouseup', onUp);
+                    };
+                    document.addEventListener('mousemove', onMove);
+                    document.addEventListener('mouseup', onUp);
+                });
             }
 
             // === Lire et afficher les utilisateurs en ligne ===
@@ -853,10 +980,26 @@ class GlobalNavigation {
                             onlineUsers.push({
                                 matricule: data.matricule || '???',
                                 pseudo: data.pseudo || '',
-                                isSelf: d.id === user.uid
+                                isSelf: d.id === user.uid,
+                                uid: d.id
                             });
                         }
                     });
+
+                    // Enrichir les entrées avec matricule '???' depuis la collection users
+                    const unknowns = onlineUsers.filter(u => u.matricule === '???');
+                    if (unknowns.length > 0) {
+                        await Promise.all(unknowns.map(async (u) => {
+                            try {
+                                const uSnap = await getDoc(doc(db, 'users', u.uid));
+                                if (uSnap.exists()) {
+                                    const uData = uSnap.data();
+                                    u.matricule = uData.matricule || '???';
+                                    u.pseudo = uData.nom_steam || uData.pseudo || u.pseudo || '';
+                                }
+                            } catch (_) {}
+                        }));
+                    }
 
                     // Trier : soi-même en premier, puis par matricule
                     onlineUsers.sort((a, b) => {
@@ -874,10 +1017,12 @@ class GlobalNavigation {
 
                     listEl.innerHTML = onlineUsers.map(u => {
                         const selfClass = u.isSelf ? ' gp-online-self' : '';
+                        const displayMat = u.matricule !== '???' ? u.matricule : '';
+                        const displayPseudo = u.pseudo || (u.matricule === '???' ? 'Inconnu' : '');
                         return `<div class="gp-online-user${selfClass}">
                             <span class="gp-online-dot"></span>
-                            <span class="gp-online-mat">${u.matricule}</span>
-                            <span class="gp-online-pseudo">${u.pseudo}</span>
+                            <span class="gp-online-mat">${displayMat}</span>
+                            <span class="gp-online-pseudo">${displayPseudo}</span>
                         </div>`;
                     }).join('');
 
@@ -893,7 +1038,8 @@ class GlobalNavigation {
 
         } catch (err) {
             console.warn('[Presence] Init error:', err);
-            listEl.innerHTML = '<div class="gp-no-events">Erreur</div>';
+            if (onlinePanel) onlinePanel.remove();
+            if (onlineTab) onlineTab.remove();
         }
     }
 

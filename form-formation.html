@@ -119,9 +119,10 @@
                             <div class="combine-header"><h2>🎓 DÉCLARATION DE FORMATION</h2><span class="header-code">FORM-05</span></div>
                             <div class="combine-body">
                                 <div class="row-2">
-                                    <div class="form-group" id="grpType"><label>TYPE DE FORMATION <span class="req">*</span></label><select id="fType"><option value="">— Sélectionner —</option><option value="Formation initiale">Formation initiale</option><option value="Formation armement">Formation armement</option><option value="Formation avancée">Formation avancée</option><option value="Formation spécialisée">Formation spécialisée</option><option value="Recyclage">Recyclage</option><option value="Autre">Autre</option></select><div class="error-msg" id="errType"></div></div>
+                                    <div class="form-group" id="grpType"><label>TYPE DE FORMATION <span class="req">*</span></label><select id="fType" onchange="onFormTypeChange()"><option value="">— Sélectionner —</option><optgroup label="── Codes & Théorique ──"><option value="Théorique">Théorique</option><option value="10-50">10-50</option><option value="S08">S08</option><option value="10-85S">10-85S</option></optgroup><optgroup label="── Compétences ──"><option value="Armements">Armements</option><option value="Fouilles">Fouilles</option><option value="Prise d'otage">Prise d'otage</option><option value="10-34">10-34</option><option value="Incendie">Incendie</option><option value="1er Secours">1er Secours</option><option value="Dispatch">Dispatch</option><option value="S34">S34</option><option value="IEDI/C4">IEDI/C4</option><option value="Remplacement mémoire">Remplacement mémoire</option></optgroup><optgroup label="── Autre ──"><option value="Recyclage">Recyclage</option><option value="Autre">Autre</option></optgroup></select><div class="error-msg" id="errType"></div></div>
                                     <div class="form-group" id="grpDate"><label>DATE <span class="req">*</span></label><input type="date" id="fDate"><div class="error-msg" id="errDate"></div></div>
                                 </div>
+                                <div class="form-group" id="grpSubOption" style="display:none;"><label>NIVEAU / CATÉGORIE <span class="req">*</span></label><select id="fSubOption"><option value="">— Sélectionner —</option></select><div class="hint" id="subOptionHint"></div><div class="error-msg" id="errSubOption"></div></div>
                                 <div class="form-group" id="grpParticipants"><label>PARTICIPANTS (MATRICULES) <span class="req">*</span></label><div class="units-selector" id="unitsSelectorWrapper"><div class="units-input-row"><input type="text" id="fParticipants" placeholder="Ex: 123, 456, 789" onkeydown="onUnitInputKey(event)"><button type="button" class="units-toggle-btn" id="unitsToggleBtn" onclick="toggleUnitsDropdown()" title="Liste des unités">▼</button></div><div class="units-dropdown" id="unitsDropdown"><input type="text" class="units-dropdown-search" id="unitsDropdownSearch" placeholder="Rechercher une unité..." oninput="filterUnitsDropdown()"><div id="unitsDropdownList"></div></div><div class="units-tags" id="unitsTags"></div></div><div class="hint">Saisissez les matricules séparés par des virgules ou utilisez ▼ pour sélectionner</div><div class="error-msg" id="errParticipants"></div></div>
                                 <div class="form-group" id="grpContenu"><label>CONTENU DE LA FORMATION <span class="req">*</span></label><textarea id="fContenu" rows="4" placeholder="Décrivez le contenu abordé, les exercices réalisés..."></textarea><div class="error-msg" id="errContenu"></div></div>
                                 <div class="row-2">
@@ -191,13 +192,36 @@
         const contenu=document.getElementById('fContenu').value.trim();if(!contenu){document.getElementById('grpContenu').classList.add('error');document.getElementById('errContenu').textContent='Contenu requis';ok=false;}
         const duree=parseInt(document.getElementById('fDuree').value);if(!duree||duree<1){document.getElementById('grpDuree').classList.add('error');document.getElementById('errDuree').textContent='Durée invalide';ok=false;}
         const resultat=document.getElementById('fResultat').value;if(!resultat){document.getElementById('grpResultat').classList.add('error');document.getElementById('errResultat').textContent='Requis';ok=false;}
+        const subOptGrp=document.getElementById('grpSubOption');if(subOptGrp.style.display!=='none'){const sv=document.getElementById('fSubOption').value;if(!sv){subOptGrp.classList.add('error');document.getElementById('errSubOption').textContent='Sélection requise';ok=false;}else{subOptGrp.classList.remove('error');}}
         if(!ok)return;
         const btn=document.getElementById('btnSubmit');btn.disabled=true;btn.textContent='⏳ ENVOI...';
         const partList=participants.split(',').map(p=>p.trim()).filter(Boolean);
-        const formation={type,date_formation:date,participants:partList,participants_str:partList.join(', '),contenu,duree,resultat,remarques:document.getElementById('fRemarques').value.trim(),formateur_matricule:currentUser.matricule,formateur_nom:currentUser.nom_steam||'',created_at:date};
-        try{const saved=await ghAddFormation(formation);allFormations.push(saved);await ghAddReport({matricule:currentUser.matricule,nom_steam:currentUser.nom_steam||'',type:'Formation',secteur:'',unités:partList.join(', '),resume:`${type} — ${partList.length} participant(s) — ${duree} min — ${resultat}`,notes:formation.remarques,created_at:date,type_rapport:'unité',division:currentUser.division||''});showAlert('✓ Formation enregistrée.','success');resetForm();renderArchives();}catch(e){showAlert('✗ Erreur: '+e.message,'error');}finally{btn.disabled=false;btn.textContent='⟩ SOUMETTRE';}
+        const subOption=document.getElementById('fSubOption').value;
+        const formation={type,sub_option:subOption||'',date_formation:date,participants:partList,participants_str:partList.join(', '),contenu,duree,resultat,remarques:document.getElementById('fRemarques').value.trim(),formateur_matricule:currentUser.matricule,formateur_nom:currentUser.nom_steam||'',created_at:date};
+        try{const saved=await ghAddFormation(formation);allFormations.push(saved);await ghAddReport({matricule:currentUser.matricule,nom_steam:currentUser.nom_steam||'',type:'Formation',secteur:'',unités:partList.join(', '),resume:`${type}${subOption?' ('+subOption+')':''} — ${partList.length} participant(s) — ${duree} min — ${resultat}`,notes:formation.remarques,created_at:date,type_rapport:'formation',division:currentUser.division||''});showAlert('✓ Formation enregistrée.','success');resetForm();renderArchives();}catch(e){showAlert('✗ Erreur: '+e.message,'error');}finally{btn.disabled=false;btn.textContent='⟩ SOUMETTRE';}
       };
-      window.resetForm=function(){['fType','fDate','fParticipants','fContenu','fDuree','fResultat','fRemarques'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});['grpType','grpDate','grpParticipants','grpContenu','grpDuree','grpResultat'].forEach(id=>document.getElementById(id).classList.remove('error'));selectedParticipants.clear();renderUnitsTags();};
+      /* === Sous-options dynamiques selon le type de formation === */
+      const _subOptions={
+        'Théorique':['Niveau RCT','Niveau 05+','Niveau 03+','Niveau 01+'],
+        'Armements':['Catégorie A','Catégorie A-B','Catégorie A-C','Catégorie A-D','Catégorie A-E','Catégorie A-F'],
+        'Prise d\'otage':['Négociation','10-63o','Exempté'],
+        'Remplacement mémoire':['25%','50%','70%','100%']
+      };
+      window.onFormTypeChange=function(){
+        const type=document.getElementById('fType').value;
+        const grp=document.getElementById('grpSubOption');
+        const sel=document.getElementById('fSubOption');
+        const hint=document.getElementById('subOptionHint');
+        if(_subOptions[type]){
+          sel.innerHTML='<option value="">— Sélectionner —</option>'+_subOptions[type].map(o=>`<option value="${o}">${o}</option>`).join('');
+          hint.textContent='Sélectionnez le niveau/catégorie pour '+type;
+          grp.style.display='block';
+        }else{
+          sel.innerHTML='<option value="">— Sélectionner —</option>';
+          grp.style.display='none';
+        }
+      };
+      window.resetForm=function(){['fType','fDate','fParticipants','fContenu','fDuree','fResultat','fRemarques','fSubOption'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});['grpType','grpDate','grpParticipants','grpContenu','grpDuree','grpResultat'].forEach(id=>document.getElementById(id).classList.remove('error'));document.getElementById('grpSubOption').style.display='none';selectedParticipants.clear();renderUnitsTags();};
       function renderArchives(){
         const tb=document.getElementById('archivesBody');const list=allFormations.sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||''));
         document.getElementById('archiveCount').textContent=list.length+' FORMATION'+(list.length>1?'S':'');

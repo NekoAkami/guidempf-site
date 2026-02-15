@@ -406,34 +406,49 @@
         if (!confirm('Synchroniser les formations validées (Réussi) dans le tableau ?\nCela ne décochera rien, uniquement ajout.')) return;
         let synced = 0;
 
+        // Mapping type de formation → colonne du tableau
+        const typeToColumn = {
+          'théorique':              { key: 'theorique', useSubOption: true, fallback: 'Niveau RCT' },
+          '10-50':                  { key: 'c10_50', value: true },
+          's08':                    { key: 's08', value: true },
+          '10-85s':                 { key: 'c10_85s', value: true },
+          'armements':              { key: 'armements', useSubOption: true, fallback: 'Catégorie A' },
+          'fouilles':               { key: 'fouilles', value: true },
+          'prise d\'otage':         { key: 'prise_otage', useSubOption: true, fallback: 'Négociation' },
+          '10-34':                  { key: 'c10_34', value: true },
+          'incendie':               { key: 'incendie', value: true },
+          '1er secours':            { key: 'premier_secours', value: true },
+          'dispatch':               { key: 'dispatch', value: true },
+          's34':                    { key: 's34', value: true },
+          'iedi/c4':                { key: 'iedi_c4', value: true },
+          'remplacement mémoire':   { key: 'remplacement_memoire', useSubOption: true, fallback: '25%' },
+          // Compat: anciens types de formation
+          'formation initiale':     { multi: [{ key: 'c10_50', value: true }, { key: 's08', value: true }] },
+          'formation armement':     { multi: [{ key: 'armements', value: true, fallback: 'Catégorie A' }, { key: 'fouilles', value: true }] },
+          'formation avancée':      { multi: [{ key: 'c10_34', value: true }, { key: 'incendie', value: true }, { key: 'premier_secours', value: true }] },
+          'formation spécialisée':  { multi: [{ key: 'dispatch', value: true }, { key: 'iedi_c4', value: true }, { key: 's34', value: true }] }
+        };
+
         allFormations.forEach(f => {
           if (f.resultat !== 'Réussi') return;
           const parts = f.participants || (f.participants_str ? f.participants_str.split(',').map(s => s.trim()) : []);
           const type = (f.type || '').toLowerCase();
+          const mapping = typeToColumn[type];
+          if (!mapping) return;
 
+          const subOpt = f.sub_option || '';
+          const entries = mapping.multi || [mapping];
           parts.forEach(mat => {
             if (!mat) return;
             if (!competenceData[mat]) competenceData[mat] = {};
             const c = competenceData[mat];
-
-            if (type.includes('initiale') || type.includes('initial')) {
-              if (!c.c10_50) { c.c10_50 = true; synced++; }
-              if (!c.s08) { c.s08 = true; synced++; }
-            }
-            if (type.includes('armement') || type.includes('arme')) {
-              if (!c.armements) { c.armements = 'Catégorie A'; synced++; }
-              if (!c.fouilles) { c.fouilles = true; synced++; }
-            }
-            if (type.includes('avancée') || type.includes('avancee')) {
-              if (!c.c10_34) { c.c10_34 = true; synced++; }
-              if (!c.incendie) { c.incendie = true; synced++; }
-              if (!c.premier_secours) { c.premier_secours = true; synced++; }
-            }
-            if (type.includes('spécialisée') || type.includes('specialisee')) {
-              if (!c.dispatch) { c.dispatch = true; synced++; }
-              if (!c.iedi_c4) { c.iedi_c4 = true; synced++; }
-              if (!c.s34) { c.s34 = true; synced++; }
-            }
+            entries.forEach(e => {
+              if (!c[e.key]) {
+                // Pour les champs select, utiliser sub_option du formulaire, sinon fallback
+                c[e.key] = e.useSubOption ? (subOpt || e.fallback) : (e.fallback || true);
+                synced++;
+              }
+            });
           });
         });
 

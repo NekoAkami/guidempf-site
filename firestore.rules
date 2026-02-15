@@ -18,10 +18,19 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.is_admin == true;
     }
 
+    function isHautGrade() {
+      return isApproved()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.is_hg == true;
+    }
+
+    function isAdminOrHG() {
+      return isAdmin() || isHautGrade();
+    }
+
     // ===== USERS =====
     match /users/{userId} {
       allow read: if isAuthenticated() && request.auth.uid == userId;
-      allow read: if isAdmin();
+      allow read: if isAdminOrHG();
       allow create: if isAuthenticated()
         && request.auth.uid == userId
         && request.resource.data.is_admin == false
@@ -29,8 +38,9 @@ service cloud.firestore {
       allow update: if isAuthenticated()
         && request.auth.uid == userId
         && request.resource.data.is_admin == resource.data.is_admin
-        && request.resource.data.approved == resource.data.approved;
-      allow update: if isAdmin();
+        && request.resource.data.approved == resource.data.approved
+        && request.resource.data.is_hg == resource.data.is_hg;
+      allow update: if isAdminOrHG();
       allow delete: if isAdmin();
     }
 
@@ -38,16 +48,16 @@ service cloud.firestore {
     match /mpf_data/{docId} {
       allow read: if isApproved();
 
-      // Admin : document-level writes (units, playtime)
-      allow write: if isAdmin()
+      // Admin ou HG : document-level writes (units, playtime)
+      allow write: if isAdminOrHG()
         && docId in ['units', 'playtime', 'playtime_history'];
 
       // Approved : document-level writes (compat + competences)
       allow write: if isApproved()
         && docId in ['reports', 'absences', 'deposits', 'competences'];
 
-      // Payroll config : admin seulement
-      allow write: if isAdmin()
+      // Payroll config : admin ou HG
+      allow write: if isAdminOrHG()
         && docId == 'payroll_config';
 
       // Sous-collections (rapports, plaintes, planning, payes, etc.)
@@ -62,20 +72,20 @@ service cloud.firestore {
     // ===== CONFIG (navigation, maintenance) =====
     match /config/{docId} {
       allow read: if isAuthenticated();
-      allow write: if isAdmin();
+      allow write: if isAdminOrHG();
 
       // Sous-collection logs maintenance
       match /logs/{logId} {
         allow read: if isAuthenticated();
-        allow create: if isAdmin();
-        allow delete: if isAdmin();
+        allow create: if isAdminOrHG();
+        allow delete: if isAdminOrHG();
       }
     }
 
     // ===== SETTINGS (radio, cwu) =====
     match /settings/{settingId} {
       allow read: if isApproved();
-      allow write: if isAdmin();
+      allow write: if isAdminOrHG();
     }
 
     // ===== PRÉSENCE EN LIGNE =====
