@@ -815,26 +815,16 @@ class GlobalNavigation {
                 import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js')
             ]);
 
-            const { getApp, initializeApp } = appMod;
-            const { getFirestore, doc, setDoc, deleteDoc, collection, getDocs, serverTimestamp } = fsMod;
+            const { getApp } = appMod;
+            const { getFirestore, collection, getDocs } = fsMod;
             const { getAuth, onAuthStateChanged } = authMod;
 
             let app;
-            try { app = getApp(); } catch {
-                app = initializeApp({
-                    apiKey: 'AIzaSyDPs4x2EE1pyeQTC_V-Ze5uyZ8Rs2N8qF4',
-                    authDomain: 'guidempf.firebaseapp.com',
-                    projectId: 'guidempf',
-                    storageBucket: 'guidempf.firebasestorage.app',
-                    messagingSenderId: '806309770965',
-                    appId: '1:806309770965:web:3621f58bfb252446c1945c'
-                });
-            }
+            try { app = getApp(); } catch { return; }
 
             const auth = getAuth(app);
             const db = getFirestore(app);
             const PRESENCE_TTL = 2 * 60 * 1000; // 2 minutes
-            const HEARTBEAT_INTERVAL = 45 * 1000; // 45 secondes
 
             // Attendre l'utilisateur
             const user = await new Promise((resolve) => {
@@ -847,45 +837,8 @@ class GlobalNavigation {
                 return;
             }
 
-            // Lire le profil utilisateur pour matricule + pseudo
-            const { getDoc } = fsMod;
-            let matricule = '???', pseudo = '';
-            try {
-                const userSnap = await getDoc(doc(db, 'users', user.uid));
-                if (userSnap.exists()) {
-                    const ud = userSnap.data();
-                    matricule = ud.matricule || '???';
-                    pseudo = ud.pseudo || ud.nom_steam || ud.displayName || user.displayName || '';
-                }
-            } catch {}
-
-            // === Écrire la présence ===
-            const presenceRef = doc(db, 'presence', user.uid);
-            const writePresence = async () => {
-                try {
-                    await setDoc(presenceRef, {
-                        matricule,
-                        pseudo,
-                        last_seen: serverTimestamp(),
-                        page: (window.location.pathname.split('/').pop() || 'index.html')
-                    });
-                } catch (e) { console.warn('[Presence] Write error:', e); }
-            };
-
-            await writePresence();
-            const hbInterval = setInterval(writePresence, HEARTBEAT_INTERVAL);
-
-            // Supprimer la présence à la fermeture
-            window.addEventListener('beforeunload', () => {
-                clearInterval(hbInterval);
-                // sendBeacon fallback pour garantir la suppression
-                const url = `https://firestore.googleapis.com/v1/projects/guidempf/databases/(default)/documents/presence/${user.uid}`;
-                try { navigator.sendBeacon(url, ''); } catch {}
-                // Tentative classique aussi
-                deleteDoc(presenceRef).catch(() => {});
-            });
-
             // === Lire et afficher les utilisateurs en ligne ===
+            // (L'écriture de la présence est gérée par auth.js)
             const refreshOnlineUsers = async () => {
                 try {
                     const snap = await getDocs(collection(db, 'presence'));

@@ -169,7 +169,7 @@ export async function updateAuthButton() {
             <button onclick="window.logoutUser()" class="btn secondary">Déconnexion</button>
           `;
           // Démarrer la présence en ligne
-          startPresence(user.uid);
+          startPresence(user.uid, matricule, userData.nom_steam || userData.pseudo || user.displayName || '');
         } else {
           authBtn.innerHTML = `<a href="${_basePath}login.html" class="btn">Connexion</a>`;
           injectOnlineCounter();
@@ -200,11 +200,15 @@ window.logoutUser = async () => {
 
 // ========== PRÉSENCE EN LIGNE ==========
 let _presenceInterval = null;
+let _presenceData = {};
 
 async function updatePresence(uid) {
   try {
     await setDoc(doc(db, 'presence', uid), {
+      matricule: _presenceData.matricule || '???',
+      pseudo: _presenceData.pseudo || '',
       last_seen: serverTimestamp(),
+      page: (window.location.pathname.split('/').pop() || 'index.html'),
       uid
     });
   } catch (_) {}
@@ -240,9 +244,10 @@ function injectOnlineCounter() {
   headerContent.appendChild(counter);
 }
 
-function startPresence(uid) {
+function startPresence(uid, matricule, pseudo) {
+  _presenceData = { matricule: matricule || '???', pseudo: pseudo || '' };
   updatePresence(uid);
-  _presenceInterval = setInterval(() => updatePresence(uid), 60000); // heartbeat chaque 60s
+  _presenceInterval = setInterval(() => updatePresence(uid), 45000); // heartbeat chaque 45s
 
   injectOnlineCounter();
   updateOnlineCounter();
@@ -250,8 +255,15 @@ function startPresence(uid) {
 
   // Cleanup au départ
   window.addEventListener('beforeunload', () => {
-    // On ne supprime pas le doc — il expirera naturellement dans 2 min
     clearInterval(_presenceInterval);
+    // Supprimer la présence via sendBeacon
+    try {
+      navigator.sendBeacon(
+        `https://firestore.googleapis.com/v1/projects/guidempf/databases/(default)/documents/presence/${uid}`,
+        ''
+      );
+    } catch (_) {}
+    deleteDoc(doc(db, 'presence', uid)).catch(() => {});
   });
 }
 
