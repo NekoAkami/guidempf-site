@@ -469,7 +469,7 @@ class GlobalNavigation {
         if (document.getElementById('gpNotepadPanel')) return; // already injected
 
         const bp = this.basePath;
-        const MIN_W = 200, MAX_W = 500, DEFAULT_W = 280;
+        const MIN_W = 140, MAX_W = 500, DEFAULT_W = 280;
 
         // ---- Bloc-notes (left panel, starts collapsed) ----
         const notepadHTML = `
@@ -702,33 +702,66 @@ class GlobalNavigation {
         setupResize('gpOnlineResize', 'gpOnlinePanel', 'mpf_online_width', true);
         setupResize('gpTodayResize', 'gpTodayPanel', 'mpf_today_width', false);
 
-        // ---- Vertical drag (reposition) for all panels ----
-        const setupVDrag = (handleId, panelId, storageKey) => {
+        // ---- Drag (full XY reposition) for all panels ----
+        const setupVDrag = (handleId, panelId, storageKeyTop, storageKeySide) => {
             const handle = document.getElementById(handleId);
             const panel = document.getElementById(panelId);
             if (!handle || !panel) return;
             handle.addEventListener('mousedown', (e) => {
                 e.preventDefault();
+                const startX = e.clientX;
                 const startY = e.clientY;
-                const startTop = parseInt(panel.style.top) || panel.getBoundingClientRect().top;
-                const panelH = panel.offsetHeight || 200;
+                const rect = panel.getBoundingClientRect();
+                const startTop = rect.top;
+                const startLeft = rect.left;
+                const panelH = rect.height || 200;
+                const panelW = rect.width || 280;
+                // Switch to left-based positioning for free drag
+                panel.style.left = startLeft + 'px';
+                panel.style.right = 'auto';
+                panel.classList.add('gp-dragging');
                 const onMove = (ev) => {
+                    const dx = ev.clientX - startX;
+                    const dy = ev.clientY - startY;
                     const minTop = 10;
                     const maxTop = window.innerHeight - Math.min(60, panelH);
-                    const newTop = Math.max(minTop, Math.min(maxTop, startTop + (ev.clientY - startY)));
+                    const minLeft = -(panelW - 60);
+                    const maxLeft = window.innerWidth - 60;
+                    const newTop = Math.max(minTop, Math.min(maxTop, startTop + dy));
+                    const newLeft = Math.max(minLeft, Math.min(maxLeft, startLeft + dx));
                     panel.style.top = newTop + 'px';
-                    document.body.style.cursor = 'grab';
+                    panel.style.left = newLeft + 'px';
+                    document.body.style.cursor = 'grabbing';
                     document.body.style.userSelect = 'none';
                 };
                 const onUp = () => {
                     panel.dataset.customTop = 'true';
-                    localStorage.setItem(storageKey, panel.style.top);
+                    panel.dataset.customLeft = 'true';
+                    panel.classList.remove('gp-dragging');
+                    localStorage.setItem(storageKeyTop, panel.style.top);
+                    localStorage.setItem(storageKeySide, panel.style.left);
                     document.body.style.cursor = '';
                     document.body.style.userSelect = '';
                     // Update corresponding tab position
                     const tabId = panelId.replace('Panel', 'Tab');
                     const tab = document.getElementById(tabId);
-                    if (tab) tab.style.top = panel.style.top;
+                    if (tab) {
+                        tab.style.top = panel.style.top;
+                        // Move tab to same side
+                        const panelLeft = parseInt(panel.style.left) || 0;
+                        const midScreen = window.innerWidth / 2;
+                        if (panelLeft > midScreen - panelW / 2) {
+                            tab.style.left = 'auto';
+                            tab.style.right = '0';
+                            tab.classList.remove('gp-tab-left');
+                            tab.classList.add('gp-tab-right');
+                        } else {
+                            tab.style.right = 'auto';
+                            tab.style.left = '0';
+                            tab.classList.remove('gp-tab-right');
+                            tab.classList.add('gp-tab-left');
+                        }
+                    }
                     // Recalculate online panel if notepad moved
                     if (panelId === 'gpNotepadPanel') requestAnimationFrame(() => requestAnimationFrame(adjustTopPosition));
                     document.removeEventListener('mousemove', onMove);
@@ -738,8 +771,8 @@ class GlobalNavigation {
                 document.addEventListener('mouseup', onUp);
             });
         };
-        setupVDrag('gpNotepadVDrag', 'gpNotepadPanel', 'mpf_notepad_top');
-        setupVDrag('gpTodayVDrag', 'gpTodayPanel', 'mpf_today_top');
+        setupVDrag('gpNotepadVDrag', 'gpNotepadPanel', 'mpf_notepad_top', 'mpf_notepad_left');
+        setupVDrag('gpTodayVDrag', 'gpTodayPanel', 'mpf_today_top', 'mpf_today_left');
 
         // ---- Vertical resize (height) for all panels ----
         const setupVResize = (handleId, panelId, storageKey) => {
@@ -775,16 +808,39 @@ class GlobalNavigation {
         setupVResize('gpNotepadVResize', 'gpNotepadPanel', 'mpf_notepad_height');
         setupVResize('gpTodayVResize', 'gpTodayPanel', 'mpf_today_height');
 
-        // ---- Restore custom top/height for notepad & today ----
+        // ---- Restore custom top/left/height for notepad & today ----
         ['notepad','today'].forEach(key => {
             const panel = document.getElementById(key === 'notepad' ? 'gpNotepadPanel' : 'gpTodayPanel');
             const tab = document.getElementById(key === 'notepad' ? 'gpNotepadTab' : 'gpTodayTab');
             const savedTop = localStorage.getItem('mpf_' + key + '_top');
+            const savedLeft = localStorage.getItem('mpf_' + key + '_left');
             const savedHeight = localStorage.getItem('mpf_' + key + '_height');
             if (savedTop && panel) {
                 panel.style.top = savedTop;
                 panel.dataset.customTop = 'true';
                 if (tab) tab.style.top = savedTop;
+            }
+            if (savedLeft && panel) {
+                panel.style.left = savedLeft;
+                panel.style.right = 'auto';
+                panel.dataset.customLeft = 'true';
+                // Update tab side based on restored position
+                if (tab) {
+                    const panelLeft = parseInt(savedLeft) || 0;
+                    const panelW = panel.offsetWidth || 280;
+                    const midScreen = window.innerWidth / 2;
+                    if (panelLeft > midScreen - panelW / 2) {
+                        tab.style.left = 'auto';
+                        tab.style.right = '0';
+                        tab.classList.remove('gp-tab-left');
+                        tab.classList.add('gp-tab-right');
+                    } else {
+                        tab.style.right = 'auto';
+                        tab.style.left = '0';
+                        tab.classList.remove('gp-tab-right');
+                        tab.classList.add('gp-tab-left');
+                    }
+                }
             }
             if (savedHeight && panel) {
                 const h = parseInt(savedHeight);
