@@ -84,10 +84,9 @@
         .cell-select:disabled{opacity:0.5;cursor:default;}
         .cell-select option{background:#0a1628;}
 
-        /* Percentage bar */
-        .pct-cell{position:relative;min-width:60px;}
-        .pct-bar{position:absolute;top:0;left:0;bottom:0;opacity:0.15;border-radius:2px;transition:width 0.3s;}
-        .pct-text{position:relative;z-index:1;font-weight:700;font-size:0.7rem;}
+        /* Percentage cell */
+        .pct-cell{min-width:60px;transition:background 0.3s;border-radius:2px;}
+        .pct-cell .cell-select{background:transparent;border:none;text-align:center;font-weight:700;width:100%;}
 
         /* Saving indicator */
         .save-indicator{position:fixed;bottom:1rem;right:1rem;padding:0.5rem 1rem;border-radius:4px;font-family:'Share Tech Mono',monospace;font-size:0.75rem;z-index:999;transition:opacity 0.3s;opacity:0;pointer-events:none;}
@@ -212,8 +211,7 @@
         { key: 'dispatch',         label: 'DISPATCH',       type: 'checkbox', group: 'skills' },
         { key: 's34',              label: 'S34',            type: 'checkbox', group: 'skills' },
         { key: 'iedi_c4',          label: 'IEDI/C4',        type: 'checkbox', group: 'skills' },
-        { key: 'remplacement_memoire', label: 'REMPL. MÉMOIRE', type: 'pct', options: ['0%','25%','50%','70%','100%'], group: 'other' },
-        { key: 'ordre',            label: 'ORDRE',          type: 'text', group: 'other' }
+        { key: 'remplacement_memoire', label: 'REMPL. MÉMOIRE', type: 'pct', options: ['0%','25%','50%','70%','100%'], group: 'other' }
       ];
 
       const RANG_ORDER = ['Cmd','Ofc','CABAL','STBE','DvL','.01','.02','STB','.03','.04','.05','RCT',''];
@@ -276,14 +274,16 @@
         const pct = getRowProgress(matricule);
         el.textContent = pct + '%';
         el.style.color = pct === 100 ? '#00cc55' : (pct >= 50 ? '#ffc800' : '#ff4444');
-        // Update pct bar in remplacement_memoire cell
-        const pctBar = document.getElementById('pctbar-' + CSS.escape(matricule));
-        if (pctBar) {
-          const v = parseInt(competenceData[matricule]?.remplacement_memoire || '0');
-          pctBar.style.width = v + '%';
-          pctBar.style.background = v === 100 ? '#00cc55' : (v >= 50 ? '#ffc800' : (v > 0 ? '#0088dd' : '#444'));
-        }
       }
+
+      // Update pct cell background + text color after select change
+      window.updatePctCellStyle = function(sel) {
+        const v = parseInt(sel.value) || 0;
+        const color = v === 100 ? '#00cc55' : (v >= 50 ? '#ffc800' : (v > 0 ? '#0088dd' : '#444'));
+        const bg = `rgba(${v === 100 ? '0,204,85' : (v >= 50 ? '255,200,0' : (v > 0 ? '0,136,221' : '68,68,68'))},${v > 0 ? '0.15' : '0'})`;
+        sel.style.color = color;
+        sel.closest('td').style.background = bg;
+      };
 
       // ===== POPULATE FILTERS =====
       function populateDivisionFilter() {
@@ -367,8 +367,9 @@
               const pctVal = val || '0%';
               const pctNum = parseInt(pctVal) || 0;
               const pctColor = pctNum === 100 ? '#00cc55' : (pctNum >= 50 ? '#ffc800' : (pctNum > 0 ? '#0088dd' : '#444'));
+              const pctBg = `rgba(${pctNum === 100 ? '0,204,85' : (pctNum >= 50 ? '255,200,0' : (pctNum > 0 ? '0,136,221' : '68,68,68'))},${pctNum > 0 ? '0.15' : '0'})`;
               let opts = (c.options || []).map(o => `<option value="${o}" ${pctVal === o ? 'selected' : ''}>${o}</option>`).join('');
-              html += `<td class="pct-cell"><div class="pct-bar" id="pctbar-${m}" style="width:${pctNum}%;background:${pctColor};"></div><select class="cell-select" style="background:transparent;border:none;text-align:center;font-weight:700;color:${pctColor};" ${!canEdit ? 'disabled' : ''} onchange="updateCell('${me}','${c.key}',this.value);var p=parseInt(this.value)||0;var b=this.closest('td').querySelector('.pct-bar');b.style.width=p+'%';b.style.background=p===100?'#00cc55':(p>=50?'#ffc800':'#0088dd');">${opts}</select></td>`;
+              html += `<td class="pct-cell" id="pctcell-${m}" style="background:${pctBg};"><select class="cell-select" style="color:${pctColor};" ${!canEdit ? 'disabled' : ''} onchange="updateCell('${me}','${c.key}',this.value);updatePctCellStyle(this);">${opts}</select></td>`;
             } else if (c.type === 'text') {
               html += `<td><input type="number" min="0" max="20" value="${val || ''}" style="width:38px;background:transparent;border:1px solid rgba(0,170,255,0.1);color:var(--text-muted);font-family:'Orbitron',sans-serif;font-size:0.68rem;text-align:center;padding:2px;border-radius:2px;" ${!canEdit ? 'disabled' : ''} onchange="updateCell('${me}','${c.key}',this.value)"></td>`;
             }

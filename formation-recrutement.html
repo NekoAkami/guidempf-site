@@ -74,6 +74,10 @@
         const loadedTabs = new Set();
 
         function switchFRTab(tab) {
+            // Persist tab in URL hash and localStorage
+            history.replaceState(null, '', '#' + tab);
+            try { localStorage.setItem('mpf_fr_active_tab', tab); } catch(_) {}
+
             // Update active tab button
             document.querySelectorAll('.fr-tab').forEach(btn => btn.classList.remove('active'));
             document.querySelector('.fr-tab[data-tab="' + tab + '"]').classList.add('active');
@@ -100,10 +104,18 @@
 
         // Load the first tab on page load
         document.addEventListener('DOMContentLoaded', function() {
-            // Check if URL has a hash to auto-select tab
+            // Check hash first, then localStorage, then default
             const hash = window.location.hash.replace('#', '');
             const validTabs = ['formations', 'tableau', 'info', 'recrutement'];
-            const startTab = validTabs.includes(hash) ? hash : 'formations';
+            let startTab = 'formations';
+            if (validTabs.includes(hash)) {
+                startTab = hash;
+            } else {
+                try {
+                    const saved = localStorage.getItem('mpf_fr_active_tab');
+                    if (validTabs.includes(saved)) startTab = saved;
+                } catch(_) {}
+            }
             switchFRTab(startTab);
         });
     </script>
