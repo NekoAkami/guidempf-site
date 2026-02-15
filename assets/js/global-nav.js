@@ -735,11 +735,22 @@ class GlobalNavigation {
                     document.body.style.userSelect = 'none';
                 };
                 const onUp = () => {
-                    panel.dataset.customTop = 'true';
-                    panel.dataset.customLeft = 'true';
                     panel.classList.remove('gp-dragging');
+                    // Magnetize: snap to nearest side
+                    const endRect = panel.getBoundingClientRect();
+                    const panelCenter = endRect.left + endRect.width / 2;
+                    const screenCenter = window.innerWidth / 2;
+                    const snapLeft = panelCenter <= screenCenter;
+                    if (snapLeft) {
+                        panel.style.left = '0'; panel.style.right = 'auto';
+                        panel.classList.remove('gp-right'); panel.classList.add('gp-left');
+                    } else {
+                        panel.style.left = 'auto'; panel.style.right = '0';
+                        panel.classList.remove('gp-left'); panel.classList.add('gp-right');
+                    }
+                    panel.dataset.customTop = 'true';
                     localStorage.setItem(storageKeyTop, panel.style.top);
-                    localStorage.setItem(storageKeySide, panel.style.left);
+                    localStorage.setItem(storageKeySide, snapLeft ? 'left' : 'right');
                     document.body.style.cursor = '';
                     document.body.style.userSelect = '';
                     // Update corresponding tab position
@@ -747,19 +758,12 @@ class GlobalNavigation {
                     const tab = document.getElementById(tabId);
                     if (tab) {
                         tab.style.top = panel.style.top;
-                        // Move tab to same side
-                        const panelLeft = parseInt(panel.style.left) || 0;
-                        const midScreen = window.innerWidth / 2;
-                        if (panelLeft > midScreen - panelW / 2) {
-                            tab.style.left = 'auto';
-                            tab.style.right = '0';
-                            tab.classList.remove('gp-tab-left');
-                            tab.classList.add('gp-tab-right');
+                        if (snapLeft) {
+                            tab.style.left = '0'; tab.style.right = 'auto';
+                            tab.classList.remove('gp-tab-right'); tab.classList.add('gp-tab-left');
                         } else {
-                            tab.style.right = 'auto';
-                            tab.style.left = '0';
-                            tab.classList.remove('gp-tab-right');
-                            tab.classList.add('gp-tab-left');
+                            tab.style.left = 'auto'; tab.style.right = '0';
+                            tab.classList.remove('gp-tab-left'); tab.classList.add('gp-tab-right');
                         }
                     }
                     // Recalculate online panel if notepad moved
@@ -821,24 +825,22 @@ class GlobalNavigation {
                 if (tab) tab.style.top = savedTop;
             }
             if (savedLeft && panel) {
-                panel.style.left = savedLeft;
-                panel.style.right = 'auto';
+                const side = (savedLeft === 'left' || savedLeft === 'right') ? savedLeft : null;
+                if (side === 'right') {
+                    panel.style.left = 'auto'; panel.style.right = '0';
+                    panel.classList.remove('gp-left'); panel.classList.add('gp-right');
+                } else if (side === 'left') {
+                    panel.style.left = '0'; panel.style.right = 'auto';
+                    panel.classList.remove('gp-right'); panel.classList.add('gp-left');
+                }
                 panel.dataset.customLeft = 'true';
-                // Update tab side based on restored position
-                if (tab) {
-                    const panelLeft = parseInt(savedLeft) || 0;
-                    const panelW = panel.offsetWidth || 280;
-                    const midScreen = window.innerWidth / 2;
-                    if (panelLeft > midScreen - panelW / 2) {
-                        tab.style.left = 'auto';
-                        tab.style.right = '0';
-                        tab.classList.remove('gp-tab-left');
-                        tab.classList.add('gp-tab-right');
+                if (tab && side) {
+                    if (side === 'right') {
+                        tab.style.left = 'auto'; tab.style.right = '0';
+                        tab.classList.remove('gp-tab-left'); tab.classList.add('gp-tab-right');
                     } else {
-                        tab.style.right = 'auto';
-                        tab.style.left = '0';
-                        tab.classList.remove('gp-tab-right');
-                        tab.classList.add('gp-tab-left');
+                        tab.style.right = 'auto'; tab.style.left = '0';
+                        tab.classList.remove('gp-tab-right'); tab.classList.add('gp-tab-left');
                     }
                 }
             }
@@ -879,6 +881,18 @@ class GlobalNavigation {
             localStorage.removeItem('mpf_notepad_content');
             statusEl.textContent = 'Notes supprimées';
         });
+
+        // Save notepad immediately on page unload / tab switch to prevent data loss
+        const _saveNotepadNow = () => {
+            if (textarea && textarea.value !== undefined) {
+                localStorage.setItem('mpf_notepad_content', textarea.value);
+            }
+        };
+        window.addEventListener('beforeunload', _saveNotepadNow);
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') _saveNotepadNow();
+        });
+        textarea.addEventListener('blur', _saveNotepadNow);
 
         // ---- Planning du jour (lazy Firebase load) ----
         this._loadTodayPanel();
