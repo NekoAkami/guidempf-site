@@ -558,6 +558,14 @@
             <h3 id="modalTitle">AJOUTER UNE UNITÉ</h3>
             <input type="hidden" id="editId">
 
+            <div id="missingUserSection" style="display:none;margin-bottom:0.8rem;">
+                <label style="color:#ff8800;">PRÉ-REMPLIR DEPUIS UN UTILISATEUR MISSING</label>
+                <select id="missingUserSelect" style="width:100%;padding:0.45rem 0.6rem;background:rgba(255,140,0,0.06);border:1px solid rgba(255,140,0,0.3);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.82rem;outline:none;border-radius:2px;cursor:pointer;">
+                    <option value="">— Sélectionner un utilisateur MISSING —</option>
+                </select>
+                <div style="border-bottom:1px solid rgba(255,140,0,0.15);margin-top:0.6rem;"></div>
+            </div>
+
             <label>MATRICULE *</label>
             <input type="text" id="fMatricule" placeholder="Ex: 230" maxlength="10">
 
@@ -666,7 +674,7 @@
     <script type="module">
       import { auth, db } from '../assets/js/auth.js';
       import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-      import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+      import { doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
       import {
         loadUnits as ghLoadUnits, saveUnits as ghSaveUnits,
         loadAbsences as ghLoadAbsences,
@@ -701,6 +709,7 @@
       // ========== STATE ==========
       let allUnits = [];
       let allAbsences = [];
+      let allFirestoreUsers = [];
       let onlineMatricules = new Set();
       let currentSort = { key: 'ordre', asc: true };
 
@@ -797,7 +806,7 @@
 
       async function loadUnits() {
         try {
-          [allUnits, allAbsences, onlineMatricules] = await Promise.all([ghLoadUnits(), ghLoadAbsences(), fetchOnlineMatricules()]);
+          [allUnits, allAbsences, onlineMatricules, allFirestoreUsers] = await Promise.all([ghLoadUnits(), ghLoadAbsences(), fetchOnlineMatricules(), loadFirestoreUsers()]);
           allUnits = allUnits.map(u => ({ ...u, id: u.matricule || Math.random().toString(36).substr(2, 9) }));
           updateStats();
           renderTable();
@@ -901,6 +910,33 @@
       };
 
       // ========== MODAL ==========
+      /** Charge les utilisateurs approuvés depuis Firestore */
+      async function loadFirestoreUsers() {
+        try {
+          const snap = await getDocs(collection(db, 'users'));
+          const users = [];
+          snap.forEach(d => {
+            const data = d.data();
+            if (data.approved && data.status !== 'REVOKED') {
+              users.push({ id: d.id, ...data });
+            }
+          });
+          return users;
+        } catch (err) {
+          console.warn('Erreur chargement users Firestore:', err.message);
+          return [];
+        }
+      }
+
+      /** Retourne les utilisateurs MISSING (enregistrés mais pas d'unité liée avec un vrai rang) */
+      function getMissingUsers() {
+        return allFirestoreUsers.filter(u => {
+          if (!u.matricule) return false;
+          const unitEntry = allUnits.find(unit => unit.matricule === u.matricule);
+          return !unitEntry || !unitEntry.rang || unitEntry.rang === 'MISSING';
+        });
+      }
+
       window.openAddModal = function() {
         document.getElementById('modalTitle').textContent = 'AJOUTER UNE UNITÉ';
         document.getElementById('editId').value = '';
@@ -914,6 +950,28 @@
         document.getElementById('fOrdre').value = '';
         document.getElementById('fDateEntree').value = '';
         document.getElementById('fFormateur').checked = false;
+
+        // Populate missing users dropdown
+        const missingSection = document.getElementById('missingUserSection');
+        const missingSelect = document.getElementById('missingUserSelect');
+        const missingUsers = getMissingUsers();
+        if (missingUsers.length > 0) {
+          missingSection.style.display = 'block';
+          missingSelect.innerHTML = '<option value="">— Sélectionner un utilisateur MISSING (' + missingUsers.length + ') —</option>' +
+            missingUsers.map(u => `<option value="${u.id}">[${u.matricule}] ${u.nom_steam || u.email || '?'} — ${u.discord || '-'}</option>`).join('');
+          missingSelect.onchange = function() {
+            const selected = missingUsers.find(u => u.id === this.value);
+            if (selected) {
+              document.getElementById('fMatricule').value = selected.matricule || '';
+              document.getElementById('fSteamid').value = selected.steamid64 || '';
+              document.getElementById('fNomSteam').value = selected.nom_steam || '';
+              document.getElementById('fDiscord').value = selected.discord || '';
+            }
+          };
+        } else {
+          missingSection.style.display = 'none';
+        }
+
         document.getElementById('unitModal').classList.add('visible');
       };
 
@@ -923,6 +981,7 @@
 
         document.getElementById('modalTitle').textContent = 'MODIFIER UNITÉ — ' + unit.matricule;
         document.getElementById('editId').value = unit.matricule;
+        document.getElementById('missingUserSection').style.display = 'none';
         document.getElementById('fMatricule').value = unit.matricule || '';
         document.getElementById('fMatricule').disabled = true;
         document.getElementById('fSteamid').value = unit.steamid64 || '';

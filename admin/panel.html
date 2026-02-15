@@ -349,7 +349,7 @@
 
       import { auth, db } from '../assets/js/auth.js';
       import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-      import { collection, getDocs, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+      import { collection, getDocs, doc, getDoc, updateDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
       import {
         loadUnits as ghLoadUnits, saveUnits as ghSaveUnits
       } from '../assets/js/github-data.js';
@@ -490,6 +490,7 @@
           if (u.status === 'REVOKED') {
             actions += `<button class="btn-sm" onclick="reactivateUser('${u.id}')">↻ RÉACTIVER</button>`;
           }
+          actions += `<button class="btn-sm danger" onclick="deleteUser('${u.id}')" title="Supprimer définitivement" style="font-size:0.62rem;">🗑</button>`;
 
           return `<tr>
             <td><strong style="color:var(--accent-cyan);">${u.matricule || '-'}</strong></td>
@@ -618,6 +619,20 @@
           await loadUsers();
         } catch (err) {
           showMessage('✗ Erreur: ' + err.message, 'error');
+        }
+      };
+
+      window.deleteUser = async (userId) => {
+        const userData = allUsers.find(u => u.id === userId);
+        if (!userData) return;
+        const label = userData.matricule ? `${userData.matricule} (${userData.nom_steam || userData.email || '?'})` : (userData.email || userId);
+        if (!confirm(`⚠ SUPPRIMER DÉFINITIVEMENT l'utilisateur ${label} ?\n\nCette action est irréversible. Le compte Firestore sera supprimé.`)) return;
+        try {
+          await deleteDoc(doc(db, 'users', userId));
+          showMessage(`✓ Utilisateur ${label} supprimé définitivement`, 'success');
+          await loadUsers();
+        } catch (err) {
+          showMessage('✗ Erreur suppression: ' + err.message, 'error');
         }
       };
 
