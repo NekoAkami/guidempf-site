@@ -552,6 +552,52 @@ async function updateRecruitment(docId, entry) {
   return await updateInSubCollection('recruitments', docId, entry);
 }
 
+// ========== BLÂMES (sous-collection) ==========
+async function loadBlames() {
+  return await readSubCollection('blames', 'created_at', 'desc');
+}
+
+async function addBlame(blame) {
+  return await addToSubCollection('blames', blame);
+}
+
+async function deleteBlame(docId) {
+  return await deleteFromSubCollection('blames', docId);
+}
+
+async function updateBlame(docId, blame) {
+  return await updateInSubCollection('blames', docId, blame);
+}
+
+// ========== BLÂMES CONFIG (document unique — last weekly check) ==========
+async function loadBlameConfig() {
+  try {
+    const snap = await getDoc(doc(db, FS_COLLECTION, 'blame_config'));
+    if (snap.exists()) return snap.data();
+  } catch (e) {
+    console.warn('[DataStore] Blame config read failed:', e.message);
+  }
+  return {};
+}
+
+async function saveBlameConfig(config) {
+  _checkRateLimit();
+  _pendingWrites++;
+  _notifySync('syncing');
+  try {
+    await setDoc(doc(db, FS_COLLECTION, 'blame_config'), {
+      ...config,
+      updated_at: new Date().toISOString()
+    });
+    _pendingWrites--;
+    if (_pendingWrites === 0) _notifySync('synced');
+  } catch (err) {
+    _pendingWrites--;
+    if (_pendingWrites === 0) _notifySync('error');
+    throw err;
+  }
+}
+
 // ========== COMPETENCES (suivi des formations par unité) ==========
 async function loadCompetences() {
   try {
@@ -624,5 +670,7 @@ export {
   loadBlacklist, addBlacklistEntry, deleteBlacklistEntry, updateBlacklistEntry,
   loadRecruitments, addRecruitment, deleteRecruitment, updateRecruitment,
   loadCompetences, saveCompetences, updateUnitCompetence,
+  loadBlames, addBlame, deleteBlame, updateBlame,
+  loadBlameConfig, saveBlameConfig,
   GITHUB_OWNER, GITHUB_REPO
 };

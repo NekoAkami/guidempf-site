@@ -228,6 +228,53 @@
         @keyframes spin-sync { to { transform: rotate(360deg); } }
         .sync-spinner { display: inline-block; animation: spin-sync 1s linear infinite; }
 
+        /* ======= BLÂMES ======= */
+        .blame-dots { display: flex; gap: 4px; align-items: center; }
+        .blame-dot {
+            position: relative; width: 14px; height: 14px; border-radius: 50%;
+            cursor: pointer; flex-shrink: 0; transition: transform 0.15s;
+        }
+        .blame-dot:hover { transform: scale(1.4); z-index: 10; }
+        .blame-dot.viewtime { background: #ff4444; box-shadow: 0 0 6px rgba(255,68,68,0.6); }
+        .blame-dot.manual { background: #ffaa00; box-shadow: 0 0 6px rgba(255,170,0,0.6); }
+        .blame-tooltip {
+            display: none; position: absolute; bottom: calc(100% + 6px);
+            left: 50%; transform: translateX(-50%);
+            background: rgba(10,10,20,0.95); border: 1px solid rgba(0,170,255,0.3);
+            color: var(--text-primary); padding: 0.4rem 0.6rem; border-radius: 3px;
+            font-family: 'Share Tech Mono', monospace; font-size: 0.68rem;
+            white-space: nowrap; z-index: 100; pointer-events: none;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.6);
+        }
+        .blame-dot:hover .blame-tooltip { display: block; }
+        .blame-count-badge {
+            font-family: 'Orbitron', sans-serif; font-size: 0.68rem;
+            font-weight: 700; padding: 0.08rem 0.3rem; border-radius: 2px; margin-left: 3px;
+        }
+        .blame-0 { color: rgba(100,100,100,0.4); }
+        .blame-1 { color: #ffaa00; }
+        .blame-2 { background: rgba(255,100,0,0.2); color: #ff6600; border: 1px solid rgba(255,100,0,0.4); }
+        .blame-3 { background: rgba(255,40,40,0.25); color: #ff2222; border: 1px solid rgba(255,40,40,0.5); animation: pulse-missing 1.5s ease-in-out infinite; }
+        .blame-add-btn {
+            padding: 0.12rem 0.35rem; font-size: 0.6rem;
+            font-family: 'Share Tech Mono', monospace; cursor: pointer;
+            border: 1px solid rgba(255,140,0,0.3); background: rgba(255,140,0,0.08);
+            color: #ff8800; border-radius: 2px; transition: all 0.15s; margin-left: 3px;
+        }
+        .blame-add-btn:hover { background: rgba(255,140,0,0.2); }
+        .blame-list-modal { margin-top: 0.8rem; max-height: 200px; overflow-y: auto; }
+        .blame-list-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.4rem 0.5rem; border-bottom: 1px solid rgba(0,170,255,0.06);
+            font-size: 0.75rem; font-family: 'Share Tech Mono', monospace;
+        }
+        .blame-list-item .blame-info { flex: 1; }
+        .blame-list-item .blame-reason { color: var(--text-primary); }
+        .blame-list-item .blame-meta { color: var(--text-muted); font-size: 0.65rem; }
+        .blame-type-tag { font-size: 0.6rem; padding: 0.05rem 0.25rem; border-radius: 2px; font-weight: 700; margin-right: 4px; }
+        .blame-type-viewtime { background: rgba(255,68,68,0.15); color: #ff4444; border: 1px solid rgba(255,68,68,0.3); }
+        .blame-type-manual { background: rgba(255,170,0,0.15); color: #ffaa00; border: 1px solid rgba(255,170,0,0.3); }
+
         /* Buttons */
         .btn-sm {
             padding: 0.2rem 0.5rem;
@@ -534,6 +581,7 @@
                                         <th onclick="sortBy('discord')">DISCORD</th>
                                         <th onclick="sortBy('division')">DIVISION</th>
                                         <th onclick="sortBy('rang')">RANG</th>
+                                        <th onclick="sortBy('blames')">BLÂMES</th>
                                         <th>FORMATEUR</th>
                                         <th>STATUT</th>
                                         <th onclick="sortBy('ordre')">ORDRE</th>
@@ -542,7 +590,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="unitsBody">
-                                    <tr><td colspan="11" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr>
+                                    <tr><td colspan="12" style="text-align:center;color:var(--text-muted);">Chargement...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -665,6 +713,27 @@
         </div>
     </div>
 
+    <!-- Modal: Blâmes d'une unité -->
+    <div id="blameModal" class="modal-overlay">
+        <div class="modal">
+            <h3 id="blameModalTitle">BLÂMES — ???</h3>
+            <div id="blameListModal" class="blame-list-modal">
+                <p style="color:var(--text-muted);font-size:0.75rem;">Aucun blâme</p>
+            </div>
+            <hr style="border:none;border-top:1px solid rgba(0,170,255,0.1);margin:0.8rem 0;">
+            <div id="blameAddSection">
+                <label>RAISON DU BLÂME</label>
+                <textarea id="blameReason" rows="2" placeholder="Raison du blâme..." style="width:100%;resize:vertical;padding:0.45rem 0.6rem;background:rgba(0,170,255,0.04);border:1px solid rgba(0,170,255,0.2);color:var(--text-primary);font-family:'Share Tech Mono',monospace;font-size:0.82rem;outline:none;border-radius:2px;"></textarea>
+                <div class="modal-actions" style="margin-top:0.6rem;">
+                    <button class="btn-action" style="border-color:rgba(255,140,0,0.5);background:rgba(255,140,0,0.15);color:#ff8800;" onclick="addManualBlame()">+ AJOUTER BLÂME</button>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-action" onclick="closeBlameModal()">FERMER</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script type="module" src="../assets/js/auth.js"></script>
     <script src="../assets/js/global-nav.js?v=20260214" defer></script>
@@ -679,7 +748,8 @@
         loadUnits as ghLoadUnits, saveUnits as ghSaveUnits,
         loadAbsences as ghLoadAbsences,
         addFiredUnit,
-        onSyncStatus
+        onSyncStatus,
+        loadBlames, addBlame as ghAddBlame, deleteBlame as ghDeleteBlame
       } from '../assets/js/github-data.js';
 
       // ========== SYNC INDICATOR ==========
@@ -709,9 +779,13 @@
       // ========== STATE ==========
       let allUnits = [];
       let allAbsences = [];
+      let allBlames = [];
       let allFirestoreUsers = [];
       let onlineMatricules = new Set();
       let currentSort = { key: 'ordre', asc: true };
+      let blameModalMatricule = '';
+      let currentUserMatricule = '';
+      const BLAME_EXPIRY_DAYS = 30;
 
       // ========== SAVE QUEUE (sérialisation des écritures) ==========
       let _saveQueue = Promise.resolve();
@@ -821,9 +895,121 @@
         return '<span class="statut-ok">—</span>';
       }
 
+      // ========== BLAME HELPERS ==========
+      function getActiveBlames(matricule) {
+        const now = new Date();
+        return allBlames.filter(b => {
+          if (b.matricule !== matricule) return false;
+          if (b.expires_at && new Date(b.expires_at) < now) return false;
+          return true;
+        });
+      }
+
+      function blameCellHTML(matricule) {
+        const active = getActiveBlames(matricule);
+        const count = active.length;
+        let dots = '';
+        active.forEach(b => {
+          const typeClass = b.type === 'viewtime' ? 'viewtime' : 'manual';
+          const reason = (b.raison || 'Aucune raison').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+          const dateStr = b.created_at ? new Date(b.created_at).toLocaleDateString('fr-FR') : '?';
+          const expStr = b.expires_at ? new Date(b.expires_at).toLocaleDateString('fr-FR') : '?';
+          dots += `<span class="blame-dot ${typeClass}" onclick="event.stopPropagation();openBlameModal('${matricule}')">
+            <span class="blame-tooltip">${b.type === 'viewtime' ? '⏱ VIEWTIME' : '📝 MANUEL'} — ${reason}<br>📅 ${dateStr} → expire ${expStr}</span>
+          </span>`;
+        });
+        let badge = '';
+        if (count === 0) badge = '<span class="blame-count-badge blame-0">0</span>';
+        else if (count === 1) badge = `<span class="blame-count-badge blame-1">${count}</span>`;
+        else if (count === 2) badge = `<span class="blame-count-badge blame-2">${count} ⚠ RÉTRO</span>`;
+        else badge = `<span class="blame-count-badge blame-3">${count} ⛔ EXCLU</span>`;
+        const addBtn = `<button class="blame-add-btn" onclick="event.stopPropagation();openBlameModal('${matricule}')" title="Gérer blâmes">+</button>`;
+        return `<div class="blame-dots">${dots}${badge}${addBtn}</div>`;
+      }
+
+      window.openBlameModal = function(matricule) {
+        blameModalMatricule = matricule;
+        const u = allUnits.find(x => x.matricule === matricule);
+        document.getElementById('blameModalTitle').textContent = `BLÂMES — ${matricule} ${u ? '(' + u.nom_steam + ')' : ''}`;
+        document.getElementById('blameReason').value = '';
+        renderBlameListModal(matricule);
+        document.getElementById('blameModal').classList.add('visible');
+      };
+
+      function renderBlameListModal(matricule) {
+        const now = new Date();
+        const blames = allBlames.filter(b => b.matricule === matricule).sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+        const container = document.getElementById('blameListModal');
+        if (blames.length === 0) {
+          container.innerHTML = '<p style="color:var(--text-muted);font-size:0.75rem;text-align:center;">Aucun blâme pour cette unité</p>';
+          return;
+        }
+        container.innerHTML = blames.map(b => {
+          const isExpired = b.expires_at && new Date(b.expires_at) < now;
+          const typeTag = b.type === 'viewtime'
+            ? '<span class="blame-type-tag blame-type-viewtime">VIEWTIME</span>'
+            : '<span class="blame-type-tag blame-type-manual">MANUEL</span>';
+          const dateStr = b.created_at ? new Date(b.created_at).toLocaleDateString('fr-FR') : '?';
+          const expStr = b.expires_at ? new Date(b.expires_at).toLocaleDateString('fr-FR') : '?';
+          return `<div class="blame-list-item" style="${isExpired ? 'opacity:0.4;' : ''}">
+            <div class="blame-info">
+              ${typeTag}<span class="blame-reason">${b.raison || '-'}</span>
+              <div class="blame-meta">${dateStr} → expire ${expStr}${isExpired ? ' (EXPIRÉ)' : ''} ${b.created_by ? '— par ' + b.created_by : ''}</div>
+            </div>
+            <button class="blame-add-btn" style="border-color:rgba(255,60,60,0.3);color:#ff4444;background:rgba(255,60,60,0.08);" onclick="removeBlame('${b._id}')">✗ Suppr.</button>
+          </div>`;
+        }).join('');
+      }
+
+      window.closeBlameModal = function() {
+        document.getElementById('blameModal').classList.remove('visible');
+      };
+      document.getElementById('blameModal').addEventListener('click', e => {
+        if (e.target === document.getElementById('blameModal')) closeBlameModal();
+      });
+
+      window.addManualBlame = async function() {
+        const reason = document.getElementById('blameReason').value.trim();
+        if (!reason) { alert('Veuillez entrer une raison.'); return; }
+        if (!blameModalMatricule) return;
+        const now = new Date();
+        const expiresAt = new Date(now);
+        expiresAt.setDate(expiresAt.getDate() + BLAME_EXPIRY_DAYS);
+        try {
+          const saved = await ghAddBlame({
+            matricule: blameModalMatricule,
+            raison: reason,
+            type: 'manual',
+            created_at: now.toISOString(),
+            expires_at: expiresAt.toISOString(),
+            created_by: currentUserMatricule || 'HG'
+          });
+          allBlames.push(saved);
+          renderBlameListModal(blameModalMatricule);
+          renderTable();
+          document.getElementById('blameReason').value = '';
+          showAlert(`✓ Blâme ajouté à ${blameModalMatricule}`, 'success');
+        } catch (err) {
+          showAlert('Erreur ajout blâme: ' + err.message, 'error');
+        }
+      };
+
+      window.removeBlame = async function(docId) {
+        if (!confirm('Supprimer ce blâme ?')) return;
+        try {
+          await ghDeleteBlame(docId);
+          allBlames = allBlames.filter(b => b._id !== docId);
+          if (blameModalMatricule) renderBlameListModal(blameModalMatricule);
+          renderTable();
+          showAlert('✓ Blâme supprimé', 'success');
+        } catch (err) {
+          showAlert('Erreur suppression blâme: ' + err.message, 'error');
+        }
+      };
+
       async function loadUnits() {
         try {
-          [allUnits, allAbsences, onlineMatricules, allFirestoreUsers] = await Promise.all([ghLoadUnits(), ghLoadAbsences(), fetchOnlineMatricules(), loadFirestoreUsers()]);
+          [allUnits, allAbsences, onlineMatricules, allFirestoreUsers, allBlames] = await Promise.all([ghLoadUnits(), ghLoadAbsences(), fetchOnlineMatricules(), loadFirestoreUsers(), loadBlames()]);
           allUnits = allUnits.map(u => ({ ...u, id: u.matricule || Math.random().toString(36).substr(2, 9) }));
           updateStats();
           renderTable();
@@ -870,7 +1056,13 @@
 
           let va, vb;
           const key = currentSort.key;
-          if (key === 'ordre') {
+          if (key === 'blames') {
+            va = getActiveBlames(a.matricule).length;
+            vb = getActiveBlames(b.matricule).length;
+            const cmp = vb - va;
+            if (cmp !== 0) return cmp;
+            return (a.matricule || '').localeCompare(b.matricule || '');
+          } else if (key === 'ordre') {
             va = parseInt(a.ordre) || 999;
             vb = parseInt(b.ordre) || 999;
           } else if (key === 'matricule') {
@@ -888,7 +1080,7 @@
 
         const tbody = document.getElementById('unitsBody');
         if (filtered.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;color:var(--text-muted);">Aucune unité trouvée</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;color:var(--text-muted);">Aucune unité trouvée</td></tr>';
           return;
         }
 
@@ -903,6 +1095,7 @@
             <td style="font-size:0.78rem;">${u.discord || '<span style="color:var(--text-muted);">-</span>'}</td>
             <td>${divBadge(u.division)}</td>
             <td><span class="rang-badge ${rangClass(u.rang)}">${u.rang || '-'}</span></td>
+            <td>${blameCellHTML(u.matricule)}</td>
             <td>${u.formateur ? '<span style="color:#00e5ff;font-size:0.7rem;font-weight:700;">FORMATEUR</span>' : '<span style="color:var(--text-muted);">-</span>'}</td>
             <td>${statutBadge(u.matricule)}</td>
             <td style="font-size:0.78rem;color:var(--text-muted);">${u.ordre || '-'}</td>
@@ -1168,13 +1361,19 @@
         try {
           // Tentative de vérification admin via Firestore
           const snap = await getDoc(doc(db, 'users', user.uid));
-          if (!snap.exists() || !snap.data().is_admin) {
+          if (!snap.exists()) {
             document.getElementById('loading').style.display = 'none';
             document.getElementById('access-denied').style.display = 'block';
             return;
           }
+          const uData = snap.data();
+          if (!uData.is_admin && !uData.is_hg) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('access-denied').style.display = 'block';
+            return;
+          }
+          currentUserMatricule = uData.matricule || '';
         } catch (err) {
-          // Si Firestore échoue, on autorise si l'utilisateur est connecté
           console.warn('Firestore admin check failed, allowing authenticated user:', err.message);
         }
         document.getElementById('loading').style.display = 'none';

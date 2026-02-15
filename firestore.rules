@@ -48,13 +48,17 @@ service cloud.firestore {
     match /mpf_data/{docId} {
       allow read: if isApproved();
 
-      // Admin ou HG : document-level writes (units, playtime)
+      // Admin ou HG : document-level writes (units, playtime, blame_config)
       allow write: if isAdminOrHG()
-        && docId in ['units', 'playtime', 'playtime_history'];
+        && docId in ['units', 'playtime', 'playtime_history', 'blame_config'];
 
       // Approved : document-level writes (compat + competences)
       allow write: if isApproved()
         && docId in ['reports', 'absences', 'deposits', 'competences'];
+
+      // Blâmes : admin ou HG uniquement
+      allow write: if isAdminOrHG()
+        && docId == 'blames';
 
       // Payroll config : admin ou HG
       allow write: if isAdminOrHG()
