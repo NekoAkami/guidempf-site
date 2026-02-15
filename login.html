@@ -191,12 +191,20 @@
             const matricule = userData.matricule || '';
             if (matricule) {
               try {
-                const res = await fetch('https://raw.githubusercontent.com/NekoAkami/guidempf-site/main/data/units.json');
-                if (res.ok) {
-                  const units = await res.json();
-                  const unit = units.find(u => u.matricule === matricule);
-                  if (unit && (unit.rang === 'Ofc' || unit.rang === 'Cmd')) isHG = true;
+                // Lire depuis Firestore (live) avec fallback GitHub
+                let units = [];
+                try {
+                  const unitSnap = await getDoc(doc(db, 'mpf_data', 'units'));
+                  if (unitSnap.exists() && Array.isArray(unitSnap.data().items)) units = unitSnap.data().items;
+                } catch (_) {}
+                if (!units.length) {
+                  try {
+                    const res = await fetch('https://raw.githubusercontent.com/NekoAkami/guidempf-site/main/data/units.json');
+                    if (res.ok) units = await res.json();
+                  } catch (_) {}
                 }
+                const unit = units.find(u => u.matricule === matricule);
+                if (unit && (unit.rang === 'Ofc' || unit.rang === 'Cmd')) isHG = true;
               } catch (_) {}
             }
             if (!isAdmin && !isHG) {

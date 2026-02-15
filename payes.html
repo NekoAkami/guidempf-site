@@ -313,7 +313,7 @@
     <script src="assets/js/combine-animations.js" defer></script>
 
     <script type="module">
-      import { auth, db } from './assets/js/auth.js';
+      import { auth, db, loadUnitsLive } from './assets/js/auth.js';
       import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
       import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
       import { loadReports, loadUnits, loadPayrollConfig, savePayrollConfig, loadPayrollArchives, addPayrollArchive, loadEarnings, addEarning, deleteEarning, onSyncStatus } from './assets/js/github-data.js';
@@ -355,6 +355,8 @@
 
       // ===== ONGLETS =====
       window.switchTab = function(tab) {
+        // Bloquer l'accès à l'onglet config si non-HG/admin
+        if (tab === 'config' && !isHG && !currentUser?._isAdmin) return;
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         event.target.classList.add('active');
@@ -376,6 +378,10 @@
       }
 
       window.saveConfig = async function() {
+        if (!isHG && !currentUser?._isAdmin) {
+          showAlert('✗ Accès refusé : réservé aux haut-gradés', 'error');
+          return;
+        }
         const inputs = document.querySelectorAll('#configBody input[type="number"]');
         const values = {};
         inputs.forEach(inp => { values[inp.dataset.type] = parseFloat(inp.value) || 0; });
@@ -671,8 +677,8 @@
           const s = await getDoc(doc(db,'users',user.uid));
           if(!s.exists()||!s.data().approved){document.getElementById('loading').style.display='none';document.getElementById('access-denied').style.display='block';return;}
           const ud = s.data();
-          currentUser = { matricule: ud.matricule||'???', nom_steam: ud.nom_steam||'' };
-          let units = []; try { units = await loadUnits(); } catch(_){}
+          currentUser = { matricule: ud.matricule||'???', nom_steam: ud.nom_steam||'', _isAdmin: !!ud.is_admin };
+          let units = []; try { units = await loadUnitsLive(); } catch(_) { try { units = await loadUnits(); } catch(_){} }
           allUnits = units;
           const ui = units.find(x => x.matricule === currentUser.matricule);
           const rg = ui?(ui.rang||''):'';

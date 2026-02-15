@@ -713,6 +713,23 @@
       let onlineMatricules = new Set();
       let currentSort = { key: 'ordre', asc: true };
 
+      // ========== SAVE QUEUE (sérialisation des écritures) ==========
+      let _saveQueue = Promise.resolve();
+      async function queueSave(saveFn) {
+        _saveQueue = _saveQueue.then(saveFn).catch(async (err) => {
+          console.error('[Units] Save failed, reloading:', err);
+          showAlert('⚠ Sauvegarde échouée: ' + (err.message || err) + ' — Rechargement...', 'error');
+          // Rollback : recharger les données réelles depuis Firestore
+          try {
+            const freshUnits = await ghLoadUnits();
+            allUnits = freshUnits.map(u => ({ ...u, id: u.matricule || Math.random().toString(36).substr(2, 9) }));
+            updateStats();
+            renderTable();
+          } catch (_) {}
+        });
+        return _saveQueue;
+      }
+
       // ========== UTILS ==========
       function showAlert(text, type = 'success') {
         const el = document.getElementById('alertMsg');
@@ -1054,14 +1071,14 @@
         closeModal();
         updateStats();
         renderTable();
-        showAlert(editId ? '✓ Unité modifiée' : '✓ Unité ajoutée', 'success');
 
-        // Sauvegarde en arrière-plan vers GitHub
-        const toSave = allUnits.map(({ id, ...rest }) => rest);
-        ghSaveUnits(toSave, editId ? `Modification unité ${matricule}` : `Ajout unité ${matricule}`)
-          .catch(err => {
-            showAlert('⚠ Sync échouée: ' + err.message, 'error');
-          });
+        // Sauvegarde sérialisée + confirmation
+        const label = editId ? `Modification unité ${matricule}` : `Ajout unité ${matricule}`;
+        await queueSave(async () => {
+          const toSave = allUnits.map(({ id, ...rest }) => rest);
+          await ghSaveUnits(toSave, label);
+          showAlert('✓ ' + label + ' — Synchronisé', 'success');
+        });
       };
 
       // ========== FIRE UNIT (VIRER) ==========
@@ -1096,14 +1113,13 @@
         allUnits = allUnits.filter(u => u.matricule !== matricule);
         updateStats();
         renderTable();
-        showAlert(`✓ Unité ${matricule} virée et archivée`, 'success');
 
-        // Sauvegarder la liste active
-        const toSave = allUnits.map(({ id, ...rest }) => rest);
-        ghSaveUnits(toSave, `Unité ${matricule} virée`)
-          .catch(err => {
-            showAlert('⚠ Sync liste échouée: ' + err.message, 'error');
-          });
+        // Sauvegarder la liste active (sérialisé)
+        await queueSave(async () => {
+          const toSave = allUnits.map(({ id, ...rest }) => rest);
+          await ghSaveUnits(toSave, `Unité ${matricule} virée`);
+          showAlert(`✓ Unité ${matricule} virée, archivée et synchronisée`, 'success');
+        });
       };
 
       // ========== DELETE UNIT ==========
@@ -1116,14 +1132,13 @@
         allUnits = allUnits.filter(u => u.matricule !== matricule);
         updateStats();
         renderTable();
-        showAlert('✓ Unité supprimée', 'success');
 
-        // Sauvegarde en arrière-plan
-        const toSave = allUnits.map(({ id, ...rest }) => rest);
-        ghSaveUnits(toSave, `Suppression unité ${matricule}`)
-          .catch(err => {
-            showAlert('⚠ Sync échouée: ' + err.message, 'error');
-          });
+        // Sauvegarde sérialisée
+        await queueSave(async () => {
+          const toSave = allUnits.map(({ id, ...rest }) => rest);
+          await ghSaveUnits(toSave, `Suppression unité ${matricule}`);
+          showAlert('✓ Unité supprimée et synchronisée', 'success');
+        });
       };
 
       // ========== TOGGLE FORMATEUR ==========
@@ -1134,10 +1149,12 @@
         allUnits[idx].formateur = !current;
         allUnits[idx].updated_at = new Date().toISOString().substring(0, 10);
         renderTable();
-        showAlert(`✓ ${matricule} — Formateur ${!current ? 'ACTIVÉ' : 'DÉSACTIVÉ'}`, 'success');
-        const toSave = allUnits.map(({ id, ...rest }) => rest);
-        ghSaveUnits(toSave, `${!current ? 'Ajout' : 'Retrait'} formateur ${matricule}`)
-          .catch(err => showAlert('⚠ Sync échouée: ' + err.message, 'error'));
+
+        await queueSave(async () => {
+          const toSave = allUnits.map(({ id, ...rest }) => rest);
+          await ghSaveUnits(toSave, `${!current ? 'Ajout' : 'Retrait'} formateur ${matricule}`);
+          showAlert(`✓ ${matricule} — Formateur ${!current ? 'ACTIVÉ' : 'DÉSACTIVÉ'} — Synchronisé`, 'success');
+        });
       };
 
       // ========== FILTERS ==========

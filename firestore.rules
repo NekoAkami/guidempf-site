@@ -42,9 +42,13 @@ service cloud.firestore {
       allow write: if isAdmin()
         && docId in ['units', 'playtime', 'playtime_history'];
 
-      // Approved : document-level writes (compat + payroll config + competences)
+      // Approved : document-level writes (compat + competences)
       allow write: if isApproved()
-        && docId in ['reports', 'absences', 'deposits', 'payroll_config', 'competences'];
+        && docId in ['reports', 'absences', 'deposits', 'competences'];
+
+      // Payroll config : admin seulement
+      allow write: if isAdmin()
+        && docId == 'payroll_config';
 
       // Sous-collections (rapports, plaintes, planning, payes, etc.)
       match /items/{itemId} {

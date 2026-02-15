@@ -282,17 +282,14 @@ class GlobalNavigation {
             return;
         }
 
-        // Vérifier HG via units.json
+        // Vérifier HG via Firestore (source de vérité)
         let isHG = false;
         const matricule = userData.matricule || '';
         if (matricule) {
             try {
-                const res = await fetch('https://raw.githubusercontent.com/NekoAkami/guidempf-site/main/data/units.json');
-                if (res.ok) {
-                    const units = await res.json();
-                    const unit = units.find(u => u.matricule === matricule);
-                    if (unit && (unit.rang === 'Ofc' || unit.rang === 'Cmd')) isHG = true;
-                }
+                const units = window._mpfLoadUnitsLive ? await window._mpfLoadUnitsLive() : [];
+                const unit = units.find(u => u.matricule === matricule);
+                if (unit && (unit.rang === 'Ofc' || unit.rang === 'Cmd')) isHG = true;
             } catch {}
         }
 
@@ -497,11 +494,29 @@ class GlobalNavigation {
                 </div>
             </div>`;
 
+        // ---- Utilisateurs en ligne (left panel, below notepad, starts collapsed) ----
+        const onlineHTML = `
+            <div class="gp-float gp-left gp-collapsed gp-float-online" id="gpOnlinePanel">
+                <div class="gp-resize-handle" id="gpOnlineResize"></div>
+                <div class="gp-float-inner">
+                    <div class="gp-float-header" id="gpOnlineHeader">
+                        <h3>👥 EN LIGNE <span class="gp-online-count" id="gpOnlineCount">0</span></h3>
+                        <span class="gp-float-toggle" id="gpOnlineToggle">◄</span>
+                    </div>
+                    <div class="gp-float-body gp-online-body" id="gpOnlineBody">
+                        <div id="gpOnlineList" class="gp-online-list">
+                            <div class="gp-no-events">Chargement…</div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+
         // ---- Collapsed tabs (vertical text labels) ----
         const tabNotepadHTML = `<div class="gp-collapsed-tab gp-tab-left" id="gpNotepadTab"><span class="gp-tab-icon">📝</span><span class="gp-tab-label">BLOC-NOTES</span></div>`;
+        const tabOnlineHTML = `<div class="gp-collapsed-tab gp-tab-left gp-tab-online" id="gpOnlineTab"><span class="gp-tab-icon">👥</span><span class="gp-tab-label">EN LIGNE</span></div>`;
         const tabTodayHTML = `<div class="gp-collapsed-tab gp-tab-right" id="gpTodayTab"><span class="gp-tab-icon">📋</span><span class="gp-tab-label">PLANNING</span></div>`;
 
-        document.body.insertAdjacentHTML('beforeend', notepadHTML + todayHTML + tabNotepadHTML + tabTodayHTML);
+        document.body.insertAdjacentHTML('beforeend', notepadHTML + onlineHTML + todayHTML + tabNotepadHTML + tabOnlineHTML + tabTodayHTML);
 
         // ---- Dynamic top position based on nav height ----
         const adjustTopPosition = () => {
@@ -516,6 +531,15 @@ class GlobalNavigation {
                 const el = document.getElementById(id);
                 if (el) { el.style.top = topOffset + 'px'; el.style.maxHeight = `calc(100vh - ${topOffset + 20}px)`; }
             });
+            // Online panel: position below notepad
+            const notepadEl = document.getElementById('gpNotepadPanel');
+            if (notepadEl) {
+                const notepadBottom = notepadEl.getBoundingClientRect().bottom + 8;
+                const onlineEl = document.getElementById('gpOnlinePanel');
+                if (onlineEl) { onlineEl.style.top = notepadBottom + 'px'; onlineEl.style.maxHeight = `calc(100vh - ${notepadBottom + 20}px)`; }
+                const onlineTab = document.getElementById('gpOnlineTab');
+                if (onlineTab) onlineTab.style.top = notepadBottom + 'px';
+            }
             ['gpNotepadTab','gpTodayTab'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.style.top = topOffset + 'px';
@@ -528,15 +552,21 @@ class GlobalNavigation {
         // ---- Restore saved widths ----
         const notepadPanel = document.getElementById('gpNotepadPanel');
         const todayPanel = document.getElementById('gpTodayPanel');
+        const onlinePanel = document.getElementById('gpOnlinePanel');
         const notepadTab = document.getElementById('gpNotepadTab');
         const todayTab = document.getElementById('gpTodayTab');
+        const onlineTab = document.getElementById('gpOnlineTab');
         const savedNotepadW = parseInt(localStorage.getItem('mpf_notepad_width'));
         const savedTodayW = parseInt(localStorage.getItem('mpf_today_width'));
+        const savedOnlineW = parseInt(localStorage.getItem('mpf_online_width'));
         if (savedNotepadW && savedNotepadW >= MIN_W && savedNotepadW <= MAX_W) {
             notepadPanel.style.width = savedNotepadW + 'px';
         }
         if (savedTodayW && savedTodayW >= MIN_W && savedTodayW <= MAX_W) {
             todayPanel.style.width = savedTodayW + 'px';
+        }
+        if (savedOnlineW && savedOnlineW >= MIN_W && savedOnlineW <= MAX_W) {
+            onlinePanel.style.width = savedOnlineW + 'px';
         }
         // Restore saved textarea height
         const savedTAh = parseInt(localStorage.getItem('mpf_notepad_ta_height'));
@@ -549,8 +579,10 @@ class GlobalNavigation {
         const syncTabVisibility = () => {
             const npCollapsed = notepadPanel.classList.contains('gp-collapsed');
             const tdCollapsed = todayPanel.classList.contains('gp-collapsed');
+            const onCollapsed = onlinePanel.classList.contains('gp-collapsed');
             notepadTab.classList.toggle('gp-tab-hidden', !npCollapsed);
             todayTab.classList.toggle('gp-tab-hidden', !tdCollapsed);
+            onlineTab.classList.toggle('gp-tab-hidden', !onCollapsed);
         };
 
         // ---- Toggle logic ----
@@ -562,20 +594,26 @@ class GlobalNavigation {
             localStorage.setItem(storageKey, collapsed ? '1' : '0');
             const toggle = panel.querySelector('.gp-float-toggle');
             if (toggle) {
-                if (panelId === 'gpNotepadPanel') {
+                if (panelId === 'gpNotepadPanel' || panelId === 'gpOnlinePanel') {
                     toggle.textContent = collapsed ? '►' : '◄';
                 } else {
                     toggle.textContent = collapsed ? '◄' : '►';
                 }
             }
             syncTabVisibility();
+            // Recalculate online panel position when notepad toggled
+            if (panelId === 'gpNotepadPanel') {
+                requestAnimationFrame(() => { requestAnimationFrame(adjustTopPosition); });
+            }
         };
 
         document.getElementById('gpNotepadHeader').addEventListener('click', () => togglePanel('gpNotepadPanel', 'mpf_notepad_collapsed'));
         document.getElementById('gpTodayHeader').addEventListener('click', () => togglePanel('gpTodayPanel', 'mpf_today_collapsed'));
+        document.getElementById('gpOnlineHeader').addEventListener('click', () => togglePanel('gpOnlinePanel', 'mpf_online_collapsed'));
         // Click on collapsed tab to open
         notepadTab.addEventListener('click', () => togglePanel('gpNotepadPanel', 'mpf_notepad_collapsed'));
         todayTab.addEventListener('click', () => togglePanel('gpTodayPanel', 'mpf_today_collapsed'));
+        onlineTab.addEventListener('click', () => togglePanel('gpOnlinePanel', 'mpf_online_collapsed'));
 
         // ---- Restore panel states from localStorage ----
         if (localStorage.getItem('mpf_notepad_collapsed') !== '1') {
@@ -585,6 +623,10 @@ class GlobalNavigation {
         if (localStorage.getItem('mpf_today_collapsed') !== '1') {
             todayPanel.classList.remove('gp-collapsed');
             document.getElementById('gpTodayToggle').textContent = '►';
+        }
+        if (localStorage.getItem('mpf_online_collapsed') !== '1') {
+            onlinePanel.classList.remove('gp-collapsed');
+            document.getElementById('gpOnlineToggle').textContent = '◄';
         }
         syncTabVisibility();
 
@@ -631,6 +673,7 @@ class GlobalNavigation {
             });
         };
         setupResize('gpNotepadResize', 'gpNotepadPanel', 'mpf_notepad_width', true);
+        setupResize('gpOnlineResize', 'gpOnlinePanel', 'mpf_online_width', true);
         setupResize('gpTodayResize', 'gpTodayPanel', 'mpf_today_width', false);
 
         // ---- Bloc-notes logic (localStorage) ----
@@ -663,6 +706,9 @@ class GlobalNavigation {
 
         // ---- Planning du jour (lazy Firebase load) ----
         this._loadTodayPanel();
+
+        // ---- Module "En ligne" (présence Firestore) ----
+        this._initPresenceSystem();
     }
 
     async _loadTodayPanel() {
@@ -753,6 +799,148 @@ class GlobalNavigation {
         } catch (err) {
             console.warn('[MiniPlanning]', err);
             container.innerHTML = '<div class="gp-no-events">Erreur de chargement</div>';
+        }
+    }
+
+    // ===== SYSTÈME DE PRÉSENCE EN LIGNE =====
+    async _initPresenceSystem() {
+        const listEl = document.getElementById('gpOnlineList');
+        const countEl = document.getElementById('gpOnlineCount');
+        if (!listEl) return;
+
+        try {
+            const [appMod, fsMod, authMod] = await Promise.all([
+                import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js'),
+                import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js'),
+                import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js')
+            ]);
+
+            const { getApp, initializeApp } = appMod;
+            const { getFirestore, doc, setDoc, deleteDoc, collection, getDocs, serverTimestamp } = fsMod;
+            const { getAuth, onAuthStateChanged } = authMod;
+
+            let app;
+            try { app = getApp(); } catch {
+                app = initializeApp({
+                    apiKey: 'AIzaSyDPs4x2EE1pyeQTC_V-Ze5uyZ8Rs2N8qF4',
+                    authDomain: 'guidempf.firebaseapp.com',
+                    projectId: 'guidempf',
+                    storageBucket: 'guidempf.firebasestorage.app',
+                    messagingSenderId: '806309770965',
+                    appId: '1:806309770965:web:3621f58bfb252446c1945c'
+                });
+            }
+
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+            const PRESENCE_TTL = 2 * 60 * 1000; // 2 minutes
+            const HEARTBEAT_INTERVAL = 45 * 1000; // 45 secondes
+
+            // Attendre l'utilisateur
+            const user = await new Promise((resolve) => {
+                if (auth.currentUser) { resolve(auth.currentUser); return; }
+                const unsub = onAuthStateChanged(auth, (u) => { unsub(); resolve(u); });
+            });
+
+            if (!user) {
+                listEl.innerHTML = '<div class="gp-no-events">Non connecté</div>';
+                return;
+            }
+
+            // Lire le profil utilisateur pour matricule + pseudo
+            const { getDoc } = fsMod;
+            let matricule = '???', pseudo = '';
+            try {
+                const userSnap = await getDoc(doc(db, 'users', user.uid));
+                if (userSnap.exists()) {
+                    const ud = userSnap.data();
+                    matricule = ud.matricule || '???';
+                    pseudo = ud.pseudo || ud.nom_steam || ud.displayName || user.displayName || '';
+                }
+            } catch {}
+
+            // === Écrire la présence ===
+            const presenceRef = doc(db, 'presence', user.uid);
+            const writePresence = async () => {
+                try {
+                    await setDoc(presenceRef, {
+                        matricule,
+                        pseudo,
+                        last_seen: serverTimestamp(),
+                        page: (window.location.pathname.split('/').pop() || 'index.html')
+                    });
+                } catch (e) { console.warn('[Presence] Write error:', e); }
+            };
+
+            await writePresence();
+            const hbInterval = setInterval(writePresence, HEARTBEAT_INTERVAL);
+
+            // Supprimer la présence à la fermeture
+            window.addEventListener('beforeunload', () => {
+                clearInterval(hbInterval);
+                // sendBeacon fallback pour garantir la suppression
+                const url = `https://firestore.googleapis.com/v1/projects/guidempf/databases/(default)/documents/presence/${user.uid}`;
+                try { navigator.sendBeacon(url, ''); } catch {}
+                // Tentative classique aussi
+                deleteDoc(presenceRef).catch(() => {});
+            });
+
+            // === Lire et afficher les utilisateurs en ligne ===
+            const refreshOnlineUsers = async () => {
+                try {
+                    const snap = await getDocs(collection(db, 'presence'));
+                    const now = Date.now();
+                    const onlineUsers = [];
+
+                    snap.forEach(d => {
+                        const data = d.data();
+                        if (!data.last_seen) return;
+                        const lastSeen = data.last_seen.toMillis ? data.last_seen.toMillis() : (data.last_seen.seconds ? data.last_seen.seconds * 1000 : 0);
+                        if (now - lastSeen < PRESENCE_TTL) {
+                            onlineUsers.push({
+                                matricule: data.matricule || '???',
+                                pseudo: data.pseudo || '',
+                                isSelf: d.id === user.uid
+                            });
+                        }
+                    });
+
+                    // Trier : soi-même en premier, puis par matricule
+                    onlineUsers.sort((a, b) => {
+                        if (a.isSelf) return -1;
+                        if (b.isSelf) return 1;
+                        return (a.matricule || '').localeCompare(b.matricule || '');
+                    });
+
+                    countEl.textContent = onlineUsers.length;
+
+                    if (onlineUsers.length === 0) {
+                        listEl.innerHTML = '<div class="gp-no-events">Aucun utilisateur en ligne</div>';
+                        return;
+                    }
+
+                    listEl.innerHTML = onlineUsers.map(u => {
+                        const selfClass = u.isSelf ? ' gp-online-self' : '';
+                        return `<div class="gp-online-user${selfClass}">
+                            <span class="gp-online-dot"></span>
+                            <span class="gp-online-mat">${u.matricule}</span>
+                            <span class="gp-online-pseudo">${u.pseudo}</span>
+                        </div>`;
+                    }).join('');
+
+                } catch (e) {
+                    console.warn('[Presence] Read error:', e);
+                    listEl.innerHTML = '<div class="gp-no-events">Erreur de chargement</div>';
+                }
+            };
+
+            // Premier chargement + rafraîchissement toutes les 30s
+            await refreshOnlineUsers();
+            setInterval(refreshOnlineUsers, 30000);
+
+        } catch (err) {
+            console.warn('[Presence] Init error:', err);
+            listEl.innerHTML = '<div class="gp-no-events">Erreur</div>';
         }
     }
 

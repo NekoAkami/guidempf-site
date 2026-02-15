@@ -29,6 +29,45 @@ export { app, auth, db };
 // Signal pour les scripts non-module (global-nav.js) que Firebase est prêt
 window._mpfDbReady = true;
 
+// ========== CHARGEMENT DES UNITÉS (Firestore → fallback GitHub) ==========
+let _unitsCacheData = null;
+let _unitsCacheTime = 0;
+const _UNITS_CACHE_TTL = 30000; // 30s cache
+
+async function _loadUnitsLive() {
+  // 1. Firestore (source de vérité)
+  try {
+    const snap = await getDoc(doc(db, 'mpf_data', 'units'));
+    if (snap.exists() && snap.data().items) {
+      const items = snap.data().items;
+      _unitsCacheData = items;
+      _unitsCacheTime = Date.now();
+      return items;
+    }
+  } catch (e) {
+    console.warn('[Auth] Firestore units read failed:', e.message);
+  }
+  // 2. Fallback GitHub (lecture seule)
+  try {
+    const res = await fetch('https://raw.githubusercontent.com/NekoAkami/guidempf-site/main/data/units.json?t=' + Date.now());
+    if (res.ok) {
+      const items = await res.json();
+      if (Array.isArray(items)) return items;
+    }
+  } catch (_) {}
+  return [];
+}
+
+export async function loadUnitsLive() {
+  if (_unitsCacheData && (Date.now() - _unitsCacheTime) < _UNITS_CACHE_TTL) {
+    return _unitsCacheData;
+  }
+  return await _loadUnitsLive();
+}
+
+// Expose pour les scripts non-module
+window._mpfLoadUnitsLive = loadUnitsLive;
+
 // Détection automatique du chemin de base (pour les sous-dossiers comme admin/)
 const _basePath = (() => {
     const s = document.querySelector('script[src*="auth.js"]');
@@ -102,22 +141,19 @@ export async function updateAuthButton() {
           const _accredMap = { 'RCT': 'Recrue', '.05': 'MPF', '.04': 'MPF', '.03': 'MPF', 'STB': 'MPF', '.02': 'MPEF', '.01': 'MPEF', 'DvL': 'MPEF', 'STBE': 'MPEF', 'CABAL': 'MPEF', 'Ofc': 'HautGradé', 'Cmd': 'HautGradé' };
           const _formateurLabel = (acc) => (acc === 'MPF' || acc === 'Recrue') ? 'Unité Formatrice MPF' : (acc === 'MPEF' || acc === 'HautGradé') ? 'Unité Formatrice MPEF' : '';
           try {
-            const res = await fetch('https://raw.githubusercontent.com/NekoAkami/guidempf-site/main/data/units.json');
-            if (res.ok) {
-              const units = await res.json();
-              const unit = units.find(u => u.matricule === matricule);
-              if (unit) {
-                unitRang = unit.rang || '';
-                const isUnitHG = unit.rang === 'Ofc' || unit.rang === 'Cmd';
-                const r = unit.rang && unit.rang !== 'MISSING' ? unit.rang : '';
-                const d = !isUnitHG && unit.division && unit.division !== 'N/A' ? unit.division : '';
-                // Format : C17.grade.division.matricule (ou C17.grade.matricule pour HG)
-                gradeMatDiv = ['C17', r, d, matricule].filter(Boolean).join('.');
-                const acc = _accredMap[unit.rang] || '';
-                if (acc) {
-                  accredLine = 'Accréditation : ' + acc;
-                  if (unit.formateur) accredLine += ' — ' + _formateurLabel(acc);
-                }
+            const units = await loadUnitsLive();
+            const unit = units.find(u => u.matricule === matricule);
+            if (unit) {
+              unitRang = unit.rang || '';
+              const isUnitHG = unit.rang === 'Ofc' || unit.rang === 'Cmd';
+              const r = unit.rang && unit.rang !== 'MISSING' ? unit.rang : '';
+              const d = !isUnitHG && unit.division && unit.division !== 'N/A' ? unit.division : '';
+              // Format : C17.grade.division.matricule (ou C17.grade.matricule pour HG)
+              gradeMatDiv = ['C17', r, d, matricule].filter(Boolean).join('.');
+              const acc = _accredMap[unit.rang] || '';
+              if (acc) {
+                accredLine = 'Accréditation : ' + acc;
+                if (unit.formateur) accredLine += ' — ' + _formateurLabel(acc);
               }
             }
           } catch (_) {}
@@ -273,11 +309,8 @@ async function _checkPageAccess(currentPage, userData) {
     const matricule = userData.matricule || '';
     let unit = null;
     try {
-      const res = await fetch('https://raw.githubusercontent.com/NekoAkami/guidempf-site/main/data/units.json');
-      if (res.ok) {
-        const units = await res.json();
-        unit = units.find(u => u.matricule === matricule);
-      }
+      const units = await loadUnitsLive();
+      unit = units.find(u => u.matricule === matricule);
     } catch {}
 
     if (!unit) return 'Unité introuvable. Contactez un administrateur.';

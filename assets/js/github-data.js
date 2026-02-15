@@ -47,20 +47,28 @@ async function readData(key) {
     }
   } catch (e) {
     console.warn(`[DataStore] Firestore read '${key}' failed:`, e.message);
+    // IMPORTANT : Ne PAS fallback sur GitHub si Firestore a échoué transitoirement,
+    // car cela écraserait les données récentes avec des données potentiellement obsolètes.
+    // On retente une fois avant de fallback.
+    try {
+      const snap2 = await getDoc(doc(db, FS_COLLECTION, key));
+      if (snap2.exists()) {
+        return snap2.data().items || [];
+      }
+    } catch (e2) {
+      console.warn(`[DataStore] Firestore retry '${key}' also failed:`, e2.message);
+    }
   }
 
+  // Fallback GitHub — lecture seule, SANS réécriture dans Firestore
+  // (évite d'écraser des données récentes avec un fichier statique obsolète)
   try {
     const url = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/data/${key}.json?t=${Date.now()}`;
     const resp = await fetch(url);
     if (resp.ok) {
       const items = await resp.json();
-      if (Array.isArray(items) && items.length > 0) {
-        try {
-          await setDoc(doc(db, FS_COLLECTION, key), { items, migrated_at: new Date().toISOString() });
-          console.log(`[DataStore] Migré '${key}' → Firestore (${items.length} items)`);
-        } catch (_) {}
-      }
-      return items || [];
+      console.warn(`[DataStore] '${key}' chargé depuis GitHub (lecture seule, pas de migration)`);
+      return Array.isArray(items) ? items : [];
     }
   } catch (e) {
     console.warn(`[DataStore] GitHub fallback '${key}' failed:`, e.message);
@@ -150,22 +158,16 @@ async function readSubCollection(parentKey, sortField, sortDir) {
     console.warn(`[DataStore] Old format check '${parentKey}' failed:`, e.message);
   }
 
-  // 3. Fallback GitHub JSON
+  // 3. Fallback GitHub JSON — lecture seule, PAS de migration automatique
+  // (évite les doublons si Firestore était temporairement indisponible)
   try {
     const url = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/data/${parentKey}.json?t=${Date.now()}`;
     const resp = await fetch(url);
     if (resp.ok) {
       const items = await resp.json();
       if (Array.isArray(items) && items.length > 0) {
-        const migrated = [];
-        for (const item of items) {
-          try {
-            const newDoc = await addDoc(colRef, item);
-            migrated.push({ ...item, _id: newDoc.id });
-          } catch (_) {}
-        }
-        console.log(`[DataStore] GitHub → sous-collection '${parentKey}': ${migrated.length} items`);
-        return migrated;
+        console.warn(`[DataStore] '${parentKey}' chargé depuis GitHub (lecture seule, ${items.length} items)`);
+        return items.map((item, i) => ({ ...item, _id: '__gh_' + i }));
       }
     }
   } catch (e) {
