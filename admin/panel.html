@@ -660,12 +660,28 @@
       document.getElementById('statusFilter').addEventListener('change', filterUsers);
       document.getElementById('unitFilter').addEventListener('change', filterUsers);
 
-      // Auth check — admin only
+      // Auth check — admin + HautGradés (Ofc/Cmd)
       onAuthStateChanged(auth, async (user) => {
         if (!user) return; // auth.js redirige déjà vers login
         try {
           const snap = await getDoc(doc(db, 'users', user.uid));
-          if (!snap.exists() || !snap.data().is_admin) {
+          if (!snap.exists()) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('access-denied').style.display = 'block';
+            return;
+          }
+          const userData = snap.data();
+          const isAdmin = userData.is_admin === true;
+          // Vérifier si HautGradé via unités
+          let isHG = false;
+          try {
+            const unitsSnap = await getDoc(doc(db, 'mpf_data', 'units'));
+            if (unitsSnap.exists() && unitsSnap.data().items) {
+              const unit = unitsSnap.data().items.find(u => u.matricule === userData.matricule);
+              if (unit && (unit.rang === 'Ofc' || unit.rang === 'Cmd')) isHG = true;
+            }
+          } catch (_) {}
+          if (!isAdmin && !isHG) {
             document.getElementById('loading').style.display = 'none';
             document.getElementById('access-denied').style.display = 'block';
             return;
